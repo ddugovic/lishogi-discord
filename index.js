@@ -31,7 +31,7 @@ const help = require('./commands/help');
 const stop = require('./commands/stop');
 
 bot.on('ready', () => {
-    bot.user.setActivity('lichess.org'); //you can set a default game
+    bot.user.setActivity('lishogi.org'); //you can set a default game
     console.log(`Bot is online!\n${bot.users.size} users, in ${bot.guilds.size} servers connected.`);
 });
 

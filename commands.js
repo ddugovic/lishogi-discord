@@ -12,12 +12,12 @@ const whoAmI = require('./commands/whoAmI');
 const commands = {
     "arena": {
         usage: "[user]",
-        description: "Find an upcoming or recent arena created by lichess (or a user)",
+        description: "Find an upcoming or recent arena created by lishogi (or a user)",
         process: arena
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your lichess username from the bot's database",
+        description: "Deletes your lishogi username from the bot's database",
         process: deleteUser
     },
     "playing": {
@@ -41,8 +41,8 @@ const commands = {
         process: setGameMode
     },
     "setuser": {
-        usage: "<lichess name>",
-        description: "Sets your lichess username",
+        usage: "<lishogi name>",
+        description: "Sets your lishogi username",
         process: setUser
     },
     "tv": {
@@ -52,7 +52,7 @@ const commands = {
     },
     "whoami": {
         usage: "",
-        description: "Returns your lichess username",
+        description: "Returns your lishogi username",
         process: whoAmI
     },
 };

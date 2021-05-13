@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 // Send ongoin game info
 function sendCurrent(msg, username) {
-    axios.get('https://lichess.org/api/user/' + username)
+    axios.get('https://lishogi.org/api/user/' + username)
         .then((response) => {
             var formattedMessage = formatCurrent(response.data);
             msg.channel.send(formattedMessage);
@@ -39,9 +39,9 @@ function playing(bot, msg, suffix) {
                 msg.channel.send(`There was an error with your request.`);
             }
             if (!result) {
-                msg.channel.send(`You need to set your lichess username with \`setuser\`!`);
+                msg.channel.send(`You need to set your lishogi username with \`setuser\`!`);
             } else {
-                sendCurrent(msg, result.lichessName);
+                sendCurrent(msg, result.lishogiName);
             }
         });
     }

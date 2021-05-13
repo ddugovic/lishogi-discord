@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 function sendRecentGame(msg, username, rated) {
     // Accept only the x-ndjson type
-    axios.get('https://lichess.org/games/export/' + username + '?max=1' + '&rated=' + rated,
+    axios.get('https://lishogi.org/games/export/' + username + '?max=1' + '&rated=' + rated,
         { headers: { 'Accept': 'application/x-ndjson' } })
         .then((response) => {
             var formattedMessage = formatRecentGame(response.data);
@@ -18,7 +18,7 @@ function sendRecentGame(msg, username, rated) {
 }
 
 function formatRecentGame(data) {
-    return 'https://lichess.org/' + data.id;
+    return 'https://lishogi.org/' + data.id;
 }
 
 function recent(bot, msg, suffix) {
@@ -38,10 +38,10 @@ function recent(bot, msg, suffix) {
             console.log(err);
         }
         if (!result) {
-            msg.channel.send('You need to set your lichess username with setuser!');
+            msg.channel.send('You need to set your lishogi username with setuser!');
         }
         else {
-            sendRecentGame(msg, result.lichessName, rated);
+            sendRecentGame(msg, result.lishogiName, rated);
         }
     });
 }

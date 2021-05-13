@@ -8,7 +8,7 @@ function setGameMode(bot, msg, suffix) {
             console.log(err);
         }
         if (!result) {
-            msg.channel.send('You need to set your lichess username with setuser!');
+            msg.channel.send('You need to set your lishogi username with setuser!');
         } else {
             var newValues = { $set: { favoriteMode: mode } };
             User.updateOne({ userId: authorId }, newValues, (err, updateResult) => {
