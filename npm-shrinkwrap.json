@@ -220,6 +220,14 @@
         "safe-buffer": "^5.1.1"
       }
     },
+    "blapi": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/blapi/-/blapi-2.1.0.tgz",
+      "integrity": "sha512-ngmTXCh8gyqDKtEuyeuHsXFL2pEKZG2MkO4RQE2Q48CL61BjrpxeLhT/CgBWVmetR+WHf4xbIJPkCSW8RUdqLg==",
+      "requires": {
+        "centra": "^2.4.2"
+      }
+    },
     "bluebird": {
       "version": "3.5.1",
       "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz",
@@ -348,6 +356,11 @@
       "resolved": "https://registry.npmjs.org/capture-stack-trace/-/capture-stack-trace-1.0.1.tgz",
       "integrity": "sha512-mYQLZnx5Qt1JgB1WEiMCf2647plpGeQ2NMR/5L0HNZzGQo4fuSPnK+wjfPnKZV0aiJDgzmWqqkV/g7JD+DW0qw==",
       "dev": true
+    },
+    "centra": {
+      "version": "2.4.2",
+      "resolved": "https://registry.npmjs.org/centra/-/centra-2.4.2.tgz",
+      "integrity": "sha512-f1RaP0V1HqVNEXfLfjNBthB2yy3KnSGnPCnOPCFLUk9e/Z4rNJ8nBaJNnghflnp88mi1IT8mfmW+HlMS1/H+bg=="
     },
     "chalk": {
       "version": "2.4.2",
@@ -575,11 +588,6 @@
       "resolved": "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-1.0.0.tgz",
       "integrity": "sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=",
       "dev": true
-    },
-    "dblapi.js": {
-      "version": "2.4.0",
-      "resolved": "https://registry.npmjs.org/dblapi.js/-/dblapi.js-2.4.0.tgz",
-      "integrity": "sha512-SqDYVcV1DBQnyhySTjd+Qvzu7jFr+4eKwl56fGpIti7OlXGF5dmDPeo3jQfRlOXTRn5/I5997MDIJukoDxE3Mg=="
     },
     "debug": {
       "version": "3.1.0",
