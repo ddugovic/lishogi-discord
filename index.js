@@ -1,5 +1,6 @@
 const config = require('./config.json');
 const Discord = require('discord.js');
+const blapi = require('blapi');
 
 // Set up the database
 const mongoose = require('mongoose');
@@ -72,6 +73,5 @@ process.on('unhandledRejection', err => {
 bot.login(config.token);
 
 if (config.discordbotstoken) {
-    const blapi = require('blapi');
     blapi.handle(bot, {'top.gg' : config.discordbotstoken}, 1);
 }
