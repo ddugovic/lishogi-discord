@@ -41,7 +41,7 @@ function formatProfile(data, favoriteMode) {
         playerName = data.title + ' ' + playerName;
 
     var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
-    var formattedMessage = new Discord.RichEmbed()
+    var formattedMessage = new Discord.MessageEmbed()
         .setAuthor(flag + ' ' + playerName + '  ' + status, null, data.url)
         .setTitle('Challenge ' + data.username + ' to a game!')
         .setURL('https://lishogi.org/?user=' + data.username + '#friend')
