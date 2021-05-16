@@ -28,7 +28,7 @@ function tv(bot, msg, suffix) {
     if (suffix) {
         sendTv(msg, suffix);
     } else {
-        User.findOne({ userId: msg.author.id }, (err, result) => {
+        User.findOne({ playerId: msg.author.id }, (err, result) => {
             if (err) {
                 console.log(err);
             }

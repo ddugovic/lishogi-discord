@@ -37,7 +37,7 @@ function formatArena(data, createdBy, favoriteMode) {
 }
 
 function arena(bot, msg, suffix) {
-    User.findOne({ userId: msg.author.id }, (err, result) => {
+    User.findOne({ playerId: msg.author.id }, (err, result) => {
         var favoriteMode = '';
         if (err) {
             console.log(err);

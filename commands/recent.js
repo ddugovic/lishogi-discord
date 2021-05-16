@@ -33,7 +33,7 @@ function recent(bot, msg, suffix) {
     else {
         rated = '';
     }
-    User.findOne({ userId: msg.author.id }, (err, result) => {
+    User.findOne({ playerId: msg.author.id }, (err, result) => {
         if (err) {
             console.log(err);
         }
