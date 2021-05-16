@@ -73,5 +73,5 @@ process.on('unhandledRejection', err => {
 bot.login(config.token);
 
 if (config.discordbotstoken) {
-    blapi.handle(bot, {'top.gg' : config.discordbotstoken}, 1);
+    blapi.handle(bot, {'top.gg' : config.discordbotstoken}, 60);
 }
