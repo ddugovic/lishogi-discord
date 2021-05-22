@@ -1,6 +1,6 @@
 const config = require('./config.json');
 const Discord = require('discord.js');
-const blapi = require('blapi');
+const publisher = require('discord-publisher');
 
 // Set up the database
 const mongoose = require('mongoose');
@@ -26,7 +26,7 @@ bot.on('ready', () => {
 });
 
 bot.on('guildCreate', (guild) => {
-    console.log(`I've joined the guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
+    console.log(`Joining guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
 });
 
 bot.on('message', (msg) => {
@@ -42,7 +42,7 @@ bot.on('message', (msg) => {
     }
     let command = commands[cmdTxt];
     if (command) {
-        console.log(`Treating  ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
+        console.log(`Treating ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
         try {
             commands[cmdTxt].process(bot, msg, suffix);
         } catch (e) {
@@ -72,6 +72,35 @@ process.on('unhandledRejection', err => {
 
 bot.login(config.token);
 
-if (config.discordbotstoken) {
-    blapi.handle(bot, {'top.gg' : config.discordbotstoken}, 60);
+function publish(config, bot) {
+    let settings = {
+	listings: {
+		// tokens for sites here
+		// leave blank or remove site if not posting to that site
+		topgg: config.topggtoken,
+		discordbotsgg: config.discordbotsggtoken,
+		discordboats: config.discordboatstoken,
+		botsondiscord: config.botsondiscordtoken,
+		botsfordiscord: config.botsfordiscordtoken,
+		botlistspace: config.botlistspacetoken,
+		topcord: config.topcordtoken,
+		discordextremelist: config.discordextremelisttoken,
+		discordbotlist: config.discordbotlisttoken,
+		sentcord: config.sentcordtoken,
+		dbotsco: config.dbotscotoken,
+		discordlabs: config.discordlabstoken,
+		blist: config.blisttoken
+	},
+	// the following is required
+	clientid: bot.user.id,
+	servercount: bot.guilds.size,
+	shardscount: 0,
+	shardsid: 0,
+	usercount: bot.users.size,
+	output: config.debug
+    }
+    publisher.post(settings)
 }
+
+setInterval(publish, 1800000, config, bot);
+
