@@ -73,6 +73,7 @@ process.on('unhandledRejection', err => {
 bot.login(config.token);
 
 function publish(config, bot) {
+    console.log(`${bot.users.cache.size} users, in ${bot.guilds.cache.size} servers connected.`);
     let settings = {
 	listings: {
 		// tokens for sites here
