@@ -1,5 +1,5 @@
 {
-  "name": "lishogidiscordbot",
+  "name": "lichessdiscordbot",
   "version": "1.0.0",
   "description": "A Discord bot to interact with the Lishogi API",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "keywords": [
     "discord",
-    "lishogi",
+    "lichess",
     "bot"
   ],
   "author": "Tim Beck",

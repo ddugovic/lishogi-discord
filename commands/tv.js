@@ -2,7 +2,7 @@ const axios = require('axios');
 const User = require('../models/User');
 
 function sendTv(msg, favoriteMode) {
-    axios.get('https://lishogi.org/tv/channels')
+    axios.get('https://lichess.org/tv/channels')
         .then((response) => {
             var formattedMessage = formatTv(response.data, favoriteMode);
             msg.channel.send(formattedMessage);
@@ -18,7 +18,7 @@ function sendTv(msg, favoriteMode) {
 function formatTv(data, favoriteMode) {
     for (var channel in data) {
         if (channel.toLowerCase() == favoriteMode)
-            return 'https://lishogi.org/' + data[channel].gameId;
+            return 'https://lichess.org/' + data[channel].gameId;
     }
     console.log(data)
     return `No channel of mode ${favoriteMode} found!`;
@@ -28,12 +28,12 @@ function tv(bot, msg, suffix) {
     if (suffix) {
         sendTv(msg, suffix);
     } else {
-        User.findOne({ playerId: msg.author.id }, (err, result) => {
+        User.findOne({ userId: msg.author.id }, (err, result) => {
             if (err) {
                 console.log(err);
             }
             if (!result) {
-                msg.channel.send('You need to set your lishogi username with setuser!');
+                msg.channel.send('You need to set your lichess username with setuser!');
             } else if (!result.favoriteMode) { 
                 msg.channel.send('You need to set your favorite gamemode with setgamemode!');
             } else {

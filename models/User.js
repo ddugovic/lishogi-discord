@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-  playerId: {
+  userId: {
     type: String,
     required: true
   },
-  lishogiName: {
+  lichessName: {
     type: String,
     required: true
   },

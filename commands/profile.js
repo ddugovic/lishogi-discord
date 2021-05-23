@@ -6,7 +6,7 @@ const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 function sendProfile(msg, username, favoriteMode) {
-    axios.get('https://lishogi.org/api/user/' + username)
+    axios.get('https://lichess.org/api/user/' + username)
         .then((response) => {
             let formattedMessage = formatProfile(response.data, favoriteMode);
             msg.channel.send(formattedMessage);
@@ -44,7 +44,7 @@ function formatProfile(data, favoriteMode) {
     var formattedMessage = new Discord.MessageEmbed()
         .setAuthor(flag + ' ' + playerName + '  ' + status, null, data.url)
         .setTitle('Challenge ' + data.username + ' to a game!')
-        .setURL('https://lishogi.org/?user=' + data.username + '#friend')
+        .setURL('https://lichess.org/?user=' + data.username + '#friend')
         .setColor(0xFFFFFF)
         .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
@@ -102,7 +102,7 @@ function getMostPlayedRating(list, mostPlayedMode) {
         mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
-// For sorting through modes... lishogi api does not put these in an array so we do it ourselves
+// For sorting through modes... lichess api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
     // Count up number of keys...
@@ -128,7 +128,7 @@ function profile(bot, msg, suffix) {
         sendProfile(msg, suffix, '');
     }
     else {
-        User.findOne({ playerId: msg.author.id }, (err, result) => {
+        User.findOne({ userId: msg.author.id }, (err, result) => {
             if (err) {
                 console.log(err);
                 msg.channel.send(`There was an error with your request.`);
@@ -136,7 +136,7 @@ function profile(bot, msg, suffix) {
             if (!result) {
                 msg.channel.send(`You need to set your username with \`setuser\`!`);
             } else {
-                sendProfile(msg, result.lishogiName, result.favoriteMode);
+                sendProfile(msg, result.lichessName, result.favoriteMode);
             }
         });
     }

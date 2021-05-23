@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 // Send ongoing game info
 function sendArena(msg, suffix, favoriteMode) {
-    axios.get('https://lishogi.org/api/tournament')
+    axios.get('https://lichess.org/api/tournament')
         .then((response) => {
             var formattedMessage = formatArena(response.data, suffix, favoriteMode);
             msg.channel.send(formattedMessage);
@@ -22,7 +22,7 @@ function formatArena(data, createdBy, favoriteMode) {
         for (var i = 0; i < arenas.length; i++) {
             if (arenas[i].variant.key.toLowerCase() == favoriteMode &&
                 arenas[i].createdBy == createdBy) {
-                return 'https://lishogi.org/tournament/' + arenas[i].id;
+                return 'https://lichess.org/tournament/' + arenas[i].id;
             }
         }
     }
@@ -30,14 +30,14 @@ function formatArena(data, createdBy, favoriteMode) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
             if (arenas[i].createdBy == createdBy)
-                return 'https://lishogi.org/tournament/' + arenas[i].id;
+                return 'https://lichess.org/tournament/' + arenas[i].id;
         }
     }
     return 'No tournament created by ' + createdBy + ' found!';
 }
 
 function arena(bot, msg, suffix) {
-    User.findOne({ playerId: msg.author.id }, (err, result) => {
+    User.findOne({ userId: msg.author.id }, (err, result) => {
         var favoriteMode = '';
         if (err) {
             console.log(err);
@@ -46,7 +46,7 @@ function arena(bot, msg, suffix) {
         if (suffix) {
             sendArena(msg, suffix, favoriteMode);
         } else {
-            sendArena(msg, 'lishogi', favoriteMode);
+            sendArena(msg, 'lichess', favoriteMode);
         }
     });
 }
