@@ -95,7 +95,7 @@ function publish(config, bot) {
 	// the following is required
 	clientid: bot.user.id,
 	servercount: bot.guilds.cache.size,
-	shardscount: 0,
+	shardscount: 1,
 	shardsid: 0,
 	usercount: bot.users.cache.size,
 	output: config.debug
