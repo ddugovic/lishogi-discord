@@ -4,6 +4,7 @@ const deleteUser = require('./commands/deleteUser');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
 const profile = require('./commands/profile');
+const puzzle = require('./commands/puzzle');
 const recent = require('./commands/recent');
 const setGameMode = require('./commands/setGameMode');
 const tv = require('./commands/tv');
@@ -29,6 +30,11 @@ const commands = {
         usage: "[username]",
         description: "Displays your (or a user's) profile",
         process: profile
+    },
+    "puzzle": {
+        usage: "",
+        description: "Displays today's puzzle",
+        process: puzzle
     },
     "recent": {
         usage: "[rated/casual]",

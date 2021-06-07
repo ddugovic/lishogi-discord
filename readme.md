@@ -24,6 +24,8 @@
     Shares your (or a user's) ongoing game
 !profile [username]
     Displays your (or a user's) profile
+!puzzle
+    Displays today's puzzle
 !recent [rated/casual]
     Shares your most recent game
 !setgamemode [game mode]
