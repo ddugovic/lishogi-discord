@@ -1,6 +1,6 @@
 const config = require('./config.json');
 const Discord = require('discord.js');
-const publisher = require('discord-publisher');
+const publisher = require('discord-lister');
 
 // Set up the database
 const mongoose = require('mongoose');
