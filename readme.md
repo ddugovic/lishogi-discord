@@ -38,4 +38,6 @@
     Shares the featured game
 !whoami
     Returns your current lichess username
+!privacy
+    View privacy policy
 ```
