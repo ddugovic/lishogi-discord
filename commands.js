@@ -3,6 +3,7 @@ const arena = require('./commands/arena');
 const deleteUser = require('./commands/deleteUser');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
+const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const recent = require('./commands/recent');
@@ -60,6 +61,11 @@ const commands = {
         usage: "",
         description: "Returns your lishogi username",
         process: whoAmI
+    },
+    "privacy": {
+        usage: "",
+        description: "View privacy policy",
+        process: privacy
     },
 };
 

@@ -18,6 +18,7 @@ const bot = new Discord.Client({
 // Set up commands
 const commands = require('./commands');
 const help = require('./commands/help');
+const privacy = require('./commands/privacy');
 const stop = require('./commands/stop');
 
 bot.on('ready', () => {
@@ -51,6 +52,8 @@ bot.on('message', (msg) => {
         }
     } else if (cmdTxt == 'help') {
         help(bot, msg, suffix);
+    } else if (cmdTxt == 'privacy') {
+        privacy(bot, msg, suffix);
     } else if (cmdTxt == 'stop') {
         stop(bot, msg, suffix);
     } else if (config.respondToInvalid) {

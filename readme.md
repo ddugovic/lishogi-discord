@@ -38,4 +38,6 @@
     Shares the featured game
 !whoami
     Returns your current lishogi username
+!privacy
+    View privacy policy
 ```
