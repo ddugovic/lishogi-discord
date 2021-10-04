@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -16,6 +17,11 @@ const commands = {
         usage: "[user]",
         description: "Find an upcoming or recent arena created by lichess (or a user)",
         process: arena
+    },
+    "broadcast": {
+        usage: "",
+        description: "Find an incoming, ongoing, or finished official broadcast",
+        process: broadcast
     },
     "deleteuser": {
         usage: "",

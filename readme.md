@@ -32,6 +32,8 @@
     Shares your (or a user's) ongoing game
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
+!broadcast
+    Find an incoming, ongoing, or finished official broadcast
 !puzzle
     Displays today's puzzle
 !tv [game mode]
