@@ -1,6 +1,6 @@
 # lichess discord bot
-[![Discord Bots](https://discordbots.org/api/widget/status/490949867657494530.svg)](https://discordbots.org/bot/490949867657494530)
-[![Build Status](https://github.com/door-bell/lichess-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/door-bell/lichess-discord/actions?query=workflow%3A%22Node.js+CI%22)
+[![Discord Bots](https://discordbots.org/api/widget/status/842330057841049600.svg)](https://discordbots.org/bot/842330057841049600)
+[![Build Status](https://github.com/ddugovic/lishogi-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lishogi-discord/actions?query=workflow%3A%22Node.js+CI%22)
 
 # Setup
 
@@ -14,30 +14,30 @@
 
 # Command List
 ```
-!arena [username]
-    Find an upcoming or recent arena created by lichess (or a user)
-!deleteuser
-    Deletes your lichess username from the bot's database
 !help
     Sends a list of available commands
-!playing [username]
-    Shares your (or a user's) ongoing game
-!profile [username]
-    Displays your (or a user's) profile
-!puzzle
-    Displays today's puzzle
-!recent [rated/casual]
-    Shares your most recent game
-!setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
 !setuser <username>
     Sets your lichess username
-!stop
-    Stops the bot (owner only)
-!tv [game mode]
-    Shares the featured game
 !whoami
     Returns your current lichess username
+!deleteuser
+    Deletes your lichess username from the bot's database
+!setgamemode [game mode]
+    Sets your favorite game (or puzzle) mode
+!profile [username]
+    Displays your (or a user's) profile
+!recent [rated/casual]
+    Shares your most recent game
+!playing [username]
+    Shares your (or a user's) ongoing game
+!arena [username]
+    Find an upcoming or recent arena created by lichess (or a user)
+!puzzle
+    Displays today's puzzle
+!tv [game mode]
+    Shares the featured game
 !privacy
     View privacy policy
+!stop
+    Stops the bot (owner only)
 ```
