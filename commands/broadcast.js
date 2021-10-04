@@ -2,10 +2,7 @@ const axios = require('axios');
 
 // Send ongoing broadcast info
 function formatBroadcast(data) {
-    for (var i = 0; i < data.length; i++) {
-        return data[i]['tour']['url'];
-    }
-    return 'No broadcast found!';
+    return data['tour']['url'];
 }
 
 function broadcast(bot, msg) {
