@@ -14,30 +14,30 @@
 
 # Command List
 ```
-!arena [username]
-    Find an upcoming or recent arena created by lishogi (or a user)
-!deleteuser
-    Deletes your lishogi username from the bot's database
 !help
     Sends a list of available commands
-!playing [username]
-    Shares your (or a user's) ongoing game
-!profile [username]
-    Displays your (or a user's) profile
-!puzzle
-    Displays today's puzzle
-!recent [rated/casual]
-    Shares your most recent game
-!setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
 !setuser <username>
     Sets your lishogi username
-!stop
-    Stops the bot (owner only)
-!tv [game mode]
-    Shares the featured game
 !whoami
     Returns your current lishogi username
+!deleteuser
+    Deletes your lishogi username from the bot's database
+!setgamemode [game mode]
+    Sets your favorite game (or puzzle) mode
+!profile [username]
+    Displays your (or a user's) profile
+!recent [rated/casual]
+    Shares your most recent game
+!playing [username]
+    Shares your (or a user's) ongoing game
+!arena [username]
+    Find an upcoming or recent arena created by lishogi (or a user)
+!puzzle
+    Displays today's puzzle
+!tv [game mode]
+    Shares the featured game
 !privacy
     View privacy policy
+!stop
+    Stops the bot (owner only)
 ```
