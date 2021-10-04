@@ -19,7 +19,7 @@ function getHelp() {
 }
 
 function help(bot, msg, suffix) {
-    msg.author.send(`Available Commands: \n${getHelp()}`);
+    msg.channel.send(`Available Commands: \n${getHelp()}`);
 }
 
 module.exports = help;
