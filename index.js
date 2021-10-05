@@ -57,7 +57,7 @@ bot.on('message', (msg) => {
     } else if (cmdTxt == 'stop') {
         stop(bot, msg, suffix);
     } else if (config.respondToInvalid) {
-        bot.sendMessage(msg.channel, `Invalid command`);
+        msg.channel.send(`Invalid command!`);
     }
 });
 
