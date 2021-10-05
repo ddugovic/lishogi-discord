@@ -42,7 +42,7 @@ bot.on('message', (msg) => {
         suffix = msg.content.substring(cmdTxt.length + 2);
     }
     let command = commands[cmdTxt];
-    if (command) {
+    if (command && suffix.indexOf('@') == -1) {
         console.log(`Treating ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
         try {
             commands[cmdTxt].process(bot, msg, suffix);
@@ -57,7 +57,7 @@ bot.on('message', (msg) => {
     } else if (cmdTxt == 'stop') {
         stop(bot, msg, suffix);
     } else if (config.respondToInvalid) {
-        bot.sendMessage(msg.channel, `Invalid command: ${cmdTxt}`);
+        bot.sendMessage(msg.channel, `Invalid command`);
     }
 });
 
