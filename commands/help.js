@@ -18,7 +18,7 @@ function getHelp() {
     return helpText;
 }
 
-function help(bot, msg, suffix) {
+function help(bot, msg) {
     msg.channel.send(`Available Commands: \n${getHelp()}`);
 }
 

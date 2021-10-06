@@ -9,7 +9,7 @@ function sendTv(msg, favoriteMode) {
         })
         .catch((err) => {
             console.log(`Error in tv: \
-                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+                ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });
@@ -24,9 +24,9 @@ function formatTv(data, favoriteMode) {
     return `No channel of mode ${favoriteMode} found!`;
 }
 
-function tv(bot, msg, suffix) {
-    if (suffix) {
-        sendTv(msg, suffix);
+function tv(bot, msg, favoriteMode) {
+    if (favoriteMode) {
+        sendTv(msg, favoriteMode);
     } else {
         User.findOne({ userId: msg.author.id }, (err, result) => {
             if (err) {
