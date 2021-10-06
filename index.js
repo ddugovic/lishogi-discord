@@ -40,6 +40,8 @@ bot.on('message', (msg) => {
     if (msg.content[0] === config.prefix) {
         cmdTxt = msg.content.split(' ')[0].substring(1);
         suffix = msg.content.substring(cmdTxt.length + 2);
+    } else {
+        return;
     }
     let command = commands[cmdTxt];
     if (command && suffix.indexOf('@') == -1) {
