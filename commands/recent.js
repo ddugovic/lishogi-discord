@@ -11,7 +11,7 @@ function sendRecentGame(msg, username, rated) {
         })
         .catch((err) => {
             console.log(`Error in recent: \
-                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+                ${username} ${rated} ${err.response.status}  ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });

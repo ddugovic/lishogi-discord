@@ -1,8 +1,7 @@
 const User = require('../models/User');
 
-function setUser(bot, msg, suffix) {
+function setUser(bot, msg, username) {
     var authorId = msg.author.id;
-    var username = suffix;
     User.findOne({ playerId: authorId }, (err, result) => {
         if (err) {
             console.log(err);

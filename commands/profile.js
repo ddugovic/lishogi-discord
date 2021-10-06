@@ -13,7 +13,7 @@ function sendProfile(msg, username, favoriteMode) {
         })
         .catch((err) => {
             console.log(`Error in profile: \
-                ${favoriteMode} ${err.response.status}  ${err.response.statusText}`);
+                ${username} ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });
@@ -123,9 +123,9 @@ function getWinExpectancy(list) {
     return (score / list.count.all * 100).toFixed(1) + '%';
 }
 
-function profile(bot, msg, suffix) {
-    if (suffix) {
-        sendProfile(msg, suffix, '');
+function profile(bot, msg, username) {
+    if (username) {
+        sendProfile(msg, username, '');
     }
     else {
         User.findOne({ playerId: msg.author.id }, (err, result) => {

@@ -2,15 +2,15 @@ const axios = require('axios');
 const User = require('../models/User');
 
 // Send ongoing game info
-function sendArena(msg, suffix, favoriteMode) {
+function sendArena(msg, username, favoriteMode) {
     axios.get('https://lishogi.org/api/tournament')
         .then((response) => {
-            var formattedMessage = formatArena(response.data, suffix, favoriteMode);
+            var formattedMessage = formatArena(response.data, username, favoriteMode);
             msg.channel.send(formattedMessage);
         })
         .catch((err) => {
             console.log(`Error in sendArena: \
-                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+                ${username} ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });
@@ -36,15 +36,15 @@ function formatArena(data, createdBy, favoriteMode) {
     return 'No tournament created by ' + createdBy + ' found!';
 }
 
-function arena(bot, msg, suffix) {
+function arena(bot, msg, username) {
     User.findOne({ playerId: msg.author.id }, (err, result) => {
         var favoriteMode = '';
         if (err) {
             console.log(err);
         }
         favoriteMode = result.favoriteMode;
-        if (suffix) {
-            sendArena(msg, suffix, favoriteMode);
+        if (username) {
+            sendArena(msg, username, favoriteMode);
         } else {
             sendArena(msg, 'lishogi', favoriteMode);
         }

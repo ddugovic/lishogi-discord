@@ -1,6 +1,6 @@
 const config = require('../config.json');
 
-function stop(bot, msg, suffix) {
+function stop(bot, msg) {
     if (msg.author.id == config.owner) {
         process.exit();
     }

@@ -10,7 +10,7 @@ function sendCurrent(msg, username) {
         })
         .catch((err) => {
             console.log(`Error in playing: \
-                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+                ${username} ${err.response.status} ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });
@@ -27,9 +27,9 @@ function formatCurrent(data) {
     return formattedMessage;
 }
 
-function playing(bot, msg, suffix) {
-    if (suffix) {
-        sendCurrent(msg, suffix);
+function playing(bot, msg, username) {
+    if (username) {
+        sendCurrent(msg, username);
     }
     else {
         // Send name.
