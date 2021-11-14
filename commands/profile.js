@@ -48,8 +48,7 @@ function formatProfile(data, favoriteMode) {
         .setColor(0xFFFFFF)
         .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
-        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true)
-        .addField('Win Expectancy ', getWinExpectancy(data), true);
+        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
 
     return formattedMessage;
 }
@@ -115,12 +114,6 @@ function modesArray(list) {
         array[i] = Object.entries(list)[i];
     }
     return array;
-}
-
-// Get win/result expectancy (draws count as 0.5)
-function getWinExpectancy(list) {
-    var score = list.count.win + (list.count.draw / 2);
-    return (score / list.count.all * 100).toFixed(1) + '%';
 }
 
 function profile(bot, msg, username) {
