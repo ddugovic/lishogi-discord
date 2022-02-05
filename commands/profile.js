@@ -9,7 +9,7 @@ function sendProfile(msg, username, favoriteMode) {
     axios.get('https://lishogi.org/api/user/' + username)
         .then((response) => {
             let formattedMessage = formatProfile(response.data, favoriteMode);
-            msg.channel.send(formattedMessage);
+            msg.channel.send({ embeds: [formattedMessage] });
         })
         .catch((err) => {
             console.log(`Error in profile: \
@@ -42,10 +42,10 @@ function formatProfile(data, favoriteMode) {
 
     var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
     var formattedMessage = new Discord.MessageEmbed()
-        .setAuthor(flag + ' ' + playerName + '  ' + status, null, data.url)
+        .setColor(0xFFFFFF)
         .setTitle('Challenge ' + data.username + ' to a game!')
         .setURL('https://lishogi.org/?user=' + data.username + '#friend')
-        .setColor(0xFFFFFF)
+        .setAuthor({name: flag + ' ' + playerName + '  ' + status, iconURL: null, url: data.url})
         .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
         .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);

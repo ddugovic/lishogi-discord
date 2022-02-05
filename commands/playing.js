@@ -6,7 +6,7 @@ function sendCurrent(msg, username) {
     axios.get('https://lishogi.org/api/user/' + username)
         .then((response) => {
             var formattedMessage = formatCurrent(response.data);
-            msg.channel.send(formattedMessage);
+            msg.channel.send({ embeds: [formattedMessage] });
         })
         .catch((err) => {
             console.log(`Error in playing: \
