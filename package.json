@@ -16,6 +16,7 @@
   "author": "Tim Beck",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/rest": "^0.3.0",
     "axios": "^0.21.4",
     "convert-seconds": "^1.0.1",
     "discord-lister": "^1.4.0",

@@ -1,4 +1,6 @@
 {
+    "clientId": "[client ID]",
+    "guildId": "[guild ID]",
     "token": "[bottoken]",
     "topggtoken": "",
     "discordbotsggtoken": "",
