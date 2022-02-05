@@ -1,7 +1,7 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-// Send ongoin game info
+// Send ongoing game info
 function sendCurrent(msg, username) {
     axios.get('https://lichess.org/api/user/' + username)
         .then((response) => {
@@ -27,7 +27,7 @@ function formatCurrent(data) {
     return formattedMessage;
 }
 
-function playing(bot, msg, username) {
+function process(bot, msg, username) {
     if (username) {
         sendCurrent(msg, username);
     }
@@ -47,4 +47,8 @@ function playing(bot, msg, username) {
     }
 }
 
-module.exports = playing;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

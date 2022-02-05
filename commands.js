@@ -16,63 +16,75 @@ const commands = {
     "arena": {
         usage: "[user]",
         description: "Find an upcoming or recent arena created by lichess (or a user)",
-        process: arena
+        process: arena.process,
+        reply: arena.reply
     },
     "broadcast": {
         usage: "",
         description: "Find an incoming, ongoing, or finished official broadcast",
-        process: broadcast
+        process: broadcast.process,
+        reply: broadcast.reply
     },
     "deleteuser": {
         usage: "",
         description: "Deletes your lichess username from the bot's database",
-        process: deleteUser
+        process: deleteUser.process,
+        reply: deleteUser.reply
     },
     "playing": {
         usage: "[user]",
         description: "Shares your (or a user's) ongoing game",
-        process: playing
-    },
-    "profile": {
-        usage: "[username]",
-        description: "Displays your (or a user's) profile",
-        process: profile
-    },
-    "puzzle": {
-        usage: "",
-        description: "Displays today's puzzle",
-        process: puzzle
-    },
-    "recent": {
-        usage: "[rated/casual]",
-        description: "Shares your most recent game",
-        process: recent
-    },
-    "setgamemode": {
-        usage: "[game mode]",
-        description: "Sets your favorite game (or puzzle) mode",
-        process: setGameMode
-    },
-    "setuser": {
-        usage: "<lichess name>",
-        description: "Sets your lichess username",
-        process: setUser
-    },
-    "tv": {
-        usage: "[game mode]",
-        description: "Shares the featured game",
-        process: tv
-    },
-    "whoami": {
-        usage: "",
-        description: "Returns your lichess username",
-        process: whoAmI
+        process: playing.process,
+        reply: playing.reply
     },
     "privacy": {
         usage: "",
         description: "View privacy policy",
-        process: privacy
+        process: privacy.process,
+        reply: privacy.reply
     },
+    "profile": {
+        usage: "[username]",
+        description: "Displays your (or a user's) profile",
+        process: profile.process,
+        reply: profile.reply
+    },
+    "puzzle": {
+        usage: "",
+        description: "Displays today's puzzle",
+        process: puzzle.process,
+        reply: puzzle.reply
+    },
+    "recent": {
+        usage: "[rated/casual]",
+        description: "Shares your most recent game",
+        process: recent.process,
+        reply: recent.reply
+    },
+    "setgamemode": {
+        usage: "[game mode]",
+        description: "Sets your favorite game (or puzzle) mode",
+        process: setGameMode.process,
+        reply: setGameMode.reply
+    },
+    "setuser": {
+        usage: "<lichess name>",
+        description: "Sets your lichess username",
+        process: setUser.process,
+        reply: setUser.reply
+    },
+    "tv": {
+        usage: "[game mode]",
+        description: "Shares the featured game",
+        process: tv.process,
+        reply: tv.reply
+    },
+    "whoami": {
+        usage: "",
+        description: "Returns your lichess username",
+        process: whoAmI.process,
+        reply: whoAmI.reply
+    }
 };
 
 module.exports = commands;

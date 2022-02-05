@@ -24,7 +24,7 @@ function formatTv(data, favoriteMode) {
     return `No channel of mode ${favoriteMode} found!`;
 }
 
-function tv(bot, msg, favoriteMode) {
+function process(bot, msg, favoriteMode) {
     if (favoriteMode) {
         sendTv(msg, favoriteMode);
     } else {
@@ -43,4 +43,8 @@ function tv(bot, msg, favoriteMode) {
     }
 }
 
-module.exports = tv;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

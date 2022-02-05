@@ -1,6 +1,11 @@
-// Send daily puzzle info
-function puzzle(bot, msg) {
-    msg.channel.send('https://lichess.org/training/daily')
+message = 'https://lichess.org/training/daily';
+
+function process(bot, msg) {
+    msg.channel.send(message);
 }
 
-module.exports = puzzle;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

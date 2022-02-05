@@ -1,9 +1,16 @@
 const config = require('../config.json');
 
-function stop(bot, msg) {
+function process(bot, msg) {
     if (msg.author.id == config.owner) {
         process.exit();
     }
 }
 
-module.exports = stop;
+function reply(interaction) {
+    if (interaction.author.id == config.owner) {
+        process.exit();
+    }
+    return '';
+}
+
+module.exports = {process, reply};

@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-function setGameMode(bot, msg, suffix) {
+function process(bot, msg, suffix) {
     var authorId = msg.author.id;
     var mode = suffix.toLowerCase();
     User.findOne({ userId: authorId }, (err, result) => {
@@ -17,4 +17,9 @@ function setGameMode(bot, msg, suffix) {
         }
     });
 }
-module.exports = setGameMode;
+
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

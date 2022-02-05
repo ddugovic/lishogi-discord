@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-function whoAmI(bot, msg) {
+function process(bot, msg) {
     User.findOne({ userId: msg.author.id }, (err, result) => {
         if (err) {
             console.log(err);
@@ -14,4 +14,8 @@ function whoAmI(bot, msg) {
     });
 }
 
-module.exports = whoAmI;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

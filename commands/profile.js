@@ -116,7 +116,7 @@ function modesArray(list) {
     return array;
 }
 
-function profile(bot, msg, username) {
+function process(bot, msg, username) {
     if (username) {
         sendProfile(msg, username, '');
     }
@@ -135,4 +135,8 @@ function profile(bot, msg, username) {
     }
 }
 
-module.exports = profile;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

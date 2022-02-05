@@ -9,8 +9,8 @@ mongoose.connect(config.mongourl, {
     useUnifiedTopology: true
 });
 
-// Initialize bot
-const bot = new Discord.Client({
+// Initialize client
+const client = new Discord.Client({
     disableEveryone: true,
     disabledEvents: ['TYPING_START'],
     intents: ["GUILDS", "GUILD_MESSAGES"]
@@ -19,19 +19,18 @@ const bot = new Discord.Client({
 // Set up commands
 const commands = require('./commands');
 const help = require('./commands/help');
-const privacy = require('./commands/privacy');
 const stop = require('./commands/stop');
 
-bot.on('ready', () => {
-    bot.user.setActivity('lichess.org'); //you can set a default game
-    console.log(`Bot is online!\n${bot.users.cache.size} users, in ${bot.guilds.cache.size} servers connected.`);
+client.on('ready', () => {
+    client.user.setActivity('lichess.org'); //you can set a default game
+    console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
 });
 
-bot.on('guildCreate', (guild) => {
+client.on('guildCreate', (guild) => {
     console.log(`Joining guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
 });
 
-bot.on('message', (msg) => {
+client.on('message', (msg) => {
     //drop bot messages (including our own) to prevent feedback loops
     if (msg.author.bot) {
         return;
@@ -48,17 +47,15 @@ bot.on('message', (msg) => {
     if (command && suffix.indexOf('@') == -1) {
         console.log(`Treating ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
         try {
-            commands[cmdTxt].process(bot, msg, suffix);
+            commands[cmdTxt].process(client, msg, suffix);
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
             msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
         }
     } else if (cmdTxt == 'help') {
-        help(bot, msg, suffix);
-    } else if (cmdTxt == 'privacy') {
-        privacy(bot, msg, suffix);
+        help(client, msg, suffix);
     } else if (cmdTxt == 'stop') {
-        stop(bot, msg, suffix);
+        stop(client, msg, suffix);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
     }
@@ -76,10 +73,35 @@ process.on('unhandledRejection', err => {
     process.exit(1); //Gracefully exit so systemd service may restart
 });
 
-bot.login(config.token);
+client.login(config.token);
 
-function publish(config, bot) {
-    console.log(`${bot.users.cache.size} users, in ${bot.guilds.cache.size} servers connected.`);
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+    //console.log(interaction);
+
+    const cmdTxt = interaction.commandName;
+    let command = commands[cmdTxt];
+    if (command) {
+        await interaction.deferReply();
+        try {
+            await interaction.reply(command.reply(interaction));
+        } catch (e) {
+            console.log(`Command failed:\n ${e.stack}`);
+            msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
+        }
+    } else if (cmdTxt == 'help') {
+        await interaction.reply(help.reply(interaction));
+    } else if (config.respondToInvalid) {
+        await interaction.reply('Invalid command!');
+    }
+});
+
+// Catch Errors before they crash the app.
+process.on('uncaughtException', (err) => {
+});
+
+function publish(config, client) {
+    console.log(`${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
     let settings = {
 	listings: {
 		// tokens for sites here
@@ -99,15 +121,15 @@ function publish(config, bot) {
 		blist: config.blisttoken
 	},
 	// the following is required
-	clientid: bot.user.id,
-	servercount: bot.guilds.cache.size,
+	clientid: client.user.id,
+	servercount: client.guilds.cache.size,
 	shardscount: 1,
 	shardsid: 0,
-	usercount: bot.users.cache.size,
+	usercount: client.users.cache.size,
 	output: config.debug
     }
     publisher.post(settings)
 }
 
-setInterval(publish, 1800000, config, bot);
+setInterval(publish, 1800000, config, client);
 

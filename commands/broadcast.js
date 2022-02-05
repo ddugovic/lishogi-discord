@@ -5,7 +5,7 @@ function formatBroadcast(data) {
     return data['tour']['url'];
 }
 
-function broadcast(bot, msg) {
+function process(bot, msg) {
     axios.get('https://lichess.org/api/broadcast?nb=1')
         .then((response) => {
             var formattedMessage = formatBroadcast(response.data);
@@ -19,4 +19,8 @@ function broadcast(bot, msg) {
         });
 }
 
-module.exports = broadcast;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

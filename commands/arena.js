@@ -36,7 +36,7 @@ function formatArena(data, createdBy, favoriteMode) {
     return 'No tournament created by ' + createdBy + ' found!';
 }
 
-function arena(bot, msg, username) {
+function process(bot, msg, username) {
     User.findOne({ userId: msg.author.id }, (err, result) => {
         var favoriteMode = '';
         if (err) {
@@ -51,4 +51,8 @@ function arena(bot, msg, username) {
     });
 }
 
-module.exports = arena;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

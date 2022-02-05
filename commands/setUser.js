@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-function setUser(bot, msg, username) {
+function process(bot, msg, username) {
     var authorId = msg.author.id;
     User.findOne({ userId: authorId }, (err, result) => {
         if (err) {
@@ -25,4 +25,9 @@ function setUser(bot, msg, username) {
         }
     });
 }
-module.exports = setUser;
+
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};

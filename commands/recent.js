@@ -21,7 +21,7 @@ function formatRecentGame(data) {
     return 'https://lichess.org/' + data.id;
 }
 
-function recent(bot, msg, suffix) {
+function process(bot, msg, suffix) {
     var rated = '';
     // test if the user wants a rated, casual game, or most recent
     if (suffix.includes('casual') || suffix.includes('unrated')) {
@@ -47,4 +47,8 @@ function recent(bot, msg, suffix) {
     });
 }
 
-module.exports = recent;
+function reply(interaction) {
+    return message;
+}
+
+module.exports = {process, reply};
