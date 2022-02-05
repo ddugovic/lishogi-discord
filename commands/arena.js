@@ -6,7 +6,7 @@ function sendArena(msg, username, favoriteMode) {
     axios.get('https://lichess.org/api/tournament')
         .then((response) => {
             var formattedMessage = formatArena(response.data, username, favoriteMode);
-            msg.channel.send(formattedMessage);
+            msg.channel.send({ embeds: [formattedMessage] });
         })
         .catch((err) => {
             console.log(`Error in sendArena: \

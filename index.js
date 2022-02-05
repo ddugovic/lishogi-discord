@@ -12,7 +12,8 @@ mongoose.connect(config.mongourl, {
 // Initialize bot
 const bot = new Discord.Client({
     disableEveryone: true,
-    disabledEvents: ['TYPING_START']
+    disabledEvents: ['TYPING_START'],
+    intents: ["GUILDS", "GUILD_MESSAGES"]
 });
 
 // Set up commands

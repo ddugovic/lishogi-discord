@@ -5,7 +5,7 @@ function sendTv(msg, favoriteMode) {
     axios.get('https://lichess.org/tv/channels')
         .then((response) => {
             var formattedMessage = formatTv(response.data, favoriteMode);
-            msg.channel.send(formattedMessage);
+            msg.channel.send({ embeds: [formattedMessage] });
         })
         .catch((err) => {
             console.log(`Error in tv: \

@@ -7,7 +7,7 @@ function sendRecentGame(msg, username, rated) {
         { headers: { 'Accept': 'application/x-ndjson' } })
         .then((response) => {
             var formattedMessage = formatRecentGame(response.data);
-            msg.channel.send(formattedMessage);
+            msg.channel.send({ embeds: [formattedMessage] });
         })
         .catch((err) => {
             console.log(`Error in recent: \
