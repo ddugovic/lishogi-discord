@@ -27,6 +27,12 @@ const commands = {
         description: "Shares your (or a user's) ongoing game",
         process: playing
     },
+    "privacy": {
+        usage: "",
+        description: "View privacy policy",
+        process: privacy.process,
+        reply: privacy.reply
+    },
     "profile": {
         usage: "[username]",
         description: "Displays your (or a user's) profile",
@@ -61,12 +67,7 @@ const commands = {
         usage: "",
         description: "Returns your lishogi username",
         process: whoAmI
-    },
-    "privacy": {
-        usage: "",
-        description: "View privacy policy",
-        process: privacy
-    },
+    }
 };
 
 module.exports = commands;

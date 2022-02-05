@@ -15,11 +15,16 @@ function getHelp() {
         }
         helpText += '```' + info + '```';
     }
-    return helpText;
+    return `Available Commands: \n${helpText}`;
 }
 
-function help(bot, msg) {
-    msg.channel.send(`Available Commands: \n${getHelp()}`);
+function process(bot, msg, username) {
+    msg.channel.send(getHelp());
 }
 
-module.exports = help;
+function reply(interaction) {
+    return getHelp();
+}
+
+module.exports = {process, reply};
+
