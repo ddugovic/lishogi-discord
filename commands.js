@@ -27,7 +27,7 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your lichess username from the bot's database",
+        description: "Deletes your lishogi username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -68,8 +68,8 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<lichess name>",
-        description: "Sets your lichess username",
+        usage: "<lishogi name>",
+        description: "Sets your lishogi username",
         process: setUser.process,
         reply: setUser.reply
     },
@@ -81,7 +81,7 @@ const commands = {
     },
     "whoami": {
         usage: "",
-        description: "Returns your lichess username",
+        description: "Returns your lishogi username",
         process: whoAmI.process,
         reply: whoAmI.reply
     }
