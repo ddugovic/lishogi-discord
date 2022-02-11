@@ -1,33 +1,22 @@
 const User = require('../models/User');
 
-function process(bot, msg, username) {
-    var authorId = msg.author.id;
-    User.findOne({ userId: authorId }, (err, result) => {
-        if (err) {
-            console.log(err);
-            msg.channel.send('An error occured in your request.');
-        }
-        if (!result) {
-            User.create({ userId: authorId, lichessName: username }, (err, createResult) => {
-                msg.channel.send(`User added! ${msg.author.username}  =  ${username}`);
-            });
-        }
-        else {
-            if ((new Date() - result.dateAdded) < (60 * 1000)) { // 1 minute
-                msg.channel.send('You may update your name once per minute. Try again later.');
-            }
-            else {
-                var newValues = { $set: { lichessName: username, dateAdded: new Date() } };
-                User.updateOne({ userId: authorId }, newValues, (err, updateResult) => {
-                    msg.channel.send(`User updated!  ${msg.author.username} = ${username}`);
-                });
-            }
-        }
-    });
+async function setUser(author, username) {
+    var authorId = author.id;
+    var newValues = { userId: authorId, lichessName: username, dateAdded: new Date() };
+    if (await User.findByIdAndUpdate(authorId, newValues, {upsert: true, new: true}).exec()) {
+        return `User updated! ${author.username} = ${username}`;
+    }
+    else {
+        return 'An error occured in your request.';
+    }
 }
 
-function reply(interaction) {
-    return message;
+function process(bot, msg, username) {
+    setUser(msg.author, username).then(message => msg.channel.send(message));
+}
+
+async function reply(interaction) {
+    return setUser(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};

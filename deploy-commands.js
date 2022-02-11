@@ -10,7 +10,7 @@ const commands = [
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
     new SlashCommandBuilder().setName('recent').setDescription("Shares your most recent game"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode"),
-    new SlashCommandBuilder().setName('setuser').setDescription("Sets your lichess username"),
+    new SlashCommandBuilder().setName('setuser').setDescription("Sets your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username')),
     new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game"),
     new SlashCommandBuilder().setName('whoami').setDescription("Returns your lichess username"),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")

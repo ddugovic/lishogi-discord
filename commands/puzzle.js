@@ -1,4 +1,4 @@
-message = 'https://lichess.org/training/daily';
+const message = 'https://lichess.org/training/daily';
 
 function process(bot, msg) {
     msg.channel.send(message);
