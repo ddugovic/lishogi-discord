@@ -53,9 +53,9 @@ client.on('message', (msg) => {
             msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
         }
     } else if (cmdTxt == 'help') {
-        help(client, msg, suffix);
+        help.process(client, msg, suffix);
     } else if (cmdTxt == 'stop') {
-        stop(client, msg, suffix);
+        stop.process(client, msg, suffix);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
     }
@@ -84,10 +84,11 @@ client.on('interactionCreate', async interaction => {
     if (command) {
         await interaction.deferReply();
         try {
-            await interaction.reply(command.reply(interaction));
+            const message = await command.reply(interaction);
+            interaction.editReply(message);
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
-            msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
+            interaction.editReply(`Command failed:\n ${e.stack}`);
         }
     } else if (cmdTxt == 'help') {
         await interaction.reply(help.reply(interaction));

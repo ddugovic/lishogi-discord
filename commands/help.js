@@ -1,7 +1,7 @@
 const config = require('../config.json');
 const commands = require('../commands');
 
-function getHelp() {
+function help() {
     var helpText = '';
     for (var cmd in commands) {
         var info = config.prefix + cmd;
@@ -19,11 +19,11 @@ function getHelp() {
 }
 
 function process(bot, msg, username) {
-    msg.channel.send(getHelp());
+    msg.channel.send(help());
 }
 
 function reply(interaction) {
-    return getHelp();
+    return help();
 }
 
 module.exports = {process, reply};
