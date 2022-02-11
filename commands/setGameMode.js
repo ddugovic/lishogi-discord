@@ -1,20 +1,22 @@
 const User = require('../models/User');
 
-function setGameMode(bot, msg, suffix) {
-    var authorId = msg.author.id;
-    var mode = suffix.toLowerCase();
-    User.findOne({ playerId: authorId }, (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        if (!result) {
-            msg.channel.send('You need to set your lishogi username with setuser!');
-        } else {
-            var newValues = { $set: { favoriteMode: mode } };
-            User.updateOne({ playerId: authorId }, newValues, (err, updateResult) => {
-                msg.channel.send(`${msg.author.username} favorite mode updated!`);
-            });
-        }
-    });
+async function setGameMode(author, mode) {
+    var authorId = author.id;
+    var newValues = { favoriteMode: mode };
+    if (await User.findByIdAndUpdate(authorId, newValues, {new: true}).exec()) {
+        return `${author.username} favorite mode updated!`;
+    }
+    else {
+        return 'You need to set your lishogi username with setuser!';
+    }
 }
-module.exports = setGameMode;
+
+function process(bot, msg, mode) {
+    setGameMode(msg.author, mode).then(message => msg.channel.send(message));
+}
+
+async function reply(interaction) {
+    return setGameMode(interaction.user, interaction.options.getString('mode'));
+}
+
+module.exports = {process, reply};

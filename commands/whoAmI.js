@@ -1,17 +1,22 @@
 const User = require('../models/User');
 
-function whoAmI(bot, msg) {
-    User.findOne({ playerId: msg.author.id }, (err, result) => {
-        if (err) {
-            console.log(err);
-            msg.channel.send(`There was an error with your request.`);
-        }
-        if (!result) {
-            msg.channel.send(`You need to set your lishogi username with setuser!`);
-        } else {
-            msg.channel.send(`${msg.author.username} is lishogi user ${result.lishogiName}`);
-        }
-    });
+async function whoAmI(author) {
+    var authorId = author.id;
+    const user = await User.findById(authorId).exec();
+    if (user) {
+        return `${author.username} is lishogi user ${user.lishogiName}`;
+    }
+    else {
+        return `You need to set your lishogi username with setuser!`;
+    }
 }
 
-module.exports = whoAmI;
+function process(bot, msg, suffix) {
+    whoAmI(msg.author).then(message => msg.channel.send(message));
+}
+
+async function reply(interaction) {
+    return whoAmI(interaction.user);
+}
+
+module.exports = {process, reply};
