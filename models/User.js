@@ -1,6 +1,10 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true
+  },
   playerId: {
     type: String,
     required: true
@@ -18,6 +22,6 @@ var UserSchema = new mongoose.Schema({
   }
 });
 
-var User = mongoose.model('User', UserSchema);
+var User = mongoose.model('Player', UserSchema);
 
 module.exports = User;

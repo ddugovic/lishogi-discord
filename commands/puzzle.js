@@ -1,6 +1,11 @@
-// Send daily puzzle info
-function puzzle(bot, msg) {
-    msg.channel.send('https://lishogi.org/training/daily')
+const message = 'https://lishogi.org/training/daily';
+
+function process(bot, msg) {
+    msg.channel.send(message);
+}
+
+function reply(interaction) {
+    return message;
 }
 
 module.exports = puzzle;
