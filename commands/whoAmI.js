@@ -1,21 +1,22 @@
 const User = require('../models/User');
 
-function process(bot, msg) {
-    User.findOne({ userId: msg.author.id }, (err, result) => {
-        if (err) {
-            console.log(err);
-            msg.channel.send(`There was an error with your request.`);
-        }
-        if (!result) {
-            msg.channel.send(`You need to set your lichess username with setuser!`);
-        } else {
-            msg.channel.send(`${msg.author.username} is lichess user ${result.lichessName}`);
-        }
-    });
+async function whoAmI(author) {
+    var authorId = author.id;
+    const user = await User.findById(authorId).exec();
+    if (user) {
+        return `${author.username} is lichess user ${user.lichessName}`;
+    }
+    else {
+        return `You need to set your lichess username with setuser!`;
+    }
 }
 
-function reply(interaction) {
-    return message;
+function process(bot, msg, suffix) {
+    whoAmI(msg.author).then(message => msg.channel.send(message));
+}
+
+async function reply(interaction) {
+    return whoAmI(interaction.user);
 }
 
 module.exports = {process, reply};
