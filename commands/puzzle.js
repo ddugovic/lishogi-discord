@@ -8,4 +8,4 @@ function reply(interaction) {
     return message;
 }
 
-module.exports = puzzle;
+module.exports = {process, reply};

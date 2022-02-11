@@ -20,7 +20,8 @@ const commands = {
     "deleteuser": {
         usage: "",
         description: "Deletes your lishogi username from the bot's database",
-        process: deleteUser
+        process: deleteUser.process,
+        reply: deleteUser.reply
     },
     "playing": {
         usage: "[user]",
@@ -41,7 +42,8 @@ const commands = {
     "puzzle": {
         usage: "",
         description: "Displays today's puzzle",
-        process: puzzle
+        process: puzzle.process,
+        reply: puzzle.reply
     },
     "recent": {
         usage: "[rated/casual]",
@@ -51,12 +53,14 @@ const commands = {
     "setgamemode": {
         usage: "[game mode]",
         description: "Sets your favorite game (or puzzle) mode",
-        process: setGameMode
+        process: setGameMode.process,
+        reply: setGameMode.reply
     },
     "setuser": {
         usage: "<lishogi name>",
         description: "Sets your lishogi username",
-        process: setUser
+        process: setUser.process,
+        reply: setUser.reply
     },
     "tv": {
         usage: "[game mode]",
@@ -66,7 +70,8 @@ const commands = {
     "whoami": {
         usage: "",
         description: "Returns your lishogi username",
-        process: whoAmI
+        process: whoAmI.process,
+        reply: whoAmI.reply
     }
 };
 
