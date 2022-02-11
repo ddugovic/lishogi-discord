@@ -1,17 +1,23 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-function sendTv(msg, favoriteMode) {
-    axios.get('https://lishogi.org/tv/channels')
-        .then((response) => {
-            var formattedMessage = formatTv(response.data, favoriteMode);
-            msg.channel.send({ embeds: [formattedMessage] });
-        })
+async function tv(author, favoriteMode) {
+    const user = await User.findById(author.id).exec();
+    if (!favoriteMode) {
+        if (!user) {
+            return 'You need to set your lishogi username with setuser!';
+        } else if (!user.favoriteMode) {
+            return 'You need to set your favorite gamemode with setgamemode!';
+        }
+	favoriteMode = user.favoriteMode;
+    }
+    return axios.get('https://lishogi.org/tv/channels')
+        .then(response => formatTv(response.data, favoriteMode))
         .catch((err) => {
-            console.log(`Error in tv: \
-                ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
-            msg.channel.send(`An error occured with your request: \
-                ${err.response.status} ${err.response.statusText}`);
+            console.log(`Error in tv(${author.username}, ${favoriteMode}): \
+                ${suffix} ${err.response.status} ${err.response.statusText}`);
+            return `An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`;
         });
 }
 
@@ -20,27 +26,15 @@ function formatTv(data, favoriteMode) {
         if (channel.toLowerCase() == favoriteMode)
             return 'https://lishogi.org/' + data[channel].gameId;
     }
-    console.log(data)
     return `No channel of mode ${favoriteMode} found!`;
 }
 
-function tv(bot, msg, favoriteMode) {
-    if (favoriteMode) {
-        sendTv(msg, favoriteMode);
-    } else {
-        User.findOne({ playerId: msg.author.id }, (err, result) => {
-            if (err) {
-                console.log(err);
-            }
-            if (!result) {
-                msg.channel.send('You need to set your lishogi username with setuser!');
-            } else if (!result.favoriteMode) { 
-                msg.channel.send('You need to set your favorite gamemode with setgamemode!');
-            } else {
-                sendTv(msg, result.favoriteMode);
-            }
-        });
-    }
+function process(bot, msg, favoriteMode) {
+    tv(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-module.exports = tv;
+async function reply(interaction) {
+    return tv(interaction.user, interaction.options.favoriteMode);
+}
+
+module.exports = {process, reply};

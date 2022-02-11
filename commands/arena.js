@@ -1,27 +1,31 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-// Send ongoing game info
-function sendArena(msg, username, favoriteMode) {
-    axios.get('https://lishogi.org/api/tournament')
-        .then((response) => {
-            var formattedMessage = formatArena(response.data, username, favoriteMode);
-            msg.channel.send({ embeds: [formattedMessage] });
-        })
+async function arena(author, favoriteMode) {
+    const user = await User.findById(author.id).exec();
+    if (!favoriteMode) {
+        if (!user) {
+            return 'You need to set your lishogi username with setuser!';
+        } else if (!user.favoriteMode) {
+            return 'You need to set your favorite gamemode with setgamemode!';
+        }
+	favoriteMode = user.favoriteMode;
+    }
+    return axios.get('https://lishogi.org/api/tournament')
+        .then(response => formatArena(response.data, favoriteMode))
         .catch((err) => {
-            console.log(`Error in sendArena: \
-                ${username} ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
-            msg.channel.send(`An error occured with your request: \
+            console.log(`Error in arena(${author.username}, ${favoriteMode}): \
                 ${err.response.status} ${err.response.statusText}`);
+            return `An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`;
         });
 }
 
-function formatArena(data, createdBy, favoriteMode) {
+function formatArena(data, favoriteMode) {
     for (var status in data) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
-            if (arenas[i].variant.key.toLowerCase() == favoriteMode &&
-                arenas[i].createdBy == createdBy) {
+            if (arenas[i].variant.key.toLowerCase() == favoriteMode) {
                 return 'https://lishogi.org/tournament/' + arenas[i].id;
             }
         }
@@ -29,26 +33,18 @@ function formatArena(data, createdBy, favoriteMode) {
     for (var status in data) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
-            if (arenas[i].createdBy == createdBy)
-                return 'https://lishogi.org/tournament/' + arenas[i].id;
+            return 'https://lishogi.org/tournament/' + arenas[i].id;
         }
     }
-    return 'No tournament created by ' + createdBy + ' found!';
+    return 'No tournament found!';
 }
 
-function arena(bot, msg, username) {
-    User.findOne({ playerId: msg.author.id }, (err, result) => {
-        var favoriteMode = '';
-        if (err) {
-            console.log(err);
-        }
-        favoriteMode = result.favoriteMode;
-        if (username) {
-            sendArena(msg, username, favoriteMode);
-        } else {
-            sendArena(msg, 'lishogi', favoriteMode);
-        }
-    });
+function process(bot, msg, favoriteMode) {
+    arena(msg.author, '', favoriteMode).then(message => msg.channel.send(message));
 }
 
-module.exports = arena;
+async function reply(interaction) {
+    return arena(interaction.user, '', interaction.options.favoriteMode);
+}
+
+module.exports = {process, reply};

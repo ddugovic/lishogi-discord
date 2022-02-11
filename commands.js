@@ -15,7 +15,8 @@ const commands = {
     "arena": {
         usage: "[user]",
         description: "Find an upcoming or recent arena created by lishogi (or a user)",
-        process: arena
+        process: arena.process,
+        reply: arena.reply
     },
     "deleteuser": {
         usage: "",
@@ -26,7 +27,8 @@ const commands = {
     "playing": {
         usage: "[user]",
         description: "Shares your (or a user's) ongoing game",
-        process: playing
+        process: playing.process,
+        reply: playing.reply
     },
     "privacy": {
         usage: "",
@@ -37,7 +39,8 @@ const commands = {
     "profile": {
         usage: "[username]",
         description: "Displays your (or a user's) profile",
-        process: profile
+        process: profile.process,
+        reply: profile.reply
     },
     "puzzle": {
         usage: "",
@@ -48,7 +51,8 @@ const commands = {
     "recent": {
         usage: "[rated/casual]",
         description: "Shares your most recent game",
-        process: recent
+        process: recent.process,
+        reply: recent.reply
     },
     "setgamemode": {
         usage: "[game mode]",
@@ -65,7 +69,8 @@ const commands = {
     "tv": {
         usage: "[game mode]",
         description: "Shares the featured game",
-        process: tv
+        process: tv.process,
+        reply: tv.reply
     },
     "whoami": {
         usage: "",

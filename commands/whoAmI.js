@@ -1,8 +1,7 @@
 const User = require('../models/User');
 
 async function whoAmI(author) {
-    var authorId = author.id;
-    const user = await User.findById(authorId).exec();
+    const user = await User.findById(author.id).exec();
     if (user) {
         return `${author.username} is lishogi user ${user.lishogiName}`;
     }

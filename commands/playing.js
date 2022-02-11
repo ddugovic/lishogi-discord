@@ -1,22 +1,23 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-// Send ongoin game info
-function sendCurrent(msg, username) {
-    axios.get('https://lishogi.org/api/user/' + username)
-        .then((response) => {
-            var formattedMessage = formatCurrent(response.data);
-            msg.channel.send({ embeds: [formattedMessage] });
-        })
+async function playing(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (!username && !user) {
+        return 'You need to set your lishogi username with setuser!';
+    }
+    username = user.lishogiName;
+    return axios.get('https://lishogi.org/api/user/' + username)
+        .then(response => formatGames(response.data))
         .catch((err) => {
-            console.log(`Error in playing: \
-                ${username} ${err.response.status} ${err.response.statusText}`);
-            msg.channel.send(`An error occured with your request: \
+            console.log(`Error in playing(${author.username}, ${username}): \
                 ${err.response.status} ${err.response.statusText}`);
+            return `An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`;
         });
 }
 
-function formatCurrent(data) {
+function formatGames(data) {
     var formattedMessage;
     if (data.playing) {
         formattedMessage = data.playing;
@@ -27,24 +28,12 @@ function formatCurrent(data) {
     return formattedMessage;
 }
 
-function playing(bot, msg, username) {
-    if (username) {
-        sendCurrent(msg, username);
-    }
-    else {
-        // Send name.
-        User.findOne({ playerId: msg.author.id }, (err, result) => {
-            if (err) {
-                console.log(err);
-                msg.channel.send(`There was an error with your request.`);
-            }
-            if (!result) {
-                msg.channel.send(`You need to set your lishogi username with \`setuser\`!`);
-            } else {
-                sendCurrent(msg, result.lishogiName);
-            }
-        });
-    }
+function process(bot, msg, username) {
+    playing(msg.author, username).then(message => msg.channel.send(message));
 }
 
-module.exports = playing;
+async function reply(interaction) {
+    return playing(interaction.user, interaction.options.username);
+}
+
+module.exports = {process, reply};
