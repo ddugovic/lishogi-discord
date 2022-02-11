@@ -1,22 +1,23 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-// Send ongoing game info
-function sendCurrent(msg, username) {
-    axios.get('https://lichess.org/api/user/' + username)
-        .then((response) => {
-            var formattedMessage = formatCurrent(response.data);
-            msg.channel.send({ embeds: [formattedMessage] });
-        })
+async function playing(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (!username && !user) {
+        return 'You need to set your lichess username with setuser!';
+    }
+    username = user.lichessName;
+    return axios.get('https://lichess.org/api/user/' + username)
+        .then(response => formatGames(response.data))
         .catch((err) => {
-            console.log(`Error in playing: \
-                ${username} ${err.response.status} ${err.response.statusText}`);
-            msg.channel.send(`An error occured with your request: \
+            console.log(`Error in playing(${author.username}, ${username}): \
                 ${err.response.status} ${err.response.statusText}`);
+            return `An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`;
         });
 }
 
-function formatCurrent(data) {
+function formatGames(data) {
     var formattedMessage;
     if (data.playing) {
         formattedMessage = data.playing;
@@ -28,27 +29,11 @@ function formatCurrent(data) {
 }
 
 function process(bot, msg, username) {
-    if (username) {
-        sendCurrent(msg, username);
-    }
-    else {
-        // Send name.
-        User.findOne({ userId: msg.author.id }, (err, result) => {
-            if (err) {
-                console.log(err);
-                msg.channel.send(`There was an error with your request.`);
-            }
-            if (!result) {
-                msg.channel.send(`You need to set your lichess username with \`setuser\`!`);
-            } else {
-                sendCurrent(msg, result.lichessName);
-            }
-        });
-    }
+    playing(msg.author, username).then(message => msg.channel.send(message));
 }
 
-function reply(interaction) {
-    return message;
+async function reply(interaction) {
+    return playing(interaction.user, interaction.options.username);
 }
 
 module.exports = {process, reply};

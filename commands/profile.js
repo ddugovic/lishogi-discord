@@ -5,17 +5,20 @@ const plural = require('plural');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-function sendProfile(msg, username, favoriteMode) {
-    axios.get('https://lichess.org/api/user/' + username)
-        .then((response) => {
-            let formattedMessage = formatProfile(response.data, favoriteMode);
-            msg.channel.send({ embeds: [formattedMessage] });
-        })
+async function profile(author, username, favoriteMode) {
+    const user = await User.findById(author.id).exec();
+    if (!username && !user) {
+        return 'You need to set your lichess username with setuser!';
+    }
+    username = user.lichessName;
+    favoriteMode = user.favoriteMode;
+    return axios.get('https://lichess.org/api/user/' + username)
+        .then(response => formatProfile(response.data, favoriteMode))
         .catch((err) => {
-            console.log(`Error in profile: \
-                ${username} ${favoriteMode} ${err.response.status} ${err.response.statusText}`);
-            msg.channel.send(`An error occured with your request: \
+            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
                 ${err.response.status} ${err.response.statusText}`);
+            return `An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`;
         });
 }
 
@@ -50,7 +53,7 @@ function formatProfile(data, favoriteMode) {
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
         .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
 
-    return formattedMessage;
+    return { embeds: [formattedMessage] };
 }
 
 function getMostPlayedMode(list, favoriteMode) {
@@ -117,26 +120,11 @@ function modesArray(list) {
 }
 
 function process(bot, msg, username) {
-    if (username) {
-        sendProfile(msg, username, '');
-    }
-    else {
-        User.findOne({ userId: msg.author.id }, (err, result) => {
-            if (err) {
-                console.log(err);
-                msg.channel.send(`There was an error with your request.`);
-            }
-            if (!result) {
-                msg.channel.send(`You need to set your username with \`setuser\`!`);
-            } else {
-                sendProfile(msg, result.lichessName, result.favoriteMode);
-            }
-        });
-    }
+    profile(msg.author, username, '').then(message => msg.channel.send(message));
 }
 
-function reply(interaction) {
-    return message;
+async function reply(interaction) {
+    return profile(interaction.user, interaction.options.username, '');
 }
 
 module.exports = {process, reply};
