@@ -45,9 +45,9 @@ client.on('message', (msg) => {
     }
     let command = commands[cmdTxt];
     if (command && suffix.indexOf('@') == -1) {
-        console.log(`Treating ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
-            commands[cmdTxt].process(client, msg, suffix);
+            command.process(client, msg, suffix);
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
             msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
