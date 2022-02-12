@@ -1,6 +1,6 @@
 const config = require('../config.json');
 
-function help() {
+function help(commands) {
     var helpText = '';
     for (var cmd in commands) {
         var info = config.prefix + cmd;
@@ -18,7 +18,7 @@ function help() {
 }
 
 function process(commands, msg, username) {
-    msg.channel.send(help());
+    msg.channel.send(help(commands));
 }
 
 function reply(commands, interaction) {
