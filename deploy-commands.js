@@ -22,6 +22,10 @@ const { Routes } = require('discord-api-types/v9');
 const rest = new REST({ version: '9' }).setToken(config.token);
 
 rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: commands })
+    .then(() => console.log('Successfully registered application guild slash commands.'))
+    .catch(console.error);
+
+rest.put(Routes.applicationCommands(config.clientId), { body: commands })
     .then(() => console.log('Successfully registered application slash commands.'))
     .catch(console.error);
 
