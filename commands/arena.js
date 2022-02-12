@@ -44,7 +44,7 @@ function process(bot, msg, favoriteMode) {
 }
 
 async function reply(interaction) {
-    return arena(interaction.user, '', interaction.options.favoriteMode);
+    return arena(interaction.user, '', interaction.options.getString('favoriteMode'));
 }
 
 module.exports = {process, reply};

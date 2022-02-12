@@ -43,7 +43,7 @@ function process(bot, msg, suffix) {
 }
 
 async function reply(interaction) {
-    return recent(interaction.user, '', interaction.options.rated);
+    return recent(interaction.user, '', interaction.options.getString('rated'));
 }
 
 module.exports = {process, reply};

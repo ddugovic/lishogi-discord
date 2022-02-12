@@ -34,7 +34,7 @@ function process(bot, msg, mode) {
 }
 
 async function reply(interaction) {
-    return tv(interaction.user, interaction.options.mode);
+    return tv(interaction.user, interaction.options.getString('mode'));
 }
 
 module.exports = {process, reply};
