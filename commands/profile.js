@@ -5,7 +5,7 @@ const plural = require('plural');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-async function profile(author, username, favoriteMode) {
+async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
         if (!user) {
@@ -13,7 +13,7 @@ async function profile(author, username, favoriteMode) {
         }
         username = user.lishogiName;
     }
-    favoriteMode = user.favoriteMode;
+    var favoriteMode = user.favoriteMode;
     return axios.get('https://lishogi.org/api/user/' + username)
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
@@ -122,11 +122,11 @@ function modesArray(list) {
 }
 
 function process(bot, msg, username) {
-    profile(msg.author, username, '').then(message => msg.channel.send(message));
+    profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
-    return profile(interaction.user, interaction.options.username, '');
+    return profile(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};

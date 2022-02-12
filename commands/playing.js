@@ -33,7 +33,7 @@ function process(bot, msg, username) {
 }
 
 async function reply(interaction) {
-    return playing(interaction.user, interaction.options.username);
+    return playing(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};
