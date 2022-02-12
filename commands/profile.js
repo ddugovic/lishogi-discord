@@ -7,8 +7,8 @@ const User = require('../models/User');
 
 async function profile(author, username, favoriteMode) {
     const user = await User.findById(author.id).exec();
-    if (!username && !user) {
-        if (!!user) {
+    if (!username) {
+        if (!user) {
             return 'You need to set your lichess username with setuser!';
         }
         username = user.lichessName;
@@ -16,11 +16,11 @@ async function profile(author, username, favoriteMode) {
     favoriteMode = user.favoriteMode;
     return axios.get('https://lichess.org/api/user/' + username)
         .then(response => formatProfile(response.data, favoriteMode))
-        .catch((err) => {
+        .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
