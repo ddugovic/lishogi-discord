@@ -7,7 +7,8 @@ async function setUser(author, username) {
         return `User updated! ${author.username} = ${username}`;
     }
     else {
-        return 'An error occured in your request.';
+        console.log(`Error in setUser(${author.username}, ${username})`);
+        return 'An error occurred handling your request.';
     }
 }
 

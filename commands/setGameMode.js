@@ -7,6 +7,7 @@ async function setGameMode(author, mode) {
         return `${author.username} favorite mode updated!`;
     }
     else {
+        console.log(`Error in setGameMode(${author.username}, ${mode})`);
         return 'You need to set your lichess username with setuser!';
     }
 }

@@ -6,6 +6,7 @@ async function whoAmI(author) {
         return `${author.username} is lichess user ${user.lichessName}`;
     }
     else {
+        console.log(`Error in whoAmI(${author.id}, ${author.username})`);
         return `You need to set your lichess username with setuser!`;
     }
 }
