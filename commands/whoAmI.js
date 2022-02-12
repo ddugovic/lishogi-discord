@@ -6,6 +6,7 @@ async function whoAmI(author) {
         return `${author.username} is lishogi user ${user.lishogiName}`;
     }
     else {
+        console.log(`Error in whoAmI(${author.id}, ${author.username})`);
         return `You need to set your lishogi username with setuser!`;
     }
 }

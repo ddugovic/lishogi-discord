@@ -1,5 +1,4 @@
 const config = require('../config.json');
-const commands = require('../commands');
 
 function help() {
     var helpText = '';
@@ -18,12 +17,12 @@ function help() {
     return `Available Commands: \n${helpText}`;
 }
 
-function process(bot, msg, username) {
+function process(commands, msg, username) {
     msg.channel.send(help());
 }
 
-function reply(interaction) {
-    return help();
+function reply(commands, interaction) {
+    return help(commands);
 }
 
 module.exports = {process, reply};

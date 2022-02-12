@@ -5,7 +5,8 @@ async function deleteUser(author, username) {
         return `User deleted: ${author.username}`;
     }
     else {
-        return 'An error occured in your request.';
+        console.log(`Error in deleteUser(${author.username})`);
+        return 'An error occurred handling your request.';
     }
 }
 

@@ -1,12 +1,12 @@
 const axios = require('axios');
 
-async function broadcast() {
-    return axios.get('https://lichess.org/api/broadcast?nb=1')
+async function broadcast(author) {
+    return axios.get('https://lishogi.org/api/broadcast?nb=1')
         .then(response => formatBroadcast(response.data))
         .catch((err) => {
-            console.log(`Error in sendBroadcast: \
-                ${suffix} ${err.response.status} ${err.response.statusText}`);
-            return `An error occured with your request: \
+            console.log(`Error in broadcast(${author.username}): \
+                ${err.response.status} ${err.response.statusText}`);
+            return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
 }
@@ -16,11 +16,11 @@ function formatBroadcast(data) {
 }
 
 function process(bot, msg) {
-    broadcast().then(url => msg.channel.send(url))
+    broadcast(msg.author).then(url => msg.channel.send(url))
 }
 
 async function reply(interaction) {
-    return broadcast();
+    return broadcast(interaction.user);
 }
 
 module.exports = {process, reply};

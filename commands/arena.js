@@ -16,7 +16,7 @@ async function arena(author, favoriteMode) {
         .catch((err) => {
             console.log(`Error in arena(${author.username}, ${favoriteMode}): \
                 ${err.response.status} ${err.response.statusText}`);
-            return `An error occured with your request: \
+            return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
 }

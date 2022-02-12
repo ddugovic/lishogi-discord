@@ -12,7 +12,7 @@ async function playing(author, username) {
         .catch((err) => {
             console.log(`Error in playing(${author.username}, ${username}): \
                 ${err.response.status} ${err.response.statusText}`);
-            return `An error occured with your request: \
+            return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
 }
