@@ -4,6 +4,7 @@ const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena created by lichess (or a user)").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your lichess username from the bot's database"),
+    new SlashCommandBuilder().setName('leaderboard').setDescription("Displays the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
     new SlashCommandBuilder().setName('playing').setDescription("Shares your (or a user's) ongoing game").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
