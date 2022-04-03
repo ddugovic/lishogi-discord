@@ -7,7 +7,12 @@ async function playing(author, username) {
         return 'You need to set your lishogi username with setuser!';
     }
     username = user.lishogiName;
-    return axios.get('https://lishogi.org/api/user/' + username)
+    return axios.get('https://lishogi.org/api/user/' + username, {
+            headers: {
+                'Content-Type': 'application/vnd.lishogi.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatGames(response.data))
         .catch((err) => {
             console.log(`Error in playing(${author.username}, ${username}): \

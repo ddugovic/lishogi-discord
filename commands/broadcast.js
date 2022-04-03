@@ -1,7 +1,12 @@
 const axios = require('axios');
 
 async function broadcast(author) {
-    return axios.get('https://lishogi.org/api/broadcast?nb=1')
+    return axios.get('https://lishogi.org/api/broadcast?nb=1', {
+            headers: {
+                'Content-Type': 'application/vnd.lishogi.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatBroadcast(response.data))
         .catch((err) => {
             console.log(`Error in broadcast(${author.username}): \

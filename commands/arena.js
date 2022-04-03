@@ -11,7 +11,12 @@ async function arena(author, favoriteMode) {
         }
 	favoriteMode = user.favoriteMode;
     }
-    return axios.get('https://lishogi.org/api/tournament')
+    return axios.get('https://lishogi.org/api/tournament', {
+            headers: {
+                'Content-Type': 'application/vnd.lishogi.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatArena(response.data, favoriteMode))
         .catch((err) => {
             console.log(`Error in arena(${author.username}, ${favoriteMode}): \

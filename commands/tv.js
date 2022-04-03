@@ -11,7 +11,12 @@ async function tv(author, mode) {
         }
 	mode = user.favoriteMode;
     }
-    return axios.get('https://lishogi.org/tv/channels')
+    return axios.get('https://lishogi.org/tv/channels', {
+            headers: {
+                'Content-Type': 'application/vnd.lishogi.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatTv(response.data, mode))
         .catch((err) => {
             console.log(`Error in tv(${author.username}, ${mode}): \
