@@ -31,7 +31,7 @@ function process(bot, msg, mode) {
 }
 
 async function reply(interaction) {
-    return leaderboard(interaction.user, '', interaction.options.getString('mode'));
+    return leaderboard(interaction.user, interaction.options.getString('mode'));
 }
 
 module.exports = {process, reply};
