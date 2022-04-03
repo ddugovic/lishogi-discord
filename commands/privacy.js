@@ -9,4 +9,3 @@ function reply(interaction) {
 }
 
 module.exports = {process, reply};
-

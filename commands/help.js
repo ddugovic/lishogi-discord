@@ -26,4 +26,3 @@ function reply(commands, interaction) {
 }
 
 module.exports = {process, reply};
-

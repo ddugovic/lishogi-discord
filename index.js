@@ -82,6 +82,7 @@ client.on('interactionCreate', async interaction => {
     const cmdTxt = interaction.commandName;
     let command = commands[cmdTxt];
     if (command) {
+        await interaction.deferReply();
         try {
             const message = await command.reply(interaction);
             interaction.editReply(message);
