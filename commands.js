@@ -1,6 +1,7 @@
 // Include commands
 const arena = require('./commands/arena');
 const deleteUser = require('./commands/deleteUser');
+const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
@@ -23,6 +24,12 @@ const commands = {
         description: "Deletes your lishogi username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "leaderboard": {
+        usage: "[game mode]",
+        description: "Displays the leaderboard top player",
+        process: leaderboard.process,
+        reply: leaderboard.reply
     },
     "playing": {
         usage: "[user]",

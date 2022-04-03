@@ -8,12 +8,8 @@ async function recent(author, username, suffix) {
         return 'You need to set your lishogi username with setuser!';
     }
     username = user.lishogiName;
-    return axios.get(`https://lishogi.org/games/export/${username}?max=1&rated=${rated}`, {
-            headers: {
-                'Content-Type': 'application/vnd.lishogi.v3+json',
-                'Accept': 'application/x-ndjson'
-            }
-        })
+    url = `https://lishogi.org/games/export/${username}?max=1&rated=${rated}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => formatRecentGame(response.data))
         .catch((err) => {
             console.log(`Error in recent(${author.username}, ${username}, ${suffix}): \

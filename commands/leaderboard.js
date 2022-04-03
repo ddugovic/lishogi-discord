@@ -1,7 +1,7 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-async function tv(author, mode) {
+async function leaderboard(author, mode) {
     const user = await User.findById(author.id).exec();
     if (!mode) {
         if (!user) {
@@ -11,31 +11,27 @@ async function tv(author, mode) {
         }
 	mode = user.favoriteMode;
     }
-    url = 'https://lishogi.org/tv/channels';
+    url = `https://lishogi.org/player/top/1/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => formatTv(response.data, mode))
+        .then(response => formatLeaderboard(response.data))
         .catch((err) => {
-            console.log(`Error in tv(${author.username}, ${mode}): \
-                ${suffix} ${err.response.status} ${err.response.statusText}`);
+            console.log(`Error in leaderboard(${author.username}, ${mode}): \
+                ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
 }
 
-function formatTv(data, mode) {
-    for (var channel in data) {
-        if (channel.toLowerCase() == mode)
-            return 'https://lishogi.org/' + data[channel].gameId;
-    }
-    return `No channel of mode ${mode} found!`;
+function formatLeaderboard(data) {
+    return 'https://lishogi.org/@/' + data.users[0].username;
 }
 
 function process(bot, msg, mode) {
-    tv(msg.author, mode).then(message => msg.channel.send(message));
+    leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
-    return tv(interaction.user, interaction.options.getString('mode'));
+    return leaderboard(interaction.user, '', interaction.options.getString('mode'));
 }
 
 module.exports = {process, reply};

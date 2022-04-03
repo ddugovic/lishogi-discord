@@ -11,12 +11,8 @@ async function arena(author, favoriteMode) {
         }
 	favoriteMode = user.favoriteMode;
     }
-    return axios.get('https://lishogi.org/api/tournament', {
-            headers: {
-                'Content-Type': 'application/vnd.lishogi.v3+json',
-                'Accept': 'application/x-ndjson'
-            }
-        })
+    url = 'https://lishogi.org/api/tournament';
+    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => formatArena(response.data, favoriteMode))
         .catch((err) => {
             console.log(`Error in arena(${author.username}, ${favoriteMode}): \
@@ -45,7 +41,7 @@ function formatArena(data, favoriteMode) {
 }
 
 function process(bot, msg, favoriteMode) {
-    arena(msg.author, '', favoriteMode).then(message => msg.channel.send(message));
+    arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
