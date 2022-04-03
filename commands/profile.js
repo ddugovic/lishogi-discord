@@ -14,7 +14,12 @@ async function profile(author, username) {
         username = user.lichessName;
     }
     var favoriteMode = user.favoriteMode;
-    return axios.get('https://lichess.org/api/user/' + username)
+    return axios.get('https://lichess.org/api/user/' + username, {
+            headers: {
+                'Content-Type': 'application/vnd.lichess.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \

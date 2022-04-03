@@ -8,8 +8,12 @@ async function recent(author, username, suffix) {
         return 'You need to set your lichess username with setuser!';
     }
     username = user.lichessName;
-    // Accept only the x-ndjson type
-    return axios.get('https://lichess.org/games/export/' + username + '?max=1' + '&rated=' + rated, { headers: { 'Accept': 'application/x-ndjson' } })
+    return axios.get(`https://lichess.org/games/export/${username}?max=1&rated=${rated}`, {
+            headers: {
+                'Content-Type': 'application/vnd.lichess.v3+json',
+                'Accept': 'application/x-ndjson'
+            }
+        })
         .then(response => formatRecentGame(response.data))
         .catch((err) => {
             console.log(`Error in recent(${author.username}, ${username}, ${suffix}): \
