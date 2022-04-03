@@ -2,6 +2,7 @@
 const arena = require('./commands/arena');
 const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
+const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
@@ -30,6 +31,12 @@ const commands = {
         description: "Deletes your lichess username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "leaderboard": {
+        usage: "[game mode]",
+        description: "Displays the leaderboard top player",
+        process: leaderboard.process,
+        reply: leaderboard.reply
     },
     "playing": {
         usage: "[user]",

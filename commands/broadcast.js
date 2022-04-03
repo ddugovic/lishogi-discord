@@ -1,12 +1,8 @@
 const axios = require('axios');
 
 async function broadcast(author) {
-    return axios.get('https://lichess.org/api/broadcast?nb=1', {
-            headers: {
-                'Content-Type': 'application/vnd.lichess.v3+json',
-                'Accept': 'application/x-ndjson'
-            }
-        })
+    url = 'https://lichess.org/api/broadcast?nb=1';
+    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatBroadcast(response.data))
         .catch((err) => {
             console.log(`Error in broadcast(${author.username}): \

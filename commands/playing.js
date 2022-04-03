@@ -7,12 +7,8 @@ async function playing(author, username) {
         return 'You need to set your lichess username with setuser!';
     }
     username = user.lichessName;
-    return axios.get('https://lichess.org/api/user/' + username, {
-            headers: {
-                'Content-Type': 'application/vnd.lichess.v3+json',
-                'Accept': 'application/x-ndjson'
-            }
-        })
+    url = `https://lichess.org/api/user/${username}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatGames(response.data))
         .catch((err) => {
             console.log(`Error in playing(${author.username}, ${username}): \
