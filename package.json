@@ -23,7 +23,7 @@
     "discord.js": "^13.6.0",
     "emoji-flags": "^1.3.0",
     "mocha": "^9.2.2",
-    "mongoose": "^6.2.9",
+    "mongoose": "^6.2.10",
     "plural": "^1.1.0"
   },
   "devDependencies": {
