@@ -1,7 +1,7 @@
 {
   "name": "lichessdiscordbot",
   "version": "1.0.0",
-  "description": "A Discord bot to interact with the Lishogi API",
+  "description": "A Discord bot to interact with the Lichess API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -17,14 +17,14 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
-    "axios": "^0.21.4",
+    "axios": "^0.26.1",
     "convert-seconds": "^1.0.1",
     "discord-lister": "^1.4.0",
     "discord.js": "^13.6.0",
     "emoji-flags": "^1.3.0",
     "fen-validator": "^1.4.1",
-    "mocha": "^9.2.0",
-    "mongoose": "^5.13.14",
+    "mocha": "^9.2.2",
+    "mongoose": "^6.2.10",
     "plural": "^1.1.0"
   },
   "devDependencies": {
