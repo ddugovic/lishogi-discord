@@ -1,6 +1,7 @@
 // Include commands
 const arena = require('./commands/arena');
 const deleteUser = require('./commands/deleteUser');
+const eval = require('./commands/eval');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -18,6 +19,12 @@ const commands = {
         description: "Find an upcoming or recent arena created by lishogi (or a user)",
         process: arena.process,
         reply: arena.reply
+    },
+    "eval": {
+        usage: "<fen>",
+        description: "Get the cached evaluation of a position, if available",
+        process: eval.process,
+        reply: eval.reply
     },
     "deleteuser": {
         usage: "",
