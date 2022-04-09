@@ -3,7 +3,7 @@ const validateFEN = require('fen-validator').default;
 
 async function eval(author, fen) {
     if (validateFEN(fen)) {
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
+        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
             .then(response => formatCloudEval(response.data))
             .catch((err) => {
@@ -19,8 +19,12 @@ async function eval(author, fen) {
 
 function formatCloudEval(data) {
     const formatter = new Intl.NumberFormat("en-GB", { style: "decimal", signDisplay: 'always' });
-    const pv = data['pvs'][0]
-    return `${formatter.format(pv['cp'] / 100)}: ${pv['moves']}`;
+    var message = `Nodes: ${Math.floor(data['knodes'] / 1000)}M, Depth: ${data['depth']}`;
+    const pvs = data['pvs'];
+    for (const pv in pvs) {
+        message += `\n${formatter.format(pvs[pv]['cp'] / 100)}: ${pvs[pv]['moves']}`;
+    }
+    return message;
 }
 
 function process(bot, msg, fen) {
