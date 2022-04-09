@@ -1,9 +1,9 @@
 const axios = require('axios');
-const validateFEN = require('fen-validator').default;
+const validateSFEN = require('sfen-validator').default;
 
-async function eval(author, fen) {
-    if (validateFEN(fen)) {
-        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+async function eval(author, sfen) {
+    if (validateSFEN(sfen)) {
+        const url = `https://lishogi.org/api/cloud-eval?fen=${sfen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
             .then(response => formatCloudEval(response.data))
             .catch((err) => {
@@ -13,7 +13,7 @@ async function eval(author, fen) {
                     ${err.response.status} ${err.response.statusText}`;
         });
     } else {
-        return fen ? 'Invalid FEN!' : 'Missing FEN!'
+        return sfen ? 'Invalid SFEN!' : 'Missing SFEN!'
     }
 }
 
@@ -27,12 +27,12 @@ function formatCloudEval(data) {
     return message;
 }
 
-function process(bot, msg, fen) {
-    eval(msg.author, fen).then(url => msg.channel.send(url))
+function process(bot, msg, sfen) {
+    eval(msg.author, sfen).then(url => msg.channel.send(url))
 }
 
 async function reply(interaction) {
-    return eval(interaction.user, interaction.options.getString('fen'));
+    return eval(interaction.user, interaction.options.getString('sfen'));
 }
 
 module.exports = {process, reply};

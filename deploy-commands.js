@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena created by lishogi (or a user)").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your lishogi username from the bot's database"),
-    new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')),
+    new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('sfen').setDescription('SFEN (Shogi Forsyth-Edwards Notation)')),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Displays the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
     new SlashCommandBuilder().setName('playing').setDescription("Shares your (or a user's) ongoing game").addStringOption(option => option.setName('username').setDescription('Enter lishogi player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
