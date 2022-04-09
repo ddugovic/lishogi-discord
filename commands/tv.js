@@ -16,7 +16,7 @@ async function tv(author, mode) {
         .then(response => formatTv(response.data, mode))
         .catch((err) => {
             console.log(`Error in tv(${author.username}, ${mode}): \
-                ${suffix} ${err.response.status} ${err.response.statusText}`);
+                ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });

@@ -2,6 +2,7 @@
 const arena = require('./commands/arena');
 const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
+const eval = require('./commands/eval');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -25,6 +26,12 @@ const commands = {
         description: "Find an incoming, ongoing, or finished official broadcast",
         process: broadcast.process,
         reply: broadcast.reply
+    },
+    "eval": {
+        usage: "<fen>",
+        description: "Get the cached evaluation of a position, if available",
+        process: eval.process,
+        reply: eval.reply
     },
     "deleteuser": {
         usage: "",
