@@ -3,8 +3,8 @@ const validateFEN = require('fen-validator').default;
 
 async function eval(author, fen) {
     if (validateFEN(fen)) {
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}`;
-        return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}`;
+        return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
             .then(response => formatCloudEval(response.data))
             .catch((err) => {
                 console.log(`Error in eval(${author.username}): \
