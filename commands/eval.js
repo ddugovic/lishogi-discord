@@ -1,8 +1,8 @@
 const axios = require('axios');
-const validateFEN = require('fen-validator').default;
+const cfen = require('chessops/fen');
 
 async function eval(author, fen) {
-    if (validateFEN(fen)) {
+    if (fen && cfen.parseFen(fen).isOk) {
         const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
             .then(response => formatCloudEval(response.data))
