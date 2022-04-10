@@ -1,5 +1,8 @@
 const axios = require('axios');
+const chess = require('chessops/chess');
 const cfen = require('chessops/fen');
+const san = require('chessops/san');
+const util = require('chessops/util');
 
 async function eval(author, fen) {
     if (fen && cfen.parseFen(fen).isOk) {
@@ -18,11 +21,14 @@ async function eval(author, fen) {
 }
 
 function formatCloudEval(fen, data) {
-    const formatter = new Intl.NumberFormat("en-GB", { style: "decimal", signDisplay: 'always' });
-    var message = `Nodes: ${Math.floor(data['knodes'] / 1000)}M, Depth: ${data['depth']}`;
+    const setup = cfen.parseFen(fen).unwrap();
+    const pos = chess.Chess.fromSetup(setup).unwrap();
+    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
+    var message = `Nodes: ${Math.floor(data['knodes']/1000)}M, Depth: ${data['depth']}`;
     const pvs = data['pvs'];
     for (const pv in pvs) {
-        message += `\n${formatter.format(pvs[pv]['cp'] / 100)}: ${pvs[pv]['moves']}`;
+        const variation = pvs[pv]['moves'].split(' ').map(uci => util.parseUci(uci));
+        message += `\n${formatter.format(pvs[pv]['cp']/100)}: ${san.makeSanVariation(pos, variation)}`;
     }
     message += `\nhttps://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`
     return message;
