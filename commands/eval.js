@@ -5,7 +5,7 @@ async function eval(author, fen) {
     if (fen && cfen.parseFen(fen).isOk) {
         const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
-            .then(response => formatCloudEval(response.data))
+            .then(response => formatCloudEval(fen, response.data))
             .catch((err) => {
                 console.log(`Error in eval(${author.username}): \
                     ${err.response.status} ${err.response.statusText}`);
@@ -17,13 +17,14 @@ async function eval(author, fen) {
     }
 }
 
-function formatCloudEval(data) {
+function formatCloudEval(fen, data) {
     const formatter = new Intl.NumberFormat("en-GB", { style: "decimal", signDisplay: 'always' });
     var message = `Nodes: ${Math.floor(data['knodes'] / 1000)}M, Depth: ${data['depth']}`;
     const pvs = data['pvs'];
     for (const pv in pvs) {
         message += `\n${formatter.format(pvs[pv]['cp'] / 100)}: ${pvs[pv]['moves']}`;
     }
+    message += `\nhttps://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`
     return message;
 }
 
