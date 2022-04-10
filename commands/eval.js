@@ -1,9 +1,9 @@
 const axios = require('axios');
-const validateSFEN = require('sfen-validator').default;
+const sfen = require('shogiops/sfen');
 
-async function eval(author, sfen) {
-    if (validateSFEN(sfen)) {
-        const url = `https://lishogi.org/api/cloud-eval?fen=${sfen}&multiPv=3`;
+async function eval(author, fen) {
+    if (fen && sfen.parseSfen(fen).isOk) {
+        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
             .then(response => formatCloudEval(response.data))
             .catch((err) => {
@@ -13,7 +13,7 @@ async function eval(author, sfen) {
                     ${err.response.status} ${err.response.statusText}`;
         });
     } else {
-        return sfen ? 'Invalid SFEN!' : 'Missing SFEN!'
+        return fen ? 'Invalid SFEN!' : 'Missing SFEN!'
     }
 }
 
