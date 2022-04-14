@@ -30,7 +30,7 @@ client.on('guildCreate', (guild) => {
     console.log(`Joining guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
 });
 
-client.on('message', (msg) => {
+client.on('messageCreate', (msg) => {
     //drop bot messages (including our own) to prevent feedback loops
     if (msg.author.bot) {
         return;
