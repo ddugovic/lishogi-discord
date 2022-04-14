@@ -1,7 +1,7 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena created by lichess (or a user)").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
+    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your lichess username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')),
