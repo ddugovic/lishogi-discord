@@ -16,8 +16,8 @@ const whoAmI = require('./commands/whoAmI');
 
 const commands = {
     "arena": {
-        usage: "[user]",
-        description: "Find an upcoming or recent arena created by lichess (or a user)",
+        usage: "[game mode]",
+        description: "Find an upcoming or recent arena",
         process: arena.process,
         reply: arena.reply
     },

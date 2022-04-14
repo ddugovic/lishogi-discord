@@ -26,7 +26,7 @@ function formatArena(data, favoriteMode) {
     for (var status in data) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
-            if (arenas[i].variant.key.toLowerCase() == favoriteMode) {
+            if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
                 return 'https://lichess.org/tournament/' + arenas[i].id;
             }
         }
