@@ -25,15 +25,14 @@ function formatRecentGame(data) {
 
 function getRated(suffix) {
     var rated = '';
-    // test if the user wants a rated, casual game, or most recent
-    if (suffix.includes('casual') || suffix.includes('unrated')) {
-        rated = 'false';
-    }
-    else if (suffix.includes('rated')) {
-        rated = 'true';
-    }
-    else {
-        rated = '';
+    if (suffix) {
+        // test if the user wants a rated, casual game, or most recent
+        if (suffix.includes('casual') || suffix.includes('unrated')) {
+            rated = 'false';
+        }
+        else if (suffix.includes('rated')) {
+            rated = 'true';
+        }
     }
     return rated;
 }
