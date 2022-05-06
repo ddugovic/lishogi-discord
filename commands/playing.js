@@ -7,9 +7,9 @@ async function playing(author, username) {
         return 'You need to set your lishogi username with setuser!';
     }
     username = user.lishogiName;
-    url = `https://lishogi.org/api/user/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => formatGames(response.data))
+    url = `https://lishogi.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatCurrent(response.data))
         .catch((err) => {
             console.log(`Error in playing(${author.username}, ${username}): \
                 ${err.response.status} ${err.response.statusText}`);
@@ -18,15 +18,8 @@ async function playing(author, username) {
         });
 }
 
-function formatGames(data) {
-    var formattedMessage;
-    if (data.playing) {
-        formattedMessage = data.playing;
-    }
-    else {
-        formattedMessage = "No current games found!";
-    }
-    return formattedMessage;
+function formatCurrent(data) {
+    return 'https://lishogi.org/' + data.id;
 }
 
 function process(bot, msg, username) {
