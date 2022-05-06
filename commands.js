@@ -9,7 +9,6 @@ const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
-const recent = require('./commands/recent');
 const setGameMode = require('./commands/setGameMode');
 const tv = require('./commands/tv');
 const whoAmI = require('./commands/whoAmI');
@@ -68,12 +67,6 @@ const commands = {
         description: "Displays today's puzzle",
         process: puzzle.process,
         reply: puzzle.reply
-    },
-    "recent": {
-        usage: "[rated/casual]",
-        description: "Shares your most recent game",
-        process: recent.process,
-        reply: recent.reply
     },
     "setgamemode": {
         usage: "[game mode]",

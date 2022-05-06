@@ -10,7 +10,6 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
-    new SlashCommandBuilder().setName('recent').setDescription("Shares your most recent game").addStringOption(option => option.setName('rated').setDescription('Enter rated or casual')),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username')),
     new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
