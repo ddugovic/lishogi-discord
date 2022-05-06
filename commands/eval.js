@@ -1,5 +1,5 @@
 const axios = require('axios');
-const sfen = require('shogiops/sfen');
+const sfen = import('shogiops/sfen.js');
 
 async function eval(author, fen) {
     if (fen && sfen.parseSfen(fen).isOk) {
