@@ -1,11 +1,11 @@
 {
-  "name": "lishogidiscordbot",
+  "name": "lidraughtsdiscordbot",
   "version": "1.0.0",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
-      "name": "lishogidiscordbot",
+      "name": "lidraughtsdiscordbot",
       "version": "1.0.0",
       "license": "MIT",
       "dependencies": {
@@ -17,8 +17,7 @@
         "emoji-flags": "^1.3.0",
         "mocha": "^10.0.0",
         "mongoose": "^6.3.4",
-        "plural": "^1.1.0",
-        "shogiops": "^0.7.0"
+        "plural": "^1.1.0"
       },
       "devDependencies": {
         "nodemon": "^2.0.16"
@@ -2097,14 +2096,6 @@
         "randombytes": "^2.1.0"
       }
     },
-    "node_modules/shogiops": {
-      "version": "0.7.0",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.7.0.tgz",
-      "integrity": "sha512-D5iITdg5JITo4whDkN+utuRNPtbuhdsyaUUBSuaFBGX+Bjck7ovNecYnaxWmF1b6ZxiytwhWivdlCgCs2ijlDg==",
-      "dependencies": {
-        "@badrap/result": "^0.2"
-      }
-    },
     "node_modules/sift": {
       "version": "16.0.0",
       "resolved": "https://registry.npmjs.org/sift/-/sift-16.0.0.tgz",
@@ -4075,14 +4066,6 @@
       "integrity": "sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==",
       "requires": {
         "randombytes": "^2.1.0"
-      }
-    },
-    "shogiops": {
-      "version": "0.7.0",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.7.0.tgz",
-      "integrity": "sha512-D5iITdg5JITo4whDkN+utuRNPtbuhdsyaUUBSuaFBGX+Bjck7ovNecYnaxWmF1b6ZxiytwhWivdlCgCs2ijlDg==",
-      "requires": {
-        "@badrap/result": "^0.2"
       }
     },
     "sift": {
