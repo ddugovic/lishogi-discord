@@ -29,7 +29,9 @@
 !recent [rated/casual]
     Shares your most recent game
 !playing [username]
-    Shares your (or a user's) ongoing game
+    Shares your (or a user's) current game URL
+!playing [username]
+    Shares your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lishogi (or a user)
 !puzzle
