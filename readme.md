@@ -1,6 +1,6 @@
 # lidraughts discord bot
 [![Discord Bots](https://discordbots.org/api/widget/status/842330057841049600.svg)](https://discordbots.org/bot/842330057841049600)
-[![Build Status](https://github.com/ddugovic/lidraughts-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lidraughts-discord/actions?query=workflow%3A%22Node.js+CI%22)
+[![Build Status](https://github.com/ddugovic/lishogi-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lishogi-discord/actions?query=workflow%3A%22Node.js+CI%22)
 
 # Setup
 
