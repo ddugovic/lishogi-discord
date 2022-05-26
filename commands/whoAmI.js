@@ -3,11 +3,11 @@ const User = require('../models/User');
 async function whoAmI(author) {
     const user = await User.findById(author.id).exec();
     if (user) {
-        return `${author.username} is lishogi user ${user.lishogiName}`;
+        return `${author.username} is lidraughts user ${user.lidraughtsName}`;
     }
     else {
         console.log(`Error in whoAmI(${author.id}, ${author.username})`);
-        return `You need to set your lishogi username with setuser!`;
+        return `You need to set your lidraughts username with setuser!`;
     }
 }
 

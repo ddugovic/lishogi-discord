@@ -3,8 +3,8 @@ const sfen = import('shogiops/sfen.js');
 
 async function eval(author, fen) {
     if (fen && sfen.parseSfen(fen).isOk) {
-        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
-        return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+        const url = `https://lidraughts.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+        return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
             .then(response => formatCloudEval(fen, response.data))
             .catch((err) => {
                 console.log(`Error in eval(${author.username}): \
@@ -24,7 +24,7 @@ function formatCloudEval(fen, data) {
     for (const pv in pvs) {
         message += `\n${formatter.format(pvs[pv]['cp'] / 100)}: ${pvs[pv]['moves']}`;
     }
-    message += `\nhttps://lishogi.org/analysis/standard/${fen.replace(/ /g,'_')}`
+    message += `\nhttps://lidraughts.org/analysis/standard/${fen.replace(/ /g,'_')}`
     return message;
 }
 

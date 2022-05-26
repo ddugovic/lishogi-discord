@@ -28,7 +28,7 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your lishogi username from the bot's database",
+        description: "Deletes your lidraughts username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -75,8 +75,8 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<lishogi name>",
-        description: "Sets your lishogi username",
+        usage: "<lidraughts name>",
+        description: "Sets your lidraughts username",
         process: setUser.process,
         reply: setUser.reply
     },
@@ -88,7 +88,7 @@ const commands = {
     },
     "whoami": {
         usage: "",
-        description: "Returns your lishogi username",
+        description: "Returns your lidraughts username",
         process: whoAmI.process,
         reply: whoAmI.reply
     }

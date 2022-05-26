@@ -5,14 +5,14 @@ async function tv(author, mode) {
     const user = await User.findById(author.id).exec();
     if (!mode) {
         if (!user) {
-            return 'You need to set your lishogi username with setuser!';
+            return 'You need to set your lidraughts username with setuser!';
         } else if (!user.favoriteMode) {
             return 'You need to set your favorite gamemode with setgamemode!';
         }
 	mode = user.favoriteMode;
     }
-    url = 'https://lishogi.org/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    url = 'https://lidraughts.org/tv/channels';
+    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
         .then(response => formatTv(response.data, mode))
         .catch((err) => {
             console.log(`Error in tv(${author.username}, ${mode}): \
@@ -25,7 +25,7 @@ async function tv(author, mode) {
 function formatTv(data, mode) {
     for (var channel in data) {
         if (channel.toLowerCase() == mode)
-            return 'https://lishogi.org/' + data[channel].gameId;
+            return 'https://lidraughts.org/' + data[channel].gameId;
     }
     return `No channel of mode ${mode} found!`;
 }

@@ -1,7 +1,7 @@
 {
-  "name": "lishogidiscordbot",
+  "name": "lidraughtsdiscordbot",
   "version": "1.0.0",
-  "description": "A Discord bot to interact with the Lishogi API",
+  "description": "A Discord bot to interact with the Lidraughts API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,7 +10,7 @@
   },
   "keywords": [
     "discord",
-    "lishogi",
+    "lidraughts",
     "bot"
   ],
   "author": "Tim Beck",

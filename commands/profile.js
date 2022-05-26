@@ -9,13 +9,13 @@ async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
         if (!user) {
-            return 'You need to set your lishogi username with setuser!';
+            return 'You need to set your lidraughts username with setuser!';
         }
-        username = user.lishogiName;
+        username = user.lidraughtsName;
     }
     var favoriteMode = user.favoriteMode;
-    url = `https://lishogi.org/api/user/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    url = `https://lidraughts.org/api/user/${username}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
@@ -50,7 +50,7 @@ function formatProfile(data, favoriteMode) {
     var formattedMessage = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setTitle('Challenge ' + data.username + ' to a game!')
-        .setURL('https://lishogi.org/?user=' + data.username + '#friend')
+        .setURL('https://lidraughts.org/?user=' + data.username + '#friend')
         .setAuthor({name: flag + ' ' + playerName + '  ' + status, iconURL: null, url: data.url})
         .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
@@ -107,7 +107,7 @@ function getMostPlayedRating(list, mostPlayedMode) {
         mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
-// For sorting through modes... lishogi api does not put these in an array so we do it ourselves
+// For sorting through modes... lidraughts api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
     // Count up number of keys...

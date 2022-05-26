@@ -5,14 +5,14 @@ async function arena(author, favoriteMode) {
     const user = await User.findById(author.id).exec();
     if (!favoriteMode) {
         if (!user) {
-            return 'You need to set your lishogi username with setuser!';
+            return 'You need to set your lidraughts username with setuser!';
         } else if (!user.favoriteMode) {
             return 'You need to set your favorite gamemode with setgamemode!';
         }
 	favoriteMode = user.favoriteMode;
     }
-    url = 'https://lishogi.org/api/tournament';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    url = 'https://lidraughts.org/api/tournament';
+    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
         .then(response => formatArena(response.data, favoriteMode))
         .catch((err) => {
             console.log(`Error in arena(${author.username}, ${favoriteMode}): \
@@ -27,14 +27,14 @@ function formatArena(data, favoriteMode) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
             if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
-                return 'https://lishogi.org/tournament/' + arenas[i].id;
+                return 'https://lidraughts.org/tournament/' + arenas[i].id;
             }
         }
     }
     for (var status in data) {
         var arenas = data[status];
         for (var i = 0; i < arenas.length; i++) {
-            return 'https://lishogi.org/tournament/' + arenas[i].id;
+            return 'https://lidraughts.org/tournament/' + arenas[i].id;
         }
     }
     return 'No tournament found!';
