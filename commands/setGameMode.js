@@ -8,7 +8,7 @@ async function setGameMode(author, mode) {
     }
     else {
         console.log(`Error in setGameMode(${author.username}, ${mode})`);
-        return 'You need to set your lidraughts username with setuser!';
+        return 'You need to set your playstrategy username with setuser!';
     }
 }
 

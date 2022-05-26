@@ -1,7 +1,7 @@
 {
-  "name": "lidraughtsdiscordbot",
+  "name": "playstrategydiscordbot",
   "version": "1.0.0",
-  "description": "A Discord bot to interact with the Lidraughts API",
+  "description": "A Discord bot to interact with the PlayStrategy API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,7 +10,7 @@
   },
   "keywords": [
     "discord",
-    "lidraughts",
+    "playstrategy",
     "bot"
   ],
   "author": "Tim Beck",

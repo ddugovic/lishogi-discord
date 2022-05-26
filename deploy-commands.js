@@ -2,17 +2,17 @@ const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
-    new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your lidraughts username from the bot's database"),
+    new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your playstrategy username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Displays the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode')),
-    new SlashCommandBuilder().setName('playing').setDescription("Shares your (or a user's) current game URL").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
-    new SlashCommandBuilder().setName('gif').setDescription("Shares your (or a user's) current game as a GIF").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
+    new SlashCommandBuilder().setName('playing').setDescription("Shares your (or a user's) current game URL").addStringOption(option => option.setName('username').setDescription('Enter playstrategy player username')),
+    new SlashCommandBuilder().setName('gif').setDescription("Shares your (or a user's) current game as a GIF").addStringOption(option => option.setName('username').setDescription('Enter playstrategy player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
-    new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
+    new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter playstrategy player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('setuser').setDescription("Sets your lidraughts username").addStringOption(option => option.setName('username').setDescription('Enter your lidraughts username')),
+    new SlashCommandBuilder().setName('setuser').setDescription("Sets your playstrategy username").addStringOption(option => option.setName('username').setDescription('Enter your playstrategy username')),
     new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('whoami').setDescription("Returns your lidraughts username"),
+    new SlashCommandBuilder().setName('whoami').setDescription("Returns your playstrategy username"),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
     .map(command => command.toJSON());

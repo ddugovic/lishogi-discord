@@ -2,7 +2,7 @@ const User = require('../models/User');
 
 async function setUser(author, username) {
     var authorId = author.id;
-    var newValues = { lidraughtsName: username, dateAdded: new Date() };
+    var newValues = { playstrategyName: username, dateAdded: new Date() };
     if (await User.findByIdAndUpdate(authorId, newValues, {upsert: true, new: true}).exec()) {
         return `User updated! ${author.username} = ${username}`;
     }

@@ -1,6 +1,6 @@
-# lidraughts discord bot
+# playstrategy discord bot
 [![Discord Bots](https://discordbots.org/api/widget/status/842330057841049600.svg)](https://discordbots.org/bot/842330057841049600)
-[![Build Status](https://github.com/ddugovic/lidraughts-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lidraughts-discord/actions?query=workflow%3A%22Node.js+CI%22)
+[![Build Status](https://github.com/ddugovic/lishogi-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lishogi-discord/actions?query=workflow%3A%22Node.js+CI%22)
 
 # Setup
 
@@ -10,18 +10,18 @@
 
 # Features
 
-1. Link your lidraughts username with this bot to get customized commands!
+1. Link your playstrategy username with this bot to get customized commands!
 
 # Command List
 ```
 !help
     Sends a list of available commands
 !setuser <username>
-    Sets your lidraughts username
+    Sets your playstrategy username
 !whoami
-    Returns your current lidraughts username
+    Returns your current playstrategy username
 !deleteuser
-    Deletes your lidraughts username from the bot's database
+    Deletes your playstrategy username from the bot's database
 !setgamemode [game mode]
     Sets your favorite game (or puzzle) mode
 !profile [username]
@@ -33,7 +33,7 @@
 !playing [username]
     Shares your (or a user's) current game as a GIF
 !arena [username]
-    Find an upcoming or recent arena created by lidraughts (or a user)
+    Find an upcoming or recent arena created by playstrategy (or a user)
 !puzzle
     Displays today's puzzle
 !tv [game mode]

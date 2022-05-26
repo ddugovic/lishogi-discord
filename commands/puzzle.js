@@ -1,4 +1,4 @@
-const message = 'https://lidraughts.org/training/daily';
+const message = 'https://playstrategy.org/training/daily';
 
 function process(bot, msg) {
     msg.channel.send(message);

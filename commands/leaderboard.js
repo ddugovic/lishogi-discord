@@ -5,14 +5,14 @@ async function leaderboard(author, mode) {
     const user = await User.findById(author.id).exec();
     if (!mode) {
         if (!user) {
-            return 'You need to set your lidraughts username with setuser!';
+            return 'You need to set your playstrategy username with setuser!';
         } else if (!user.favoriteMode) {
             return 'You need to set your favorite gamemode with setgamemode!';
         }
 	mode = user.favoriteMode;
     }
-    url = `https://lidraughts.org/player/top/1/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
+    url = `https://playstrategy.org/player/top/1/${mode}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => formatLeaderboard(response.data))
         .catch((err) => {
             console.log(`Error in leaderboard(${author.username}, ${mode}): \
@@ -23,7 +23,7 @@ async function leaderboard(author, mode) {
 }
 
 function formatLeaderboard(data) {
-    return 'https://lidraughts.org/@/' + data.users[0].username;
+    return 'https://playstrategy.org/@/' + data.users[0].username;
 }
 
 function process(bot, msg, mode) {

@@ -6,8 +6,8 @@ async function tv(author, mode) {
         const user = await User.findById(author.id).exec();
         mode = (user && user.favoriteMode) ? user.favoriteMode : 'blitz';
     }
-    url = 'https://lidraughts.org/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
+    url = 'https://playstrategy.org/tv/channels';
+    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => formatTv(response.data, mode))
         .catch((err) => {
             console.log(`Error in tv(${author.username}, ${mode}): \
@@ -20,7 +20,7 @@ async function tv(author, mode) {
 function formatTv(data, mode) {
     for (var channel in data) {
         if (channel.toLowerCase() == mode)
-            return 'https://lidraughts.org/' + data[channel].gameId;
+            return 'https://playstrategy.org/' + data[channel].gameId;
     }
     return `No channel of mode ${mode} found!`;
 }

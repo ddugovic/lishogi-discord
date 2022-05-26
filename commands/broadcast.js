@@ -1,8 +1,8 @@
 const axios = require('axios');
 
 async function broadcast(author) {
-    url = 'https://lidraughts.org/api/broadcast?nb=1';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
+    url = 'https://playstrategy.org/api/broadcast?nb=1';
+    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => formatBroadcast(response.data))
         .catch((err) => {
             console.log(`Error in broadcast(${author.username}): \

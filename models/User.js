@@ -9,7 +9,7 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  lidraughtsName: {
+  playstrategyName: {
     type: String,
     required: true
   },

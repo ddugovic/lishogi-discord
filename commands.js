@@ -21,7 +21,7 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your lidraughts username from the bot's database",
+        description: "Deletes your playstrategy username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -68,8 +68,8 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<lidraughts name>",
-        description: "Sets your lidraughts username",
+        usage: "<playstrategy name>",
+        description: "Sets your playstrategy username",
         process: setUser.process,
         reply: setUser.reply
     },
@@ -81,7 +81,7 @@ const commands = {
     },
     "whoami": {
         usage: "",
-        description: "Returns your lidraughts username",
+        description: "Returns your playstrategy username",
         process: whoAmI.process,
         reply: whoAmI.reply
     }

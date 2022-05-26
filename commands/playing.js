@@ -5,11 +5,11 @@ async function playing(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
         if (!username && !user) {
-            return 'You need to set your lidraughts username with setuser!';
+            return 'You need to set your playstrategy username with setuser!';
         }
-        username = user.lidraughtsName;
+        username = user.playstrategyName;
     }
-    url = `https://lidraughts.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
+    url = `https://playstrategy.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrent(response.data))
         .catch((err) => {
@@ -21,7 +21,7 @@ async function playing(author, username) {
 }
 
 function formatCurrent(data) {
-    return 'https://lidraughts.org/' + data.id;
+    return 'https://playstrategy.org/' + data.id;
 }
 
 function process(bot, msg, username) {
