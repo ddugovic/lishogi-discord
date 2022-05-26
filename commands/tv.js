@@ -2,14 +2,9 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function tv(author, mode) {
-    const user = await User.findById(author.id).exec();
     if (!mode) {
-        if (!user) {
-            return 'You need to set your lichess username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	mode = user.favoriteMode;
+        const user = await User.findById(author.id).exec();
+        mode = (user && user.favoriteMode) ? user.favoriteMode : 'blitz';
     }
     url = 'https://lichess.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
