@@ -4,7 +4,7 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode) {
         const user = await User.findById(author.id).exec();
-        mode = (user && user.favoriteMode) ? user.favoriteMode : 'blitz';
+        mode = (user && user.favoriteMode) ? user.favoriteMode : 'top rated';
     }
     url = 'https://playstrategy.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
