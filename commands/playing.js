@@ -2,11 +2,13 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function playing(author, username) {
-    const user = await User.findById(author.id).exec();
-    if (!username && !user) {
-        return 'You need to set your lichess username with setuser!';
+    if (!username) {
+        const user = await User.findById(author.id).exec();
+        if (!username && !user) {
+            return 'You need to set your lichess username with setuser!';
+        }
+        username = user.lichessName;
     }
-    username = user.lichessName;
     url = `https://lichess.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrent(response.data))
