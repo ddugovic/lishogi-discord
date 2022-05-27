@@ -20,11 +20,17 @@ describe('Commands', function() {
     it('should format 1 hour', function() {
       assert.equal("1 hour", format.formatSeconds(3600));
     });
+    it('should format 1 hour, 1 minute', function() {
+      assert.equal("1 hour, 1 minute", format.formatSeconds(3660));
+    });
     it('should format 2 hours', function() {
       assert.equal("2 hours", format.formatSeconds(7200));
     });
     it('should format 1 day', function() {
       assert.equal("1 day", format.formatSeconds(86400));
+    });
+    it('should format 1 day, 1 hour', function() {
+      assert.equal("1 day, 1 hour", format.formatSeconds(90000));
     });
     it('should format 2 days', function() {
       assert.equal("2 days", format.formatSeconds(172800));
