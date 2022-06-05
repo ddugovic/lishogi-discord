@@ -23,7 +23,10 @@ async function leaderboard(author, mode) {
 }
 
 function formatLeaderboard(data) {
-    return 'https://playstrategy.org/@/' + data.users[0].username;
+    if (data.users[0]) {
+        return 'https://playstrategy.org/@/' + data.users[0].username;
+    }
+    return 'Leader not found!'
 }
 
 function process(bot, msg, mode) {
