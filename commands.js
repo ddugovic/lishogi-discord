@@ -1,41 +1,17 @@
 // Include commands
-const arena = require('./commands/arena');
-const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
-const eval = require('./commands/eval');
-const gif = require('./commands/gif');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
-const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
-const tv = require('./commands/tv');
 const whoAmI = require('./commands/whoAmI');
 
 const commands = {
-    "arena": {
-        usage: "[game mode]",
-        description: "Find an upcoming or recent arena",
-        process: arena.process,
-        reply: arena.reply
-    },
-    "broadcast": {
-        usage: "",
-        description: "Find an incoming, ongoing, or finished official broadcast",
-        process: broadcast.process,
-        reply: broadcast.reply
-    },
-    "eval": {
-        usage: "<fen>",
-        description: "Get the cached evaluation of a position, if available",
-        process: eval.process,
-        reply: eval.reply
-    },
     "deleteuser": {
         usage: "",
-        description: "Deletes your lichess username from the bot's database",
+        description: "Deletes your chess.com username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -44,18 +20,6 @@ const commands = {
         description: "Displays the leaderboard top player",
         process: leaderboard.process,
         reply: leaderboard.reply
-    },
-    "playing": {
-        usage: "[user]",
-        description: "Shares your (or a user's) current game URL",
-        process: playing.process,
-        reply: playing.reply
-    },
-    "gif": {
-        usage: "[user]",
-        description: "Shares your (or a user's) current game as a GIF",
-        process: gif.process,
-        reply: gif.reply
     },
     "privacy": {
         usage: "",
@@ -82,20 +46,14 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<lichess name>",
-        description: "Sets your lichess username",
+        usage: "<chess.com name>",
+        description: "Sets your chess.com username",
         process: setUser.process,
         reply: setUser.reply
     },
-    "tv": {
-        usage: "[game mode]",
-        description: "Shares the featured game",
-        process: tv.process,
-        reply: tv.reply
-    },
     "whoami": {
         usage: "",
-        description: "Returns your lichess username",
+        description: "Returns your chess.com username",
         process: whoAmI.process,
         reply: whoAmI.reply
     }

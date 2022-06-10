@@ -22,7 +22,7 @@ const help = require('./commands/help');
 const stop = require('./commands/stop');
 
 client.on('ready', () => {
-    client.user.setActivity('lichess.org'); //you can set a default game
+    client.user.setActivity('chess.com'); //you can set a default game
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
 });
 

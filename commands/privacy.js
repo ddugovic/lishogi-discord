@@ -1,4 +1,4 @@
-const message = 'This bot only stores your Lichess username and favorite game mode. Contact Toadofsky#0954 on Tadpole Pond if you need your data removed and cannot figure out how to use the deleteuser command.';
+const message = 'This bot only stores your Chess.com username and favorite game mode. Contact Toadofsky#0954 on Tadpole Pond if you need your data removed and cannot figure out how to use the deleteuser command.';
 
 function process(bot, msg, username) {
     msg.channel.send(message);

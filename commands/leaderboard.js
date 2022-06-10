@@ -1,21 +1,12 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-async function leaderboard(author, mode) {
-    const user = await User.findById(author.id).exec();
-    if (!mode) {
-        if (!user) {
-            return 'You need to set your lichess username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	mode = user.favoriteMode;
-    }
-    url = `https://lichess.org/player/top/1/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+async function leaderboard(author) {
+    url = 'https://api.chess.com/pub/leaderboards';
+    return axios.get(url)
         .then(response => formatLeaderboard(response.data))
         .catch((err) => {
-            console.log(`Error in leaderboard(${author.username}, ${mode}): \
+            console.log(`Error in leaderboard(${author.username}): \
                 ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
@@ -23,10 +14,7 @@ async function leaderboard(author, mode) {
 }
 
 function formatLeaderboard(data) {
-    if (data.users[0]) {
-        return 'https://lichess.org/@/' + data.users[0].username;
-    }
-    return 'Leader not found!'
+    return data.daily[0].url;
 }
 
 function process(bot, msg, mode) {

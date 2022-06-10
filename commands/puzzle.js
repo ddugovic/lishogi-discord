@@ -1,11 +1,27 @@
-const message = 'https://lichess.org/training/daily';
+const axios = require('axios');
 
-function process(bot, msg) {
-    msg.channel.send(message);
+async function puzzle(author, favoriteMode) {
+    url = 'https://api.chess.com/pub/puzzle';
+    return axios.get(url)
+        .then(response => formatPuzzle(response.data, favoriteMode))
+        .catch((err) => {
+            console.log(`Error in puzzle(${author.username}): \
+                ${err.response.status} ${err.response.statusText}`);
+            return `An error occurred handling your request: \
+                ${err.response.status} ${err.response.statusText}`;
+        });
 }
 
-function reply(interaction) {
-    return message;
+function formatPuzzle(data) {
+    return data.url;
+}
+
+function process(bot, msg) {
+    puzzle(msg.author).then(message => msg.channel.send(message));
+}
+
+async function reply(interaction) {
+    return puzzle(interaction.user);
 }
 
 module.exports = {process, reply};
