@@ -5,6 +5,7 @@ const setUser = require('./commands/setUser');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
+const streamers = require('./commands/streamers');
 const setGameMode = require('./commands/setGameMode');
 
 const commands = {
@@ -37,6 +38,12 @@ const commands = {
         description: "Displays today's puzzle",
         process: puzzle.process,
         reply: puzzle.reply
+    },
+    "streamers": {
+        usage: "",
+        description: "Displays live streamers",
+        process: streamers.process,
+        reply: streamers.reply
     },
     "setgamemode": {
         usage: "[game mode]",
