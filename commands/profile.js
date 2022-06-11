@@ -33,8 +33,9 @@ function formatProfile(data, favoriteMode) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF);
     return setName(embed, data)
-        .then(embed => { return setRating(embed, data, favoriteMode) })
+        .then(embed => { return setStats(embed, data, favoriteMode) })
         .then(embed => { return setStreamer(embed, data) })
+        .then(embed => { return setClubs(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
@@ -73,18 +74,30 @@ function setName(embed, data) {
     });
 }
 
-function setRating(embed, data, favoriteMode) {
-    const url = `https://api.chess.com/pub/player/${data.username}`;
-    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } })
+function setStats(embed, data, favoriteMode) {
+    const url = `https://api.chess.com/pub/player/${data.username}/stats`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
-            const mode = getMostRecentMode(response.data, favoriteMode);
-            const rating = getMostRecentRating(response.data, mode);
-            return embed.addFields(
-                { name: 'Followers', value: `${data.followers}`, inline: true },
-                { name: 'Rating (' + mode + ')', value: rating, inline: true },
-                { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
-            );
-    });
+            return embed.addFields(formatStats(embed, data, response, favoriteMode));
+        });
+}
+
+function formatStats(embed, data, response, favoriteMode) {
+    const mode = getMostRecentMode(response.data, favoriteMode);
+    const rating = getMostRecentRating(response.data, mode);
+    return [
+        { name: 'Followers', value: `${data.followers}`, inline: true },
+        { name: 'Rating (' + mode + ')', value: rating, inline: true },
+        { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
+   ];
+}
+
+function setClubs(embed, data) {
+    const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            return embed.addFields(formatClubs(response.data.clubs));
+        });
 }
 
 function setStreamer(embed, data) {
@@ -130,6 +143,18 @@ function getMostRecentRating(stats, mostRecentMode) {
         }
     }
     return `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}`;
+}
+
+function formatClubs(clubs) {
+    var lastActiveClub = clubs[0].name;
+    var lastActiveDate = clubs[0].last_activity;
+    for (var i = 0; i < clubs.length; i++) {
+        if (clubs[i].last_activity > lastActiveDate) {
+            lastActiveClub = clubs[i].name;
+            lastActiveDate = clubs[i].last_activity;
+        }
+    }
+    return { name: 'Active Club', value: lastActiveClub, inline: false }
 }
 
 // For sorting through modes... chess api does not put these in an array so we do it ourselves
