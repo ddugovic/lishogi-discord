@@ -53,8 +53,9 @@ function formatProfile(data, favoriteMode) {
                     .setTitle('Watch ' + data.username + ' on Twitch!')
                     .setURL(data.twitch_url);
             }
-            return { embeds: [formattedMessage] };
+            return formattedMessage;
         })
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
