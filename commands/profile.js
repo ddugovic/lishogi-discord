@@ -30,26 +30,13 @@ function formatProfile(data, favoriteMode) {
     if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
-    var name = data.name || data.username;
-    if (data.title)
-        name = data.title + ' ' + name;
-    if (data.location)
-        name += ` (${data.location})`;
-    const formattedMessage = new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
-        .setAuthor({ name: name, iconURL: data.avatar, url: data.url });
+        .setAuthor({ name: formatName(data), iconURL: data.avatar, url: data.url });
 
     const url = `https://api.chess.com/pub/player/${data.username}`;
     return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            const mostRecentMode = getMostRecentMode(response.data, favoriteMode);
-            const mostRecentRating = getMostRecentRating(response.data, mostRecentMode);
-            return formattedMessage.addFields(
-                    { name: 'Followers', value: `${data.followers}`, inline: true },
-                    { name: 'Rating (' + mostRecentMode + ')', value: mostRecentRating, inline: true },
-                    { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
-                );
-        })
+        .then(response => { return setRating(embed, data, response, favoriteMode) })
         .then(embed => { return setStreamer(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -58,6 +45,25 @@ function formatProfile(data, favoriteMode) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+function formatName(data) {
+    var name = data.name || data.username;
+    if (data.title)
+        name = data.title + ' ' + name;
+    if (data.location)
+        name += ` (${data.location})`;
+    return name;
+}
+
+function setRating(embed, data, response, favoriteMode) {
+    const mostRecentMode = getMostRecentMode(response.data, favoriteMode);
+    const mostRecentRating = getMostRecentRating(response.data, mostRecentMode);
+    return embed.addFields(
+        { name: 'Followers', value: `${data.followers}`, inline: true },
+        { name: 'Rating (' + mostRecentMode + ')', value: mostRecentRating, inline: true },
+        { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
+    );
 }
 
 function setStreamer(embed, data) {
