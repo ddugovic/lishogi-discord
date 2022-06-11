@@ -36,19 +36,20 @@ function formatProfile(data, favoriteMode) {
     if (data.title)
         playerName = data.title + ' ' + playerName;
 
-    //url = `https://api.chess.com/pub/player/${data.username}/stats`;
-    //stats = axios.get(url, { headers: { Accept: 'application/nd-json' } })
-    //    .then(response => formatStats(response.data, favoriteMode));
+    url = `https://api.chess.com/pub/player/${data.username}/stats`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => formatStats(response.data, favoriteMode))
+        .then(stats => {
+            var mostRecentMode = getMostRecentMode(stats, favoriteMode);
+            var formattedMessage = new Discord.MessageEmbed()
+                .setColor(0xFFFFFF)
+                .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
+                //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
+                .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(stats, mostRecentMode), true)
+                .addField('Account Age', formatSeconds.formatSeconds(data.last_online - data.joined), true);
 
-    //var mostRecentMode = getMostRecentMode(stats, favoriteMode);
-    var formattedMessage = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
-        .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
-        //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-        //.addField('Rating (' + mostRecentMode + ')', getMostRecentRating(stats, mostRecentMode), true)
-        .addField('Account Age', formatSeconds.formatSeconds(data.last_online - data.joined), true);
-
-    return { embeds: [formattedMessage] };
+            return { embeds: [formattedMessage] };
+        });
 }
 
 function formatStats(stats, favoriteMode) {
@@ -61,7 +62,7 @@ function getMostRecentMode(stats, favoriteMode) {
     var mostRecentDate = modes[0][1].last.date;
     for (var i = 0; i < modes.length; i++) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0].last && modes[i][1].last.date > mostRecentDate) {
+        if (modes[i][1].last && modes[i][1].last.date > mostRecentDate) {
             mostRecentMode = modes[i][0];
             mostRecentDate = modes[i][1].last.date;
         }
@@ -77,23 +78,20 @@ function getMostRecentMode(stats, favoriteMode) {
 function getMostRecentRating(stats, mostRecentMode) {
     var modes = modesArray(stats);
 
-    var mostRecentRD = modes[0][1].rd;
-    var mostRecentProg = modes[0][1].prog;
-    var mostRecentRating = modes[0][1].rating;
-    var mostRecentDate = modes[0][1].games;
+    var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
+    var mostRecentRating = modes[0][1].last ? modes[0][1].last.rating : undefined;
+    var mostRecentGames = modes[0][1].record ? modes[0][1].record.win + modes[0][1].record.loss + modes[0][1].record.draw : undefined;
     for (var i = 0; i < modes.length; i++) {
-        // exclude puzzle games, unless it is the only mode played by that user.
         if (modes[i][0] == mostRecentMode) {
-            mostRecentRD = modes[i][1].rd;
-            mostRecentProg = modes[i][1].prog;
-            mostRecentRating = modes[i][1].rating;
-            mostRecentDate = modes[i][1].games + ' ' + plural((mostRecentMode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
+            mostRecentRD = modes[i][1].last.rd;
+            mostRecentRating = modes[i][1].last.rating;
+            mostRecentGames = modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
+            mostRecentGames = mostRecentGames + ' ' + plural((mostRecentMode == 'puzzle' ? 'attempt' : ' game'), mostRecentGames);
         }
     }
-
-    var formattedMessage = mostRecentRating + ' ± ' + (2 * mostRecentRD) + ' on ' + mostRecentDate;
-    return formattedMessage;
+    return `${mostRecentRating} ± ${(2 * mostRecentRD)} in ${mostRecentGames}`;
 }
+
 // For sorting through modes... chess api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
