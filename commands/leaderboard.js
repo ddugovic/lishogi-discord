@@ -1,5 +1,4 @@
 const axios = require('axios');
-const User = require('../models/User');
 
 async function leaderboard(author) {
     url = 'https://api.chess.com/pub/leaderboards';
