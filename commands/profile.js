@@ -2,7 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const plural = require('plural');
-const formatSeconds = require('../lib/format-seconds');
+const timeago = require('time-ago')
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -46,7 +46,7 @@ function formatProfile(data, favoriteMode) {
                 .addFields(
                     { name: 'Followers', value: `${data.followers}`, inline: true },
                     { name: 'Rating (' + mostRecentMode + ')', value: getMostRecentRating(response.data, mostRecentMode), inline: true },
-                    { name: 'Offline', value: formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), inline: true }
+                    { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
                 );
             if (data.is_streamer) {
                 formattedMessage = formattedMessage

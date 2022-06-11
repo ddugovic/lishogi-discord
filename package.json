@@ -25,7 +25,8 @@
     "emoji-flags": "^1.3.0",
     "mocha": "^10.0.0",
     "mongoose": "^6.3.6",
-    "plural": "^1.1.0"
+    "plural": "^1.1.0",
+    "time-ago": "^0.2.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
