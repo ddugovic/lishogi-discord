@@ -33,9 +33,7 @@ function formatProfile(data, favoriteMode) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({ name: formatName(data), iconURL: data.avatar, url: data.url });
-
-    return getStats(data.username)
-        .then(response => { return setRating(embed, data, response, favoriteMode) })
+    return setRating(embed, data, favoriteMode)
         .then(embed => { return setStreamer(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -55,19 +53,18 @@ function formatName(data) {
     return name;
 }
 
-function getStats(username) {
-    const url = `https://api.chess.com/pub/player/${username}`;
-    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } });
-}
-
-function setRating(embed, data, response, favoriteMode) {
-    const mostRecentMode = getMostRecentMode(response.data, favoriteMode);
-    const mostRecentRating = getMostRecentRating(response.data, mostRecentMode);
-    return embed.addFields(
-        { name: 'Followers', value: `${data.followers}`, inline: true },
-        { name: 'Rating (' + mostRecentMode + ')', value: mostRecentRating, inline: true },
-        { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
-    );
+function setRating(embed, data, favoriteMode) {
+    const url = `https://api.chess.com/pub/player/${data.username}`;
+    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            const mode = getMostRecentMode(response.data, favoriteMode);
+            const rating = getMostRecentRating(response.data, mode);
+            return embed.addFields(
+                { name: 'Followers', value: `${data.followers}`, inline: true },
+                { name: 'Rating (' + mode + ')', value: rating, inline: true },
+                { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
+            );
+    });
 }
 
 function setStreamer(embed, data) {
