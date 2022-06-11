@@ -35,5 +35,14 @@ describe('Commands', function() {
     it('should format 2 days', function() {
       assert.equal("2 days", format.formatSeconds(172800));
     });
+    it('should format 1 year', function() {
+      assert.equal("1 year", format.formatSeconds(86400 * 365));
+    });
+    it('should format 1 year, 1 day', function() {
+      assert.equal("1 year, 1 day", format.formatSeconds(86400 * 366));
+    });
+    it('should format 2 years', function() {
+      assert.equal("2 years", format.formatSeconds(86400 * 730));
+    });
   });
 });
