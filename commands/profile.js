@@ -30,11 +30,11 @@ function formatProfile(data, favoriteMode) {
     if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
-    var status = data.is_streamer ? '📡 Streamer' : '';
-
-    var playerName = data.username;
+    var name = data.name || data.username;
     if (data.title)
-        playerName = data.title + ' ' + playerName;
+        name = data.title + ' ' + name;
+    if (data.location)
+        name += ` (${data.location})`;
 
     url = `https://api.chess.com/pub/player/${data.username}/stats`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
@@ -42,10 +42,17 @@ function formatProfile(data, favoriteMode) {
             var mostRecentMode = getMostRecentMode(response.data, favoriteMode);
             var formattedMessage = new Discord.MessageEmbed()
                 .setColor(0xFFFFFF)
-                .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
-                //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-                .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(response.data, mostRecentMode), true)
-                .addField('Offline', formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), true);
+                .setAuthor({name: name, iconURL: data.avatar, url: data.url})
+                .addFields(
+                    { name: 'Followers', value: `${data.followers}`, inline: true },
+                    { name: 'Rating (' + mostRecentMode + ')', value: getMostRecentRating(response.data, mostRecentMode), inline: true },
+                    { name: 'Offline', value: formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), inline: true }
+                );
+            if (data.is_streamer) {
+                formattedMessage = formattedMessage
+                    .setTitle('Watch ' + data.username + ' on Twitch!')
+                    .setURL(data.twitch_url);
+            }
             return { embeds: [formattedMessage] };
         })
         .catch(error => {
@@ -76,7 +83,6 @@ function getMostRecentMode(stats, favoriteMode) {
 }
 // Get string with highest rating formatted for profile
 function getMostRecentRating(stats, mostRecentMode) {
-    console.log(stats, mostRecentMode);
     var modes = modesArray(stats);
 
     var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
