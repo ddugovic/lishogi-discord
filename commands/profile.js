@@ -146,15 +146,13 @@ function getMostRecentRating(stats, mostRecentMode) {
 }
 
 function formatClubs(clubs) {
-    var lastActiveClub = clubs[0].name;
-    var lastActiveDate = clubs[0].last_activity;
+    var clubNames = '';
     for (var i = 0; i < clubs.length; i++) {
-        if (clubs[i].last_activity > lastActiveDate) {
-            lastActiveClub = clubs[i].name;
-            lastActiveDate = clubs[i].last_activity;
-        }
+        if (clubNames)
+            clubNames += '\n';
+        clubNames += clubs[i].name;
     }
-    return { name: 'Active Club', value: lastActiveClub, inline: false }
+    return { name: 'Clubs', value: clubNames, inline: false }
 }
 
 // For sorting through modes... chess api does not put these in an array so we do it ourselves
