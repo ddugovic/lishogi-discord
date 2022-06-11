@@ -31,9 +31,9 @@ function formatProfile(data, favoriteMode) {
         return 'This account is closed.';
 
     const embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
-        .setAuthor({ name: formatName(data), iconURL: data.avatar, url: data.url });
-    return setRating(embed, data, favoriteMode)
+        .setColor(0xFFFFFF);
+    return setName(embed, data)
+        .then(embed => { return setRating(embed, data, favoriteMode) })
         .then(embed => { return setStreamer(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -44,13 +44,23 @@ function formatProfile(data, favoriteMode) {
         });
 }
 
-function formatName(data) {
+function formatName(data, response) {
     var name = data.name || data.username;
     if (data.title)
         name = data.title + ' ' + name;
     if (data.location)
         name += ` (${data.location})`;
+    else if (response && response.data)
+        name += ` (${response.data.name})`;
     return name;
+}
+
+function setName(embed, data) {
+    return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            return embed
+                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url });
+    });
 }
 
 function setRating(embed, data, favoriteMode) {
