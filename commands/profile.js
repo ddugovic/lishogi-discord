@@ -35,16 +35,16 @@ function formatProfile(data, favoriteMode) {
         name = data.title + ' ' + name;
     if (data.location)
         name += ` (${data.location})`;
+    const formattedMessage = new Discord.MessageEmbed()
+        .setColor(0xFFFFFF)
+        .setAuthor({ name: name, iconURL: data.avatar, url: data.url });
 
-    url = `https://api.chess.com/pub/player/${data.username}/stats`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+    const url = `https://api.chess.com/pub/player/${data.username}`;
+    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             const mostRecentMode = getMostRecentMode(response.data, favoriteMode);
             const mostRecentRating = getMostRecentRating(response.data, mostRecentMode);
-            return new Discord.MessageEmbed()
-                .setColor(0xFFFFFF)
-                .setAuthor({name: name, iconURL: data.avatar, url: data.url})
-                .addFields(
+            return formattedMessage.addFields(
                     { name: 'Followers', value: `${data.followers}`, inline: true },
                     { name: 'Rating (' + mostRecentMode + ')', value: mostRecentRating, inline: true },
                     { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
