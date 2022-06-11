@@ -19,8 +19,6 @@ async function profile(author, username) {
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${favoriteMode}): \
-                ${error}`);
-            console.log(`Error in profile(${author.username}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -28,7 +26,7 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-async function formatProfile(data, favoriteMode) {
+function formatProfile(data, favoriteMode) {
     if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
@@ -38,21 +36,30 @@ async function formatProfile(data, favoriteMode) {
     if (data.title)
         playerName = data.title + ' ' + playerName;
 
-    var response = await axios.get(`https://api.chess.com/pub/player/${data.username}/stats`, { headers: { Accept: 'application/nd-json' } });
-    var mostRecentMode = getMostRecentMode(response.data, favoriteMode);
-    var formattedMessage = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
-        .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
-        //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-        .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(response.data, mostRecentMode), true)
-        .addField('Offline', formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), true);
-    return { embeds: [formattedMessage] };
+    url = `https://api.chess.com/pub/player/${data.username}/stats`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            var mostRecentMode = getMostRecentMode(response.data, favoriteMode);
+            var formattedMessage = new Discord.MessageEmbed()
+                .setColor(0xFFFFFF)
+                .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
+                //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
+                .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(response.data, mostRecentMode), true)
+                .addField('Offline', formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), true);
+            return { embeds: [formattedMessage] };
+        })
+        .catch(error => {
+            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
+                ${error.response.status} ${error.response.statusText}`);
+            return `An error occurred handling your request: \
+                ${error.response.status} ${error.response.statusText}`;
+        });
 }
 
 function getMostRecentMode(stats, favoriteMode) {
     var modes = modesArray(stats);
     var mostRecentMode = modes[0][0];
-    var mostRecentDate = modes[0][1].last.date;
+    var mostRecentDate = modes[0][1] && modes[0][1].last ? modes[0][1].last.date : 0;
     for (var i = 0; i < modes.length; i++) {
         // exclude puzzle games, unless it is the only mode played by that user.
         if (modes[i][1].last && modes[i][1].last.date > mostRecentDate) {
@@ -69,20 +76,21 @@ function getMostRecentMode(stats, favoriteMode) {
 }
 // Get string with highest rating formatted for profile
 function getMostRecentRating(stats, mostRecentMode) {
+    console.log(stats, mostRecentMode);
     var modes = modesArray(stats);
 
     var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
     var mostRecentRating = modes[0][1].last ? modes[0][1].last.rating : undefined;
     var mostRecentGames = modes[0][1].record ? modes[0][1].record.win + modes[0][1].record.loss + modes[0][1].record.draw : undefined;
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mostRecentMode) {
+        if (modes[i][0] == mostRecentMode && modes[i][1].last) {
             mostRecentRD = modes[i][1].last.rd;
             mostRecentRating = modes[i][1].last.rating;
             mostRecentGames = modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
             mostRecentGames = mostRecentGames + ' ' + plural((mostRecentMode == 'puzzle' ? 'attempt' : ' game'), mostRecentGames);
         }
     }
-    return `${mostRecentRating} ± ${(2 * mostRecentRD)} in ${mostRecentGames}`;
+    return `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}`;
 }
 
 // For sorting through modes... chess api does not put these in an array so we do it ourselves
