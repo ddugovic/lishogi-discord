@@ -40,7 +40,7 @@ function formatProfile(data, favoriteMode) {
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             var mostRecentMode = getMostRecentMode(response.data, favoriteMode);
-            var formattedMessage = new Discord.MessageEmbed()
+            return new Discord.MessageEmbed()
                 .setColor(0xFFFFFF)
                 .setAuthor({name: name, iconURL: data.avatar, url: data.url})
                 .addFields(
@@ -48,12 +48,14 @@ function formatProfile(data, favoriteMode) {
                     { name: 'Rating (' + mostRecentMode + ')', value: getMostRecentRating(response.data, mostRecentMode), inline: true },
                     { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
                 );
+        })
+        .then(embed => {
             if (data.is_streamer) {
-                formattedMessage = formattedMessage
+                embed = embed
                     .setTitle('Watch ' + data.username + ' on Twitch!')
                     .setURL(data.twitch_url);
             }
-            return formattedMessage;
+            return embed
         })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
