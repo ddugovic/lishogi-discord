@@ -45,7 +45,7 @@ async function formatProfile(data, favoriteMode) {
         .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
         //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(response.data, mostRecentMode), true)
-        .addField('Account Age', formatSeconds.formatSeconds(data.last_online - data.joined), true);
+        .addField('Offline', formatSeconds.formatSeconds(Date.now() / 1000 - data.last_online), true);
     return { embeds: [formattedMessage] };
 }
 
