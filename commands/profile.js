@@ -96,7 +96,8 @@ function setClubs(embed, data) {
     const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
-            return embed.addFields(formatClubs(response.data.clubs));
+            const clubs = response.data.clubs;
+            return clubs.length ? embed.addFields(formatClubs(clubs)) : embed;
         });
 }
 
