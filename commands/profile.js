@@ -34,8 +34,7 @@ function formatProfile(data, favoriteMode) {
         .setColor(0xFFFFFF)
         .setAuthor({ name: formatName(data), iconURL: data.avatar, url: data.url });
 
-    const url = `https://api.chess.com/pub/player/${data.username}`;
-    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } })
+    return getStats(data.username)
         .then(response => { return setRating(embed, data, response, favoriteMode) })
         .then(embed => { return setStreamer(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
@@ -54,6 +53,11 @@ function formatName(data) {
     if (data.location)
         name += ` (${data.location})`;
     return name;
+}
+
+function getStats(username) {
+    const url = `https://api.chess.com/pub/player/${username}`;
+    return axios.get(`${url}/stats`, { headers: { Accept: 'application/nd-json' } });
 }
 
 function setRating(embed, data, response, favoriteMode) {
