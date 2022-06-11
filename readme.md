@@ -18,8 +18,6 @@
     Sends a list of available commands
 !setuser <username>
     Sets your lichess username
-!whoami
-    Returns your current lichess username
 !deleteuser
     Deletes your lichess username from the bot's database
 !setgamemode [game mode]
