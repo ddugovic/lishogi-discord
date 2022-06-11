@@ -18,8 +18,6 @@
     Sends a list of available commands
 !setuser <username>
     Sets your lishogi username
-!whoami
-    Returns your current lishogi username
 !deleteuser
     Deletes your lishogi username from the bot's database
 !setgamemode [game mode]

@@ -13,7 +13,6 @@ const commands = [
     new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your lishogi username").addStringOption(option => option.setName('username').setDescription('Enter your lishogi username')),
     new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('whoami').setDescription("Returns your lishogi username"),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
     .map(command => command.toJSON());
