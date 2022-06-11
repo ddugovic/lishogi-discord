@@ -10,7 +10,6 @@ const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
 const tv = require('./commands/tv');
-const whoAmI = require('./commands/whoAmI');
 
 const commands = {
     "arena": {
@@ -78,12 +77,6 @@ const commands = {
         description: "Shares the featured game",
         process: tv.process,
         reply: tv.reply
-    },
-    "whoami": {
-        usage: "",
-        description: "Returns your lidraughts username",
-        process: whoAmI.process,
-        reply: whoAmI.reply
     }
 };
 

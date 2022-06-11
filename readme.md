@@ -18,8 +18,6 @@
     Sends a list of available commands
 !setuser <username>
     Sets your lidraughts username
-!whoami
-    Returns your current lidraughts username
 !deleteuser
     Deletes your lidraughts username from the bot's database
 !setgamemode [game mode]
