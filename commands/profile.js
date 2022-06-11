@@ -44,10 +44,20 @@ function formatProfile(data, favoriteMode) {
         });
 }
 
+function getFlagEmoji(code) {
+    if (countryFlags.countryCode(code))
+        return countryFlags.countryCode(code).emoji;
+}
+
 function formatName(data, response) {
     var name = data.name || data.username;
     if (data.title)
-        name = data.title + ' ' + name;
+        name = `${data.title} ${name}`;
+    if (response && response.data) {
+        const flag = getFlagEmoji(response.data.code);
+        if (flag)
+            name = `${flag} ${name}`;
+    }
     if (data.location)
         name += ` (${data.location})`;
     else if (response && response.data)
