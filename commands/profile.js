@@ -19,6 +19,8 @@ async function profile(author, username) {
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${favoriteMode}): \
+                ${error}`);
+            console.log(`Error in profile(${author.username}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -26,7 +28,7 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, favoriteMode) {
+async function formatProfile(data, favoriteMode) {
     if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
@@ -36,24 +38,15 @@ function formatProfile(data, favoriteMode) {
     if (data.title)
         playerName = data.title + ' ' + playerName;
 
-    url = `https://api.chess.com/pub/player/${data.username}/stats`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => formatStats(response.data, favoriteMode))
-        .then(stats => {
-            var mostRecentMode = getMostRecentMode(stats, favoriteMode);
-            var formattedMessage = new Discord.MessageEmbed()
-                .setColor(0xFFFFFF)
-                .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
-                //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-                .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(stats, mostRecentMode), true)
-                .addField('Account Age', formatSeconds.formatSeconds(data.last_online - data.joined), true);
-
-            return { embeds: [formattedMessage] };
-        });
-}
-
-function formatStats(stats, favoriteMode) {
-    return stats;
+    var response = await axios.get(`https://api.chess.com/pub/player/${data.username}/stats`, { headers: { Accept: 'application/nd-json' } });
+    var mostRecentMode = getMostRecentMode(response.data, favoriteMode);
+    var formattedMessage = new Discord.MessageEmbed()
+        .setColor(0xFFFFFF)
+        .setAuthor({name: playerName + '  ' + status, iconURL: data.avatar, url: data.url})
+        //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
+        .addField('Rating (' + mostRecentMode + ')', getMostRecentRating(response.data, mostRecentMode), true)
+        .addField('Account Age', formatSeconds.formatSeconds(data.last_online - data.joined), true);
+    return { embeds: [formattedMessage] };
 }
 
 function getMostRecentMode(stats, favoriteMode) {
