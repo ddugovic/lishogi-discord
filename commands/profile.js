@@ -50,14 +50,7 @@ function formatProfile(data, favoriteMode) {
                     { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
                 );
         })
-        .then(embed => {
-            if (data.is_streamer) {
-                embed = embed
-                    .setTitle('Watch ' + data.username + ' on Twitch!')
-                    .setURL(data.twitch_url);
-            }
-            return embed
-        })
+        .then(embed => { return setStreamer(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
@@ -65,6 +58,15 @@ function formatProfile(data, favoriteMode) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+function setStreamer(embed, data) {
+    if (data.is_streamer) {
+        embed = embed
+            .setTitle('Watch ' + data.username + ' on Twitch!')
+            .setURL(data.twitch_url);
+    }
+    return embed
 }
 
 function getMostRecentMode(stats, favoriteMode) {
