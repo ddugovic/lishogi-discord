@@ -18,8 +18,6 @@
     Sends a list of available commands
 !setuser <username>
     Sets your playstrategy username
-!whoami
-    Returns your current playstrategy username
 !deleteuser
     Deletes your playstrategy username from the bot's database
 !setgamemode [game mode]
