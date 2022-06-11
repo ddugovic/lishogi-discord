@@ -6,7 +6,6 @@ const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
-const whoAmI = require('./commands/whoAmI');
 
 const commands = {
     "deleteuser": {
@@ -50,12 +49,6 @@ const commands = {
         description: "Sets your chess.com username",
         process: setUser.process,
         reply: setUser.reply
-    },
-    "whoami": {
-        usage: "",
-        description: "Returns your chess.com username",
-        process: whoAmI.process,
-        reply: whoAmI.reply
     }
 };
 

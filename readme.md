@@ -18,8 +18,6 @@
     Sends a list of available commands
 !setuser <username>
     Sets your chess.com username
-!whoami
-    Returns your current chess.com username
 !deleteuser
     Deletes your chess.com username from the bot's database
 !setgamemode [game mode]
