@@ -14,6 +14,21 @@ const modes = [
     { name: 'Three-check', value: 'threeCheck' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
+const ratings = [
+    { name: 'Antichess', value: 'antichess' },
+    { name: 'Atomic', value: 'atomic' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Chess960', value: 'chess960' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Crazyhouse', value: 'crazyhouse' },
+    { name: 'King of the Hill', value: 'kingOfTheHill' },
+    { name: 'Puzzle', value: 'puzzle' },
+    { name: 'Racing Kings', value: 'racingKings' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Three-check', value: 'threeCheck' },
+    { name: 'UltraBullet', value: 'ultraBullet' }
+];
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
@@ -25,9 +40,9 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
-    new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...ratings)),
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username')),
-    new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
     .map(command => command.toJSON());
