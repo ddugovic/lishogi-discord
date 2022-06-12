@@ -19,7 +19,7 @@ async function tv(author, mode) {
 
 function formatTv(data, mode) {
     for (var channel in data) {
-        if (channel.toLowerCase() == mode)
+        if (channel.casefold() == mode.casefold())
             return 'https://lichess.org/' + data[channel].gameId;
     }
     return `No channel of mode ${mode} found!`;
