@@ -1,5 +1,16 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const channels = [
+    { name: 'Top Rated', value: 'best' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Computer', value: 'computer' },
+    { name: 'Crazyhouse', value: 'crazyhouse' },
+    { name: 'Minishogi', value: 'minishogi' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'UltraBullet', value: 'ultraBullet' }
+];
 const modes = [
     { name: 'Antichess', value: 'antichess' },
     { name: 'Atomic', value: 'atomic' },
@@ -42,7 +53,7 @@ const commands = [
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...ratings)),
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username')),
-    new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...channels)),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
     .map(command => command.toJSON());
