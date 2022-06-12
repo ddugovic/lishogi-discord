@@ -1,21 +1,19 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const channels = [
-    { name: 'Top Rated', value: 'best' },
-    { name: 'Blitz', value: 'blitz' },
-    { name: 'Bullet', value: 'bullet' },
-    { name: 'Classical', value: 'classical' },
-    { name: 'Computer', value: 'computer' },
-    { name: 'Crazyhouse', value: 'crazyhouse' },
-    { name: 'Minishogi', value: 'minishogi' },
-    { name: 'Rapid', value: 'rapid' },
-    { name: 'UltraBullet', value: 'ultraBullet' }
+    { name: 'Top Rated', value: 'Top Rated' },
+    { name: 'Blitz', value: 'Blitz' },
+    { name: 'Bullet', value: 'Bullet' },
+    { name: 'Classical', value: 'Classical' },
+    { name: 'Computer', value: 'Computer' },
+    { name: 'Minishogi', value: 'Minishogi' },
+    { name: 'Rapid', value: 'Rapid' },
+    { name: 'UltraBullet', value: 'UltraBullet' }
 ];
 const modes = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
     { name: 'Classical', value: 'classical' },
-    { name: 'Crazyhouse', value: 'crazyhouse' },
     { name: 'Minishogi', value: 'minishogi' },
     { name: 'Rapid', value: 'rapid' },
     { name: 'UltraBullet', value: 'ultraBullet' }
@@ -24,7 +22,6 @@ const ratings = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
     { name: 'Classical', value: 'classical' },
-    { name: 'Crazyhouse', value: 'crazyhouse' },
     { name: 'Minishogi', value: 'minishogi' },
     { name: 'Puzzle', value: 'puzzle' },
     { name: 'Rapid', value: 'rapid' },
