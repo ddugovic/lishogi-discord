@@ -1,15 +1,22 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const channels = [
-    { name: 'Top Rated', value: 'best' },
-    { name: 'Blitz', value: 'blitz' },
-    { name: 'Bullet', value: 'bullet' },
-    { name: 'Classical', value: 'classical' },
-    { name: 'Computer', value: 'computer' },
-    { name: 'Crazyhouse', value: 'crazyhouse' },
-    { name: 'Minishogi', value: 'minishogi' },
-    { name: 'Rapid', value: 'rapid' },
-    { name: 'UltraBullet', value: 'ultraBullet' }
+    { name: 'Top Rated', value: 'Top Rated' },
+    { name: 'Antichess', value: 'Antichess' },
+    { name: 'Atomic', value: 'Atomic' },
+    { name: 'Blitz', value: 'Blitz' },
+    { name: 'Bot', value: 'Bot' },
+    { name: 'Bullet', value: 'Bullet' },
+    { name: 'Chess960', value: 'Chess960' },
+    { name: 'Classical', value: 'Classical' },
+    { name: 'Computer', value: 'Computer' },
+    { name: 'Crazyhouse', value: 'Crazyhouse' },
+    { name: 'Horde', value: 'Horde' },
+    { name: 'King of the Hill', value: 'King of the Hill' },
+    { name: 'Racing Kings', value: 'Racing Kings' },
+    { name: 'Rapid', value: 'Rapid' },
+    { name: 'Three-check', value: 'Three-check' },
+    { name: 'UltraBullet', value: 'UltraBullet' }
 ];
 const modes = [
     { name: 'Antichess', value: 'antichess' },
@@ -19,6 +26,7 @@ const modes = [
     { name: 'Chess960', value: 'chess960' },
     { name: 'Classical', value: 'classical' },
     { name: 'Crazyhouse', value: 'crazyhouse' },
+    { name: 'Horde', value: 'Horde' },
     { name: 'King of the Hill', value: 'kingOfTheHill' },
     { name: 'Racing Kings', value: 'racingKings' },
     { name: 'Rapid', value: 'rapid' },
