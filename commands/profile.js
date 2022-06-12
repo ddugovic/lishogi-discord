@@ -117,7 +117,6 @@ function getMostRecentMode(stats, favoriteMode) {
     var mostRecentMode = modes[0][0];
     var mostRecentDate = modes[0][1] && modes[0][1].last ? modes[0][1].last.date : 0;
     for (var i = 0; i < modes.length; i++) {
-        // exclude puzzle games, unless it is the only mode played by that user.
         if (modes[i][1].last && modes[i][1].last.date > mostRecentDate) {
             mostRecentMode = modes[i][0];
             mostRecentDate = modes[i][1].last.date;
@@ -141,9 +140,10 @@ function getMostRecentRating(stats, mostRecentMode) {
             mostRecentRD = modes[i][1].last.rd;
             mostRecentRating = modes[i][1].last.rating;
             mostRecentGames = modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
-            mostRecentGames = mostRecentGames + ' ' + plural((mostRecentMode == 'puzzle' ? 'attempt' : ' game'), mostRecentGames);
         }
     }
+    const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
+    mostRecentGames = mostRecentGames + ' ' + plural((puzzleModes.includes(mostRecentMode) ? 'attempt' : ' game'), mostRecentGames);
     return mostRecentRating ? `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}` : 'None';
 }
 
