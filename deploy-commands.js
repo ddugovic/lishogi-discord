@@ -5,10 +5,10 @@ const channels = [
     { name: 'Blitz', value: 'Blitz' },
     { name: 'Bullet', value: 'Bullet' },
     { name: 'Classical', value: 'Classical' },
-    { name: 'Computer', value: 'Computer' },
     { name: 'Minishogi', value: 'Minishogi' },
     { name: 'Rapid', value: 'Rapid' },
-    { name: 'UltraBullet', value: 'UltraBullet' }
+    { name: 'UltraBullet', value: 'UltraBullet' },
+    { name: 'Computer', value: 'Computer' }
 ];
 const modes = [
     { name: 'Blitz', value: 'blitz' },
