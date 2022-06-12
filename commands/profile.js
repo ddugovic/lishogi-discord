@@ -85,10 +85,11 @@ function setStats(embed, data, favoriteMode) {
 
 function formatStats(embed, data, response, favoriteMode) {
     const mode = getMostRecentMode(response.data, favoriteMode);
+    const category = title(mode.replace('chess_',''));
     const rating = getMostRecentRating(response.data, mode);
     return [
         { name: 'Followers', value: `${data.followers}`, inline: true },
-        { name: 'Rating (' + mode + ')', value: rating, inline: true },
+        { name: `Rating (${category})`, value: rating, inline: true },
         { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
    ];
 }
@@ -144,6 +145,12 @@ function getMostRecentRating(stats, mostRecentMode) {
         }
     }
     return mostRecentRating ? `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}` : 'None';
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
 }
 
 function formatClubs(clubs) {
