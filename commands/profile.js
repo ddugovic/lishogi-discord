@@ -132,7 +132,6 @@ function getMostRecentMode(stats, favoriteMode) {
 // Get string with highest rating formatted for profile
 function getMostRecentRating(stats, mostRecentMode) {
     var modes = modesArray(stats);
-
     var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
     var mostRecentRating = modes[0][1].last ? modes[0][1].last.rating : undefined;
     var mostRecentGames = modes[0][1].record ? modes[0][1].record.win + modes[0][1].record.loss + modes[0][1].record.draw : undefined;
@@ -144,7 +143,7 @@ function getMostRecentRating(stats, mostRecentMode) {
             mostRecentGames = mostRecentGames + ' ' + plural((mostRecentMode == 'puzzle' ? 'attempt' : ' game'), mostRecentGames);
         }
     }
-    return `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}`;
+    return mostRecentRating ? `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}` : 'None';
 }
 
 function formatClubs(clubs) {
