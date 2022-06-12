@@ -9,14 +9,14 @@ const channels = [
     { name: 'Bullet', value: 'Bullet' },
     { name: 'Chess960', value: 'Chess960' },
     { name: 'Classical', value: 'Classical' },
-    { name: 'Computer', value: 'Computer' },
     { name: 'Crazyhouse', value: 'Crazyhouse' },
     { name: 'Horde', value: 'Horde' },
     { name: 'King of the Hill', value: 'King of the Hill' },
     { name: 'Racing Kings', value: 'Racing Kings' },
     { name: 'Rapid', value: 'Rapid' },
     { name: 'Three-check', value: 'Three-check' },
-    { name: 'UltraBullet', value: 'UltraBullet' }
+    { name: 'UltraBullet', value: 'UltraBullet' },
+    { name: 'Computer', value: 'Computer' }
 ];
 const modes = [
     { name: 'Antichess', value: 'antichess' },
