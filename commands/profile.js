@@ -70,7 +70,8 @@ function setName(embed, data) {
     return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             return embed
-                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url });
+                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
+                .setThumbnail(data.avatar);
     });
 }
 
