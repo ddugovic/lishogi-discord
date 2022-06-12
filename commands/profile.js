@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 const timeago = require('time-ago')
 const User = require('../models/User');
@@ -88,7 +89,7 @@ function formatStats(embed, data, response, favoriteMode) {
     const category = title(mode.replace('chess_',''));
     const rating = getMostRecentRating(response.data, mode);
     return [
-        { name: 'Followers', value: `${data.followers}`, inline: true },
+        { name: 'Followers', value: `${fn.format(data.followers)}`, inline: true },
         { name: `Rating (${category})`, value: rating, inline: true },
         { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
    ];
