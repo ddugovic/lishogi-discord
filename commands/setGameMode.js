@@ -4,7 +4,7 @@ async function setGameMode(author, mode) {
     var authorId = author.id;
     var newValues = { favoriteMode: mode };
     if (await User.findByIdAndUpdate(authorId, newValues, {new: true}).exec()) {
-        return `${author.username} favorite mode updated!`;
+        return `${author.username} favorite mode ${mode ? 'updated' : 'cleared'}!`;
     }
     else {
         console.log(`Error in setGameMode(${author.username}, ${mode})`);
