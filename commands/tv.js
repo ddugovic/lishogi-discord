@@ -19,7 +19,7 @@ async function tv(author, mode) {
 
 function formatTv(data, mode) {
     for (var channel in data) {
-        if (channel.casefold() == mode.casefold())
+        if (channel.toLowerCase() == mode.toLowerCase())
             return 'https://lishogi.org/' + data[channel].gameId;
     }
     return `No channel of mode ${mode} found!`;
