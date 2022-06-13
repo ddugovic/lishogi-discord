@@ -1,9 +1,15 @@
 const axios = require('axios');
 
 async function puzzle(author, favoriteMode) {
-    url = 'https://api.woogles.io/pub/puzzle';
-    return axios.get(url)
-        .then(response => formatPuzzle(response.data, favoriteMode))
+    // Getting a puzzle ID fails for some reason, so return instead.
+    return 'https://woogles.io/puzzle';
+    const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
+    const context = {
+        'authority': 'woogles.io',
+        'origin': 'https://woogles.io'
+    };
+    return axios.post(url, 'NWL20', {headers: context})
+        .then(response => formatPuzzle(response.data))
         .catch((err) => {
             console.log(`Error in puzzle(${author.username}): \
                 ${err.response.status} ${err.response.statusText}`);
@@ -13,7 +19,7 @@ async function puzzle(author, favoriteMode) {
 }
 
 function formatPuzzle(data) {
-    return data.url;
+    return data;//`https://woogles.io/puzzle/${data}`;
 }
 
 function process(bot, msg) {
