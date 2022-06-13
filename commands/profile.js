@@ -72,11 +72,23 @@ function setFields(embed, data, favoriteMode) {
 
 function formatRatings(ratings) {
     const modes = modesArray(ratings);
-    var fields = [];
+    var ratings = {};
     for (var i = 0; i < modes.length; i++) {
-        const category = modes[i][0];
+        // puzzles are classic and untimed
+        const category = modes[i][0].split('.');
+        const game = category[1] == 'puzzle' ? 'classic' : category[1];
+        const speed = category[1] == 'puzzle' ? 'puzzle' : category[2];
+        const lexicon = `${category[0]} ${title(game)}`;
         const rating = modes[i][1];
-        fields.push({ name: category, value: `${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`, inline: true });
+        if (ratings[lexicon]) {
+            ratings[lexicon].push(`${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`);
+        } else {
+            ratings[lexicon] = [`${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`];
+        }
+    }
+    var fields = [];
+    for (const [category, rating] of Object.entries(ratings)) {
+        fields.push({name: category, value: rating.join('\n'), inline: true});
     }
     return fields;
 }
@@ -103,6 +115,12 @@ function modesArray(list) {
     }
     return array;
 }
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
+ }
 
 function process(bot, msg, username) {
     profile(msg.author, username).then(message => msg.channel.send(message));
