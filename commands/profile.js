@@ -61,8 +61,7 @@ function setFields(embed, data, favoriteMode) {
     //console.log(data.stats_json);
     if (data.ratings_json) {
         const ratings = JSON.parse(data.ratings_json).Data;
-        const mostRecentMode = getMostRecentMode(ratings, favoriteMode);
-        embed = embed.addField(mostRecentMode, getMostRecentRating(ratings, mostRecentMode))
+        embed = embed.addFields(formatRatings(ratings));
         //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
     }
     if (data.about) {
@@ -71,35 +70,15 @@ function setFields(embed, data, favoriteMode) {
     return embed;
 }
 
-function getMostRecentMode(ratings, favoriteMode) {
-    var modes = modesArray(ratings);
-    var mostRecentMode = modes[0][0];
-    var mostRecentDate = modes[0][1] ? modes[0][1].ts : 0;
+function formatRatings(ratings) {
+    const modes = modesArray(ratings);
+    var fields = [];
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][1] && modes[i][1].ts > mostRecentDate) {
-            mostRecentMode = modes[i][0];
-            mostRecentDate = modes[i][1].ts;
-        }
+        const category = modes[i][0];
+        const rating = modes[i][1];
+        fields.push({ name: category, value: `${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`, inline: true });
     }
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0].toLowerCase() == favoriteMode) {
-            mostRecentMode = modes[i][0];
-        }
-    }
-    return mostRecentMode;
-}
-// Get string with highest rating formatted for profile
-function getMostRecentRating(ratings, mostRecentMode) {
-    var modes = modesArray(ratings);
-    var mostRecentRating = modes[0][1] ? modes[0][1].r : undefined;
-    var mostRecentRD = modes[0][1] ? modes[0][1].rd : undefined;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0].endsWith(`.${mostRecentMode}`) && modes[i][1]) {
-            mostRecentRating = modes[i][1].r;
-            mostRecentRD = modes[i][1].rd;
-        }
-    }
-    return mostRecentRating ? `${mostRecentRating.toFixed(0)} ± ${(2 * mostRecentRD).toFixed(0)}` : 'None';
+    return fields;
 }
 
 function formatClubs(clubs) {
