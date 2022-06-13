@@ -33,7 +33,8 @@ function formatProfile(data, username) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({ name: formatName(data, username), iconURL: data.avatar_url })
-        .setThumbnail(data.avatar_url);
+        .setThumbnail(data.avatar_url)
+        .setDescription(data.about);
     return { embeds: [ setFields(embed, data) ] };
 }
 
@@ -62,9 +63,6 @@ function setFields(embed, data) {
         const stats = JSON.parse(data.stats_json).Data;
         embed = embed.addFields(formatStats(ratings, stats));
         //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-    }
-    if (data.about) {
-        embed = embed.addField('About', data.about);
     }
     return embed;
 }
