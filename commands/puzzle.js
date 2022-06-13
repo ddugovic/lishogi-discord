@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function puzzle(author, favoriteMode) {
-    url = 'https://api.chess.com/pub/puzzle';
+    url = 'https://api.woogles.io/pub/puzzle';
     return axios.get(url)
         .then(response => formatPuzzle(response.data, favoriteMode))
         .catch((err) => {

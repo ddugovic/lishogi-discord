@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function streamers(author) {
-    url = 'https://api.chess.com/pub/streamers';
+    url = 'https://api.woogles.io/pub/streamers';
     return axios.get(url)
         .then(response => formatStreamers(response.data))
         .catch((err) => {

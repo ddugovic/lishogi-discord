@@ -1,17 +1,16 @@
 {
-  "name": "chessdiscordbot",
+  "name": "wooglesdiscordbot",
   "version": "1.0.0",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
-      "name": "chessdiscordbot",
+      "name": "wooglesdiscordbot",
       "version": "1.0.0",
       "license": "MIT",
       "dependencies": {
         "@discordjs/rest": "^0.5.0",
         "axios": "^0.27.2",
-        "chessops": "^0.8.1",
         "convert-seconds": "^1.0.1",
         "discord-lister": "^1.4.0",
         "discord.js": "^13.8.0",
@@ -25,11 +24,6 @@
       "devDependencies": {
         "nodemon": "^2.0.16"
       }
-    },
-    "node_modules/@badrap/result": {
-      "version": "0.2.8",
-      "resolved": "https://registry.npmjs.org/@badrap/result/-/result-0.2.8.tgz",
-      "integrity": "sha512-zC6LgWe8QWSTwxfQVoRyieFaTbCJ2WYvpJdZ0fONoUJT1ln/oWNb3zBPlPP5J9ehLAaFIZJ7aB8oISzYFs6grQ=="
     },
     "node_modules/@discordjs/builders": {
       "version": "0.14.0",
@@ -441,14 +435,6 @@
       },
       "engines": {
         "node": ">=8"
-      }
-    },
-    "node_modules/chessops": {
-      "version": "0.8.1",
-      "resolved": "https://registry.npmjs.org/chessops/-/chessops-0.8.1.tgz",
-      "integrity": "sha512-D0VeU1cI0iHqGE3RAZYRZaWTai1wHpKXdZaTM3iWKt89kfnO8Y49MWydcd5TawrfE3Zczq9Xa+1pyr+j/2q4lQ==",
-      "dependencies": {
-        "@badrap/result": "^0.2.6"
       }
     },
     "node_modules/chokidar": {
@@ -2545,11 +2531,6 @@
     }
   },
   "dependencies": {
-    "@badrap/result": {
-      "version": "0.2.8",
-      "resolved": "https://registry.npmjs.org/@badrap/result/-/result-0.2.8.tgz",
-      "integrity": "sha512-zC6LgWe8QWSTwxfQVoRyieFaTbCJ2WYvpJdZ0fONoUJT1ln/oWNb3zBPlPP5J9ehLAaFIZJ7aB8oISzYFs6grQ=="
-    },
     "@discordjs/builders": {
       "version": "0.14.0",
       "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.14.0.tgz",
@@ -2848,14 +2829,6 @@
             "has-flag": "^4.0.0"
           }
         }
-      }
-    },
-    "chessops": {
-      "version": "0.8.1",
-      "resolved": "https://registry.npmjs.org/chessops/-/chessops-0.8.1.tgz",
-      "integrity": "sha512-D0VeU1cI0iHqGE3RAZYRZaWTai1wHpKXdZaTM3iWKt89kfnO8Y49MWydcd5TawrfE3Zczq9Xa+1pyr+j/2q4lQ==",
-      "requires": {
-        "@badrap/result": "^0.2.6"
       }
     },
     "chokidar": {

@@ -6,11 +6,11 @@ async function leaderboard(author, mode) {
     if (!mode) {
         const user = await User.findById(author.id).exec();
         if (!user) {
-            return 'You need to set your chess.com username with setuser!';
+            return 'You need to set your woogles.io username with setuser!';
         }
         favoriteMode = user.favoriteMode;
     }
-    url = 'https://api.chess.com/pub/leaderboards';
+    url = 'https://api.woogles.io/pub/leaderboards';
     return axios.get(url)
         .then(response => formatLeaderboard(response.data, favoriteMode))
         .catch((err) => {

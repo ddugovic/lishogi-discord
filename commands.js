@@ -11,7 +11,7 @@ const setGameMode = require('./commands/setGameMode');
 const commands = {
     "deleteuser": {
         usage: "",
-        description: "Deletes your chess.com username from the bot's database",
+        description: "Deletes your woogles.io username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -52,8 +52,8 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<chess.com name>",
-        description: "Sets your chess.com username",
+        usage: "<woogles.io name>",
+        description: "Sets your woogles.io username",
         process: setUser.process,
         reply: setUser.reply
     }

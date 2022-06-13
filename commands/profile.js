@@ -1,23 +1,26 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
-const fn = require('friendly-numbers');
 const plural = require('plural');
-const timeago = require('time-ago')
 const User = require('../models/User');
 
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
         if (!user) {
-            return 'You need to set your chess.com username with setuser!';
+            return 'You need to set your woogles.io username with setuser!';
         }
         username = user.chessName;
     }
     const favoriteMode = user.favoriteMode;
-    const url = `https://api.chess.com/pub/player/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => formatProfile(response.data, favoriteMode))
+    const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
+    const context = {
+        'authority': 'woogles.io',
+        'accept': 'application/json',
+        'origin': 'https://woogles.io'
+    };
+    return axios.post(url, {'username': username.toLowerCase()}, {headers: context})
+        .then(response => formatProfile(response.data, username, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -27,23 +30,12 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, favoriteMode) {
-    if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
-        return 'This account is closed.';
-
+function formatProfile(data, username, favoriteMode) {
     const embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF);
-    return setName(embed, data)
-        .then(embed => { return setStats(embed, data, favoriteMode) })
-        .then(embed => { return setStreamer(embed, data) })
-        .then(embed => { return setClubs(embed, data) })
-        .then(embed => { return { embeds: [ embed ] } })
-        .catch(error => {
-            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
-        });
+        .setColor(0xFFFFFF)
+        .setAuthor({ name: formatName(data, username), iconURL: data.avatar_url })
+        .setThumbnail(data.avatar_url);
+    return { embeds: [ setFields(embed, data, favoriteMode) ] };
 }
 
 function getFlagEmoji(code) {
@@ -51,76 +43,42 @@ function getFlagEmoji(code) {
         return countryFlags.countryCode(code).emoji;
 }
 
-function formatName(data, response) {
-    var name = data.name || data.username;
-    if (data.title)
-        name = `${data.title} ${name}`;
-    if (response && response.data) {
-        const flag = getFlagEmoji(response.data.code);
+function formatName(data, username) {
+    var name = data.full_name || username;
+    if (data.country_code) {
+        const flag = getFlagEmoji(data.country_code);
         if (flag)
             name = `${flag} ${name}`;
     }
+    if (data.title)
+        name = `${data.title} ${name}`;
     if (data.location)
         name += ` (${data.location})`;
-    else if (response && response.data)
-        name += ` (${response.data.name})`;
     return name;
 }
 
-function setName(embed, data) {
-    return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            return embed
-                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
-                .setThumbnail(data.avatar);
-    });
-}
-
-function setStats(embed, data, favoriteMode) {
-    const url = `https://api.chess.com/pub/player/${data.username}/stats`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            return embed.addFields(formatStats(embed, data, response, favoriteMode));
-        });
-}
-
-function formatStats(embed, data, response, favoriteMode) {
-    const mode = getMostRecentMode(response.data, favoriteMode);
-    const category = title(mode.replace('chess_',''));
-    const rating = getMostRecentRating(response.data, mode);
-    return [
-        { name: 'Followers', value: `${fn.format(data.followers)}`, inline: true },
-        { name: `Rating (${category})`, value: rating, inline: true },
-        { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
-   ];
-}
-
-function setClubs(embed, data) {
-    const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            const clubs = response.data.clubs;
-            return clubs.length ? embed.addFields(formatClubs(clubs)) : embed;
-        });
-}
-
-function setStreamer(embed, data) {
-    if (data.is_streamer) {
-        embed = embed
-            .setTitle('Watch ' + data.username + ' on Twitch!')
-            .setURL(data.twitch_url);
+function setFields(embed, data, favoriteMode) {
+    //console.log(data.stats_json);
+    if (data.ratings_json) {
+        const ratings = JSON.parse(data.ratings_json).Data;
+        const mostRecentMode = getMostRecentMode(ratings, favoriteMode);
+        embed = embed.addField(mostRecentMode, getMostRecentRating(ratings, mostRecentMode))
+        //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
     }
-    return embed
+    if (data.about) {
+        embed = embed.addField('About', data.about);
+    }
+    return embed;
 }
 
-function getMostRecentMode(stats, favoriteMode) {
-    var modes = modesArray(stats);
+function getMostRecentMode(ratings, favoriteMode) {
+    var modes = modesArray(ratings);
     var mostRecentMode = modes[0][0];
-    var mostRecentDate = modes[0][1] && modes[0][1].last ? modes[0][1].last.date : 0;
+    var mostRecentDate = modes[0][1] ? modes[0][1].ts : 0;
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][1].last && modes[i][1].last.date > mostRecentDate) {
+        if (modes[i][1] && modes[i][1].ts > mostRecentDate) {
             mostRecentMode = modes[i][0];
-            mostRecentDate = modes[i][1].last.date;
+            mostRecentDate = modes[i][1].ts;
         }
     }
     for (var i = 0; i < modes.length; i++) {
@@ -131,27 +89,17 @@ function getMostRecentMode(stats, favoriteMode) {
     return mostRecentMode;
 }
 // Get string with highest rating formatted for profile
-function getMostRecentRating(stats, mostRecentMode) {
-    var modes = modesArray(stats);
-    var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
-    var mostRecentRating = modes[0][1].last ? modes[0][1].last.rating : undefined;
-    var mostRecentGames = modes[0][1].record ? modes[0][1].record.win + modes[0][1].record.loss + modes[0][1].record.draw : undefined;
+function getMostRecentRating(ratings, mostRecentMode) {
+    var modes = modesArray(ratings);
+    var mostRecentRating = modes[0][1] ? modes[0][1].r : undefined;
+    var mostRecentRD = modes[0][1] ? modes[0][1].rd : undefined;
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mostRecentMode && modes[i][1].last) {
-            mostRecentRD = modes[i][1].last.rd;
-            mostRecentRating = modes[i][1].last.rating;
-            mostRecentGames = modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
+        if (modes[i][0].endsWith(`.${mostRecentMode}`) && modes[i][1]) {
+            mostRecentRating = modes[i][1].r;
+            mostRecentRD = modes[i][1].rd;
         }
     }
-    const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
-    mostRecentGames = mostRecentGames + ' ' + plural((puzzleModes.includes(mostRecentMode) ? 'attempt' : ' game'), mostRecentGames);
-    return mostRecentRating ? `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}` : 'None';
-}
-
-function title(str) {
-    return str.split('_')
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join(' ');
+    return mostRecentRating ? `${mostRecentRating.toFixed(0)} ± ${(2 * mostRecentRD).toFixed(0)}` : 'None';
 }
 
 function formatClubs(clubs) {

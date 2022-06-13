@@ -8,7 +8,7 @@ async function setGameMode(author, mode) {
     }
     else {
         console.log(`Error in setGameMode(${author.username}, ${mode})`);
-        return 'You need to set your chess.com username with setuser!';
+        return 'You need to set your woogles.io username with setuser!';
     }
 }
 
