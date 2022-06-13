@@ -119,6 +119,7 @@ function modesArray(list) {
 function formatLexicon(lexicon) {
     return (
         lexicon.startsWith('CSW') ? 'CSW' :
+        lexicon.startsWith('ECWL') ? 'CEL' :
         lexicon.startsWith('NWL') ? 'NWL' :
         lexicon);
 }
