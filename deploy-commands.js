@@ -1,19 +1,11 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const leaderboards = [
-    { name: 'Blitz', value: 'live_blitz' },
-    { name: 'Bullet', value: 'live_bullet' },
-    { name: 'Puzzle', value: 'puzzle' },
-    { name: 'Rapid', value: 'live_rapid' }
-];
 const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your woogles.io username from the bot's database"),
-    new SlashCommandBuilder().setName('leaderboard').setDescription("Displays the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
+    new SlashCommandBuilder().setName('news').setDescription("Displays the latest announcement");
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter woogles.io player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
-    new SlashCommandBuilder().setName('streamers').setDescription("Displays live streamers"),
-    new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your woogles.io username").addStringOption(option => option.setName('username').setDescription('Enter your woogles.io username')),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]

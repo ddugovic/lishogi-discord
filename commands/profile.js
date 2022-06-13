@@ -12,7 +12,6 @@ async function profile(author, username) {
         }
         username = user.chessName;
     }
-    const favoriteMode = user.favoriteMode;
     const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
     const context = {
         'authority': 'woogles.io',
@@ -20,9 +19,9 @@ async function profile(author, username) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, {'username': username.toLowerCase()}, {headers: context})
-        .then(response => formatProfile(response.data, username, favoriteMode))
+        .then(response => formatProfile(response.data, username))
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${favoriteMode}): \
+            console.log(`Error in profile(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -30,12 +29,12 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, username, favoriteMode) {
+function formatProfile(data, username) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({ name: formatName(data, username), iconURL: data.avatar_url })
         .setThumbnail(data.avatar_url);
-    return { embeds: [ setFields(embed, data, favoriteMode) ] };
+    return { embeds: [ setFields(embed, data) ] };
 }
 
 function getFlagEmoji(code) {
@@ -57,7 +56,7 @@ function formatName(data, username) {
     return name;
 }
 
-function setFields(embed, data, favoriteMode) {
+function setFields(embed, data) {
     if (data.ratings_json && data.stats_json) {
         const ratings = JSON.parse(data.ratings_json).Data;
         const stats = JSON.parse(data.stats_json).Data;
