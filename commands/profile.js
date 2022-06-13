@@ -76,9 +76,9 @@ function formatRatings(ratings) {
     for (var i = 0; i < modes.length; i++) {
         // puzzles are classic and untimed
         const category = modes[i][0].split('.');
-        const game = title(category[1] == 'puzzle' ? 'classic' : category[1]);
-        const speed = title(category[1] == 'puzzle' ? 'puzzle' : category[2]);
-        const lexicon = `${category[0]} ${game}`;
+        const game = formatTitle(category[1] == 'puzzle' ? 'classic' : category[1]);
+        const speed = formatTitle(category[1] == 'puzzle' ? 'puzzle' : category[2]);
+        const lexicon = `${formatLexicon(category[0])} ${game}`;
         const rating = modes[i][1];
         if (ratings[lexicon]) {
             ratings[lexicon].push(`${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`);
@@ -116,7 +116,14 @@ function modesArray(list) {
     return array;
 }
 
-function title(str) {
+function formatLexicon(lexicon) {
+    return (
+        lexicon.startsWith('CSW') ? 'CSW' :
+        lexicon.startsWith('NWL') ? 'NWL' :
+        lexicon);
+}
+
+function formatTitle(str) {
     return str.split('_')
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
