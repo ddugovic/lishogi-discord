@@ -58,10 +58,10 @@ function formatName(data, username) {
 }
 
 function setFields(embed, data, favoriteMode) {
-    //console.log(data.stats_json);
-    if (data.ratings_json) {
+    if (data.ratings_json && data.stats_json) {
         const ratings = JSON.parse(data.ratings_json).Data;
-        embed = embed.addFields(formatRatings(ratings));
+        const stats = JSON.parse(data.stats_json).Data;
+        embed = embed.addFields(formatStats(ratings, stats));
         //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
     }
     if (data.about) {
@@ -70,9 +70,10 @@ function setFields(embed, data, favoriteMode) {
     return embed;
 }
 
-function formatRatings(ratings) {
+function formatStats(ratings, stats) {
     const modes = modesArray(ratings);
     var ratings = {};
+    var records = {};
     for (var i = 0; i < modes.length; i++) {
         // puzzles are classic and untimed
         const category = modes[i][0].split('.');
@@ -80,28 +81,41 @@ function formatRatings(ratings) {
         const speed = formatTitle(category[1] == 'puzzle' ? 'puzzle' : category[2]);
         const lexicon = `${formatLexicon(category[0])} ${game}`;
         const rating = modes[i][1];
+        var perf = `${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`;
+        var record = stats[modes[i][0]];
+        if (record) {
+            var wins = record.d1.Wins.t;
+            var losses = record.d1.Losses.t;
+            var draws = record.d1.Draws.t;
+            // Discord embeds lack a two-column display (classic / wordsmog)
+            //perf = `${speed}: ${rating.r.toFixed(0)} ${formatRecord(wins, losses, draws)}`;
+            if ((record = records[lexicon])) {
+                wins += record[0];
+                losses += record[1];
+                draws += record[2];
+            }
+            records[lexicon] = [wins, losses, draws];
+        }
         if (ratings[lexicon]) {
-            ratings[lexicon].push(`${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`);
+            ratings[lexicon].push(perf);
         } else {
-            ratings[lexicon] = [`${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`];
+            ratings[lexicon] = [perf];
         }
     }
     var fields = [];
-    for (const [category, rating] of Object.entries(ratings)) {
-        fields.push({name: category, value: rating.join('\n'), inline: true});
+    for (const [lexicon, rating] of Object.entries(ratings)) {
+        var category = lexicon;
+        const record = records[lexicon];
+        if (record) {
+            const [wins, losses, draws] = record;
+            category = `${lexicon} ${formatRecord(wins, losses, draws)}`;
+        }
+        fields.push({ name: category, value: rating.join('\n'), inline: true });
     }
     return fields;
 }
 
-function formatClubs(clubs) {
-    var clubNames = [];
-    for (var i = 0; i < clubs.length; i++) {
-        clubNames[i] = clubs[i].name;
-    }
-    return { name: 'Clubs', value: clubNames.sort().join('\n'), inline: false }
-}
-
-// For sorting through modes... chess api does not put these in an array so we do it ourselves
+// For sorting through modes... woogles api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
     // Count up number of keys...
@@ -114,6 +128,10 @@ function modesArray(list) {
         array[i] = Object.entries(list)[i];
     }
     return array;
+}
+
+function formatRecord(wins, losses, draws) {
+    return draws ? `(+${wins} -${losses} =${draws})` : `(+${wins} -${losses})`;
 }
 
 function formatLexicon(lexicon) {
