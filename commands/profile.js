@@ -62,7 +62,6 @@ function setFields(embed, data) {
         const ratings = JSON.parse(data.ratings_json).Data;
         const stats = JSON.parse(data.stats_json).Data;
         embed = embed.addFields(formatStats(ratings, stats));
-        //.addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
     }
     return embed;
 }
@@ -84,14 +83,16 @@ function formatStats(ratings, stats) {
             var wins = record.d1.Wins.t;
             var losses = record.d1.Losses.t;
             var draws = record.d1.Draws.t;
+            var bingos = record.d1['Bingos'].t;
             // Discord embeds lack a two-column display (classic / wordsmog)
-            //perf = `${speed}: ${rating.r.toFixed(0)} ${formatRecord(wins, losses, draws)}`;
+            //perf = `${speed}: ${rating.r.toFixed(0)} ${formatRecord(wins, losses, draws, bingos)}`;
             if ((record = records[lexicon])) {
                 wins += record[0];
                 losses += record[1];
                 draws += record[2];
+                bingos += record[3];
             }
-            records[lexicon] = [wins, losses, draws];
+            records[lexicon] = [wins, losses, draws, bingos];
         }
         if (ratings[lexicon]) {
             ratings[lexicon].push(perf);
@@ -104,8 +105,8 @@ function formatStats(ratings, stats) {
         var category = lexicon;
         const record = records[lexicon];
         if (record) {
-            const [wins, losses, draws] = record;
-            category = `${lexicon} ${formatRecord(wins, losses, draws)}`;
+            const [wins, losses, draws, bingos] = record;
+            category = `${lexicon} ${formatRecord(wins, losses, draws, bingos)}`;
         }
         fields.push({ name: category, value: rating.join('\n'), inline: true });
     }
@@ -127,8 +128,15 @@ function modesArray(list) {
     return array;
 }
 
-function formatRecord(wins, losses, draws) {
-    return draws ? `(+${wins} -${losses} =${draws})` : `(+${wins} -${losses})`;
+function formatRecord(wins, losses, draws, bingos) {
+    var result = [`+${wins}`, `-${losses}`];
+    if (draws) {
+        result.push(`=${draws}`);
+    }
+    if (bingos) {
+        result.push(`:gem:${bingos}`);
+    }
+    return `(${result.join(' ')})`
 }
 
 function formatLexicon(lexicon) {
