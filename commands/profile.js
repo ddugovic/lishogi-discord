@@ -36,7 +36,7 @@ function formatProfile(data, favoriteMode) {
         username = `${countryFlags.countryCode(profile.country).emoji} ${username}`;
 
     var playerName = data.username;
-    if (profile.firstName && profile.lastName)
+    if (profile && profile.firstName && profile.lastName)
         playerName = `${profile.firstName} ${profile.lastName}`;
     if (data.title)
         playerName = `${data.title} ${playerName}`;
