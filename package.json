@@ -25,8 +25,7 @@
     "friendly-numbers": "^1.0.1",
     "mocha": "^10.0.0",
     "mongoose": "^6.3.6",
-    "plural": "^1.1.0",
-    "time-ago": "^0.2.1"
+    "plural": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
