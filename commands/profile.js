@@ -8,7 +8,7 @@ const User = require('../models/User');
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user) {
+        if (!user || !user.lichessName) {
             return 'You need to set your lichess username with setuser!';
         }
         username = user.lichessName;
@@ -30,6 +30,17 @@ function formatProfile(data, favoriteMode) {
     if (data.closed)
         return 'This account is closed.';
 
+    const profile = data.profile;
+    var username = data.username;
+    if (profile && profile.country && countryFlags.countryCode(profile.country))
+        username = `${countryFlags.countryCode(profile.country).emoji} ${username}`;
+
+    var playerName = data.username;
+    if (profile.firstName && profile.lastName)
+        playerName = `${profile.firstName} ${profile.lastName}`;
+    if (data.title)
+        playerName = `${data.title} ${playerName}`;
+
     var colorEmoji;
     if (data.playing) {
         colorEmoji = data.playing.includes('white') ? '⚪' : '⚫';
@@ -38,20 +49,12 @@ function formatProfile(data, favoriteMode) {
     if (data.streaming)
         status = '📡 Streaming  ' + status;
 
-    var flag = '';
-    if (data.profile && data.profile.country && countryFlags.countryCode(data.profile.country))
-        flag = countryFlags.countryCode(data.profile.country).emoji;
-
-    var playerName = data.username;
-    if (data.title)
-        playerName = data.title + ' ' + playerName;
-
     var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
     var formattedMessage = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
-        .setTitle('Challenge ' + data.username + ' to a game!')
-        .setURL('https://lichess.org/?user=' + data.username + '#friend')
-        .setAuthor({name: flag + ' ' + playerName + '  ' + status, iconURL: null, url: data.url})
+        .setAuthor({name: `${playerName}  ${status}`, iconURL: null, url: data.url})
+        .setTitle(`Challenge ${username} to a game!`)
+        .setURL(`https://lichess.org/?user=${data.username}#friend`)
         .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
         .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
         .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
