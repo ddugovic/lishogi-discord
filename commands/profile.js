@@ -30,12 +30,28 @@ async function profile(author, username) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, username) {
-    const embed = new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
-        .setAuthor({ name: formatName(data, username), iconURL: data.avatar_url })
+        .setTitle(formatName(data, username))
         .setThumbnail(data.avatar_url)
         .setDescription(data.about);
-    return { embeds: [ setFields(embed, data) ] };
+    if (data.ratings_json && data.stats_json) {
+        let [ratings, records] = parseStats(
+            parseData(data.ratings_json),
+            parseData(data.stats_json));
+        var bingos = 0;
+        for (const record of Object.values(records)) {
+            bingos += record[3];
+        }
+        embed = embed
+            .setTitle(`${formatName(data, username)} :gem:${bingos}`)
+            .addFields(formatStats(ratings, records));
+    }
+    return { embeds: [ embed ] };
+}
+
+function parseData(json) {
+    return JSON.parse(json).Data;
 }
 
 function getFlagEmoji(code) {
@@ -57,16 +73,7 @@ function formatName(data, username) {
     return name;
 }
 
-function setFields(embed, data) {
-    if (data.ratings_json && data.stats_json) {
-        const ratings = JSON.parse(data.ratings_json).Data;
-        const stats = JSON.parse(data.stats_json).Data;
-        embed = embed.addFields(formatStats(ratings, stats));
-    }
-    return embed;
-}
-
-function formatStats(ratings, stats) {
+function parseStats(ratings, stats) {
     const modes = modesArray(ratings);
     var ratings = {};
     var records = {};
@@ -100,6 +107,10 @@ function formatStats(ratings, stats) {
             ratings[lexicon] = [perf];
         }
     }
+    return [ratings, records];
+}
+
+function formatStats(ratings, records) {
     var fields = [];
     for (const [lexicon, rating] of Object.entries(ratings)) {
         var category = lexicon;
