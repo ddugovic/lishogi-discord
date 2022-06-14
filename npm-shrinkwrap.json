@@ -18,7 +18,7 @@
         "mocha": "^10.0.0",
         "mongoose": "^6.3.6",
         "plural": "^1.1.0",
-        "shogiops": "^0.7.0"
+        "shogiops": "^0.8.0"
       },
       "devDependencies": {
         "nodemon": "^2.0.16"
@@ -2078,9 +2078,9 @@
       }
     },
     "node_modules/shogiops": {
-      "version": "0.7.0",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.7.0.tgz",
-      "integrity": "sha512-D5iITdg5JITo4whDkN+utuRNPtbuhdsyaUUBSuaFBGX+Bjck7ovNecYnaxWmF1b6ZxiytwhWivdlCgCs2ijlDg==",
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.8.0.tgz",
+      "integrity": "sha512-ryO649T2MgU4TsT4NDO0pAi/IfXmuVG110EHLiWq8fyybKz3iHJGDUZ5vw35+I8lTrXsv2KhNKBImbgVZg3cyw==",
       "dependencies": {
         "@badrap/result": "^0.2"
       }
@@ -4045,9 +4045,9 @@
       }
     },
     "shogiops": {
-      "version": "0.7.0",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.7.0.tgz",
-      "integrity": "sha512-D5iITdg5JITo4whDkN+utuRNPtbuhdsyaUUBSuaFBGX+Bjck7ovNecYnaxWmF1b6ZxiytwhWivdlCgCs2ijlDg==",
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.8.0.tgz",
+      "integrity": "sha512-ryO649T2MgU4TsT4NDO0pAi/IfXmuVG110EHLiWq8fyybKz3iHJGDUZ5vw35+I8lTrXsv2KhNKBImbgVZg3cyw==",
       "requires": {
         "@badrap/result": "^0.2"
       }
