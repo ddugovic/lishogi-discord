@@ -22,6 +22,8 @@
     Deletes your woogles username from the bot's database
 !playing [username]
     Shares your (or a user's) current game URL
+!gif [username]
+    Shares your (or a user's) current game as a GIF
 !profile [username]
     Displays your (or a user's) profile
 !puzzle

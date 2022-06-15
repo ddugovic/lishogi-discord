@@ -1,5 +1,6 @@
 // Include commands
 const deleteUser = require('./commands/deleteUser');
+const gif = require('./commands/gif');
 const news = require('./commands/news');
 const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
@@ -13,6 +14,12 @@ const commands = {
         description: "Deletes your woogles username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "gif": {
+        usage: "[user]",
+        description: "Shares your (or a user's) current game as a GIF",
+        process: gif.process,
+        reply: gif.reply
     },
     "news": {
         usage: "",
