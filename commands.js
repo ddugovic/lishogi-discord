@@ -1,6 +1,7 @@
 // Include commands
 const deleteUser = require('./commands/deleteUser');
 const news = require('./commands/news');
+const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
@@ -18,6 +19,12 @@ const commands = {
         description: "Displays the latest announcement",
         process: news.process,
         reply: news.reply
+    },
+    "playing": {
+        usage: "[user]",
+        description: "Shares your (or a user's) current game URL",
+        process: playing.process,
+        reply: playing.reply
     },
     "privacy": {
         usage: "",
