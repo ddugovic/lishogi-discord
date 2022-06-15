@@ -1,12 +1,12 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const commands = [
-    new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your woogles.io username from the bot's database"),
+    new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your woogles username from the bot's database"),
     new SlashCommandBuilder().setName('news').setDescription("Displays the latest announcement"),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
-    new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter woogles.io player username')),
+    new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter woogles player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
-    new SlashCommandBuilder().setName('setuser').setDescription("Sets your woogles.io username").addStringOption(option => option.setName('username').setDescription('Enter your woogles.io username')),
+    new SlashCommandBuilder().setName('setuser').setDescription("Sets your woogles username").addStringOption(option => option.setName('username').setDescription('Enter your woogles username')),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
     .map(command => command.toJSON());

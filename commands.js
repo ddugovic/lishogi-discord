@@ -10,7 +10,7 @@ const setUser = require('./commands/setUser');
 const commands = {
     "deleteuser": {
         usage: "",
-        description: "Deletes your woogles.io username from the bot's database",
+        description: "Deletes your woogles username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
@@ -45,8 +45,8 @@ const commands = {
         reply: puzzle.reply
     },
     "setuser": {
-        usage: "<woogles.io name>",
-        description: "Sets your woogles.io username",
+        usage: "<woogles name>",
+        description: "Sets your woogles username",
         process: setUser.process,
         reply: setUser.reply
     }
