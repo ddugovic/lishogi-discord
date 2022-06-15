@@ -15,6 +15,18 @@ const leaderboards = [
     { name: 'Tactics', value: 'tactics' },
     { name: 'Three-Check', value: 'live_threecheck' }
 ];
+const titles = [
+    { name: "Grandmaster", value: "GM" }
+    { name: "Women's Grandmaster", value: "WGM" }
+    { name: "International Master", value: "IM" }
+    { name: "Women's International Master", value: "WIM" }
+    { name: "FIDE Master", value: "FM" }
+    { name: "Women's FIDE Master", value: "WFM" }
+    { name: "National Master", value: "NM" }
+    { name: "Women's National Master", value: "WNM" }
+    { name: "Candidate Master", value: "CM" }
+    { name: "Women's Candidate Master", value: "WCM" }
+];
 const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your chess.com username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
@@ -24,7 +36,7 @@ const commands = [
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
     new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username')),
-    new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true)),
+    new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true).addChoices(...titles)),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
     .map(command => command.toJSON());
