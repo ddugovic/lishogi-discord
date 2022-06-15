@@ -6,7 +6,7 @@ async function tv(author, mode) {
         const user = await User.findById(author.id).exec();
         mode = (user && user.favoriteMode) ? user.favoriteMode : 'blitz';
     }
-    url = 'https://lichess.org/tv/channels';
+    const url = 'https://lichess.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatTv(response.data, mode))
         .catch((err) => {
@@ -18,9 +18,9 @@ async function tv(author, mode) {
 }
 
 function formatTv(data, mode) {
-    for (var channel in data) {
+    for (channel in data) {
         if (channel.toLowerCase() == mode.toLowerCase())
-            return 'https://lichess.org/' + data[channel].gameId;
+            return `https://lichess.org/${data[channel].gameId}`;
     }
     return `No channel of mode ${mode} found!`;
 }
