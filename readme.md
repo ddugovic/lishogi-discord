@@ -32,6 +32,8 @@
     Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lishogi (or a user)
+!coach
+    Find a coach
 !puzzle
     Display today's puzzle
 !simul
