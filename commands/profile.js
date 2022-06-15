@@ -53,9 +53,9 @@ function formatProfile(data, favoriteMode) {
         .setColor(0xFFFFFF)
         .setAuthor({name: `${playerName}  ${status}`, iconURL: null, url: data.url})
         .setTitle(`Challenge ${username} to a game!`)
-        .setURL(`https://lichess.org/?user=${data.username}#friend`)
-        .addFields(formatStats(data, favoriteMode));
-    return setTeams(embed, data)
+        .setURL(`https://lichess.org/?user=${data.username}#friend`);
+    return setStats(embed, data, favoriteMode)
+        .then(embed => { return setTeams(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
@@ -65,13 +65,14 @@ function formatProfile(data, favoriteMode) {
         });
 }
 
-function formatStats(data, favoriteMode) {
+function setStats(embed, data, favoriteMode) {
     const mode = getMostPlayedMode(data.perfs, favoriteMode);
-    return [
-        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
-        { name: `Rating (${mode})`, value: getMostPlayedRating(data.perfs, mode), inline: true },
-        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
-   ];
+    const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+        .then(response => {
+            const perf = response.data;
+            return embed.addFields(formatStats(data, mode, perf));
+        });
 }
 
 function setTeams(embed, data) {
@@ -130,10 +131,13 @@ function getMostPlayedRating(list, mostPlayedMode) {
     return formattedMessage;
 }
 
-function title(str) {
-    return str.split('_')
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join(' ');
+function formatStats(data, mode, perf) {
+    const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
+    return [
+        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+        { name: category, value: getMostPlayedRating(data.perfs, mode), inline: true },
+        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+   ];
 }
 
 function formatTeams(teams) {
@@ -157,6 +161,12 @@ function modesArray(list) {
         array[i] = Object.entries(list)[i];
     }
     return array;
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
 }
 
 function process(bot, msg, username) {
