@@ -17,7 +17,7 @@ function formatStreamers(data) {
     for (var i = 0; i < data.length; i++) {
         streamers.push(data[i].title ? `${data[i].title} ${data[i].name}` : data[i].name);
     }
-    return streamers.length ? streamers.sort().join('\n') : 'No streamers are currently live.';
+    return streamers.length ? streamers.join('\n') : 'No streamers are currently live.';
 }
 
 function process(bot, msg, mode) {
