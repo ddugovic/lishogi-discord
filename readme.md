@@ -28,7 +28,7 @@
     Shares your most recent game
 !playing [username]
     Shares your (or a user's) current game URL
-!playing [username]
+!gif [username]
     Shares your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
@@ -36,6 +36,8 @@
     Find an incoming, ongoing, or finished official broadcast
 !puzzle
     Displays today's puzzle
+!streamers
+    Displays live streamers
 !tv [game mode]
     Shares the featured game
 !privacy
