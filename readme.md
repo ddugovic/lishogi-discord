@@ -15,31 +15,33 @@
 # Command List
 ```
 !help
-    Sends a list of available commands
+    Display a list of available commands
 !setuser <username>
-    Sets your playstrategy username
+    Set your playstrategy username
 !deleteuser
-    Deletes your playstrategy username from the bot's database
+    Delete your playstrategy username from the bot's database
 !setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
+    Set your favorite game (or puzzle) mode
 !profile [username]
-    Displays your (or a user's) profile
+    Display your (or a user's) profile
 !recent [rated/casual]
-    Shares your most recent game
+    Share your most recent game
 !playing [username]
-    Shares your (or a user's) current game URL
+    Share your (or a user's) current game URL
 !gif [username]
-    Shares your (or a user's) current game as a GIF
+    Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by playstrategy (or a user)
 !puzzle
-    Displays today's puzzle
+    Display today's puzzle
+!simul
+    Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
-    Displays live streamers
+    Display live streamers
 !tv [game mode]
-    Shares the featured game
+    Share the featured game
 !privacy
     View privacy policy
 !stop
-    Stops the bot (owner only)
+    Stop the bot (owner only)
 ```

@@ -9,6 +9,7 @@ const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
+const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
 const tv = require('./commands/tv');
 
@@ -21,25 +22,25 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your playstrategy username from the bot's database",
+        description: "Delete your playstrategy username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
     "leaderboard": {
         usage: "[game mode]",
-        description: "Displays the leaderboard top player",
+        description: "Display the leaderboard top player",
         process: leaderboard.process,
         reply: leaderboard.reply
     },
     "playing": {
         usage: "[user]",
-        description: "Shares your (or a user's) current game URL",
+        description: "Share your (or a user's) current game URL",
         process: playing.process,
         reply: playing.reply
     },
     "gif": {
         usage: "[user]",
-        description: "Shares your (or a user's) current game as a GIF",
+        description: "Share your (or a user's) current game as a GIF",
         process: gif.process,
         reply: gif.reply
     },
@@ -51,37 +52,43 @@ const commands = {
     },
     "profile": {
         usage: "[username]",
-        description: "Displays your (or a user's) profile",
+        description: "Display your (or a user's) profile",
         process: profile.process,
         reply: profile.reply
     },
     "puzzle": {
         usage: "",
-        description: "Displays today's puzzle",
+        description: "Display today's puzzle",
         process: puzzle.process,
         reply: puzzle.reply
     },
     "setgamemode": {
         usage: "[game mode]",
-        description: "Sets your favorite game (or puzzle) mode",
+        description: "Set your favorite game (or puzzle) mode",
         process: setGameMode.process,
         reply: setGameMode.reply
     },
     "setuser": {
         usage: "<playstrategy name>",
-        description: "Sets your playstrategy username",
+        description: "Set your playstrategy username",
         process: setUser.process,
         reply: setUser.reply
     },
+    "simul": {
+        usage: "",
+        description: "Display a recently finished, ongoing, or upcoming simultanous exhibition",
+        process: simul.process,
+        reply: simul.reply
+    },
     "streamers": {
         usage: "",
-        description: "Displays live streamers",
+        description: "Display live streamers",
         process: streamers.process,
         reply: streamers.reply
     },
     "tv": {
         usage: "[game mode]",
-        description: "Shares the featured game",
+        description: "Share the featured game",
         process: tv.process,
         reply: tv.reply
     }
