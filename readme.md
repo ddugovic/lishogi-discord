@@ -34,6 +34,8 @@
     Find an upcoming or recent arena created by playstrategy (or a user)
 !puzzle
     Displays today's puzzle
+!streamers
+    Displays live streamers
 !tv [game mode]
     Shares the featured game
 !privacy
