@@ -51,6 +51,10 @@ function getFlagEmoji(code) {
         return countryFlags.countryCode(code).emoji;
 }
 
+function getFirstName(data) {
+    return data.name ? data.name.split(' ')[0] : undefined;
+}
+
 function formatName(data, response) {
     var name = data.name || data.username;
     if (data.title)
@@ -72,7 +76,10 @@ function setName(embed, data) {
         .then(response => {
             return embed
                 .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
-                .setThumbnail(data.avatar);
+                .setThumbnail(data.avatar)
+                .setTitle(`Challenge ${getFirstName(data) || data.username} to a game!`)
+                .setURL(`https://chess.com/play/${data.username}`);
+
     });
 }
 
