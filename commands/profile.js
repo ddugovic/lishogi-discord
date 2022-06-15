@@ -49,22 +49,42 @@ function formatProfile(data, favoriteMode) {
     if (data.streaming)
         status = '📡 Streaming  ' + status;
 
-    var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
-    var formattedMessage = new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${playerName}  ${status}`, iconURL: null, url: data.url})
         .setTitle(`Challenge ${username} to a game!`)
         .setURL(`https://lichess.org/?user=${data.username}#friend`)
-        .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-        .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
-        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
+        .addFields(formatStats(data, favoriteMode));
+    return setTeams(embed, data)
+        .then(embed => { return { embeds: [ embed ] } })
+        .catch(error => {
+            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
+                ${error.response.status} ${error.response.statusText}`);
+            return `An error occurred handling your request: \
+                ${error.response.status} ${error.response.statusText}`;
+        });
+}
 
-    return { embeds: [formattedMessage] };
+function formatStats(data, favoriteMode) {
+    const mode = getMostPlayedMode(data.perfs, favoriteMode);
+    return [
+        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+        { name: `Rating (${mode})`, value: getMostPlayedRating(data.perfs, mode), inline: true },
+        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+   ];
+}
+
+function setTeams(embed, data) {
+    const url = `https://lichess.org/api/team/of/${data.username}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+        .then(response => {
+            const data = response.data;
+            return data.length ? embed.addFields(formatTeams(data)) : embed;
+        });
 }
 
 function getMostPlayedMode(list, favoriteMode) {
     var modes = modesArray(list);
-
     var mostPlayedMode = modes[0][0];
     var mostPlayedGames = modes[0][1].games;
     for (var i = 0; i < modes.length; i++) {
@@ -85,7 +105,6 @@ function getMostPlayedMode(list, favoriteMode) {
 // Get string with highest rating formatted for profile
 function getMostPlayedRating(list, mostPlayedMode) {
     var modes = modesArray(list);
-
     var mostPlayedRD = modes[0][1].rd;
     var mostPlayedProg = modes[0][1].prog;
     var mostPlayedRating = modes[0][1].rating;
@@ -110,6 +129,21 @@ function getMostPlayedRating(list, mostPlayedMode) {
         mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
+}
+
+function formatTeams(teams) {
+    var names = [];
+    for (var i = 0; i < teams.length; i++) {
+        names[i] = teams[i].name;
+    }
+    return { name: 'Teams', value: names.sort().join('\n'), inline: false }
+}
+
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
