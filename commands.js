@@ -2,7 +2,7 @@
 const deleteUser = require('./commands/deleteUser');
 const gif = require('./commands/gif');
 const news = require('./commands/news');
-const playing = require('./commands/playing');
+const recent = require('./commands/recent');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
@@ -17,7 +17,7 @@ const commands = {
     },
     "gif": {
         usage: "[user]",
-        description: "Shares your (or a user's) current game as a GIF",
+        description: "Shares your (or a user's) recent game",
         process: gif.process,
         reply: gif.reply
     },
@@ -27,11 +27,11 @@ const commands = {
         process: news.process,
         reply: news.reply
     },
-    "playing": {
+    "recent": {
         usage: "[user]",
-        description: "Shares your (or a user's) current game URL",
-        process: playing.process,
-        reply: playing.reply
+        description: "Shares your (or a user's) recent game URL",
+        process: recent.process,
+        reply: recent.reply
     },
     "privacy": {
         usage: "",

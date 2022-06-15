@@ -1,7 +1,7 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-async function playing(author, username) {
+async function recent(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
         if (!user || !user.wooglesName) {
@@ -23,7 +23,7 @@ async function playing(author, username) {
     return axios.post(url, request, {headers: context})
         .then(response => formatGames(response.data))
         .catch((err) => {
-            console.log(`Error in playing(${author.username}, ${username}): \
+            console.log(`Error in recent(${author.username}, ${username}): \
                 ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
@@ -38,11 +38,11 @@ function formatGames(data) {
 }
 
 function process(bot, msg, username) {
-    playing(msg.author, username).then(message => msg.channel.send(message));
+    recent(msg.author, username).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
-    return playing(interaction.user, interaction.options.getString('username'));
+    return recent(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};

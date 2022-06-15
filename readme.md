@@ -20,10 +20,10 @@
     Sets your woogles username
 !deleteuser
     Deletes your woogles username from the bot's database
-!playing [username]
-    Shares your (or a user's) current game URL
+!recent [username]
+    Shares your (or a user's) recent game URL
 !gif [username]
-    Shares your (or a user's) current game as a GIF
+    Shares your (or a user's) recent game
 !profile [username]
     Displays your (or a user's) profile
 !puzzle
