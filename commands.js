@@ -10,6 +10,7 @@ const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
+const streamers = require('./commands/streamers');
 const tv = require('./commands/tv');
 
 const commands = {
@@ -78,6 +79,12 @@ const commands = {
         description: "Sets your lishogi username",
         process: setUser.process,
         reply: setUser.reply
+    },
+    "streamers": {
+        usage: "",
+        description: "Displays live streamers",
+        process: streamers.process,
+        reply: streamers.reply
     },
     "tv": {
         usage: "[game mode]",
