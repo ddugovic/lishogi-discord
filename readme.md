@@ -34,6 +34,8 @@
     Find an upcoming or recent arena created by lichess (or a user)
 !broadcast
     Display an incoming, ongoing, or finished official broadcast
+!coach
+    Find a coach
 !puzzle
     Display today's puzzle
 !simul

@@ -1,6 +1,7 @@
 // Include commands
 const arena = require('./commands/arena');
 const broadcast = require('./commands/broadcast');
+const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const gif = require('./commands/gif');
@@ -28,17 +29,23 @@ const commands = {
         process: broadcast.process,
         reply: broadcast.reply
     },
-    "eval": {
-        usage: "<fen>",
-        description: "Get the cached evaluation of a position, if available",
-        process: eval.process,
-        reply: eval.reply
+    "coach": {
+        usage: "",
+        description: "Find a coach",
+        process: coach.process,
+        reply: coach.reply
     },
     "deleteuser": {
         usage: "",
         description: "Delete your lichess username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "eval": {
+        usage: "<fen>",
+        description: "Get the cached evaluation of a position, if available",
+        process: eval.process,
+        reply: eval.reply
     },
     "leaderboard": {
         usage: "[game mode]",
