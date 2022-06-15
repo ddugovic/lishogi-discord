@@ -16,15 +16,15 @@ const leaderboards = [
     { name: 'Three-Check', value: 'live_threecheck' }
 ];
 const titles = [
-    { name: "Grandmaster", value: "GM" }
-    { name: "Women's Grandmaster", value: "WGM" }
-    { name: "International Master", value: "IM" }
-    { name: "Women's International Master", value: "WIM" }
-    { name: "FIDE Master", value: "FM" }
-    { name: "Women's FIDE Master", value: "WFM" }
-    { name: "National Master", value: "NM" }
-    { name: "Women's National Master", value: "WNM" }
-    { name: "Candidate Master", value: "CM" }
+    { name: "Grandmaster", value: "GM" },
+    { name: "Women's Grandmaster", value: "WGM" },
+    { name: "International Master", value: "IM" },
+    { name: "Women's International Master", value: "WIM" },
+    { name: "FIDE Master", value: "FM" },
+    { name: "Women's FIDE Master", value: "WFM" },
+    { name: "National Master", value: "NM" },
+    { name: "Women's National Master", value: "WNM" },
+    { name: "Candidate Master", value: "CM" },
     { name: "Women's Candidate Master", value: "WCM" }
 ];
 const commands = [
