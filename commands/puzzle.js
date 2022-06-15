@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function puzzle(author, favoriteMode) {
+async function puzzle(author) {
     // Getting a puzzle ID fails for some reason, so return instead.
     return 'https://woogles.io/puzzle';
     const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
@@ -19,7 +19,7 @@ async function puzzle(author, favoriteMode) {
 }
 
 function formatPuzzle(data) {
-    return data;//`https://woogles.io/puzzle/${data}`;
+    return `https://woogles.io/puzzle/${data}`;
 }
 
 function process(bot, msg) {

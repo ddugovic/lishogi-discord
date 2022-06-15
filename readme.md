@@ -20,12 +20,8 @@
     Sets your woogles.io username
 !deleteuser
     Deletes your woogles.io username from the bot's database
-!setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
 !profile [username]
     Displays your (or a user's) profile
-!recent [rated/casual]
-    Shares your most recent game
 !puzzle
     Displays today's puzzle
 !privacy
