@@ -24,20 +24,12 @@
     Sets your favorite game (or puzzle) mode
 !profile [username]
     Displays your (or a user's) profile
-!recent [rated/casual]
-    Shares your most recent game
-!playing [username]
-    Shares your (or a user's) current game URL
-!playing [username]
-    Shares your (or a user's) current game as a GIF
-!arena [username]
-    Find an upcoming or recent arena created by chess.com (or a user)
-!broadcast
-    Find an incoming, ongoing, or finished official broadcast
+!leaderboard [game mode]
+    Display the leaderboard top player
 !puzzle
     Displays today's puzzle
-!tv [game mode]
-    Shares the featured game
+!titled <title>
+    Displays a titled player ID
 !privacy
     View privacy policy
 !stop

@@ -16,15 +16,16 @@ const leaderboards = [
     { name: 'Three-Check', value: 'live_threecheck' }
 ];
 const commands = [
-    new SlashCommandBuilder().setName('deleteuser').setDescription("Deletes your chess.com username from the bot's database"),
-    new SlashCommandBuilder().setName('leaderboard').setDescription("Displays the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
+    new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your chess.com username from the bot's database"),
+    new SlashCommandBuilder().setName('leaderboard').setDescription("Display the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
-    new SlashCommandBuilder().setName('profile').setDescription("Displays your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter chess.com player username')),
-    new SlashCommandBuilder().setName('puzzle').setDescription("Displays today's puzzle"),
-    new SlashCommandBuilder().setName('streamers').setDescription("Displays live streamers"),
-    new SlashCommandBuilder().setName('setgamemode').setDescription("Sets your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('setuser').setDescription("Sets your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username')),
-    new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
+    new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter chess.com player username')),
+    new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
+    new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
+    new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username')),
+    new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true)),
+    new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
     .map(command => command.toJSON());
 

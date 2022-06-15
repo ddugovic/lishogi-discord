@@ -7,6 +7,7 @@ const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const streamers = require('./commands/streamers');
 const setGameMode = require('./commands/setGameMode');
+const titled = require('./commands/titled');
 
 const commands = {
     "deleteuser": {
@@ -56,6 +57,12 @@ const commands = {
         description: "Sets your chess.com username",
         process: setUser.process,
         reply: setUser.reply
+    },
+    "titled": {
+        usage: "<title>",
+        description: "Displays a titled player ID",
+        process: titled.process,
+        reply: titled.reply
     }
 };
 

@@ -5,7 +5,7 @@ async function leaderboard(author, mode) {
     var favoriteMode = mode;
     if (!mode) {
         const user = await User.findById(author.id).exec();
-        if (!user) {
+        if (!user || !user.chessName) {
             return 'You need to set your chess.com username with setuser!';
         }
         favoriteMode = user.favoriteMode;

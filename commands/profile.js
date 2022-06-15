@@ -9,7 +9,7 @@ const User = require('../models/User');
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user) {
+        if (!user || !user.chessName) {
             return 'You need to set your chess.com username with setuser!';
         }
         username = user.chessName;
