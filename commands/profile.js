@@ -31,11 +31,12 @@ function formatProfile(data, favoriteMode) {
     if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
+    const firstName = getFirstName(data) || title(data.username);
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF);
-    return setName(embed, data)
+    return setName(embed, data, firstName)
         .then(embed => { return setStats(embed, data, favoriteMode) })
-        .then(embed => { return setStreamer(embed, data) })
+        .then(embed => { return setStreamer(embed, data, firstName) })
         .then(embed => { return setClubs(embed, data) })
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -44,11 +45,6 @@ function formatProfile(data, favoriteMode) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function getFlagEmoji(code) {
-    if (countryFlags.countryCode(code))
-        return countryFlags.countryCode(code).emoji;
 }
 
 function getFirstName(data) {
@@ -71,13 +67,18 @@ function formatName(data, response) {
     return name;
 }
 
-function setName(embed, data) {
+function getFlagEmoji(code) {
+    if (countryFlags.countryCode(code))
+        return countryFlags.countryCode(code).emoji;
+}
+
+function setName(embed, data, firstName) {
     return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             return embed
                 .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
                 .setThumbnail(data.avatar)
-                .setTitle(`Challenge ${getFirstName(data) || data.username} to a game!`)
+                .setTitle(`Challenge ${firstName} to a game!`)
                 .setURL(`https://chess.com/play/${data.username}`);
 
     });
@@ -111,10 +112,10 @@ function setClubs(embed, data) {
         });
 }
 
-function setStreamer(embed, data) {
+function setStreamer(embed, data, firstName) {
     if (data.is_streamer) {
         embed = embed
-            .setTitle('Watch ' + data.username + ' on Twitch!')
+            .setTitle(`Watch ${firstName} on Twitch!`)
             .setURL(data.twitch_url);
     }
     return embed
