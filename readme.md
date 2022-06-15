@@ -29,7 +29,7 @@
 !puzzle
     Display today's puzzle
 !titled <title>
-    Display a titled player ID
+    Display a titled player URL
 !privacy
     View privacy policy
 !stop

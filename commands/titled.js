@@ -15,7 +15,8 @@ async function titled(author, title) {
 
 function formatPlayers(data) {
     const players = data.players;
-    return players[Math.floor(Math.random() * players.length)];
+    const username = players[Math.floor(Math.random() * players.length)];
+    return `https://www.chess.com/member/${username}`;
 }
 
 function process(bot, msg, title) {
