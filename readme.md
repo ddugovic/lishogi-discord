@@ -34,10 +34,10 @@
     Find an upcoming or recent arena created by lichess (or a user)
 !broadcast
     Display an incoming, ongoing, or finished official broadcast
-!simul
-    Display a recently finished, ongoing, or upcoming simultanous exhibition
 !puzzle
     Display today's puzzle
+!simul
+    Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
     Display live streamers
 !tv [game mode]
