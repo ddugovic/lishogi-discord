@@ -15,33 +15,35 @@
 # Command List
 ```
 !help
-    Sends a list of available commands
+    Display a list of available commands
 !setuser <username>
-    Sets your lichess username
+    Set your lichess username
 !deleteuser
-    Deletes your lichess username from the bot's database
+    Delete your lichess username from the bot's database
 !setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
+    Set your favorite game (or puzzle) mode
 !profile [username]
-    Displays your (or a user's) profile
+    Display your (or a user's) profile
 !recent [rated/casual]
-    Shares your most recent game
+    Share your most recent game
 !playing [username]
-    Shares your (or a user's) current game URL
+    Share your (or a user's) current game URL
 !gif [username]
-    Shares your (or a user's) current game as a GIF
+    Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
 !broadcast
-    Find an incoming, ongoing, or finished official broadcast
+    Display an incoming, ongoing, or finished official broadcast
+!simul
+    Display a recently finished, ongoing, or upcoming simultanous exhibition
 !puzzle
-    Displays today's puzzle
+    Display today's puzzle
 !streamers
-    Displays live streamers
+    Display live streamers
 !tv [game mode]
-    Shares the featured game
+    Share the featured game
 !privacy
     View privacy policy
 !stop
-    Stops the bot (owner only)
+    Stop the bot (owner only)
 ```
