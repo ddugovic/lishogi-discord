@@ -51,17 +51,13 @@ function formatProfile(data, favoriteMode) {
         status = (data.online ? '📶 Online' : '🔴 Offline');
     var badges = data.patron ? '🍺' : '';
 
-    var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
-    var formattedMessage = new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setTitle(`Challenge ${username} to a game!`)
         .setURL(`https://playstrategy.org/?user=${data.username}#friend`)
-        .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-        .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
-        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
-
-    return { embeds: [formattedMessage] };
+        .addFields(formatStats(data, favoriteMode));
+    return { embeds: [ embed ] };
 }
 
 function getMostPlayedMode(list, favoriteMode) {
@@ -112,6 +108,22 @@ function getMostPlayedRating(list, mostPlayedMode) {
         mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
+
+function formatStats(data, favoriteMode) {
+    const mode = getMostPlayedMode(data.perfs, favoriteMode);
+    return [
+        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+        { name: `Rating (${title(mode)})`, value: getMostPlayedRating(data.perfs, mode), inline: true },
+        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+   ];
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
+}
+
 // For sorting through modes... playstrategy api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
