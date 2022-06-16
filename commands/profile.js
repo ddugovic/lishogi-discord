@@ -13,12 +13,11 @@ async function profile(author, username) {
         }
         username = user.lichessName;
     }
-    var favoriteMode = user.favoriteMode;
-    url = `https://lichess.org/api/user/${username}?trophies=true`;
+    const url = `https://lichess.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
-        .then(response => formatProfile(response.data, favoriteMode))
+        .then(response => formatProfile(response.data, user.favoriteMode))
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
+            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
