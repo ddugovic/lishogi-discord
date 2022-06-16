@@ -58,8 +58,8 @@ const commands = [
     .map(command => command.toJSON());
 
 const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-const rest = new REST({ version: '9' }).setToken(config.token);
+const { Routes } = require('discord-api-types/v10');
+const rest = new REST({ version: '10' }).setToken(config.token);
 
 rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: commands })
     .then(() => console.log(`Successfully registered ${commands.length} application guild slash commands for client ${config.clientId} in guild ${config.guildId}.`))
