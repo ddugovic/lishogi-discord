@@ -117,14 +117,14 @@ function getMostPlayedMode(perfs, favoriteMode) {
     return mostPlayedMode;
 }
 // Get string with highest rating formatted for profile
-function formatPerfs(list, mostPlayedMode) {
-    const modes = modesArray(list);
+function formatPerfs(perfs, mode) {
+    const modes = modesArray(perfs);
     var rd = modes[0][1].rd;
     var prog = modes[0][1].prog;
     var rating = modes[0][1].rating;
     var games = modes[0][1].games;
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mostPlayedMode) {
+        if (modes[i][0] == mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
@@ -134,7 +134,7 @@ function formatPerfs(list, mostPlayedMode) {
     if (prog > 0)
         prog = `  ▲${prog}📈`;
     else if (prog < 0)
-        prog = `  ▼${Math.abs(mostPlayedProg)}📉`;
+        prog = `  ▼${Math.abs(prog)}📉`;
     else
         prog = '';
     return `${rating} ± ${2*rd}${prog} over ${games}`;
