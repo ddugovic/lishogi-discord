@@ -13,8 +13,8 @@ const commands = [
 ];
 
 const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-const rest = new REST({ version: '9' }).setToken(config.token);
+const { Routes } = require('discord-api-types/v10');
+const rest = new REST({ version: '10' }).setToken(config.token);
 
 // https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 //rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: commands.map(command => command.toJSON()) })
