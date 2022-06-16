@@ -40,16 +40,17 @@ function formatProfile(data, favoriteMode) {
     if (data.title)
         playerName = `${data.title} ${playerName}`;
 
-    var colorEmoji;
-    if (data.playing) {
-        colorEmoji = data.playing.includes('white') ? '⚪' : '⚫';
-    }
-    var status = (!data.online ? '🔴 Offline' : (colorEmoji ? colorEmoji + ' Playing' : '📶 Online'));
+    const link = data.playing ?? data.url;
+    var status = '';
     if (data.streaming)
-        status = '📡 Streaming  ' + status;
-    var trophies = data.patron ? '🦄' : '';
+        status = '📡 Streaming';
+    if (data.playing)
+        status += data.playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
+    else if (!status)
+        status = (data.online ? '📶 Online' : '🔴 Offline');
+    var badges = data.patron ? '🦄' : '';
     for (trophy of data.trophies) {
-        trophies +=
+        badges +=
             trophy.type == 'developer' ? '🛠️':
             trophy.type == 'moderator' ? '🔱':
             trophy.type == 'verified' ? '✔️':
@@ -61,7 +62,7 @@ function formatProfile(data, favoriteMode) {
 
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
-        .setAuthor({name: `${status}  ${playerName}  ${trophies}`, iconURL: null, url: data.url})
+        .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setTitle(`:crossed_swords: Challenge ${username} to a game!`)
         .setURL(`https://lichess.org/?user=${data.username}#friend`);
     return setStats(embed, data, favoriteMode)
