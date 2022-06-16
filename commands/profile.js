@@ -14,7 +14,7 @@ async function profile(author, username) {
         username = user.lichessName;
     }
     var favoriteMode = user.favoriteMode;
-    url = `https://lichess.org/api/user/${username}`;
+    url = `https://lichess.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
@@ -48,11 +48,19 @@ function formatProfile(data, favoriteMode) {
     var status = (!data.online ? '🔴 Offline' : (colorEmoji ? colorEmoji + ' Playing' : '📶 Online'));
     if (data.streaming)
         status = '📡 Streaming  ' + status;
+    var trophies = '';
+    for (trophy of data.trophies) {
+        trophies += trophy.type == 'developer' ? '🛠️'
+            : trophy.type.startsWith('marathon') ? '🌐'
+            : trophy.top == 1 ? '🥇'
+            : trophy.top == 10 ? '🥈'
+            : trophy.top ? '🥉' : '🏆';
+    }
 
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
-        .setAuthor({name: `${playerName}  ${status}`, iconURL: null, url: data.url})
-        .setTitle(`Challenge ${username} to a game!`)
+        .setAuthor({name: `${status}  ${playerName}  ${trophies}`, iconURL: null, url: data.url})
+        .setTitle(`:crossed_swords: Challenge ${username} to a game!`)
         .setURL(`https://lichess.org/?user=${data.username}#friend`);
     return setStats(embed, data, favoriteMode)
         .then(embed => { return setTeams(embed, data) })
