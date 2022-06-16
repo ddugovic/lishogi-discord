@@ -77,12 +77,14 @@ function formatProfile(data, favoriteMode) {
 }
 
 function setStats(embed, data, favoriteMode) {
+    // TODO Short-circuit evaluation (but return a promise) if no games are played
     const mode = getMostPlayedMode(data.perfs, favoriteMode);
     const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
-            const perf = response.data;
-            return embed.addFields(formatStats(data, mode, perf));
+            if (data.count.all)
+                embed = embed.addFields(formatStats(data, mode, response.data));
+            return embed;
         });
 }
 
