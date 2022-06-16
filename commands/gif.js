@@ -4,7 +4,7 @@ const User = require('../models/User');
 async function gif(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
-        if (!username && !user) {
+        if (!user || !user.lidraughtsName) {
             return 'You need to set your lidraughts username with setuser!';
         }
         username = user.lidraughtsName;
