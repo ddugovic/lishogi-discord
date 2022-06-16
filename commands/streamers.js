@@ -29,7 +29,9 @@ function setStreamers(data) {
 function formatStreamers(data) {
     var streamers = [];
     for (streamer of data) {
-        streamers.push({ name : formatName(streamer), value: `[Profile](https://lichess.org/@/${streamer.name})`, inline: true })
+        const name = formatName(streamer);
+        const badges = streamer.patron ? '🦄' : '';
+        streamers.push({ name : `${name} ${badges}`, value: `[Profile](https://lichess.org/@/${streamer.name})`, inline: true })
     }
     return streamers;
 }
