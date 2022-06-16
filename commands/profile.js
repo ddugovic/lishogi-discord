@@ -48,13 +48,16 @@ function formatProfile(data, favoriteMode) {
     var status = (!data.online ? '🔴 Offline' : (colorEmoji ? colorEmoji + ' Playing' : '📶 Online'));
     if (data.streaming)
         status = '📡 Streaming  ' + status;
-    var trophies = '';
+    var trophies = data.patron ? '🦄' : '';
     for (trophy of data.trophies) {
-        trophies += trophy.type == 'developer' ? '🛠️'
-            : trophy.type.startsWith('marathon') ? '🌐'
-            : trophy.top == 1 ? '🥇'
-            : trophy.top == 10 ? '🥈'
-            : trophy.top ? '🥉' : '🏆';
+        trophies +=
+            trophy.type == 'developer' ? '🛠️':
+            trophy.type == 'moderator' ? '🔱':
+            trophy.type == 'verified' ? '✔️':
+            trophy.type.startsWith('marathon') ? '🌐' :
+            trophy.top == 1 ? '🥇' :
+            trophy.top == 10 ? '🥈' :
+            trophy.top ? '🥉' : '🏆';
     }
 
     const embed = new Discord.MessageEmbed()
