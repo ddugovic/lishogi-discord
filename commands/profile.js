@@ -77,13 +77,13 @@ function formatProfile(data, favoriteMode) {
 }
 
 function setStats(embed, data, favoriteMode) {
-    // TODO Short-circuit evaluation (but return a promise) if no games are played
-    const mode = getMostPlayedMode(data.perfs, favoriteMode);
+    // TODO Short-circuit evaluation (but return a promise) if mode is 'puzzle'
+    const mode = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
     const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
             if (data.count.all)
-                embed = embed.addFields(formatStats(data, mode, response.data));
+                return embed.addFields(formatStats(data, mode, response.data));
             return embed;
         });
 }
@@ -97,8 +97,8 @@ function setTeams(embed, data) {
         });
 }
 
-function getMostPlayedMode(list, favoriteMode) {
-    var modes = modesArray(list);
+function getMostPlayedMode(perfs, favoriteMode) {
+    var modes = modesArray(perfs);
     var mostPlayedMode = modes[0][0];
     var mostPlayedGames = modes[0][1].games;
     for (var i = 0; i < modes.length; i++) {
@@ -117,40 +117,41 @@ function getMostPlayedMode(list, favoriteMode) {
     return mostPlayedMode;
 }
 // Get string with highest rating formatted for profile
-function getMostPlayedRating(list, mostPlayedMode) {
-    var modes = modesArray(list);
-    var mostPlayedRD = modes[0][1].rd;
-    var mostPlayedProg = modes[0][1].prog;
-    var mostPlayedRating = modes[0][1].rating;
-    var mostPlayedGames = modes[0][1].games;
+function formatPerfs(list, mostPlayedMode) {
+    const modes = modesArray(list);
+    var rd = modes[0][1].rd;
+    var prog = modes[0][1].prog;
+    var rating = modes[0][1].rating;
+    var games = modes[0][1].games;
     for (var i = 0; i < modes.length; i++) {
-        // exclude puzzle games, unless it is the only mode played by that user.
         if (modes[i][0] == mostPlayedMode) {
-            mostPlayedRD = modes[i][1].rd;
-            mostPlayedProg = modes[i][1].prog;
-            mostPlayedRating = modes[i][1].rating;
-            mostPlayedGames = modes[i][1].games + ' ' + plural((mostPlayedMode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
+            rd = modes[i][1].rd;
+            prog = modes[i][1].prog;
+            rating = modes[i][1].rating;
+            games = modes[i][1].games + ' ' + plural((mostPlayedMode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
         }
     }
-    if (mostPlayedProg > 0)
-        mostPlayedProg = ' ▲' + mostPlayedProg + '📈';
-    else if (mostPlayedProg < 0)
-        mostPlayedProg = ' ▼' + Math.abs(mostPlayedProg) + '📉';
+    if (prog > 0)
+        prog = `  ▲${prog}📈`;
+    else if (prog < 0)
+        prog = `  ▼${Math.abs(mostPlayedProg)}📉`;
     else
-        mostPlayedProg = '';
-
-    var formattedMessage = mostPlayedRating + ' ± ' + (2 * mostPlayedRD) +
-        mostPlayedProg + ' over ' + mostPlayedGames;
-    return formattedMessage;
+        prog = '';
+    return `${rating} ± ${2*rd}${prog} over ${games}`;
 }
 
 function formatStats(data, mode, perf) {
     const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
-    return [
-        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
-        { name: category, value: getMostPlayedRating(data.perfs, mode), inline: true },
-        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
-   ];
+    if (data.count.all)
+        return [
+            { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+            { name: category, value: formatPerfs(data.perfs, mode), inline: true },
+            { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+       ];
+    else
+        return [
+            { name: category, value: formatPerfs(data.perfs, mode), inline: true }
+       ];
 }
 
 function formatTeams(teams) {
