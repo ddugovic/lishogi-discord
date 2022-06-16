@@ -33,6 +33,7 @@ function formatProfile(data, username) {
     var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setTitle(formatName(data, username))
+        .setURL(`https://woogles.io/profile/${username}`)
         .setThumbnail(data.avatar_url)
         .setDescription(data.about);
     if (data.ratings_json && data.stats_json) {
