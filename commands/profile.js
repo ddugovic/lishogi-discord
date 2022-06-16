@@ -52,6 +52,7 @@ function formatProfile(data, favoriteMode) {
     var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
+        .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
         .setTitle(`Challenge ${nickname} to a game!`)
         .setURL(`https://lidraughts.org/?user=${data.username}#friend`);
     if (data.count.all)
