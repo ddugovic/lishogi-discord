@@ -49,19 +49,32 @@ function formatProfile(data, favoriteMode) {
         status += data.playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
     else if (!status)
         status = (data.online ? '📶 Online' : '🔴 Offline');
-    var badges = data.patron ? '☗' : '';
+    var badges = data.patron ? '⛩️' : '';
 
-    var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
-    var formattedMessage = new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setTitle(`Challenge ${username} to a game!`)
         .setURL(`https://lishogi.org/?user=${data.username}#friend`)
-        .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
-        .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
-        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true);
+        .addFields(formatStats(data, favoriteMode));
 
-    return { embeds: [formattedMessage] };
+    return setTeams(embed, data)
+        .then(embed => { return { embeds: [ embed ] } })
+        .catch(error => {
+            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
+                ${error.response.status} ${error.response.statusText}`);
+            return `An error occurred handling your request: \
+                ${error.response.status} ${error.response.statusText}`;
+        });
+}
+
+function setTeams(embed, data) {
+    const url = `https://lishogi.org/api/team/of/${data.username}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+        .then(response => {
+            const data = response.data;
+            return data.length ? embed.addFields(formatTeams(data)) : embed;
+        });
 }
 
 function getMostPlayedMode(list, favoriteMode) {
@@ -112,6 +125,30 @@ function getMostPlayedRating(list, mostPlayedMode) {
         mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
+
+function formatStats(data, favoriteMode) {
+    const mode = getMostPlayedMode(data.perfs, favoriteMode);
+    return [
+        { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+        { name: `Rating (${title(mode)})`, value: getMostPlayedRating(data.perfs, mode), inline: true },
+        { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+   ];
+}
+
+function formatTeams(teams) {
+    var names = [];
+    for (var i = 0; i < teams.length; i++) {
+        names[i] = teams[i].name;
+    }
+    return { name: 'Teams', value: names.sort().join('\n'), inline: false }
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
+}
+
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
