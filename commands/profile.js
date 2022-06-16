@@ -93,7 +93,7 @@ function formatPerfs(perfs, mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
-            games = modes[i][1].games + ' ' + plural((mostPlayedMode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
+            games = modes[i][1].games + ' ' + plural((mode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
         }
     }
     if (prog > 0)
