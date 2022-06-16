@@ -22,8 +22,8 @@ function formatStreamers(data) {
     return streamers.sort().join('\n');
 }
 
-function process(bot, msg, mode) {
-    streamers(msg.author, mode).then(message => msg.channel.send(message));
+function process(bot, msg) {
+    streamers(msg.author).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
