@@ -55,8 +55,9 @@ function formatProfile(data, favoriteMode) {
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setTitle(`Challenge ${username} to a game!`)
-        .setURL(`https://lishogi.org/?user=${data.username}#friend`)
-        .addFields(formatStats(data, favoriteMode));
+        .setURL(`https://lishogi.org/?user=${data.username}#friend`);
+    if (data.count.all)
+        embed = embed.addFields(formatStats(data, favoriteMode));
 
     return setTeams(embed, data)
         .then(embed => { return { embeds: [ embed ] } })
