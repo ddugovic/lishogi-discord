@@ -61,6 +61,7 @@ function formatProfile(data, favoriteMode) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${data.username}#friend`);
     return setStats(embed, data, favoriteMode)
