@@ -32,7 +32,7 @@ function formatProfile(data, favoriteMode) {
 
     const [firstName, lastName] = [getFirstName(data), getLastName(data)];
     const country = getCountry(data);
-    var nickname = firstName ?? data.username;
+    var nickname = firstName ?? lastName ?? data.username;
     var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
