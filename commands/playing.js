@@ -4,7 +4,7 @@ const User = require('../models/User');
 async function playing(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
-        if (!username && !user) {
+        if (!user || !user.lichessName) {
             return 'You need to set your lichess username with setuser!';
         }
         username = user.lichessName;
