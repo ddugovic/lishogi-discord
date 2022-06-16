@@ -26,7 +26,7 @@ async function profile(author, username) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, favoriteMode) {
-    if (data.closed)
+    if (data.disabled)
         return 'This account is closed.';
 
     const profile = data.profile;
