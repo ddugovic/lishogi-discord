@@ -110,7 +110,7 @@ function formatStats(data, favoriteMode) {
     if (data.count.all)
         return [
             { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
-            { name: `Rating (${title(mode)})`, value: getMostPlayedRating(data.perfs, mode), inline: true },
+            { name: `Rating (${title(mode)})`, value: formatPerfs(data.perfs, mode), inline: true },
             { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
        ];
     else
