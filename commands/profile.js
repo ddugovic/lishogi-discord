@@ -51,15 +51,22 @@ function getFirstName(data) {
     return data.name ? data.name.split(' ')[0] : undefined;
 }
 
+function setName(embed, data, firstName) {
+    return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            return embed
+                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
+                .setThumbnail(data.avatar)
+                .setTitle(`Challenge ${formatNickname(firstName, response)} to a game!`)
+                .setURL(`https://chess.com/play/${data.username}`);
+
+    });
+}
+
 function formatName(data, response) {
     var name = data.name || data.username;
     if (data.title)
         name = `${data.title} ${name}`;
-    if (response && response.data) {
-        const flag = getFlagEmoji(response.data.code);
-        if (flag)
-            name = `${flag} ${name}`;
-    }
     if (data.location)
         name += ` (${data.location})`;
     else if (response && response.data)
@@ -67,21 +74,18 @@ function formatName(data, response) {
     return name;
 }
 
+function formatNickname(firstName, response) {
+    if (response && response.data) {
+        const flag = getFlagEmoji(response.data.code);
+        if (flag)
+            return `${flag} ${firstName}`;
+    }
+    return firstName;
+}
+
 function getFlagEmoji(code) {
     if (countryFlags.countryCode(code))
         return countryFlags.countryCode(code).emoji;
-}
-
-function setName(embed, data, firstName) {
-    return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            return embed
-                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
-                .setThumbnail(data.avatar)
-                .setTitle(`Challenge ${firstName} to a game!`)
-                .setURL(`https://chess.com/play/${data.username}`);
-
-    });
 }
 
 function setStats(embed, data, favoriteMode) {
