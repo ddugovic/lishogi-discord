@@ -4,7 +4,7 @@ const User = require('../models/User');
 async function gif(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
-        if (!username && !user) {
+        if (!user || !user.playstrategyName) {
             return 'You need to set your playstrategy username with setuser!';
         }
         username = user.playstrategyName;
