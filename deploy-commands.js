@@ -16,9 +16,10 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const rest = new REST({ version: '9' }).setToken(config.token);
 
-rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: commands.map(command => command.toJSON()) })
-    .then(() => console.log(`Successfully registered ${commands.length} application guild slash commands for client ${config.clientId} in guild ${config.guildId}.`))
-    .catch(console.error);
+// https://discord.com/blog/slash-commands-permissions-discord-apps-bots
+//rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: commands.map(command => command.toJSON()) })
+//    .then(() => console.log(`Successfully registered ${commands.length} application guild slash commands for client ${config.clientId} in guild ${config.guildId}.`))
+//    .catch(console.error);
 
 rest.put(Routes.applicationCommands(config.clientId), { body: commands.map(command => command.setDefaultMemberPermissions('0').toJSON()) })
     .then(() => console.log(`Successfully registered ${commands.length} application slash commands for client ${config.clientId}.`))
