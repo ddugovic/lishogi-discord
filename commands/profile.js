@@ -30,14 +30,12 @@ function formatProfile(data, favoriteMode) {
     if (data.disabled)
         return 'This account is closed.';
 
-    const profile = data.profile;
-    var username = data.username;
-    if (profile && profile.country && countryFlags.countryCode(profile.country))
-        username = `${countryFlags.countryCode(profile.country).emoji} ${username}`;
-
-    var playerName = data.username;
-    if (profile && profile.firstName && profile.lastName)
-        playerName = `${profile.firstName} ${profile.lastName}`;
+    const [firstName, lastName] = [getFirstName(data), getLastName(data)];
+    const country = getCountry(data);
+    var nickname = firstName ?? lastName ?? data.username;
+    var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
+    if (country && countryFlags.countryCode(country))
+        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
     if (data.title)
         playerName = `${data.title} ${playerName}`;
 
@@ -54,12 +52,24 @@ function formatProfile(data, favoriteMode) {
     var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
-        .setTitle(`Challenge ${username} to a game!`)
+        .setTitle(`Challenge ${nickname} to a game!`)
         .setURL(`https://playstrategy.org/?user=${data.username}#friend`);
     if (data.count.all)
         embed = embed.addFields(formatStats(data, favoriteMode));
 
     return { embeds: [ embed ] };
+}
+
+function getCountry(data) {
+    return data.profile ? data.profile.country : undefined;
+}
+
+function getFirstName(data) {
+    return data.profile ? data.profile.firstName : undefined;
+}
+
+function getLastName(data) {
+    return data.profile ? data.profile.lastName : undefined;
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
