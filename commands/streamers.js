@@ -14,10 +14,10 @@ async function streamers(author) {
         });
 }
 
-function setStreamers(data) {
-    if (data.length) {
+function setStreamers(streamers) {
+    if (streamers.length) {
         const url = 'https://lishogi.org/api/users';
-        const ids = data.map(streamer => streamer.id);
+        const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const embed = new Discord.MessageEmbed()
@@ -35,7 +35,7 @@ function setStreamers(data) {
 
 function formatStreamer(streamer) {
     const name = formatName(streamer);
-    const badges = streamer.patron ? '🦄' : '';
+    const badges = streamer.patron ? '⛩️' : '';
     return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile, streamer.playTime), inline: true };
 }
 
