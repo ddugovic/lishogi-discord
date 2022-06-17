@@ -66,13 +66,8 @@ function formatProfile(data, favoriteMode) {
         .setURL(`https://lichess.org/?user=${data.username}#friend`);
     return setStats(embed, data, favoriteMode)
         .then(embed => { return setTeams(embed, data) })
-        .then(embed => { return { embeds: [ embed ] } })
-        .catch(error => {
-            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
-        });
+        .then(embed => { return setStorm(embed, data) })
+        .then(embed => { return { embeds: [ embed ] } });
 }
 
 function getCountry(data) {
@@ -104,7 +99,16 @@ function setTeams(embed, data) {
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
             const data = response.data;
-            return data.length ? embed.addFields(formatTeams(data)) : embed;
+            return data.length ? embed.addField('Teams', data.map(team => team.name).join('\n'), true) : embed;
+        });
+}
+
+function setStorm(embed, data) {
+    const url = `https://lichess.org/api/storm/dashboard/${data.username}?days=0`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const data = response.data;
+            return data && data.high.allTime ? embed.addField('Storm', formatStorm(data), true) : embed;
         });
 }
 
@@ -165,12 +169,13 @@ function formatStats(data, mode, perf) {
        ];
 }
 
-function formatTeams(teams) {
-    var names = [];
-    for (var i = 0; i < teams.length; i++) {
-        names[i] = teams[i].name;
+function formatStorm(data) {
+    var result = '';
+    for ([key, score] of Object.entries(data.high)) {
+        if (score)
+            result += `${key == 'allTime' ? 'Best' : title(key)}: ${score}\n`;
     }
-    return { name: 'Teams', value: names.sort().join('\n'), inline: false }
+    return result.trim();
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
