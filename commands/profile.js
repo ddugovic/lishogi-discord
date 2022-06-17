@@ -152,7 +152,7 @@ function formatPerfs(perfs, mode) {
         prog = `  ▼**${Math.abs(prog)}**📉`;
     else
         prog = '';
-    return `**${rating}** ± **${2*rd}${prog}** over ${games}`;
+    return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
 }
 
 function formatStats(data, mode, perf) {
