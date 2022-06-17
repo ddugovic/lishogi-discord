@@ -19,25 +19,21 @@ function setStreamers(data) {
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:satellite: Lichess Streamers`)
             .setURL('https://lichess.org/streamer')
-            .addFields(formatStreamers(data));
+            .addFields(data.map(formatStreamer));
         return { embeds: [ embed ] };
     } else {
         return 'No streamers are currently live.';
     }
 }
 
-function formatStreamers(data) {
-    var streamers = [];
-    for (streamer of data) {
-        const name = formatName(streamer);
-        const badges = streamer.patron ? '🦄' : '';
-        streamers.push({ name : `${name} ${badges}`, value: `[Profile](https://lichess.org/@/${streamer.name})`, inline: true })
-    }
-    return streamers;
+function formatStreamer(streamer) {
+    const name = formatName(streamer);
+    const badges = streamer.patron ? '🦄' : '';
+    return { name : `${name} ${badges}`, value: `[Profile](https://lichess.org/@/${streamer.name})`, inline: true };
 }
 
 function formatName(streamer) {
-    return streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
+    return streamer.title ? `**${streamer.title}** ${streamer.name}` : streamer.name;
 }
 
 function process(bot, msg, mode) {
