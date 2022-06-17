@@ -25,7 +25,10 @@ function formatAnnouncement(data) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setTitle(announcement.title)
-        .setDescription(`[${announcement.body}](${link})`);
+        .setURL(link)
+        .setThumbnail('https://woogles.io/logo192.png')
+        .setDescription(announcement.body);
+    console.log(embed);
     return { embeds: [ embed ] };
 }
 
