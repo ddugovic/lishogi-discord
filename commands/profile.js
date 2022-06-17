@@ -104,30 +104,39 @@ function formatPerfs(perfs, mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
-            games = modes[i][1].games + ' ' + plural((mode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
+            games = `**${modes[i][1].games}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
         }
     }
     if (prog > 0)
-        prog = `  ▲${prog}📈`;
+        prog = `  ▲**${prog}**📈`;
     else if (prog < 0)
-        prog = `  ▼${Math.abs(prog)}📉`;
+        prog = `  ▼**${Math.abs(prog)}**📉`;
     else
         prog = '';
-    return `${rating} ± ${2*rd}${prog} over ${games}`;
+    return `**${rating}** ± **${2*rd}${prog}** over ${games}`;
 }
 
 function formatStats(data, favoriteMode) {
     const mode = getMostPlayedMode(data.perfs, favoriteMode);
     if (data.count.all)
         return [
-            { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+            { name: 'Games', value: `**${data.count.rated}** rated, **${(data.count.all - data.count.rated)}** casual`, inline: true },
             { name: `Rating (${title(mode)})`, value: formatPerfs(data.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+            { name: 'Time Played', value: formatTime(data.playTime), inline: true }
        ];
     else
         return [
             { name: category, value: formatPerfs(data.perfs, mode), inline: true }
        ];
+}
+
+function formatTime(playTime) {
+    var result = [];
+    for (duration of formatSeconds.formatSeconds(playTime.total).split(', ')) {
+        const [number, unit] = duration.split(' ');
+        result.push(`**${number}** ${unit}`);
+    }
+    return result.join(', ');
 }
 
 function title(str) {
