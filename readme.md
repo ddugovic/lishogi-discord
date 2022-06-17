@@ -42,6 +42,8 @@
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
     Display live streamers
+!team
+    Search teams for a keyword
 !tv [game mode]
     Share the featured game
 !privacy
