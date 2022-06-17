@@ -35,8 +35,7 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    const links = getLinks(streamer.profile);
-    return { name : `${name} ${badges}`, value: formatProfile(links, streamer), inline: true };
+    return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile), inline: true };
 }
 
 function formatName(streamer) {
@@ -59,23 +58,19 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getLinks(profile) {
-    if (profile && profile.links)
-        return profile.links.split('\r\n');
-}
-
-function formatProfile(links, streamer) {
+function formatProfile(username, profile) {
+    const links = profile ? (profile.links ?? profile.bio) : '';
     const pattern = /(?:twitch\.tv|youtube\.com)/;
-    var result = [`[Profile](https://lichess.org/@/${streamer.username})`];
+    var result = [`[Profile](https://lichess.org/@/${username})`];
     if (links) {
         for (link of getTwitch(links))
-            result.push(`[Twitch](${link})`);
+            result.push(`[Twitch](https://${link})`);
         for (link of getYouTube(links))
-            result.push(`[YouTube](${link})`);
+            result.push(`[YouTube](https://${link})`);
     }
-    if (streamer.profile && streamer.profile.bio) {
-        const social = /@|:\/|:$|twitch\.tv|youtube\.com/i;
-        var bio = streamer.profile.bio.split(/\s+/);
+    if (profile && profile.bio) {
+        const social = /:\/|:$|twitch\.tv|youtube\.com/i;
+        var bio = profile.bio.split(/\s+/);
         for (let i = 0; i < bio.length; i++) {
             if (bio[i].match(social)) {
                 bio = bio.slice(0, i);
@@ -89,14 +84,14 @@ function formatProfile(links, streamer) {
 }
 
 function getTwitch(links) {
-    const pattern = /^https?:\/\/(?:www\.)?twitch.tv\/[\w_]{4,25}$/;
-    return links.filter(link => link.match(pattern));
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
 }
 
 function getYouTube(links) {
     // https://stackoverflow.com/a/65726047
-    const pattern = /^https?:\/\/(www\.)?youtube\.com\/(channel\/UC[\w-]{21}[AQgw]|(c\/|user\/)?[\w-]+)$/
-    return links.filter(link => link.match(pattern));
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function process(bot, msg, mode) {
