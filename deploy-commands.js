@@ -52,6 +52,7 @@ const commands = [
     new SlashCommandBuilder().setName('setuser').setDescription("Sets your playstrategy username").addStringOption(option => option.setName('username').setDescription('Enter your playstrategy username')),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
     new SlashCommandBuilder().setName('streamers').setDescription("Displays live streamers"),
+    new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
     new SlashCommandBuilder().setName('tv').setDescription("Shares the featured game").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...channels)),
     new SlashCommandBuilder().setName('help').setDescription("Sends a list of available commands")
 ]
