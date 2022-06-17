@@ -143,25 +143,25 @@ function formatPerfs(perfs, mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
-            games = modes[i][1].games + ' ' + plural((mode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
+            games = `**${modes[i][1].games}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
         }
     }
     if (prog > 0)
-        prog = `  ▲${prog}📈`;
+        prog = `  ▲**${prog}**📈`;
     else if (prog < 0)
-        prog = `  ▼${Math.abs(prog)}📉`;
+        prog = `  ▼**${Math.abs(prog)}**📉`;
     else
         prog = '';
-    return `${rating} ± ${2*rd}${prog} over ${games}`;
+    return `**${rating}** ± **${2*rd}${prog}** over ${games}`;
 }
 
 function formatStats(data, mode, perf) {
     const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
     if (data.count.all)
         return [
-            { name: 'Games', value: `${data.count.rated} rated, ${(data.count.all - data.count.rated)} casual`, inline: true },
+            { name: 'Games', value: `**${data.count.rated}** rated, **${(data.count.all - data.count.rated)}** casual`, inline: true },
             { name: category, value: formatPerfs(data.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime.total), inline: true }
+            { name: 'Time Played', value: formatTime(data.playTime), inline: true }
        ];
     else
         return [
@@ -169,11 +169,22 @@ function formatStats(data, mode, perf) {
        ];
 }
 
+function formatTime(playTime) {
+    var result = [];
+    for (duration of formatSeconds.formatSeconds(playTime.total).split(', ')) {
+        const [number, unit] = duration.split(' ');
+        result.push(`**${number}** ${unit}`);
+    }
+    return result.join(', ');
+}
+
 function formatStorm(data) {
     var result = '';
     for ([key, score] of Object.entries(data.high)) {
-        if (score)
-            result += `${key == 'allTime' ? 'Best' : title(key)}: ${score}\n`;
+        if (key == 'allTime')
+            result = `Best: **${score}**${result}`;
+        else if (score)
+            result = `\n${title(key)}: **${score}**${result}`;
     }
     return result.trim();
 }
