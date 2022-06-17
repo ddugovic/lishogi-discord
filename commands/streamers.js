@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const countryFlags = require('emoji-flags');
 
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
@@ -14,13 +15,18 @@ async function streamers(author) {
 
 function setStreamers(data) {
     if (data.length) {
-        const embed = new Discord.MessageEmbed()
-            .setColor(0xFFFFFF)
-            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setTitle(`:satellite: Lichess Streamers`)
-            .setURL('https://lichess.org/streamer')
-            .addFields(data.map(formatStreamer));
-        return { embeds: [ embed ] };
+        const url = 'https://lichess.org/api/users';
+        const ids = data.map(streamer => streamer.id);
+        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+            .then(response => {
+                const embed = new Discord.MessageEmbed()
+                    .setColor(0xFFFFFF)
+                    .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+                    .setTitle(`:satellite: Lichess Streamers`)
+                    .setURL('https://lichess.org/streamer')
+                    .addFields(response.data.map(formatStreamer))
+                return { embeds: [ embed ] };
+        });
     } else {
         return 'No streamers are currently live.';
     }
@@ -29,11 +35,56 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    return { name : `${name} ${badges}`, value: `[Profile](https://lichess.org/@/${streamer.name})`, inline: true };
+    const links = getLinks(streamer.profile);
+    return { name : `${name} ${badges}`, value: formatLinks(links, streamer.username), inline: true };
 }
 
 function formatName(streamer) {
-    return streamer.title ? `**${streamer.title}** ${streamer.name}` : streamer.name;
+    var name = getLastName(streamer.profile) ?? streamer.username;
+    if (streamer.title)
+        name = `**${streamer.title}** ${name}`;
+    const country = getCountry(streamer.profile);
+    if (country && countryFlags.countryCode(country))
+        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    return name;
+}
+
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
+}
+
+function getLastName(profile) {
+    if (profile)
+        return profile.lastName;
+}
+
+function getLinks(profile) {
+    if (profile && profile.links)
+        return profile.links.split('\r\n');
+}
+
+function formatLinks(links, username) {
+    const pattern = /(?:twitch.tv|youtube.com)/;
+    var result = [`[Profile](https://lichess.org/@/${username})`];
+    if (links) {
+        for (link of getTwitch(links))
+            result.push(`[Twitch](${link})`);
+        for (link of getYouTube(links))
+            result.push(`[YouTube](${link})`);
+    }
+    return result.join('\n');
+}
+
+function getTwitch(links) {
+    const pattern = /^https?:\/\/(?:www\.)?twitch.tv\/\w+$/;
+    return links.filter(link => link.match(pattern));
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /^https?:\/\/(www\.)?youtube\.com\/(channel\/UC[\w-]{21}[AQgw]|(c\/|user\/)?[\w-]+)$/
+    return links.filter(link => link.match(pattern));
 }
 
 function process(bot, msg, mode) {
