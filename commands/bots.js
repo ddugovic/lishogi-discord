@@ -28,7 +28,7 @@ function setBots(bots) {
             .setColor(0xFFFFFF)
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:robot: Lichess Bots`)
-            .setURL('https://lichess.org/bot')
+            .setURL('https://lichess.org/player/bots')
             .addFields(bots.map(formatBot));
         return { embeds: [ embed ] };
     } else {
