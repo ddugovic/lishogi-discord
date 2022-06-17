@@ -15,6 +15,7 @@ const puzzle = require('./commands/puzzle');
 const setGameMode = require('./commands/setGameMode');
 const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
+const team = require('./commands/team');
 const tv = require('./commands/tv');
 
 const commands = {
@@ -113,6 +114,12 @@ const commands = {
         description: "Display live streamers",
         process: streamers.process,
         reply: streamers.reply
+    },
+    "team": {
+        usage: "<text>",
+        description: "Search teams for a keyword",
+        process: team.process,
+        reply: team.reply
     },
     "tv": {
         usage: "[game mode]",
