@@ -161,21 +161,12 @@ function formatStats(data, mode, perf) {
         return [
             { name: 'Games', value: `**${data.count.rated}** rated, **${(data.count.all - data.count.rated)}** casual`, inline: true },
             { name: category, value: formatPerfs(data.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatTime(data.playTime), inline: true }
+            { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime), inline: true }
        ];
     else
         return [
             { name: category, value: formatPerfs(data.perfs, mode), inline: true }
        ];
-}
-
-function formatTime(playTime) {
-    var result = [];
-    for (duration of formatSeconds.formatSeconds(playTime.total).split(', ')) {
-        const [number, unit] = duration.split(' ');
-        result.push(`**${number}** ${unit}`);
-    }
-    return result.join(', ');
 }
 
 function formatStorm(data) {

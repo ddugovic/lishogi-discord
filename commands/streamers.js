@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
@@ -35,7 +36,7 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile), inline: true };
+    return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile, streamer.playTime), inline: true };
 }
 
 function formatName(streamer) {
@@ -58,10 +59,11 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function formatProfile(username, profile) {
+function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const pattern = /(?:twitch\.tv|youtube\.com)/;
-    var result = [`[Profile](https://lichess.org/@/${username})`];
+    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
