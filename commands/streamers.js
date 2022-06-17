@@ -36,7 +36,7 @@ function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
     const links = getLinks(streamer.profile);
-    return { name : `${name} ${badges}`, value: formatLinks(links, streamer.username), inline: true };
+    return { name : `${name} ${badges}`, value: formatProfile(links, streamer), inline: true };
 }
 
 function formatName(streamer) {
@@ -64,20 +64,32 @@ function getLinks(profile) {
         return profile.links.split('\r\n');
 }
 
-function formatLinks(links, username) {
-    const pattern = /(?:twitch.tv|youtube.com)/;
-    var result = [`[Profile](https://lichess.org/@/${username})`];
+function formatProfile(links, streamer) {
+    const pattern = /(?:twitch\.tv|youtube\.com)/;
+    var result = [`[Profile](https://lichess.org/@/${streamer.username})`];
     if (links) {
         for (link of getTwitch(links))
             result.push(`[Twitch](${link})`);
         for (link of getYouTube(links))
             result.push(`[YouTube](${link})`);
     }
+    if (streamer.profile && streamer.profile.bio) {
+        const social = /@|:\/|:$|twitch\.tv|youtube\.com/i;
+        var bio = streamer.profile.bio.split(/\s+/);
+        for (let i = 0; i < bio.length; i++) {
+            if (bio[i].match(social)) {
+                bio = bio.slice(0, i);
+                break;
+            }
+        }
+        if (bio.length)
+            result.push(bio.join(' '));
+    }
     return result.join('\n');
 }
 
 function getTwitch(links) {
-    const pattern = /^https?:\/\/(?:www\.)?twitch.tv\/\w+$/;
+    const pattern = /^https?:\/\/(?:www\.)?twitch.tv\/[\w_]{4,25}$/;
     return links.filter(link => link.match(pattern));
 }
 
