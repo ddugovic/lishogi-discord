@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const bots = require('./commands/bots');
 const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
@@ -22,6 +23,12 @@ const commands = {
         description: "Find an upcoming or recent arena",
         process: arena.process,
         reply: arena.reply
+    },
+    "bots": {
+        usage: "",
+        description: "Display online bots with source code",
+        process: bots.process,
+        reply: bots.reply
     },
     "broadcast": {
         usage: "",

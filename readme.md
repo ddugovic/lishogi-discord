@@ -32,6 +32,8 @@
     Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
+!bots
+    Display online bots with source code
 !broadcast
     Display an incoming, ongoing, or finished official broadcast
 !coach
