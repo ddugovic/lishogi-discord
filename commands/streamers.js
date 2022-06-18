@@ -67,7 +67,7 @@ function formatProfile(username, profile, playTime) {
             result.push(`[YouTube](https://${link})`);
     }
     if (profile && profile.bio) {
-        const social = /:\/|:$|twitch\.tv|youtube\.com/i;
+        const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
         const username = /@(\w+)/g;
         var bio = profile.bio.split(/\s+/);
         for (let i = 0; i < bio.length; i++) {
