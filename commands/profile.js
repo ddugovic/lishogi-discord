@@ -62,13 +62,7 @@ function formatProfile(data, favoriteMode) {
         embed = embed.addFields(formatStats(data, favoriteMode));
 
     return setTeams(embed, data.username)
-        .then(embed => { return { embeds: [ embed ] } })
-        .catch(error => {
-            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
-        });
+        .then(embed => { return { embeds: [ embed ] } });
 }
 
 function getCountry(profile) {
