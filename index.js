@@ -77,15 +77,13 @@ client.login(config.token);
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-    //console.log(interaction);
 
     const cmdTxt = interaction.commandName;
     let command = commands[cmdTxt];
     if (command) {
         await interaction.deferReply();
         try {
-            const message = await command.reply(interaction);
-            interaction.editReply(message);
+            interaction.editReply(await command.reply(interaction));
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
             interaction.editReply(`Command failed:\n ${e.stack}`);
