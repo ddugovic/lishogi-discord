@@ -22,6 +22,7 @@ const ratings = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
     { name: 'Classical', value: 'classical' },
+    { name: 'Correspondence', value: 'correspondence' },
     { name: 'Minishogi', value: 'minishogi' },
     { name: 'Puzzle', value: 'puzzle' },
     { name: 'Rapid', value: 'rapid' },
