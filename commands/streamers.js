@@ -25,7 +25,7 @@ function setStreamers(data) {
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:satellite: Lichess Streamers`)
                     .setURL('https://lichess.org/streamer')
-                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.length - a.length));
+                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.score - a.score));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -36,8 +36,8 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    const [length, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, 'length': length };
+    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime, badges);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
 }
 
 function formatName(streamer) {
@@ -60,7 +60,7 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function formatProfile(username, profile, playTime) {
+function formatProfile(username, profile, playTime, badges) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
     const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
@@ -79,7 +79,7 @@ function formatProfile(username, profile, playTime) {
         if ((length = bio.length))
             result.push(bio);
     }
-    return [(length * 1000 + tv), result.join('\n')];
+    return [((length + badges.length) * 1000000 + tv * 1000 + playTime.total), result.join('\n')];
 }
 
 function getMaiaChess(links) {
