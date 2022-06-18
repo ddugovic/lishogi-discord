@@ -68,7 +68,7 @@ function formatProfile(data, favoriteMode) {
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
-    const [mode, rating] = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
+    const [mode, rating] = getMostPlayedMode(data.perfs, data.count.rated ? favoriteMode : 'puzzle');
     if (unranked(mode, rating)) {
         embed = embed.addFields(formatStats(data.count, data.playTime, mode, rating));
         embed = setAbout(embed, username, profile, data.playTime);
@@ -179,26 +179,30 @@ function getMostPlayedMode(perfs, favoriteMode) {
     }
     return [mostPlayedMode, mostPlayedRating];
 }
-// Get string with highest rating formatted for profile
-function formatPerfs(mode, r) {
-    const prog = (r.prog > 0) ? `  ▲**${r.prog}**📈` : (r.prog < 0) ? `  ▼**${Math.abs(r.prog)}**📉` : '';
+
+function formatProgress(progress) {
+    return (progress > 0) ? ` ▲**${progress}**📈` : (progress < 0) ? ` ▼**${Math.abs(progress)}**📉` : '';
+}
+
+function formatRating(mode, r) {
     const games = `**${fn.format(r.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), r.games)}`;
-    return `**${r.rating}** ± **${2 * r.rd}**${prog} over ${games}`;
+    return `**${r.rating}** ± **${2 * r.rd}** over ${games}`;
 }
 
 function formatStats(count, playTime, mode, rating, perf) {
-    var category = `Rating (${title(mode)})`;
+    var category = title(mode);
     if (perf)
-        category += perf.rank ? ` #${perf.rank}` : ` Top ${perf.percentile}%`;
+        category += perf.rank ? ` #${perf.rank}` : ` (Top ${perf.percentile}%)`;
+    category += formatProgress(rating.prog);
     if (count.all)
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
-            { name: category, value: formatPerfs(mode, rating), inline: true },
+            { name: category, value: formatRating(mode, rating), inline: true },
             { name: 'Time Played', value: formatSeconds.formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatPerfs(stats.perfs, mode), inline: true }
+            { name: category, value: formatRating(stats.perfs, mode), inline: true }
        ];
 }
 
