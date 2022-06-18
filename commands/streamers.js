@@ -47,6 +47,9 @@ function formatName(streamer) {
     const country = getCountry(streamer.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    const rating = getRating(streamer.profile);
+    if (rating)
+        name += ` (${rating})`;
     return name;
 }
 
@@ -58,6 +61,11 @@ function getCountry(profile) {
 function getLastName(profile) {
     if (profile)
         return profile.lastName;
+}
+
+function getRating(profile) {
+    if (profile)
+        return profile.fideRating;
 }
 
 function formatProfile(username, profile, playTime, badges) {
@@ -74,12 +82,15 @@ function formatProfile(username, profile, playTime, badges) {
             result.push(`[YouTube](https://${link})`);
     }
     var length = 0;
+    var rating = 0;
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
-        if ((length = bio.length))
+        if ((length = bio.length)) {
+            rating = getRating(profile) ?? 1000;
             result.push(bio);
+	}
     }
-    return [((length + badges.length) * 1000000 + tv * 1000 + playTime.total), result.join('\n')];
+    return [((length + badges.length) * 1000000 + (tv + rating) * 1000 + playTime.total), result.join('\n')];
 }
 
 function getMaiaChess(links) {
