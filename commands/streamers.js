@@ -25,7 +25,7 @@ function setStreamers(data) {
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:satellite: Lichess Streamers`)
                     .setURL('https://lichess.org/streamer')
-                    .addFields(response.data.map(formatStreamer))
+                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.length - a.length));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -36,7 +36,8 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile, streamer.playTime), inline: true };
+    const [length, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'length': length };
 }
 
 function formatName(streamer) {
@@ -71,12 +72,13 @@ function formatProfile(username, profile, playTime) {
         for (link of getYouTube(links))
             result.push(`[YouTube](https://${link})`);
     }
+    var length = 0;
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio)
+        if ((length = bio.length))
             result.push(bio);
     }
-    return result.join('\n');
+    return [length, result.join('\n')];
 }
 
 function getMaiaChess(links) {
