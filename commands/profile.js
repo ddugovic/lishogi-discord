@@ -70,12 +70,12 @@ function formatProfile(data, favoriteMode) {
 
     const [mode, rating] = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
     if (unranked(mode, rating)) {
-        embed = embed.addFields(formatStats(data, mode, rating));
+        embed = embed.addFields(formatStats(data.count, data.playTime, mode, rating));
         embed = setAbout(embed, username, profile, data.playTime);
         return setTeams(embed, username)
             .then(embed => { return { embeds: [ embed ] } });
     }
-    return setStats(embed, data, mode, rating)
+    return setStats(embed, data.username, data.count, data.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, profile, data.playTime) })
         .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
@@ -103,11 +103,11 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function setStats(embed, data, mode, rating) {
-    const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
+function setStats(embed, username, count, playTime, mode, rating) {
+    const url = `https://lichess.org/api/user/${username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
-            return embed.addFields(formatStats(data, mode, rating, response.data));
+            return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
         });
 }
 
@@ -186,13 +186,15 @@ function formatPerfs(mode, r) {
     return `**${r.rating}** ± **${2 * r.rd}**${prog} over ${games}`;
 }
 
-function formatStats(stats, mode, rating, perf) {
-    const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
-    if (stats.count.all)
+function formatStats(count, playTime, mode, rating, perf) {
+    var category = `Rating (${title(mode)})`;
+    if (perf)
+        category += perf.rank ? ` #${perf.rank}` : ` Top ${perf.percentile}%`;
+    if (count.all)
         return [
-            { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
+            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatPerfs(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(stats.playTime ? stats.playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatSeconds.formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
     else
         return [
