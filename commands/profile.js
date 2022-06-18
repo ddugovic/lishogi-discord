@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
@@ -152,7 +153,7 @@ function formatPerfs(perfs, mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
-            games = `**${modes[i][1].games}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
+            games = `**${fn.format(modes[i][1].games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
         }
     }
     if (prog > 0)
@@ -168,7 +169,7 @@ function formatStats(stats, mode, perf) {
     const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
     if (stats.count.all)
         return [
-            { name: 'Games', value: `**${stats.count.rated}** rated, **${(stats.count.all - stats.count.rated)}** casual`, inline: true },
+            { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
             { name: category, value: formatPerfs(stats.perfs, mode), inline: true },
             { name: 'Time Played', value: formatSeconds.formatSeconds(stats.playTime ? stats.playTime.total : 0), inline: true }
        ];
