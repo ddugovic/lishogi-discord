@@ -68,24 +68,24 @@ function formatProfile(data, favoriteMode) {
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
-    const mode = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
-    if (unranked(profile, mode)) {
-        embed = embed.addFields(formatStats(data, mode));
+    const [mode, rating] = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
+    if (unranked(mode, rating)) {
+        embed = embed.addFields(formatStats(data, mode, rating));
         embed = setAbout(embed, username, profile, data.playTime);
         return setTeams(embed, username)
             .then(embed => { return { embeds: [ embed ] } });
     }
-    return setStats(embed, data, favoriteMode)
+    return setStats(embed, data, mode, rating)
         .then(embed => { return setAbout(embed, username, profile, data.playTime) })
         .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
-function unranked(profile, mode) {
-    // PERF: Players whose RD is below this threshold are unranked
-    //val variantRankableDeviation  = 65
-    //val standardRankableDeviation = 75
-    return mode == 'puzzle';
+function unranked(mode, rating) {
+    // Players whose RD is above this threshold are unranked
+    const correspondence = ['correspondence','puzzle'];
+    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
+    return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
 function getCountry(profile) {
@@ -103,11 +103,11 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function setStats(embed, data, mode) {
+function setStats(embed, data, mode, rating) {
     const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
-            return embed.addFields(formatStats(data, mode, response.data));
+            return embed.addFields(formatStats(data, mode, rating, response.data));
         });
 }
 
@@ -163,52 +163,35 @@ function formatTeams(teams) {
 function getMostPlayedMode(perfs, favoriteMode) {
     var modes = modesArray(perfs);
     var mostPlayedMode = modes[0][0];
-    var mostPlayedGames = modes[0][1].games;
+    var mostPlayedRating = modes[0][1];
     for (var i = 0; i < modes.length; i++) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames) {
+        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedRating = modes[i][1];
         }
     }
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedRating = modes[i][1];
         }
     }
-    return mostPlayedMode;
+    return [mostPlayedMode, mostPlayedRating];
 }
 // Get string with highest rating formatted for profile
-function formatPerfs(perfs, mode) {
-    const modes = modesArray(perfs);
-    var rd = modes[0][1].rd;
-    var prog = modes[0][1].prog;
-    var rating = modes[0][1].rating;
-    var games = modes[0][1].games;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mode) {
-            rd = modes[i][1].rd;
-            prog = modes[i][1].prog;
-            rating = modes[i][1].rating;
-            games = `**${fn.format(modes[i][1].games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
-        }
-    }
-    if (prog > 0)
-        prog = `  ▲**${prog}**📈`;
-    else if (prog < 0)
-        prog = `  ▼**${Math.abs(prog)}**📉`;
-    else
-        prog = '';
-    return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
+function formatPerfs(mode, r) {
+    const prog = (r.prog > 0) ? `  ▲**${r.prog}**📈` : (r.prog < 0) ? `  ▼**${Math.abs(r.prog)}**📉` : '';
+    const games = `**${fn.format(r.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), r.games)}`;
+    return `**${r.rating}** ± **${2 * r.rd}**${prog} over ${games}`;
 }
 
-function formatStats(stats, mode, perf) {
+function formatStats(stats, mode, rating, perf) {
     const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
     if (stats.count.all)
         return [
             { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
-            { name: category, value: formatPerfs(stats.perfs, mode), inline: true },
+            { name: category, value: formatPerfs(mode, rating), inline: true },
             { name: 'Time Played', value: formatSeconds.formatSeconds(stats.playTime ? stats.playTime.total : 0), inline: true }
        ];
     else
