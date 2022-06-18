@@ -146,7 +146,7 @@ function setTeams(embed, username) {
 }
 
 function formatTeams(teams) {
-    return teams.map(team => team.name).join('\n');
+    return teams.map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
