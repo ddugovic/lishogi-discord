@@ -1,25 +1,23 @@
 const axios = require('axios');
 
 async function streamers(author) {
-    url = 'https://api.chess.com/pub/streamers';
-    return axios.get(url)
-        .then(response => formatStreamers(response.data))
-        .catch((err) => {
+    return axios.get('https://api.chess.com/pub/streamers')
+        .then(response => formatStreamers(filter(response.data)) || 'No streamers are currently live.')
+        .catch((error) => {
             console.log(`Error in streamers(${author.username}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
+function filter(streamer) {
+    return streamer.is_live;
+}
+
 function formatStreamers(data) {
-    streamers = [];
-    for (var i = 0; i < data.streamers.length; i++) {
-        if (data.streamers[i].is_live) {
-            streamers.push(`<${data.streamers[i].twitch_url}>`);
-        }
-    }
-    return streamers.sort().join('\n');
+    if (streamers)
+        return streamers.map(streamer => `<${streamer.twitch_url}>`).join('\n');
 }
 
 function process(bot, msg) {
