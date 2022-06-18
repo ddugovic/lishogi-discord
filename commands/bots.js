@@ -74,7 +74,7 @@ function formatProfile(username, profile, playTime) {
             result.push(`[GitLab](https://${link})`);
     }
     if (profile && profile.bio) {
-        const social = /:\/|:$|github\.com|gitlab\.com|twitch\.tv|youtube\.com/i;
+        const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
         const username = /@(\w+)/g;
         var bio = profile.bio.split(/\s+/);
         for (let i = 0; i < bio.length; i++) {
