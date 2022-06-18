@@ -14,12 +14,11 @@ async function profile(author, username) {
         }
         username = user.lishogiName;
     }
-    const favoriteMode = user.favoriteMode;
-    const url = `https://lishogi.org/api/user/${username}`;
+    const url = `https://lishogi.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => formatProfile(response.data, favoriteMode))
+        .then(response => formatProfile(response.data, user.favoriteMode))
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
+            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -51,6 +50,16 @@ function formatProfile(data, favoriteMode) {
     else if (!status)
         status = (data.online ? '📶 Online' : '🔴 Offline');
     var badges = data.patron ? '⛩️' : '';
+    for (trophy of (data.trophies ?? [])) {
+        badges +=
+            trophy.type == 'developer' ? '🛠️':
+            trophy.type == 'moderator' ? '🔱':
+            trophy.type == 'verified' ? '✔️':
+            trophy.type.startsWith('marathon') ? '🌐' :
+            trophy.top == 1 ? '🥇' :
+            trophy.top == 10 ? '🥈' :
+            trophy.top ? '🥉' : '🏆';
+    }
 
     var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
@@ -58,12 +67,24 @@ function formatProfile(data, favoriteMode) {
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lishogi.org/?user=${username}#friend`);
-    if (data.count.all)
-        embed = embed.addFields(formatStats(data, favoriteMode));
-    embed = setAbout(embed, username, profile, data.playTime);
 
-    return setTeams(embed, username)
+    const [mode, rating] = getMostPlayedMode(data.perfs, data.count.rated ? favoriteMode : 'puzzle');
+    if (unranked(mode, rating)) {
+        embed = embed.addFields(formatStats(data.count, data.playTime, mode, rating));
+        embed = setAbout(embed, username, profile, data.playTime);
+        return setTeams(embed, username)
+            .then(embed => { return { embeds: [ embed ] } });
+    }
+    return setStats(embed, data.username, data.count, data.playTime, mode, rating)
+        .then(embed => { return setAbout(embed, username, profile, data.playTime) })
+        .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
+}
+
+function unranked(mode, rating) {
+    // Players whose RD is above this threshold are unranked
+    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
+    return mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
 function getCountry(profile) {
@@ -79,6 +100,14 @@ function getFirstName(profile) {
 function getLastName(profile) {
     if (profile)
         return profile.lastName;
+}
+
+function setStats(embed, username, count, playTime, mode, rating) {
+    const url = `https://lishogi.org/api/user/${username}/perf/${mode}`;
+    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+        .then(response => {
+            return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
+        });
 }
 
 function setAbout(embed, username, profile, playTime) {
@@ -99,21 +128,6 @@ function setAbout(embed, username, profile, playTime) {
     return embed.addField('About', result.join('\n'), true);
 }
 
-function formatBio(bio) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio = bio.slice(0, i);
-            break;
-        }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
-        }
-    }
-    return bio.join(' ');
-}
-
 function getTwitch(links) {
     const pattern = /twitch.tv\/\w{4,25}/g;
     return links.matchAll(pattern);
@@ -130,7 +144,7 @@ function setTeams(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => {
             const teams = formatTeams(response.data);
-            return teams ? embed.addField('Team', teams, true) : embed;
+            return teams ? embed.addField('Teams', teams, true) : embed;
         });
 }
 
@@ -141,73 +155,62 @@ function formatTeams(teams) {
 function getMostPlayedMode(perfs, favoriteMode) {
     var modes = modesArray(perfs);
     var mostPlayedMode = modes[0][0];
-    var mostPlayedGames = modes[0][1].games;
+    var mostPlayedRating = modes[0][1];
     for (var i = 0; i < modes.length; i++) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames) {
+        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedRating = modes[i][1];
         }
     }
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedRating = modes[i][1];
         }
     }
-    return mostPlayedMode;
-}
-// Get string with highest rating formatted for profile
-function formatPerfs(perfs, mode) {
-    const modes = modesArray(perfs);
-    var rd = modes[0][1].rd;
-    var prog = modes[0][1].prog;
-    var rating = modes[0][1].rating;
-    var games = modes[0][1].games;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mode) {
-            rd = modes[i][1].rd;
-            prog = modes[i][1].prog;
-            rating = modes[i][1].rating;
-            games = `**${fn.format(modes[i][1].games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
-        }
-    }
-    if (prog > 0)
-        prog = `  ▲**${prog}**📈`;
-    else if (prog < 0)
-        prog = `  ▼**${Math.abs(prog)}**📉`;
-    else
-        prog = '';
-    return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
+    return [mostPlayedMode, mostPlayedRating];
 }
 
-function formatStats(stats, favoriteMode) {
-    const mode = getMostPlayedMode(stats.perfs, favoriteMode);
-    if (stats.count.all)
+function formatProgress(progress) {
+    return (progress > 0) ? ` ▲**${progress}**📈` : (progress < 0) ? ` ▼**${Math.abs(progress)}**📉` : '';
+}
+
+function formatRating(mode, r) {
+    const games = `**${fn.format(r.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), r.games)}`;
+    return `**${r.rating}** ± **${2 * r.rd}** over ${games}`;
+}
+
+function formatStats(count, playTime, mode, rating, perf) {
+    var category = title(mode);
+    if (perf)
+        category += perf.rank ? ` #${perf.rank}` : ` (Top ${perf.percentile}%)`;
+    category += formatProgress(rating.prog);
+    if (count.all)
         return [
-            { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
-            { name: `Rating (${title(mode)})`, value: formatPerfs(stats.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatTime(stats.playTime ? stats.playTime.total : 0), inline: true }
+            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
+            { name: category, value: formatRating(mode, rating), inline: true },
+            { name: 'Time Played', value: formatSeconds.formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatPerfs(stats.perfs, mode), inline: true }
+            { name: category, value: formatRating(stats.perfs, mode), inline: true }
        ];
 }
 
-function formatTime(total) {
-    var result = [];
-    for (duration of formatSeconds.formatSeconds(total).split(', ')) {
-        const [number, unit] = duration.split(' ');
-        result.push(`**${number}** ${unit}`);
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+        }
     }
-    return result.join(', ');
-}
-
-function title(str) {
-    return str.split('_')
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join(' ');
+    return bio.join(' ');
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
@@ -223,6 +226,12 @@ function modesArray(list) {
         array[i] = Object.entries(list)[i];
     }
     return array;
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
 }
 
 function process(bot, msg, username) {
