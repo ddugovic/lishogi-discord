@@ -68,7 +68,7 @@ function formatProfile(data, favoriteMode) {
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
     return setStats(embed, data, favoriteMode)
-        .then(embed => { return setBio(embed, profile) })
+        .then(embed => { return setAbout(embed, username, profile, data.playTime) })
         .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
@@ -100,13 +100,33 @@ function setStats(embed, data, favoriteMode) {
         });
 }
 
-function setBio(embed, profile) {
+function setAbout(embed, username, profile, playTime) {
+    const links = profile ? (profile.links ?? profile.bio) : '';
+    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
+    if (links) {
+        for (link of getTwitch(links))
+            result.push(`[Twitch](https://${link})`);
+        for (link of getYouTube(links))
+            result.push(`[YouTube](https://${link})`);
+    }
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
         if (bio)
-            return embed.addField('Bio', bio, true);
+            result.push(bio);
     }
-    return embed;
+    return embed.addField('About', result.join('\n'), true);
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function setTeams(embed, username) {
