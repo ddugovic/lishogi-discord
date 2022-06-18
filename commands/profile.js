@@ -61,16 +61,31 @@ function formatProfile(data, favoriteMode) {
             trophy.top ? '🥉' : '🏆';
     }
 
-    const embed = new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
+
+    const mode = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
+    if (unranked(profile, mode)) {
+        embed = embed.addFields(formatStats(data, mode));
+        embed = setAbout(embed, username, profile, data.playTime);
+        return setTeams(embed, username)
+            .then(embed => { return { embeds: [ embed ] } });
+    }
     return setStats(embed, data, favoriteMode)
         .then(embed => { return setAbout(embed, username, profile, data.playTime) })
         .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
+}
+
+function unranked(profile, mode) {
+    // PERF: Players whose RD is below this threshold are unranked
+    //val variantRankableDeviation  = 65
+    //val standardRankableDeviation = 75
+    return mode == 'puzzle';
 }
 
 function getCountry(profile) {
@@ -88,15 +103,11 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function setStats(embed, data, favoriteMode) {
-    // TODO Short-circuit evaluation (but return a promise) if mode is 'puzzle'
-    const mode = data.count.rated ? getMostPlayedMode(data.perfs, favoriteMode) : 'puzzle';
+function setStats(embed, data, mode) {
     const url = `https://lichess.org/api/user/${data.username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
-            if (data.count.all)
-                return embed.addFields(formatStats(data, mode, response.data));
-            return embed;
+            return embed.addFields(formatStats(data, mode, response.data));
         });
 }
 
