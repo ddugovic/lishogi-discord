@@ -25,7 +25,7 @@ function setStreamers(streamers) {
                     .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                     .setTitle(`:satellite: Lishogi Streamers`)
                     .setURL('https://lishogi.org/streamer')
-                    .addFields(response.data.map(formatStreamer))
+                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.score - a.score));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -36,7 +36,8 @@ function setStreamers(streamers) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '⛩️' : '';
-    return { name : `${name} ${badges}`, value: formatProfile(streamer.username, streamer.profile, streamer.playTime), inline: true };
+    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
 }
 
 function formatName(streamer) {
@@ -46,6 +47,9 @@ function formatName(streamer) {
     const country = getCountry(streamer.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    const rating = getRating(streamer.profile);
+    if (rating)
+        name += ` (${rating})`;
     return name;
 }
 
@@ -59,9 +63,15 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
+function getRating(profile) {
+    if (profile)
+        return profile.fesaRating;
+}
+
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const tv = playTime ? playTime.tv : 0;
+    const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
     if (links) {
         for (link of getTwitch(links))
@@ -69,23 +79,16 @@ function formatProfile(username, profile, playTime) {
         for (link of getYouTube(links))
             result.push(`[YouTube](https://${link})`);
     }
+    var length = 0;
+    var rating = 0;
     if (profile && profile.bio) {
-        const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-        const username = /@(\w+)/g;
-        var bio = profile.bio.split(/\s+/);
-        for (let i = 0; i < bio.length; i++) {
-            if (bio[i].match(social)) {
-                bio = bio.slice(0, i);
-                break;
-            }
-            for (match of bio[i].matchAll(username)) {
-                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
-            }
-        }
-        if (bio.length)
-            result.push(bio.join(' '));
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if ((length = bio.length)) {
+            rating = getRating(profile) ?? 1000;
+            result.push(bio);
+	}
     }
-    return result.join('\n');
+    return [((length + rating) * 1000000 + tv * 1000 + playTime.total), result.join('\n')];
 }
 
 function getTwitch(links) {
@@ -97,6 +100,21 @@ function getYouTube(links) {
     // https://stackoverflow.com/a/65726047
     const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
     return links.matchAll(pattern);
+}
+
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
 }
 
 function process(bot, msg, mode) {
