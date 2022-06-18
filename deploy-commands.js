@@ -35,6 +35,7 @@ const ratings = [
     { name: 'Breakthrough', value: 'breakthrough' },
     { name: 'Bullet', value: 'bullet' },
     { name: 'Classical', value: 'classical' },
+    { name: 'Correspondence', value: 'correspondence' },
     { name: 'Frisian', value: 'frisian' },
     { name: 'Frysk!', value: 'frysk' },
     { name: 'Puzzle', value: 'puzzle' },
