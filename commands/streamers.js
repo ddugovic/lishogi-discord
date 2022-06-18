@@ -64,6 +64,8 @@ function formatProfile(username, profile, playTime) {
     const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
+        for (link of getMaiaChess(links))
+            result.push(`[Maia Chess](https://${link})`);
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
         for (link of getYouTube(links))
@@ -75,6 +77,22 @@ function formatProfile(username, profile, playTime) {
             result.push(bio);
     }
     return result.join('\n');
+}
+
+function getMaiaChess(links) {
+    const pattern = /maiachess.com/g;
+    return links.matchAll(pattern);
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function formatBio(bio) {
@@ -90,17 +108,6 @@ function formatBio(bio) {
         }
     }
     return bio.join(' ');
-}
-
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
 }
 
 function process(bot, msg, mode) {

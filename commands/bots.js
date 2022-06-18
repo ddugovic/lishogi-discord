@@ -72,6 +72,8 @@ function formatProfile(username, profile, playTime) {
             result.push(`[GitHub](https://${link})`);
         for (link of getGitLab(links))
             result.push(`[GitLab](https://${link})`);
+        for (link of getMaiaChess(links))
+            result.push(`[Maia Chess](https://${link})`);
     }
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
@@ -103,6 +105,11 @@ function getGitHub(links) {
 
 function getGitLab(links) {
     const pattern = /gitlab\.com\/[\w-]{8,255}(?:\/[\w-]+)?/g;
+    return links.matchAll(pattern);
+}
+
+function getMaiaChess(links) {
+    const pattern = /maiachess.com/g;
     return links.matchAll(pattern);
 }
 

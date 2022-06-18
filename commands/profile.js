@@ -105,6 +105,8 @@ function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
+        for (link of getMaiaChess(links))
+            result.push(`[Maia Chess](https://${link})`);
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
         for (link of getYouTube(links))
@@ -116,6 +118,11 @@ function setAbout(embed, username, profile, playTime) {
             result.push(bio);
     }
     return embed.addField('About', result.join('\n'), true);
+}
+
+function getMaiaChess(links) {
+    const pattern = /maiachess.com/g;
+    return links.matchAll(pattern);
 }
 
 function getTwitch(links) {
