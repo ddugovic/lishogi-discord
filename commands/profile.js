@@ -108,7 +108,7 @@ function formatBio(bio) {
             break;
         }
         for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
         }
     }
     return bio.join(' ');
@@ -135,7 +135,7 @@ function setTeams(embed, username) {
 }
 
 function formatTeams(teams) {
-    return teams.map(team => team.name).join('\n');
+    return teams.map(team => `[${team.name}](https://lishogi.org/team/${team.id})`).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
