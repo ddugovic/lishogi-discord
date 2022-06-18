@@ -1,6 +1,6 @@
 const axios = require('axios');
-const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const Discord = require('discord.js');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
@@ -61,7 +61,6 @@ function getLastName(profile) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const pattern = /(?:twitch\.tv|youtube\.com)/;
     const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
