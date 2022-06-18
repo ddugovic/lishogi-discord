@@ -157,7 +157,7 @@ function setTeams(embed, username) {
 }
 
 function formatTeams(teams) {
-    return teams.map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
+    return teams.slice(0, 10).map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
