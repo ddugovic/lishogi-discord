@@ -62,7 +62,8 @@ function getLastName(profile) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const tv = playTime ? playTime.tv : 0;
+    const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
         for (link of getMaiaChess(links))
@@ -78,7 +79,7 @@ function formatProfile(username, profile, playTime) {
         if ((length = bio.length))
             result.push(bio);
     }
-    return [length, result.join('\n')];
+    return [(length * 1000 + tv), result.join('\n')];
 }
 
 function getMaiaChess(links) {
