@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
@@ -30,9 +31,11 @@ function formatProfile(data, favoriteMode) {
     if (data.disabled)
         return 'This account is closed.';
 
-    const [firstName, lastName] = [getFirstName(data), getLastName(data)];
-    const country = getCountry(data);
-    var nickname = firstName ?? lastName ?? data.username;
+    const username = data.username;
+    const profile = data.profile;
+    const [firstName, lastName] = [getFirstName(profile), getLastName(profile)];
+    const country = getCountry(profile);
+    var nickname = firstName ?? lastName ?? username;
     var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
@@ -58,7 +61,7 @@ function formatProfile(data, favoriteMode) {
     if (data.count.all)
         embed = embed.addFields(formatStats(data, favoriteMode));
 
-    return setTeams(embed, data)
+    return setTeams(embed, data.username)
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
@@ -68,25 +71,32 @@ function formatProfile(data, favoriteMode) {
         });
 }
 
-function getCountry(data) {
-    return data.profile ? data.profile.country : undefined;
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
 }
 
-function getFirstName(data) {
-    return data.profile ? data.profile.firstName : undefined;
+function getFirstName(profile) {
+    if (profile)
+        return profile.firstName;
 }
 
-function getLastName(data) {
-    return data.profile ? data.profile.lastName : undefined;
+function getLastName(profile) {
+    if (profile)
+        return profile.lastName;
 }
 
-function setTeams(embed, data) {
-    const url = `https://lishogi.org/api/team/of/${data.username}`;
+function setTeams(embed, username) {
+    const url = `https://lishogi.org/api/team/of/${username}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => {
-            const data = response.data;
-            return data.length ? embed.addField('Team', data.map(team => team.name).join('\n'), true) : embed;
+            const teams = formatTeams(response.data);
+            return teams ? embed.addField('Team', teams, true) : embed;
         });
+}
+
+function formatTeams(teams) {
+    return teams.map(team => team.name).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
@@ -120,7 +130,7 @@ function formatPerfs(perfs, mode) {
             rd = modes[i][1].rd;
             prog = modes[i][1].prog;
             rating = modes[i][1].rating;
-            games = `**${modes[i][1].games}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
+            games = `**${fn.format(modes[i][1].games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
         }
     }
     if (prog > 0)
@@ -132,23 +142,23 @@ function formatPerfs(perfs, mode) {
     return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
 }
 
-function formatStats(data, favoriteMode) {
-    const mode = getMostPlayedMode(data.perfs, favoriteMode);
-    if (data.count.all)
+function formatStats(stats, favoriteMode) {
+    const mode = getMostPlayedMode(stats.perfs, favoriteMode);
+    if (stats.count.all)
         return [
-            { name: 'Games', value: `**${data.count.rated}** rated, **${(data.count.all - data.count.rated)}** casual`, inline: true },
-            { name: `Rating (${title(mode)})`, value: formatPerfs(data.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatTime(data.playTime), inline: true }
+            { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
+            { name: `Rating (${title(mode)})`, value: formatPerfs(stats.perfs, mode), inline: true },
+            { name: 'Time Played', value: formatTime(stats.playTime ? stats.playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatPerfs(data.perfs, mode), inline: true }
+            { name: category, value: formatPerfs(stats.perfs, mode), inline: true }
        ];
 }
 
-function formatTime(playTime) {
+function formatTime(total) {
     var result = [];
-    for (duration of formatSeconds.formatSeconds(playTime.total).split(', ')) {
+    for (duration of formatSeconds.formatSeconds(total).split(', ')) {
         const [number, unit] = duration.split(' ');
         result.push(`**${number}** ${unit}`);
     }
