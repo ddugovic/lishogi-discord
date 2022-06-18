@@ -40,6 +40,7 @@ const ratings = [
     { name: 'Bullet', value: 'bullet' },
     { name: 'Chess960', value: 'chess960' },
     { name: 'Classical', value: 'classical' },
+    { name: 'Correspondence', value: 'correspondence' },
     { name: 'Crazyhouse', value: 'crazyhouse' },
     { name: 'King of the Hill', value: 'kingOfTheHill' },
     { name: 'Puzzle', value: 'puzzle' },
