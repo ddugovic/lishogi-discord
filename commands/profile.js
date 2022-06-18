@@ -14,8 +14,8 @@ async function profile(author, username) {
         }
         username = user.playstrategyName;
     }
-    var favoriteMode = user.favoriteMode;
-    url = `https://playstrategy.org/api/user/${username}`;
+    const favoriteMode = user.favoriteMode;
+    const url = `https://playstrategy.org/api/user/${username}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
@@ -56,10 +56,11 @@ function formatProfile(data, favoriteMode) {
         .setColor(0xFFFFFF)
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
-        .setTitle(`Challenge ${nickname} to a game!`)
-        .setURL(`https://playstrategy.org/?user=${data.username}#friend`);
+        .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setURL(`https://playstrategy.org/?user=${username}#friend`);
     if (data.count.all)
         embed = embed.addFields(formatStats(data, favoriteMode));
+    embed = setAbout(embed, username, profile, data.playTime);
 
     return { embeds: [ embed ] };
 }
@@ -77,6 +78,50 @@ function getFirstName(profile) {
 function getLastName(profile) {
     if (profile)
         return profile.lastName;
+}
+
+function setAbout(embed, username, profile, playTime) {
+    const links = profile ? (profile.links ?? profile.bio) : '';
+    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://playstrategy.org/@/${username})`];
+    if (links) {
+        for (link of getTwitch(links))
+            result.push(`[Twitch](https://${link})`);
+        for (link of getYouTube(links))
+            result.push(`[YouTube](https://${link})`);
+    }
+    if (profile && profile.bio) {
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if (bio)
+            result.push(bio);
+    }
+    return embed.addField('About', result.join('\n'), true);
+}
+
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://playstrategy.org/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
