@@ -2,16 +2,10 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function leaderboard(author, mode) {
-    const user = await User.findById(author.id).exec();
-    if (!mode) {
-        if (!user) {
-            return 'You need to set your lichess username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	mode = user.favoriteMode;
-    }
-    url = `https://lichess.org/player/top/1/${mode}`;
+    if (!mode)
+        mode = await getMode(author);
+    const url = `https://lichess.org/player/top/1/${mode ?? 'blitz'}`;
+    console.log(url);
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatLeaderboard(response.data))
         .catch((err) => {
@@ -20,6 +14,12 @@ async function leaderboard(author, mode) {
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
+}
+
+async function getMode(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.favoriteMode;
 }
 
 function formatLeaderboard(data) {

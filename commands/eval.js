@@ -20,18 +20,17 @@ async function eval(author, fen) {
     }
 }
 
-function formatCloudEval(fen, data) {
+function formatCloudEval(fen, eval) {
     const setup = cfen.parseFen(fen).unwrap();
     const pos = chess.Chess.fromSetup(setup).unwrap();
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
-    var message = `Nodes: ${Math.floor(data['knodes']/1000)}M, Depth: ${data['depth']}`;
-    const pvs = data['pvs'];
-    for (const pv in pvs) {
+    var message = [`Nodes: ${Math.floor(eval['knodes']/1000)}M, Depth: ${eval['depth']}`];
+    for (const pv in eval.pvs) {
         const variation = pvs[pv]['moves'].split(' ').map(uci => util.parseUci(uci));
-        message += `\n${formatter.format(pvs[pv]['cp']/100)}: ${san.makeSanVariation(pos, variation)}`;
+        message.push(`${formatter.format(pvs[pv]['cp']/100)}: ${san.makeSanVariation(pos, variation)}`);
     }
-    message += `\nhttps://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`
-    return message;
+    message += (`https://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`);
+    return message.join('\n');
 }
 
 function process(bot, msg, fen) {

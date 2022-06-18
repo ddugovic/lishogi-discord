@@ -2,16 +2,12 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function arena(author, favoriteMode) {
-    const user = await User.findById(author.id).exec();
     if (!favoriteMode) {
-        if (!user) {
-            return 'You need to set your lichess username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	favoriteMode = user.favoriteMode;
+        const user = await User.findById(author.id).exec();
+        if (user)
+	    favoriteMode = user.favoriteMode;
     }
-    url = 'https://lichess.org/api/tournament';
+    const url = 'https://lichess.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => formatArena(response.data, favoriteMode))
         .catch((err) => {
@@ -23,11 +19,13 @@ async function arena(author, favoriteMode) {
 }
 
 function formatArena(data, favoriteMode) {
-    for (var status in data) {
-        var arenas = data[status];
-        for (var i = 0; i < arenas.length; i++) {
-            if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
-                return 'https://lichess.org/tournament/' + arenas[i].id;
+    if (favoriteMode) {
+        for (var status in data) {
+            var arenas = data[status];
+            for (var i = 0; i < arenas.length; i++) {
+                if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
+                    return 'https://lichess.org/tournament/' + arenas[i].id;
+                }
             }
         }
     }

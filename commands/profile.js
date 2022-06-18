@@ -7,8 +7,8 @@ const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function profile(author, username) {
-    const user = await User.findById(author.id).exec();
     if (!username) {
+        const user = await User.findById(author.id).exec();
         if (!user || !user.lichessName) {
             return 'You need to set your lichess username with setuser!';
         }
@@ -16,7 +16,7 @@ async function profile(author, username) {
     }
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
-        .then(response => formatProfile(response.data, user.favoriteMode))
+        .then(response => formatProfile(response.data, username))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);

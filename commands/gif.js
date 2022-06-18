@@ -9,7 +9,7 @@ async function gif(author, username) {
         }
         username = user.lichessName;
     }
-    url = `https://lichess.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
+    const url = `https://lichess.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrent(response.data))
         .catch((err) => {
