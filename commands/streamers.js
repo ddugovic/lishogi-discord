@@ -37,7 +37,63 @@ function formatStreamers(data) {
 }
 
 function formatName(streamer) {
-    return streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
+    var name = getLastName(streamer.profile) ?? streamer.username;
+    if (streamer.title)
+        name = `**${streamer.title}** ${name}`;
+    const country = getCountry(streamer.profile);
+    if (country && countryFlags.countryCode(country))
+        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    return name;
+}
+
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
+}
+
+function getLastName(profile) {
+    if (profile)
+        return profile.lastName;
+}
+
+function formatProfile(username, profile, playTime) {
+    const links = profile ? (profile.links ?? profile.bio) : '';
+    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lidraughts.org/@/${username})`];
+    if (links) {
+        for (link of getTwitch(links))
+            result.push(`[Twitch](https://${link})`);
+        for (link of getYouTube(links))
+            result.push(`[YouTube](https://${link})`);
+    }
+    if (profile && profile.bio) {
+        const social = /:\/|:$|twitch\.tv|youtube\.com/i;
+        const username = /@(\w+)/g;
+        var bio = profile.bio.split(/\s+/);
+        for (let i = 0; i < bio.length; i++) {
+            if (bio[i].match(social)) {
+                bio = bio.slice(0, i);
+                break;
+            }
+            for (match of bio[i].matchAll(username)) {
+                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
+            }
+        }
+        if (bio.length)
+            result.push(bio.join(' '));
+    }
+    return result.join('\n');
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function process(bot, msg, mode) {
