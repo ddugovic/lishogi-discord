@@ -36,7 +36,7 @@ function setStreamers(data) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '🦄' : '';
-    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime, badges);
+    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
     return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
 }
 
@@ -68,7 +68,7 @@ function getRating(profile) {
         return profile.fideRating;
 }
 
-function formatProfile(username, profile, playTime, badges) {
+function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
     const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
@@ -90,7 +90,7 @@ function formatProfile(username, profile, playTime, badges) {
             result.push(bio);
 	}
     }
-    return [((length + badges.length) * 1000000 + (tv + rating) * 1000 + playTime.total), result.join('\n')];
+    return [((length + rating) * 1000000 + tv * 1000 + playTime.total), result.join('\n')];
 }
 
 function getMaiaChess(links) {
