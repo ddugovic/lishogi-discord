@@ -29,9 +29,11 @@ function formatProfile(data, favoriteMode) {
     if (data.disabled)
         return 'This account is closed.';
 
-    const [firstName, lastName] = [getFirstName(data), getLastName(data)];
-    const country = getCountry(data);
-    var nickname = firstName ?? lastName ?? data.username;
+    const username = data.username;
+    const profile = data.profile;
+    const [firstName, lastName] = [getFirstName(profile), getLastName(profile)];
+    const country = getCountry(profile);
+    var nickname = firstName ?? lastName ?? username;
     var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
@@ -63,23 +65,26 @@ function formatProfile(data, favoriteMode) {
         .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lichess.org/?user=${data.username}#friend`);
+        .setURL(`https://lichess.org/?user=${username}#friend`);
     return setStats(embed, data, favoriteMode)
-        .then(embed => { return setTeams(embed, data) })
-        .then(embed => { return setStorm(embed, data) })
+        .then(embed => { return setBio(embed, profile) })
+        .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
-function getCountry(data) {
-    return data.profile ? data.profile.country : undefined;
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
 }
 
-function getFirstName(data) {
-    return data.profile ? data.profile.firstName : undefined;
+function getFirstName(profile) {
+    if (profile)
+        return profile.firstName;
 }
 
-function getLastName(data) {
-    return data.profile ? data.profile.lastName : undefined;
+function getLastName(profile) {
+    if (profile)
+        return profile.lastName;
 }
 
 function setStats(embed, data, favoriteMode) {
@@ -94,22 +99,26 @@ function setStats(embed, data, favoriteMode) {
         });
 }
 
-function setTeams(embed, data) {
-    const url = `https://lichess.org/api/team/of/${data.username}`;
+function setBio(embed, profile) {
+    if (profile && profile.bio) {
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if (bio)
+            return embed.addField('Bio', bio, true);
+    }
+    return embed;
+}
+
+function setTeams(embed, username) {
+    const url = `https://lichess.org/api/team/of/${username}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => {
-            const data = response.data;
-            return data.length ? embed.addField('Teams', data.map(team => team.name).join('\n'), true) : embed;
+            const teams = formatTeams(response.data);
+            return teams ? embed.addField('Teams', teams, true) : embed;
         });
 }
 
-function setStorm(embed, data) {
-    const url = `https://lichess.org/api/storm/dashboard/${data.username}?days=0`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const data = response.data;
-            return data && data.high.allTime ? embed.addField('Storm', formatStorm(data), true) : embed;
-        });
+function formatTeams(teams) {
+    return teams.map(team => team.name).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
@@ -155,29 +164,33 @@ function formatPerfs(perfs, mode) {
     return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
 }
 
-function formatStats(data, mode, perf) {
+function formatStats(stats, mode, perf) {
     const category = perf && perf.rank ? `Rating (${title(mode)}) #${perf.rank}` : `Rating (${title(mode)})`;
-    if (data.count.all)
+    if (stats.count.all)
         return [
-            { name: 'Games', value: `**${data.count.rated}** rated, **${(data.count.all - data.count.rated)}** casual`, inline: true },
-            { name: category, value: formatPerfs(data.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(data.playTime ? data.playTime.total : 0), inline: true }
+            { name: 'Games', value: `**${stats.count.rated}** rated, **${(stats.count.all - stats.count.rated)}** casual`, inline: true },
+            { name: category, value: formatPerfs(stats.perfs, mode), inline: true },
+            { name: 'Time Played', value: formatSeconds.formatSeconds(stats.playTime ? stats.playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatPerfs(data.perfs, mode), inline: true }
+            { name: category, value: formatPerfs(stats.perfs, mode), inline: true }
        ];
 }
 
-function formatStorm(data) {
-    var result = '';
-    for ([key, score] of Object.entries(data.high)) {
-        if (key == 'allTime')
-            result = `Best: **${score}**${result}`;
-        else if (score)
-            result = `\n${title(key)}: **${score}**${result}`;
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
+        }
     }
-    return result.trim();
+    return bio.join(' ');
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
