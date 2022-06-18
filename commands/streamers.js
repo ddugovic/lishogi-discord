@@ -71,11 +71,15 @@ function formatProfile(username, profile, playTime) {
     }
     if (profile && profile.bio) {
         const social = /:\/|:$|twitch\.tv|youtube\.com/i;
+        const username = /@(\w+)/g;
         var bio = profile.bio.split(/\s+/);
         for (let i = 0; i < bio.length; i++) {
             if (bio[i].match(social)) {
                 bio = bio.slice(0, i);
                 break;
+            }
+            for (match of bio[i].matchAll(username)) {
+                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
             }
         }
         if (bio.length)
