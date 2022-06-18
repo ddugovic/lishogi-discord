@@ -83,12 +83,12 @@ function formatProfile(username, profile, playTime) {
 }
 
 function getGitHub(links) {
-    const pattern = /github.com\/\w{,39}\/\w+/g;
+    const pattern = /github.com\/[\w-]{4,39}\/[\w-]+/g;
     return links.matchAll(pattern);
 }
 
 function getGitLab(links) {
-    const pattern = /gitlab.com\/\w{,255}\/\w+/g;
+    const pattern = /gitlab.com\/[\w-]{8,255}\/[\w-]+/g;
     return links.matchAll(pattern);
 }
 
