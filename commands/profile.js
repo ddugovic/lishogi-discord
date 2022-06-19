@@ -27,34 +27,34 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, favoriteMode) {
-    if (data.disabled)
+function formatProfile(user, favoriteMode) {
+    if (user.disabled)
         return 'This account is closed.';
 
-    const username = data.username;
-    const [country, firstName, lastName] = getCountryAndName(data.profile) ?? [];
+    const username = user.username;
+    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(data.title, name, data.patron, data.trophies, data.online, data.playing, data.streaming);
+    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies, user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
         .setColor(color)
-        .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: data.playing ?? data.url})
+        .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
-    const [mode, rating] = getMostPlayedMode(data.perfs, data.count.rated ? favoriteMode : 'puzzle');
+    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     if (unranked(mode, rating)) {
-        embed = embed.addFields(formatStats(data.count, data.playTime, mode, rating));
-        embed = setAbout(embed, username, data.profile, data.playTime);
+        embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
+        embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
             .then(embed => { return { embeds: [ embed ] } });
     }
-    return setStats(embed, data.username, data.count, data.playTime, mode, rating)
-        .then(embed => { return setAbout(embed, username, data.profile, data.playTime) })
+    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
+        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
