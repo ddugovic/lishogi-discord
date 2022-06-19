@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const blog = require('./commands/blog');
 const bots = require('./commands/bots');
 const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
@@ -24,6 +25,12 @@ const commands = {
         description: "Find an upcoming or recent arena",
         process: arena.process,
         reply: arena.reply
+    },
+    "blog": {
+        usage: "",
+        description: "Display latest blog entry",
+        process: blog.process,
+        reply: blog.reply
     },
     "bots": {
         usage: "",
