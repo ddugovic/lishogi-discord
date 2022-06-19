@@ -7,7 +7,6 @@ async function blog(author) {
     return read('https://playstrategy.org/blog.atom')
         .then(feed => formatBlog(feed))
         .catch(error => {
-            console.log(error)
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -17,6 +16,8 @@ async function blog(author) {
 
 function formatBlog(blog) {
     const entry = blog.entries[0];
+    const author = entry.author ?? blog.title;
+    const link = getLink(author) ?? blog.link;
     const embed = new Discord.MessageEmbed()
         .setAuthor({name: blog.title, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: blog.link})
         .setTitle(entry.title)
@@ -24,6 +25,12 @@ function formatBlog(blog) {
         .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setDescription(entry.description);
     return { embeds: [ embed ] };
+}
+
+function getLink(author) {
+    for (match of author.matchAll(/@(\w+)/g)) {
+        return `https://playstrategy.org/@/${match[1]}`;
+    }
 }
 
 function process(bot, msg) {
