@@ -21,18 +21,13 @@ function filter(bots) {
 
 function setBots(data) {
     if (data.length) {
-        const url = 'https://lishogi.org/api/users';
-        const ids = data.map(bot => bot.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const embed = new Discord.MessageEmbed()
-                    .setColor(0xFFFFFF)
-                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                    .setTitle(`:robot: Lishogi Bots`)
-                    .setURL('https://lishogi.org/player/bots')
-                    .addFields(response.data.map(formatBot))
-                return { embeds: [ embed ] };
-        });
+        const embed = new Discord.MessageEmbed()
+            .setColor(0xFFFFFF)
+            .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+            .setTitle(`:robot: Lishogi Bots`)
+            .setURL('https://lishogi.org/player/bots')
+            .addFields(data.map(formatBot))
+        return { embeds: [ embed ] };
     } else {
         return 'No bots are currently online.';
     }
