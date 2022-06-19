@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const blog = require('./commands/blog');
 const deleteUser = require('./commands/deleteUser');
 const gif = require('./commands/gif');
 const leaderboard = require('./commands/leaderboard');
@@ -20,6 +21,12 @@ const commands = {
         description: "Find an upcoming or recent arena",
         process: arena.process,
         reply: arena.reply
+    },
+    "blog": {
+        usage: "",
+        description: "Display latest blog entry",
+        process: blog.process,
+        reply: blog.reply
     },
     "deleteuser": {
         usage: "",
