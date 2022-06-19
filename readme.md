@@ -15,21 +15,23 @@
 # Command List
 ```
 !help
-    Sends a list of available commands
+    Send a list of available commands
 !setuser <username>
-    Sets your woogles username
+    Set your woogles username
 !deleteuser
-    Deletes your woogles username from the bot's database
+    Delete your woogles username from the bot's database
 !recent [username]
-    Shares your (or a user's) recent game URL
+    Share your (or a user's) recent game URL
 !gif [username]
-    Shares your (or a user's) recent game
+    Share your (or a user's) recent game
 !profile [username]
-    Displays your (or a user's) profile
+    Display your (or a user's) profile
+!news
+    Display the latest announcement
 !puzzle
-    Displays today's puzzle
+    Display today's puzzle
 !privacy
     View privacy policy
 !stop
-    Stops the bot (owner only)
+    Stop the bot (owner only)
 ```

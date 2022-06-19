@@ -9,7 +9,7 @@ async function recent(author, username) {
         }
         username = user.wooglesName;
     }
-    url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
+    const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
     const request = {
         'username': username,
         'numGames': 1,

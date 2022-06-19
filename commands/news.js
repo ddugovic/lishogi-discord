@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const User = require('../models/User');
 
 async function news(author) {
-    url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
+    const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
     const context = {
         'authority': 'woogles.io',
         'accept': 'application/json',
@@ -28,7 +28,6 @@ function formatAnnouncement(data) {
         .setURL(link)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(announcement.body);
-    console.log(embed);
     return { embeds: [ embed ] };
 }
 

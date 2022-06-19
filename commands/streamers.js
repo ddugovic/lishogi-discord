@@ -1,8 +1,7 @@
 const axios = require('axios');
 
 async function streamers(author) {
-    url = 'https://api.woogles.io/pub/streamers';
-    return axios.get(url)
+    return axios.get('https://api.woogles.io/pub/streamers')
         .then(response => formatStreamers(response.data))
         .catch((err) => {
             console.log(`Error in streamers(${author.username}): \
