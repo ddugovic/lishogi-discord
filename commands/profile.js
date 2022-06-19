@@ -38,13 +38,7 @@ function formatProfile(data, favoriteMode) {
         .then(embed => { return setStats(embed, data, favoriteMode) })
         .then(embed => { return setStreamer(embed, data, firstName) })
         .then(embed => { return setClubs(embed, data) })
-        .then(embed => { return { embeds: [ embed ] } })
-        .catch(error => {
-            console.log(`Error in formatProfile(${data}, ${favoriteMode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
-        });
+        .then(embed => { return { embeds: [ embed ] } });
 }
 
 function getFirstName(data) {
@@ -97,12 +91,11 @@ function setStats(embed, data, favoriteMode) {
 }
 
 function formatStats(embed, data, response, favoriteMode) {
-    const mode = getMostRecentMode(response.data, favoriteMode);
+    const [mode, rating] = getMostRecentMode(response.data, favoriteMode);
     const category = title(mode.replace('chess_',''));
-    const rating = getMostRecentRating(response.data, mode);
     return [
-        { name: 'Followers', value: `${fn.format(data.followers)}`, inline: true },
-        { name: `Rating (${category})`, value: rating, inline: true },
+        { name: 'Followers', value: `**${fn.format(data.followers)}**`, inline: true },
+        { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
         { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
    ];
 }
@@ -128,36 +121,26 @@ function setStreamer(embed, data, firstName) {
 function getMostRecentMode(stats, favoriteMode) {
     var modes = modesArray(stats);
     var mostRecentMode = modes[0][0];
-    var mostRecentDate = modes[0][1] && modes[0][1].last ? modes[0][1].last.date : 0;
+    var mostRecentRating = modes[0][1];
     for (var i = 0; i < modes.length; i++) {
-        if (modes[i][1].last && modes[i][1].last.date > mostRecentDate) {
+        if (modes[i][1].last && modes[i][1].last.date > mostRecentRating.last.date) {
             mostRecentMode = modes[i][0];
-            mostRecentDate = modes[i][1].last.date;
+            mostRecentRating = modes[i][1];
         }
     }
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostRecentMode = modes[i][0];
+            mostRecentRating = modes[i][1];
         }
     }
-    return mostRecentMode;
+    return [mostRecentMode, mostRecentRating];
 }
-// Get string with highest rating formatted for profile
-function getMostRecentRating(stats, mostRecentMode) {
-    var modes = modesArray(stats);
-    var mostRecentRD = modes[0][1].last ? modes[0][1].last.rd : undefined;
-    var mostRecentRating = modes[0][1].last ? modes[0][1].last.rating : undefined;
-    var mostRecentGames = modes[0][1].record ? modes[0][1].record.win + modes[0][1].record.loss + modes[0][1].record.draw : undefined;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mostRecentMode && modes[i][1].last) {
-            mostRecentRD = modes[i][1].last.rd;
-            mostRecentRating = modes[i][1].last.rating;
-            mostRecentGames = modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
-        }
-    }
+
+function formatRating(mode, last, record) {
+    const games = record.win + record.loss + record.draw;
     const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
-    mostRecentGames = mostRecentGames + ' ' + plural((puzzleModes.includes(mostRecentMode) ? 'attempt' : ' game'), mostRecentGames);
-    return mostRecentRating ? `${mostRecentRating} ± ${(2 * mostRecentRD)} over ${mostRecentGames}` : 'None';
+    return `**${last.rating}** ± **${(2 * last.rd)}** over **${fn.format(games)}** ${plural((puzzleModes.includes(mode) ? 'attempt' : ' game'), games)}`;
 }
 
 function title(str) {
