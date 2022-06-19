@@ -25,20 +25,15 @@ function source(bot) {
         return bot.profile.links.match(git);
 }
 
-function setBots(data) {
-    if (data.length) {
-        const url = 'https://lichess.org/api/users';
-        const ids = data.map(bot => bot.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const embed = new Discord.MessageEmbed()
-                    .setColor(0xFFFFFF)
-                    .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-                    .setTitle(`:robot: Lichess Bots`)
-                    .setURL('https://lichess.org/player/bots')
-                    .addFields(response.data.map(formatBot))
-                return { embeds: [ embed ] };
-        });
+function setBots(bots) {
+    if (bots.length) {
+        const embed = new Discord.MessageEmbed()
+            .setColor(0xFFFFFF)
+            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+            .setTitle(`:robot: Lichess Bots`)
+            .setURL('https://lichess.org/player/bots')
+            .addFields(bots.map(formatBot))
+        return { embeds: [ embed ] };
     } else {
         return 'No bots are currently online.';
     }
