@@ -78,6 +78,7 @@ client.login(config.token);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
+    console.log(interaction.user.id, interaction.commandName);
     const cmdTxt = interaction.commandName;
     let command = commands[cmdTxt];
     if (command) {
