@@ -74,12 +74,12 @@ function formatPlayer(title, name, patron, trophies, url, online, playing, strea
     }
 
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
-    var status = streaming ? '📡 Streaming' : '';
+    var status = streaming ? '  📡 Streaming' : '';
     if (playing)
         status += playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
-    else if (!status)
-        status = online ? '📶 Online' : '🔴 Offline';
-    return {'name': `${status}  ${name}  ${badges}`, iconURL: null, 'url': playing ?? url};
+    else if (!status && online)
+        status = '  📶 Online';
+    return {'name': `${name}${status}  ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', 'url': playing ?? url};
 }
 
 function unranked(mode, rating) {

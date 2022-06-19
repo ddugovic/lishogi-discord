@@ -29,8 +29,8 @@ function formatPuzzle(game, puzzle) {
     const uci = util.makeUci(move);
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-tile.png', url: `https://lichess.org/${game.id}` })
-        .setThumbnail('https://lichess1.org/assets/logo/logo-black.png')
+        .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
         .setURL(`https://lichess.org/training/${puzzle.id}`)
 	.setImage(`https://lichess.org/export/gif/${uri}?lastMove=${uci}`);
