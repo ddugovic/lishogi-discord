@@ -80,7 +80,7 @@ function formatPlayer(title, name, patron, trophies, online, playing, streaming)
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
     var status = streaming ? '📡 Streaming' : '';
     if (playing)
-        status += playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
+        status += data.playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
