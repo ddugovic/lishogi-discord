@@ -32,14 +32,16 @@ function formatProfile(data, favoriteMode) {
         return 'This account is closed.';
 
     const username = data.username;
-    const [country, firstName, lastName] = getCountryAndName(data.profile);
+    const [country, firstName, lastName] = getCountryAndName(data.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    const [color, author] = formatPlayer(data.title, name, data.patron, data.trophies, data.online, data.playing, data.streaming);
 
     var embed = new Discord.MessageEmbed()
-        .setAuthor(formatPlayer(data.title, name, data.patron, data.trophies, data.url, data.online, data.playing, data.streaming))
+        .setColor(color)
+        .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: data.playing ?? data.url})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
@@ -57,7 +59,10 @@ function formatProfile(data, favoriteMode) {
         .then(embed => { return { embeds: [ embed ] } });
 }
 
-function formatPlayer(title, name, patron, trophies, url, online, playing, streaming) {
+function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+    const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
+        playing ? 0x00FF00 :
+        online ? 0x007F00 : 0x000000;
     if (title)
         name = `${title} ${name}`;
     var badges = patron ? '🦄' : '';
@@ -78,7 +83,7 @@ function formatPlayer(title, name, patron, trophies, url, online, playing, strea
         status += playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
     else if (!status && online)
         status = '  📶 Online';
-    return {'name': `${name}${status}  ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', 'url': playing ?? url};
+    return [color, `${name}${status}  ${badges}`];
 }
 
 function unranked(mode, rating) {
