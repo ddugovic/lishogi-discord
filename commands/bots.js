@@ -21,18 +21,13 @@ function filter(bots) {
 
 function setBots(data) {
     if (data.length) {
-        const url = 'https://playstrategy.org/api/users';
-        const ids = data.map(bot => bot.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const embed = new Discord.MessageEmbed()
-                    .setColor(0xFFFFFF)
-                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
-                    .setTitle(`:robot: PlayStrategy Bots`)
-                    .setURL('https://playstrategy.org/player/bots')
-                    .addFields(response.data.map(formatBot))
-                return { embeds: [ embed ] };
-        });
+        const embed = new Discord.MessageEmbed()
+            .setColor(0xFFFFFF)
+            .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+            .setTitle(`:robot: PlayStrategy Bots`)
+            .setURL('https://playstrategy.org/player/bots')
+            .addFields(response.data.map(formatBot))
+        return { embeds: [ embed ] };
     } else {
         return 'No bots are currently online.';
     }
