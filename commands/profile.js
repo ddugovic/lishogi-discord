@@ -127,67 +127,41 @@ function getYouTube(links) {
 function getMostPlayedMode(perfs, favoriteMode) {
     var modes = modesArray(perfs);
     var mostPlayedMode = modes[0][0];
-    var mostPlayedGames = modes[0][1].games;
+    var mostPlayedRating = modes[0][1];
     for (var i = 0; i < modes.length; i++) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames) {
+        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedGames = modes[i][1];
         }
     }
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedGames = modes[i][1];
         }
     }
-    return mostPlayedMode;
+    return [mostPlayedMode, mostPlayedRating];
 }
-// Get string with highest rating formatted for profile
-function formatPerfs(perfs, mode) {
-    const modes = modesArray(perfs);
-    var rd = modes[0][1].rd;
-    var prog = modes[0][1].prog;
-    var rating = modes[0][1].rating;
-    var games = modes[0][1].games;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0] == mode) {
-            rd = modes[i][1].rd;
-            prog = modes[i][1].prog;
-            rating = modes[i][1].rating;
-            games = `**${fn.format(modes[i][1].games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), modes[i][1].games)}`;
-        }
-    }
-    if (prog > 0)
-        prog = `  ▲**${prog}**📈`;
-    else if (prog < 0)
-        prog = `  ▼**${Math.abs(prog)}**📉`;
-    else
-        prog = '';
-    return `**${rating}** ± **${2*rd}**${prog} over ${games}`;
+
+function formatRating(mode, rating) {
+    return `**${rating.rating}** ± **${2 * rating.rd}** over **${fn.format(rating.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), rating.games)}`;
 }
 
 function formatStats(stats, favoriteMode) {
-    const mode = getMostPlayedMode(stats.perfs, favoriteMode);
+    const [mode, rating] = getMostPlayedMode(stats.perfs, favoriteMode);
+    const prog = (rating.prog > 0) ? ` ▲**${rating.prog}**📈` : (rating.prog < 0) ? ` ▼**${Math.abs(rating.prog)}**📉` : '';
+    const category = `${title(mode)}${prog}`;
     if (stats.count.all)
         return [
             { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
-            { name: `Rating (${title(mode)})`, value: formatPerfs(stats.perfs, mode), inline: true },
-            { name: 'Time Played', value: formatTime(stats.playTime ? stats.playTime.total : 0), inline: true }
+            { name: category, value: formatRating(mode, rating), inline: true },
+            { name: 'Time Played', value: formatSeconds.formatSeconds(stats.playTime ? stats.playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatPerfs(stats.perfs, mode), inline: true }
+            { name: category, value: formatRating(mode, rating), inline: true }
        ];
-}
-
-function formatTime(total) {
-    var result = [];
-    for (duration of formatSeconds.formatSeconds(total).split(', ')) {
-        const [number, unit] = duration.split(' ');
-        result.push(`**${number}** ${unit}`);
-    }
-    return result.join(', ');
 }
 
 function title(str) {
