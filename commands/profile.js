@@ -32,15 +32,16 @@ function formatProfile(user, favoriteMode) {
         return 'This account is closed.';
 
     const username = user.username;
-    const [country, firstName, lastName] = getCountryAndName(user.profile);
+    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
-        .setAuthor(formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.url, user.online, user.playing, user.streaming))
+        .setColor(color)
+        .setAuthor({name: author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lishogi.org/?user=${username}#friend`);
@@ -58,7 +59,10 @@ function formatProfile(user, favoriteMode) {
         .then(embed => { return { embeds: [ embed ] } });
 }
 
-function formatPlayer(title, name, patron, trophies, url, online, playing, streaming) {
+function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+    const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
+        playing ? 0x00FF00 :
+        online ? 0x007F00 : 0x000000;
     if (title)
         name = `${title} ${name}`;
     var badges = patron ? '⛩️' : '';
@@ -77,9 +81,9 @@ function formatPlayer(title, name, patron, trophies, url, online, playing, strea
     var status = streaming ? '📡 Streaming' : '';
     if (playing)
         status += playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
-    else if (!status)
-        status = online ? '📶 Online' : '🔴 Offline';
-    return {'name': `${status}  ${name}  ${badges}`, iconURL: null, 'url': playing ?? url};
+    else if (!status && online)
+        status = '  📶 Online';
+    return [color, `${name}${status}  ${badges}`];
 }
 
 function unranked(mode, rating) {
