@@ -7,7 +7,6 @@ async function blog(author) {
     return read('https://lidraughts.org/blog.atom')
         .then(feed => formatBlog(feed))
         .catch(error => {
-            console.log(error)
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -17,13 +16,21 @@ async function blog(author) {
 
 function formatBlog(blog) {
     const entry = blog.entries[0];
+    const author = entry.author ?? blog.title;
+    const link = getLink(author) ?? blog.link;
     const embed = new Discord.MessageEmbed()
-        .setAuthor({name: blog.title, iconURL: 'https://lidraughts.org/assets/images/favicon-32-white.png', url: blog.link})
+        .setAuthor({name: blog.title, iconURL: 'https://lidraughts.org/assets/images/favicon-32-black.png', url: blog.link})
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
         .setDescription(entry.description);
     return { embeds: [ embed ] };
+}
+
+function getLink(author) {
+    for (match of author.matchAll(/@(\w+)/g)) {
+        return `https://lidraughts.org/@/${match[1]}`;
+    }
 }
 
 function process(bot, msg) {
