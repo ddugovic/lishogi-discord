@@ -39,7 +39,6 @@ function formatProfile(data, favoriteMode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
 
     var embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
         .setAuthor(formatPlayer(data.title, name, data.patron, data.trophies, data.url, data.online, data.playing, data.streaming))
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)

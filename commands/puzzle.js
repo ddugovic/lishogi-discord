@@ -35,7 +35,6 @@ function formatPuzzle(game, puzzle) {
         .setURL(`https://lichess.org/training/${puzzle.id}`)
 	.setImage(`https://lichess.org/export/gif/${uri}?lastMove=${uci}`);
     const data = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
         .addField('Themes', puzzle.themes.map(title).join(', '));
     return { embeds: [ embed, data ] };
 }
