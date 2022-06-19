@@ -69,6 +69,7 @@ const ratings = [
 ];
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('blog').setDescription("Display latest blog entry"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your playstrategy username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game URL").addStringOption(option => option.setName('username').setDescription('Enter playstrategy player username')),
