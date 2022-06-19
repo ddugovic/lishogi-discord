@@ -27,57 +27,67 @@ async function profile(author, username) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, favoriteMode) {
-    if (data.disabled)
+function formatProfile(user, favoriteMode) {
+    if (user.disabled)
         return 'This account is closed.';
 
-    const username = data.username;
-    const profile = data.profile;
-    const [firstName, lastName] = [getFirstName(profile), getLastName(profile)];
-    const country = getCountry(profile);
+    const username = user.username;
+    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    if (data.title)
-        playerName = `${data.title} ${playerName}`;
-
-    const link = data.playing ?? data.url;
-    var status = '';
-    if (data.streaming)
-        status = '📡 Streaming';
-    if (data.playing)
-        status += data.playing.includes('white') ? '  ⚪ Playing' : '  ⚫ Playing';
-    else if (!status)
-        status = (data.online ? '📶 Online' : '🔴 Offline');
-    var badges = data.patron ? '🍺' : '';
+    const [color, author] = formatPlayer(user.title, playerName, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
-        .setAuthor({name: `${status}  ${playerName}  ${badges}`, iconURL: null, url: link})
-        .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+        .setColor(color)
+        .setAuthor({name: author, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: user.playing ?? user.url})
+        .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://playstrategy.org/?user=${username}#friend`);
-    if (data.count.all)
-        embed = embed.addFields(formatStats(data, favoriteMode));
-    embed = setAbout(embed, username, profile, data.playTime);
+    if (user.count.all)
+        embed = embed.addFields(formatStats(user, favoriteMode));
+    embed = setAbout(embed, username, profile, user.playTime);
 
     return { embeds: [ embed ] };
 }
 
-function getCountry(profile) {
-    if (profile)
-        return profile.country;
+function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+    const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
+        playing ? 0x00FF00 :
+        online ? 0x007F00 : 0x000000;
+    if (title)
+        name = `${title} ${name}`;
+    var badges = patron ? '🍺' : '';
+    for (const trophy of trophies) {
+        badges +=
+            trophy.type == 'developer' ? '🛠️':
+            trophy.type == 'moderator' ? '🔱':
+            trophy.type == 'verified' ? '✔️':
+            trophy.type.startsWith('marathon') ? '🌐' :
+            trophy.top == 1 ? '🥇' :
+            trophy.top == 10 ? '🥈' :
+            trophy.top ? '🥉' : '🏆';
+    }
+
+    // A player is a) streaming and playing b) streaming c) playing d) online e) offline
+    var status = streaming ? '📡 Streaming' : '';
+    if (playing)
+        status += playing.includes('white') ? '  ⚪ Playing' : '  ⚫ Playing';
+    else if (!status && online)
+        status = '  📶 Online';
+    return [color, `${name}${status}  ${badges}`];
 }
 
-function getFirstName(profile) {
-    if (profile)
-        return profile.firstName;
+function unranked(mode, rating) {
+    // Players whose RD is above this threshold are unranked
+    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
+    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
-function getLastName(profile) {
+function getCountryAndName(profile) {
     if (profile)
-        return profile.lastName;
+        return [profile.country, profile.firstName, profile.lastName];
 }
 
 function setAbout(embed, username, profile, playTime) {
