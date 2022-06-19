@@ -82,18 +82,18 @@ function parseStats(ratings, stats) {
         // puzzles are classic and untimed
         const category = modes[i][0].split('.');
         const game = formatTitle(category[1] == 'puzzle' ? 'classic' : category[1]);
-        const speed = formatTitle(category[1] == 'puzzle' ? 'puzzle' : category[2]);
+        const speed = formatTitle(category[1] == 'puzzle' ? 'puzzle' : category[2]).replace('Ultrablitz','Ultra');
         const lexicon = `${formatLexicon(category[0])} ${game}`;
         const rating = modes[i][1];
-        var perf = `${speed}: ${rating.r.toFixed(0)} ± ${(2 * rating.rd).toFixed(0)}`;
+        var perf = `${speed}: **${rating.r.toFixed(0)}** ± **${(2 * rating.rd).toFixed(0)}**`;
         var record = stats[modes[i][0]];
         if (record) {
             var wins = record.d1.Wins.t;
             var losses = record.d1.Losses.t;
             var draws = record.d1.Draws.t;
-            var bingos = record.d1['Bingos'].t;
+            var bingos = record.d1.Bingos.t;
             // Discord embeds lack a two-column display (classic / wordsmog)
-            //perf = `${speed}: ${rating.r.toFixed(0)} ${formatRecord(wins, losses, draws, bingos)}`;
+            //perf = `${speed}: **${rating.r.toFixed(0)}** ${formatRecord(wins, losses, draws, bingos)}`;
             if ((record = records[lexicon])) {
                 wins += record[0];
                 losses += record[1];
