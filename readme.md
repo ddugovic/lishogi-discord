@@ -32,6 +32,8 @@
     Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by lishogi (or a user)
+!blog
+    Display latest blog entry
 !bots
     Display online bots
 !coach
