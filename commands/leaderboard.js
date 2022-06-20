@@ -1,32 +1,125 @@
 const axios = require('axios');
+const countryFlags = require('emoji-flags');
+const Discord = require('discord.js');
+const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function leaderboard(author, mode) {
-    const user = await User.findById(author.id).exec();
-    if (!mode) {
-        if (!user) {
-            return 'You need to set your lishogi username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	mode = user.favoriteMode;
-    }
-    url = `https://lishogi.org/player/top/1/${mode}`;
+    if (!mode)
+        mode = await getMode(author);
+    const url = `https://lishogi.org/player/top/1/${mode ?? 'blitz'}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => formatLeaderboard(response.data))
-        .catch((err) => {
+        .then(response => setPlayers(response.data.users, mode))
+        .catch((error) => {
             console.log(`Error in leaderboard(${author.username}, ${mode}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
-function formatLeaderboard(data) {
-    if (data.users[0]) {
-        return 'https://lishogi.org/@/' + data.users[0].username;
+async function getMode(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.favoriteMode;
+}
+
+function setPlayers(users, mode) {
+    if (users.length) {
+        const url = 'https://lishogi.org/api/users';
+        const ids = users.map(player => player.id);
+        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+            .then(response => {
+                const embed = new Discord.MessageEmbed()
+                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+                    .setTitle(`:trophy: ${title(mode)} Leaderboard`)
+                    .setURL('https://lishogi.org/player')
+                    .addFields(response.data.map(formatPlayer));
+                return { embeds: [ embed ] };
+        });
+    } else {
+        return 'Leader not found!';
     }
-    return 'Leader not found!'
+}
+
+function formatPlayer(player) {
+    const name = formatName(player);
+    const badges = player.patron ? '🦄' : '';
+    const profile = formatProfile(player.username, player.profile, player.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true };
+}
+
+function formatName(player) {
+    var name = getLastName(player.profile) ?? player.username;
+    if (player.title)
+        name = `**${player.title}** ${name}`;
+    const [country, rating] = getCountryAndRating(player.profile) || [];
+    if (country && countryFlags.countryCode(country))
+        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    if (rating)
+        name += ` (${rating})`;
+    return name;
+}
+
+function getLastName(profile) {
+    if (profile)
+        return profile.lastName;
+}
+
+function getCountryAndRating(profile) {
+    if (profile)
+        return [profile.country, profile.fideRating];
+}
+
+function formatProfile(username, profile, playTime) {
+    const links = profile ? (profile.links ?? profile.bio) : '';
+    const tv = playTime ? playTime.tv : 0;
+    const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
+    if (links) {
+        for (link of getTwitch(links))
+            result.push(`[Twitch](https://${link})`);
+        for (link of getYouTube(links))
+            result.push(`[YouTube](https://${link})`);
+    }
+    if (profile && profile.bio) {
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if (bio.length)
+            result.push(bio);
+    }
+    return result.join('\n');
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
+}
+
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
+}
+
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
 }
 
 function process(bot, msg, mode) {
