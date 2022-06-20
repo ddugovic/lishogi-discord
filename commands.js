@@ -24,7 +24,7 @@ const commands = {
     },
     "blog": {
         usage: "",
-        description: "Display latest blog entry",
+        description: "Display recent blog entries",
         process: blog.process,
         reply: blog.reply
     },
