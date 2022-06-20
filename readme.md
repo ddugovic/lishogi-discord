@@ -25,7 +25,7 @@
 !profile [username]
     Display your (or a user's) profile
 !leaderboard [game mode]
-    Display the leaderboard top player
+    Display top-rated players
 !playing [username]
     Share your (or a user's) current game URL
 !gif [username]
