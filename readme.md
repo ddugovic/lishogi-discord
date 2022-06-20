@@ -27,7 +27,7 @@
 !leaderboard [game mode]
     Display top-rated players
 !playing [username]
-    Share your (or a user's) current game URL
+    Share your (or a user's) current game
 !gif [username]
     Share your (or a user's) current game as a GIF
 !arena [username]
