@@ -11,7 +11,7 @@ async function leaderboard(author, mode) {
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
         .then(response => setPlayers(response.data.users, mode))
         .catch((error) => {
-            console.log(`Error in leaderboard(${author.username}): \
+            console.log(`Error in leaderboard(${author.username} ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
