@@ -14,8 +14,8 @@ async function profile(author, username) {
         }
         username = user.playstrategyName;
     }
-    const favoriteMode = user.favoriteMode;
-    const url = `https://playstrategy.org/api/user/${username}`;
+    const favoriteMode = user ? user.favoriteMode : '';
+    const url = `https://playstrategy.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
@@ -49,7 +49,8 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user, favoriteMode));
     embed = setAbout(embed, username, profile, user.playTime);
 
-    return { embeds: [ embed ] };
+    return setActivity(embed, username)
+        .then(embed => { return { embeds: [ embed ] } });
 }
 
 function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
@@ -71,7 +72,7 @@ function formatPlayer(title, name, patron, trophies, online, playing, streaming)
     }
 
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
-    var status = streaming ? '📡 Streaming' : '';
+    var status = streaming ? '  📡 Streaming' : '';
     if (playing)
         status += playing.includes('white') ? '  ⚪ Playing' : '  ⚫ Playing';
     else if (!status && online)
@@ -132,6 +133,27 @@ function getYouTube(links) {
     // https://stackoverflow.com/a/65726047
     const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
     return links.matchAll(pattern);
+}
+
+function setActivity(embed, username) {
+    const url = `https://playstrategy.org/api/user/${username}/activity`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const activity = formatActivity(response.data);
+            return activity ? embed.addField('Forum Activity', activity) : embed;
+        });
+}
+
+function formatActivity(activity) {
+    const result = [];
+    for (event of activity.filter(event => event.posts)) {
+        const start = event.interval.start / 1000;
+        for (messages of event.posts) {
+            const count = messages.posts.length;
+            result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://playstrategy.org${messages.topicUrl})`);
+        }
+    }
+    return result.slice(0, 5).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
