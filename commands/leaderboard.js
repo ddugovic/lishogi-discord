@@ -6,8 +6,8 @@ const User = require('../models/User');
 
 async function leaderboard(author, mode) {
     if (!mode)
-        mode = await getMode(author);
-    const url = `https://lidraughts.org/player/top/10/${mode ?? 'blitz'}`;
+        mode = await getMode(author) || 'blitz';
+    const url = `https://lidraughts.org/player/top/10/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
         .then(response => setPlayers(response.data.users, mode))
         .catch((error) => {
