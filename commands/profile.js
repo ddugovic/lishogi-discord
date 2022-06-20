@@ -14,7 +14,7 @@ async function profile(author, username) {
         }
         username = user.lishogiName;
     }
-    const favoriteMode = user ? user.favoriteMode : 'blitz';
+    const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => formatProfile(response.data, favoriteMode))
@@ -46,16 +46,18 @@ function formatProfile(user, favoriteMode) {
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lishogi.org/?user=${username}#friend`);
 
-    const [mode, rating] = getMostPlayedMode(user.perfs, (user.count.rated ? favoriteMode : 'puzzle'));
+    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     if (unranked(mode, rating)) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
+            .then(embed => { return setActivity(embed, username) })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
+        .then(embed => { return setActivity(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -78,9 +80,9 @@ function formatPlayer(title, name, patron, trophies, online, playing, streaming)
     }
 
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
-    var status = streaming ? '📡 Streaming' : '';
+    var status = streaming ? '  📡 Streaming' : '';
     if (playing)
-        status += data.playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
+        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
@@ -145,6 +147,27 @@ function setTeams(embed, username) {
 
 function formatTeams(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://lishogi.org/team/${team.id})`).join('\n');
+}
+
+function setActivity(embed, username) {
+    const url = `https://lishogi.org/api/user/${username}/activity`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const activity = formatActivity(response.data);
+            return activity ? embed.addField('Forum Activity', activity) : embed;
+        });
+}
+
+function formatActivity(activity) {
+    const result = [];
+    for (event of activity.filter(event => event.posts)) {
+        const start = event.interval.start / 1000;
+        for (messages of event.posts) {
+            const count = messages.posts.length;
+            result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lishogi.org${messages.topicUrl})`);
+        }
+    }
+    return result.slice(0, 5).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
