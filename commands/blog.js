@@ -15,15 +15,22 @@ async function blog(author) {
 }
 
 function formatBlog(blog) {
-    const entry = blog.items[0];
-    const link = getLink(entry.author);
-    const embed = new Discord.MessageEmbed()
-        .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: link})
-        .setTitle(entry.title)
-        .setURL(entry.link)
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setDescription(formatEntry(entry));
-    return { embeds: [ embed ] };
+    const embeds = [];
+    for (const entry of blog.items.values()) {
+        embeds.push(new Discord.MessageEmbed()
+            .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(entry.author)})
+            .setTitle(entry.title)
+            .setURL(entry.link)
+            .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+            .setDescription(formatEntry(entry)));
+    }
+    return { 'embeds': embeds.slice(0, 3) };
+}
+
+function getLink(author) {
+    for (match of author.matchAll(/@(\w+)/g)) {
+        return `https://lishogi.org/@/${match[1]}`;
+    }
 }
 
 function formatEntry(entry) {
@@ -34,12 +41,6 @@ function formatEntry(entry) {
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
     return message.trim();
-}
-
-function getLink(author) {
-    for (match of author.matchAll(/@(\w+)/g)) {
-        return `https://lishogi.org/@/${match[1]}`;
-    }
 }
 
 function process(bot, msg) {

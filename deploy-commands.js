@@ -30,7 +30,7 @@ const ratings = [
 ];
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
-    new SlashCommandBuilder().setName('blog').setDescription("Display latest blog entry"),
+    new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots"),
     new SlashCommandBuilder().setName('coach').setDescription("Find a coach"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lishogi username from the bot's database"),

@@ -33,7 +33,7 @@
 !arena [username]
     Find an upcoming or recent arena created by lishogi (or a user)
 !blog
-    Display latest blog entry
+    Display recent blog entries
 !bots
     Display online bots
 !coach
