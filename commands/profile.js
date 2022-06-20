@@ -3,7 +3,6 @@ const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
-const timeago = require('time-ago')
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -96,7 +95,7 @@ function formatStats(embed, data, response, favoriteMode) {
     return [
         { name: 'Followers', value: `**${fn.format(data.followers)}**`, inline: true },
         { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
-        { name: 'Last Login', value: timeago.ago(data.last_online * 1000), inline: true }
+        { name: 'Last Login', value: `<t:${data.last_online}:R>`, inline: true }
    ];
 }
 
