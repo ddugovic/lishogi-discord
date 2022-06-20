@@ -7,7 +7,7 @@ const parse = require('ndjson-parse');
 async function bots(author) {
     return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
         .then(response => setBots(filter(parse(response.data))))
-        .catch((error) => {
+        .catch(error => {
             console.log(`Error in bots(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \

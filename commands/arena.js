@@ -8,13 +8,13 @@ async function arena(author, favoriteMode) {
 	    favoriteMode = user.favoriteMode;
     }
     const url = 'https://lichess.org/api/tournament';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatArena(response.data, favoriteMode))
-        .catch((err) => {
+        .catch(error => {
             console.log(`Error in arena(${author.username}, ${favoriteMode}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 

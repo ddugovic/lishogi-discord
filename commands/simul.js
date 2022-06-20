@@ -2,13 +2,13 @@ const axios = require('axios');
 
 async function simul(author) {
     const url = 'https://lichess.org/api/simul';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatSimul(response.data))
-        .catch((err) => {
+        .catch(error => {
             console.log(`Error in simul(${author.username}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${err.response.statusText}`;
         });
 }
 

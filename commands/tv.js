@@ -5,13 +5,13 @@ async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
     const url = 'https://lichess.org/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatTv(response.data, mode ?? 'blitz'))
-        .catch((err) => {
+        .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 

@@ -9,7 +9,7 @@ async function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => formatPuzzle(response.data.game, response.data.puzzle))
-        .catch((error) => {
+        .catch(error => {
             console.log(`Error in puzzle(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \

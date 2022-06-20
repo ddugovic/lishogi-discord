@@ -16,7 +16,7 @@ async function profile(author, username) {
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
@@ -102,7 +102,7 @@ function getCountryAndName(profile) {
 
 function setStats(embed, username, count, playTime, mode, rating) {
     const url = `https://lichess.org/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
         });
@@ -146,7 +146,7 @@ function getYouTube(links) {
 
 function setTeams(embed, username) {
     const url = `https://lichess.org/api/team/of/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const teams = formatTeams(response.data);
             return teams ? embed.addField('Teams', teams, true) : embed;
@@ -175,7 +175,7 @@ function formatActivity(activity) {
             result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lichess.org${messages.topicUrl})`);
         }
     }
-    return result.slice(0, 5).join('\n');
+    return result.slice(0, 3).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {

@@ -6,7 +6,7 @@ const formatSeconds = require('../lib/format-seconds');
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
         .then(response => setStreamers(response.data))
-        .catch((error) => {
+        .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
