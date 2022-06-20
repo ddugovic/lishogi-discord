@@ -43,18 +43,12 @@ function formatName(streamer) {
     var name = getLastName(streamer.profile) ?? streamer.username;
     if (streamer.title)
         name = `**${streamer.title}** ${name}`;
-    const country = getCountry(streamer.profile);
+    const [country, rating] = getCountryAndRating(streamer.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    const rating = getRating(streamer.profile);
     if (rating)
         name += ` (${rating})`;
     return name;
-}
-
-function getCountry(profile) {
-    if (profile)
-        return profile.country;
 }
 
 function getLastName(profile) {
@@ -62,9 +56,9 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getRating(profile) {
+function getCountryAndRating(profile) {
     if (profile)
-        return profile.fideRating;
+        return [profile.country, profile.fideRating];
 }
 
 function formatProfile(username, profile, playTime) {
