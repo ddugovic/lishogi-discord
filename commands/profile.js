@@ -20,6 +20,8 @@ async function profile(author, username) {
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
+                ${error}`);
+            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -169,10 +171,10 @@ function setActivity(embed, username) {
 function formatActivity(activity) {
     const result = [];
     for (event of activity.filter(event => event.posts)) {
-        const end = event.interval.end / 1000;
+        const start = event.interval.start / 1000;
         for (messages of event.posts) {
             const count = messages.posts.length;
-            result.push(`<t:${end}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lichess.org${messages.topicUrl})`);
+            result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lichess.org${messages.topicUrl})`);
         }
     }
     return result.slice(0, 5).join('\n');
