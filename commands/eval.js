@@ -30,8 +30,8 @@ function formatCloudEval(fen, eval) {
         const variation = eval.pvs[pv]['moves'].split(' ').map(uci => util.parseUci(uci));
         message.push(`${formatter.format(eval.pvs[pv]['cp']/100)}: ${san.makeSanVariation(pos, variation)}`);
     }
-    message += `\nhttps://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`;
-    return message;
+    message.push(`https://lichess.org/analysis/standard/${fen.replace(/ /g,'_')}#explorer`);
+    return message.join('\n');
 }
 
 function process(bot, msg, fen) {
