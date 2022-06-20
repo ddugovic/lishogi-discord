@@ -23,7 +23,7 @@ function formatAnnouncement(data) {
     const announcement = data.announcements[0];
     const link = formatLink(announcement.link);
     const embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
+        .setColor(0x00FFFF)
         .setTitle(announcement.title)
         .setURL(link)
         .setThumbnail('https://woogles.io/logo192.png')

@@ -31,7 +31,7 @@ async function profile(author, username) {
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, username) {
     var embed = new Discord.MessageEmbed()
-        .setColor(0xFFFFFF)
+        .setColor(0x00FFFF)
         .setTitle(formatName(data, username))
         .setURL(`https://woogles.io/profile/${username}`)
         .setThumbnail(data.avatar_url)
