@@ -1,4 +1,5 @@
 const axios = require('axios');
+const Discord = require('discord.js');
 const User = require('../models/User');
 
 async function playing(author, username) {
@@ -11,17 +12,37 @@ async function playing(author, username) {
     }
     const url = `https://lichess.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatCurrent(response.data))
-        .catch((err) => {
-            console.log(`Error in playing(${author.username}, ${username}): \
-                ${err.response.status} ${err.response.statusText}`);
+        .then(response => formatGame(response.data))
+        .catch(error => {
+            console.log(`Error in playing(${author.username}): \
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
-function formatCurrent(data) {
-    return 'https://lichess.org/' + data.id;
+function formatGame(game) {
+    if (game.status == 'started')
+        return `https://lichess.org/${game.id}`;
+    const players = [game.players.white.user, game.players.black.user].map(formatPlayer).join(' - ');
+    const embed = new Discord.MessageEmbed()
+        .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setTitle(`${title(game.perf)} game #${game.id}`)
+        .setURL(`https://lichess.org/${game.id}`)
+        .setImage(`https://lichess1.org/game/export/gif/${game.id}.gif`);
+    return { embeds: [ embed ] };
+}
+
+function formatPlayer(player) {
+    if (player.title)
+        return `${player.title} ${player.name.split(' ')[0]}`;
+    return player.name;
+}
+
+function title(str) {
+    str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
 function process(bot, msg, username) {
