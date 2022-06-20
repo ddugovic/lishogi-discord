@@ -31,7 +31,7 @@ function formatEntry(entry) {
         return entry.contentSnippet;
     const snippet = entry.contentSnippet.split(/\r?\n/);
     var message = '';
-    while (message.length < 200)
+    while (message.length < 80)
         message += `${snippet.shift()}\n`;
     return message.trim();
 }
