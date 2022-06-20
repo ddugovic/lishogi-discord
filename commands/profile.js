@@ -51,11 +51,13 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
+            .then(embed => { return setActivity(embed, username) })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
+        .then(embed => { return setActivity(embed, username) })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -153,6 +155,27 @@ function setTeams(embed, username) {
 
 function formatTeams(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
+}
+
+function setActivity(embed, username) {
+    const url = `https://lichess.org/api/user/${username}/activity`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const activity = formatActivity(response.data);
+            return activity ? embed.addField('Forum Activity', activity) : embed;
+        });
+}
+
+function formatActivity(activity) {
+    const result = [];
+    for (event of activity.filter(event => event.posts)) {
+        const end = event.interval.end / 1000;
+        for (messages of event.posts) {
+            const count = messages.posts.length;
+            result.push(`<t:${end}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lichess.org${messages.topicUrl})`);
+        }
+    }
+    return result.slice(0, 5).join('\n');
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
