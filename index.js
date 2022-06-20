@@ -38,8 +38,7 @@ client.on('messageCreate', (msg) => {
     let cmdTxt = '';
     let suffix = '';
     if (msg.content[0] === config.prefix) {
-        cmdTxt = msg.content.split(' ')[0].substring(1);
-        suffix = msg.content.substring(cmdTxt.length + 2);
+        [cmdTxt, suffix] = msg.content.substring(1).split(/ +/, 2);
     } else {
         return;
     }
