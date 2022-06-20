@@ -51,7 +51,7 @@ const ratings = [
 ];
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
-    new SlashCommandBuilder().setName('blog').setDescription("Display latest blog entry"),
+    new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots with source code"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
     new SlashCommandBuilder().setName('coach').setDescription("Find a coach"),

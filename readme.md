@@ -33,7 +33,7 @@
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
 !blog
-    Display latest blog entry
+    Display recent blog entries
 !bots
     Display online bots with source code
 !broadcast
