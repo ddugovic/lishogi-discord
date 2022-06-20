@@ -7,7 +7,7 @@ const User = require('../models/User');
 async function leaderboard(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = `https://lishogi.org/player/top/1/${mode ?? 'blitz'}`;
+    const url = `https://lishogi.org/player/top/10/${mode ?? 'blitz'}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => setPlayers(response.data.users, mode))
         .catch((error) => {
@@ -34,7 +34,7 @@ function setPlayers(users, mode) {
                     .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lishogi.org/player')
-                    .addFields(response.data.map(formatPlayer));
+                    .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -46,7 +46,7 @@ function formatPlayer(player) {
     const name = formatName(player);
     const badges = player.patron ? '🦄' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true };
+    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs};
 }
 
 function formatName(player) {
