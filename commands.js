@@ -64,7 +64,7 @@ const commands = {
     },
     "leaderboard": {
         usage: "[game mode]",
-        description: "Display the leaderboard top player",
+        description: "Display top-rated players",
         process: leaderboard.process,
         reply: leaderboard.reply
     },
