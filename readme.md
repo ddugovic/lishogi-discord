@@ -24,8 +24,8 @@
     Set your favorite game (or puzzle) mode
 !profile [username]
     Display your (or a user's) profile
-!recent [rated/casual]
-    Share your most recent game
+!leaderboard [game mode]
+    Display the leaderboard top player
 !playing [username]
     Share your (or a user's) current game URL
 !gif [username]
