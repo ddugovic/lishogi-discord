@@ -1,4 +1,5 @@
 const axios = require('axios');
+const Discord = require('discord.js');
 const User = require('../models/User');
 
 async function arena(author, mode) {
@@ -20,13 +21,13 @@ async function arena(author, mode) {
 
 function setArena(data, mode) {
     if (mode) {
-        for (var status in data) {
+        for (const status in data) {
             const arenas = data[status].filter(arena => arena.perf.key.toLowerCase() == mode);
             if (arenas.length)
                 return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
         }
     }
-    for (var status in data) {
+    for (const status in data) {
         const arenas = data[status];
         if (arenas.length)
             return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
@@ -35,9 +36,23 @@ function setArena(data, mode) {
 }
 
 function formatArena(arena) {
-    return `https://lichess.org/tournament/${arena.id}`;
+    const start = Math.floor(arena.startsAt / 1000);
+    const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
+    const rated = arena.rated ? 'rated' : 'casual';
+    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` : 'Winner is not yet decided.';
+    const embed = new Discord.MessageEmbed()
+        .setAuthor({name: arena.createdBy, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setTitle(arena.fullName)
+        .setURL(`https://lichess.org/tournament/${arena.id}`)
+        .setDescription(`${arena.nbPlayers} players compete in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}`);
+    return { embeds: [ embed ] };
 }
 
+function formatPlayer(player) {
+    const name = player.title ? `${player.title} ${player.name}` : player.name;
+    return `[${name}](https://lichess.org/@/${player.name})`;
+}
 
 function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
