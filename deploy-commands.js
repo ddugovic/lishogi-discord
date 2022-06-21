@@ -1,5 +1,21 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const arenas = [
+    { name: 'Antichess', value: 'antichess' },
+    { name: 'Atomic', value: 'atomic' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Chess960', value: 'chess960' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Crazyhouse', value: 'crazyhouse' },
+    { name: 'Horde', value: 'Horde' },
+    { name: 'King of the Hill', value: 'kingOfTheHill' },
+    { name: 'Racing Kings', value: 'racingKings' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Thematic', value: 'thematic' },
+    { name: 'Three-check', value: 'threeCheck' },
+    { name: 'UltraBullet', value: 'ultraBullet' }
+];
 const channels = [
     { name: 'Top Rated', value: 'Top Rated' },
     { name: 'Antichess', value: 'Antichess' },
@@ -18,7 +34,7 @@ const channels = [
     { name: 'UltraBullet', value: 'UltraBullet' },
     { name: 'Computer', value: 'Computer' }
 ];
-const modes = [
+const leaderboards = [
     { name: 'Antichess', value: 'antichess' },
     { name: 'Atomic', value: 'atomic' },
     { name: 'Blitz', value: 'blitz' },
@@ -50,14 +66,14 @@ const ratings = [
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...arenas)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots with source code"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
     new SlashCommandBuilder().setName('coach').setDescription("Find a coach"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lichess username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')),
-    new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
     new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('gif').setDescription("Share your (or a user's) current game as a GIF").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),

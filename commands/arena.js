@@ -22,7 +22,7 @@ async function arena(author, mode) {
 function setArena(data, mode) {
     if (mode) {
         for (const status in data) {
-            const arenas = data[status].filter(arena => arena.perf.key.toLowerCase() == mode);
+            const arenas = data[status].filter(arena => filterArena(arena, mode));
             if (arenas.length)
                 return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
         }
@@ -33,6 +33,10 @@ function setArena(data, mode) {
             return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     }
     return 'No tournament found!';
+}
+
+function filterArena(arena, mode) {
+    return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
 }
 
 function formatArena(arena) {
