@@ -1,44 +1,43 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-async function arena(author, favoriteMode) {
-    const user = await User.findById(author.id).exec();
-    if (!favoriteMode) {
-        if (!user) {
-            return 'You need to set your playstrategy username with setuser!';
-        } else if (!user.favoriteMode) {
-            return 'You need to set your favorite gamemode with setgamemode!';
-        }
-	favoriteMode = user.favoriteMode;
+async function arena(author, mode) {
+    if (!mode) {
+        const user = await User.findById(author.id).exec();
+        if (user)
+	    mode = user.favoriteMode;
     }
-    url = 'https://playstrategy.org/api/tournament';
-    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
-        .then(response => formatArena(response.data, favoriteMode))
-        .catch((err) => {
-            console.log(`Error in arena(${author.username}, ${favoriteMode}): \
-                ${err.response.status} ${err.response.statusText}`);
+    const url = 'https://playstrategy.org/api/tournament';
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => setArena(response.data, mode))
+        .catch(error => {
+            console.log(`Error in arena(${author.username}, ${mode}): \
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
 }
 
-function formatArena(data, favoriteMode) {
-    for (var status in data) {
-        var arenas = data[status];
-        for (var i = 0; i < arenas.length; i++) {
-            if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
-                return 'https://playstrategy.org/tournament/' + arenas[i].id;
-            }
+function setArena(data, mode) {
+    if (mode) {
+        for (var status in data) {
+            const arenas = data[status].filter(arena => arena.perf.key.toLowerCase() == mode);
+            if (arenas.length)
+                return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
         }
     }
     for (var status in data) {
-        var arenas = data[status];
-        for (var i = 0; i < arenas.length; i++) {
-            return 'https://playstrategy.org/tournament/' + arenas[i].id;
-        }
+        const arenas = data[status];
+        if (arenas.length)
+            return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     }
     return 'No tournament found!';
 }
+
+function formatArena(arena) {
+    return `https://playstrategy.org/tournament/${arena.id}`;
+}
+
 
 function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
