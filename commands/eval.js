@@ -44,9 +44,16 @@ function formatCloudEval(fen, setup, eval) {
 
 function formatVariation(fen, setup, pv) {
     const pos = chess.Chess.fromSetup(setup).unwrap();
-    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
     const variation = pv.moves.split(' ').map(uci => util.parseUci(uci));
-    return `${formatter.format(pv.cp/100)}: ${san.makeSanVariation(pos, variation)}`;
+    return `**${formatEval(pv)}**: ${san.makeSanVariation(pos, variation)}`;
+}
+
+function formatEval(pv) {
+    if (pv.mate)
+        return `#${pv.mate}`.replace('#-', '-#');
+
+    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
+    return formatter.format(pv.cp/100);
 }
 
 function process(bot, msg, fen) {
