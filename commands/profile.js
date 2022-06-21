@@ -34,10 +34,10 @@ function formatProfile(data, favoriteMode) {
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF);
     return setName(embed, data, firstName)
-        .then(embed => { return setStats(embed, data, favoriteMode) })
-        .then(embed => { return setStreamer(embed, data, firstName) })
-        .then(embed => { return setClubs(embed, data) })
-        .then(embed => { return setGames(embed, data) })
+        .then(embed => setStats(embed, data, favoriteMode))
+        .then(embed => setStreamer(embed, data, firstName))
+        .then(embed => setClubs(embed, data))
+        .then(embed => setGames(embed, data))
         .then(embed => { return { embeds: [ embed ] } });
 }
 
