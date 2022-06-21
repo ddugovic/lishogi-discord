@@ -21,18 +21,17 @@ async function arena(author, mode) {
 }
 
 function setArena(data, mode) {
+    const arenas = [];
+    for (const status in data)
+        arenas.push(...data[status]);
+
     if (mode) {
-        for (const status in data) {
-            const arenas = data[status].filter(arena => filterArena(arena, mode));
-            if (arenas.length)
-                return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
-        }
+        const matches = arenas.filter(arena => filterArena(arena, mode));
+        if (matches.length)
+            return formatArena(matches.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     }
-    for (const status in data) {
-        const arenas = data[status];
-        if (arenas.length)
-            return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
-    }
+    if (arenas.length)
+        return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     return 'No tournament found!';
 }
 
