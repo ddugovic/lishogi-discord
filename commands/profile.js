@@ -18,7 +18,7 @@ async function profile(author, username) {
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${favoriteMode}): \
+            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -37,6 +37,7 @@ function formatProfile(data, favoriteMode) {
         .then(embed => { return setStats(embed, data, favoriteMode) })
         .then(embed => { return setStreamer(embed, data, firstName) })
         .then(embed => { return setClubs(embed, data) })
+        .then(embed => { return setGames(embed, data) })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -99,15 +100,6 @@ function formatStats(embed, data, response, favoriteMode) {
    ];
 }
 
-function setClubs(embed, data) {
-    const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            const clubs = response.data.clubs;
-            return clubs.length ? embed.addFields(formatClubs(clubs)) : embed;
-        });
-}
-
 function setStreamer(embed, data, firstName) {
     if (data.is_streamer) {
         embed = embed
@@ -115,6 +107,34 @@ function setStreamer(embed, data, firstName) {
             .setURL(data.twitch_url);
     }
     return embed
+}
+
+function setClubs(embed, data) {
+    const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            const clubs = response.data.clubs;
+            return clubs.length ? embed.addField('Clubs', clubs.map(club => club.name).join('\n'), true) : embed;
+        });
+}
+
+function setGames(embed, data) {
+    const url = `https://api.chess.com/pub/player/${data.username}/games`;
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            const games = response.data.games;
+            return games.length ? embed.addField('Games', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
+        });
+}
+
+function formatGame(game) {
+    const due = game.move_by ? `due <t:${game.move_by}:R>` : `last move <t:${game.last_activity}:R>`;
+    const [white, black] = (game.turn ? [':chess_pawn:', ''] : ['', ':chess_pawn:']);
+    return `${white}[${formatPlayer(game.white)} - ${formatPlayer(game.black)}](${game.url})${black} ${due}`;
+}
+
+function formatPlayer(player) {
+    return player.replace('https://api.chess.com/pub/player/','');
 }
 
 function getMostRecentMode(stats, favoriteMode) {
@@ -146,14 +166,6 @@ function title(str) {
     return str.split('_')
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
-}
-
-function formatClubs(clubs) {
-    var clubNames = [];
-    for (var i = 0; i < clubs.length; i++) {
-        clubNames[i] = clubs[i].name;
-    }
-    return { name: 'Clubs', value: clubNames.sort().join('\n'), inline: false }
 }
 
 // For sorting through modes... chess api does not put these in an array so we do it ourselves
