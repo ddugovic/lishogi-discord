@@ -6,10 +6,13 @@ const san = require('chessops/san');
 const util = require('chessops/util');
 
 async function eval(author, fen) {
-    if (fen && cfen.parseFen(fen).isOk) {
+    const parse = cfen.parseFen(fen || cfen.INITIAL_FEN);
+    if (parse.isOk) {
+        const setup = parse.unwrap();
+        fen = cfen.makeFen(setup);
         const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/json' } })
-            .then(response => formatCloudEval(fen, response.data))
+            .then(response => formatCloudEval(fen, setup, response.data))
             .catch(error => {
                 console.log(`Error in eval(${author.username}): \
                     ${error.response.status} ${error.response.statusText}`);
@@ -17,15 +20,15 @@ async function eval(author, fen) {
                     ${error.response.status} ${error.response.statusText}`;
         });
     } else {
-        return fen ? 'Invalid FEN!' : 'Missing FEN!'
+        return 'Invalid FEN!';
     }
 }
 
-function formatCloudEval(fen, eval) {
+function formatCloudEval(fen, setup, eval) {
     const stats = `Nodes: ${Math.floor(eval['knodes']/1000)}M, Depth: ${eval['depth']}`;
     const variations = [];
     for (const pv in eval.pvs)
-        variations.push(formatVariation(fen, eval.pvs[pv]));
+        variations.push(formatVariation(fen, setup, eval.pvs[pv]));
 
     fen = fen.replace(/ /g,'_');
     const embed = new Discord.MessageEmbed()
@@ -39,8 +42,7 @@ function formatCloudEval(fen, eval) {
     return { embeds: [ embed, data ] };
 }
 
-function formatVariation(fen, pv) {
-    const setup = cfen.parseFen(fen).unwrap();
+function formatVariation(fen, setup, pv) {
     const pos = chess.Chess.fromSetup(setup).unwrap();
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
     const variation = pv.moves.split(' ').map(uci => util.parseUci(uci));

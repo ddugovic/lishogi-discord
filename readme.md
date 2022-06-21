@@ -40,6 +40,8 @@
     Display an incoming, ongoing, or finished official broadcast
 !coach
     Find a coach
+!eval [fen]
+    Get the cached evaluation of a position, if available
 !puzzle
     Display today's puzzle
 !simul

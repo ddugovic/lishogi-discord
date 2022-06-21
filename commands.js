@@ -56,7 +56,7 @@ const commands = {
         reply: deleteUser.reply
     },
     "eval": {
-        usage: "<fen>",
+        usage: "[fen]",
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         reply: eval.reply
