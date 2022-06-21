@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const chess = require('chessops/chess');
 const fen = require('chessops/fen');
+const formatColor = require('../lib/format-color');
 const san = require('chessops/san');
 const util = require('chessops/util');
 
@@ -19,11 +20,7 @@ async function puzzle(author) {
 
 function getColor(rating) {
     const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
-    return `#${[red, 0, 255-red].map(formatHue).join('')}`;
-}
-
-function formatHue(hue) {
-    return hue.toString(16).toUpperCase().padStart(2, 0);
+    return formatColor(red, 0, 255-red);
 }
 
 function formatPuzzle(game, puzzle) {
