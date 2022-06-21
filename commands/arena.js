@@ -43,10 +43,18 @@ function formatArena(arena) {
     const embed = new Discord.MessageEmbed()
         .setAuthor({name: arena.createdBy, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(arena.fullName)
+        .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lichess.org/tournament/${arena.id}`)
         .setDescription(`${arena.nbPlayers} players compete in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}`);
     return { embeds: [ embed ] };
+}
+
+function formatSchedule(schedule) {
+    return schedule.freq == 'shield' ? ' :shield:' :
+        schedule.freq == 'daily' ? ' :calendar:' :
+        schedule.freq == 'weekly' ? ' :calendar:' :
+        schedule.freq == 'monthly' ? ' :calendar:' :
+        schedule.freq == 'yearly' ? ' :calendar:' : '';
 }
 
 function formatPlayer(player) {
