@@ -43,13 +43,14 @@ function formatArena(arena) {
     const start = Math.floor(arena.startsAt / 1000);
     const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
     const rated = arena.rated ? 'rated' : 'casual';
+    const players = arena.nbPlayers == 1 ? '1 player competes' : `${arena.nbPlayers} players compete`;
     const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` : 'Winner is not yet decided.';
     var embed = new Discord.MessageEmbed()
         .setAuthor({name: arena.createdBy, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lichess.org/tournament/${arena.id}`)
-        .setDescription(`${arena.nbPlayers} players compete in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}`);
+        .setDescription(`${players} in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}`);
     if (arena.position)
 	embed = embed.setImage(`https://lichess.org/export/gif/${formatPosition(arena.position)}`);
     return { embeds: [ embed ] };
