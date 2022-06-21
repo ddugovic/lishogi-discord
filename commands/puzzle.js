@@ -17,6 +17,15 @@ async function puzzle(author) {
         });
 }
 
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
+    return `#${[red, 0, 255-red].map(formatHue).join('')}`;
+}
+
+function formatHue(hue) {
+    return hue.toString(16).toUpperCase().padStart(2, 0);
+}
+
 function formatPuzzle(game, puzzle) {
     const players = game.players.map(formatPlayer).join(' - ');
     const pos = chess.Chess.default();
@@ -29,6 +38,7 @@ function formatPuzzle(game, puzzle) {
     const uci = util.makeUci(move);
 
     const embed = new Discord.MessageEmbed()
+        .setColor(getColor(puzzle.rating))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
