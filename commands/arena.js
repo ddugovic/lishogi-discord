@@ -1,42 +1,43 @@
 const axios = require('axios');
 const User = require('../models/User');
 
-async function arena(author, favoriteMode) {
-    if (!favoriteMode) {
+async function arena(author, mode) {
+    if (!mode) {
         const user = await User.findById(author.id).exec();
         if (user)
-	    favoriteMode = user.favoriteMode;
+	    mode = user.favoriteMode;
     }
     const url = 'https://lichess.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatArena(response.data, favoriteMode))
+        .then(response => setArena(response.data, mode))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${favoriteMode}): \
+            console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
 }
 
-function formatArena(data, favoriteMode) {
-    if (favoriteMode) {
+function setArena(data, mode) {
+    if (mode) {
         for (var status in data) {
-            var arenas = data[status];
-            for (var i = 0; i < arenas.length; i++) {
-                if (arenas[i].perf.key.toLowerCase() == favoriteMode) {
-                    return 'https://lichess.org/tournament/' + arenas[i].id;
-                }
-            }
+            const arenas = data[status].filter(arena => arena.perf.key.toLowerCase() == mode);
+            if (arenas.length)
+                return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
         }
     }
     for (var status in data) {
-        var arenas = data[status];
-        for (var i = 0; i < arenas.length; i++) {
-            return 'https://lichess.org/tournament/' + arenas[i].id;
-        }
+        const arenas = data[status];
+        if (arenas.length)
+            return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     }
     return 'No tournament found!';
 }
+
+function formatArena(arena) {
+    return `https://lichess.org/tournament/${arena.id}`;
+}
+
 
 function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
