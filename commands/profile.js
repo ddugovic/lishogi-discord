@@ -45,7 +45,7 @@ function formatProfile(data, username) {
             bingos += record[3];
         }
         embed = embed
-            .setTitle(`${formatName(data, username)} :gem:${bingos}`)
+            .setTitle(`${formatName(data, username)} Bingos: ${bingos}`)
             .addFields(formatStats(ratings, records));
     }
     return { embeds: [ embed ] };
