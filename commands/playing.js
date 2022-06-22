@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const User = require('../models/User');
 
 async function playing(author, username) {
@@ -24,9 +25,9 @@ async function playing(author, username) {
 function formatGame(game) {
     if (game.status == 'started')
         return `https://lichess.org/${game.id}`;
-    console.log(game);
     const players = [game.players.white.user, game.players.black.user].map(formatPlayer).join(' - ');
     var embed = new Discord.MessageEmbed()
+        .setColor(getColor(game.players))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${title(game.perf)} game #${game.id}`)
@@ -35,6 +36,12 @@ function formatGame(game) {
     if (game.opening)
         embed = embed.setDescription(game.opening.name);
     return { embeds: [ embed ] };
+}
+
+function getColor(players) {
+    const rating = (players.white.rating + players.black.rating) / 2;
+    const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
 function formatPlayer(player) {

@@ -31,6 +31,7 @@ function setPlayers(users, mode) {
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const embed = new Discord.MessageEmbed()
+                    .setColor('#FFFF00')
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lichess.org/player')

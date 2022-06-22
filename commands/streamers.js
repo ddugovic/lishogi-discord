@@ -21,6 +21,7 @@ function setStreamers(data) {
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const embed = new Discord.MessageEmbed()
+                    .setColor('#FF0000')
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:satellite: Lichess Streamers`)
                     .setURL('https://lichess.org/streamer')
