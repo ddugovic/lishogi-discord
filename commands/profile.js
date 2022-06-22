@@ -141,12 +141,12 @@ function modesArray(list) {
 }
 
 function formatRecord(wins, losses, draws, bingos) {
-    var result = [`+${wins}`, `-${losses}`];
+    var result = [`Wins: ${wins}`, `Losses: ${losses}`];
     if (draws) {
-        result.push(`=${draws}`);
+        result.push(`Draws: ${draws}`);
     }
     if (bingos) {
-        result.push(`:gem:${bingos}`);
+        result.push(`Bingos: ${bingos}`);
     }
     return `(${result.join(' ')})`
 }
