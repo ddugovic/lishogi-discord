@@ -32,6 +32,7 @@ function formatCloudEval(fen, setup, eval) {
 
     fen = fen.replace(/ /g,'_');
     const embed = new Discord.MessageEmbed()
+        .setColor('#0000FF')
         .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(':cloud: Cloud Evaluation')
