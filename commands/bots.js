@@ -28,6 +28,7 @@ function source(bot) {
 function setBots(bots) {
     if (bots.length) {
         const embed = new Discord.MessageEmbed()
+            .setColor('#00FFFF')
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:robot: Lichess Bots`)
             .setURL('https://lichess.org/player/bots')
