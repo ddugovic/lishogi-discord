@@ -110,7 +110,7 @@ function setStats(embed, username, count, playTime, mode, rating) {
 
 function setAbout(embed, username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
         for (link of getMaiaChess(links))
@@ -216,7 +216,7 @@ function formatStats(count, playTime, mode, rating, perf) {
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(playTime ? playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
     else
         return [

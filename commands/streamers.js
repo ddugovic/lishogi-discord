@@ -64,7 +64,7 @@ function getCountryAndRating(profile) {
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
-    const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
+    const duration = formatSeconds(tv).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
         for (link of getMaiaChess(links))
