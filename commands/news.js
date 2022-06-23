@@ -36,7 +36,7 @@ function formatAnnouncement(announcement) {
 }
 
 function formatBody(body) {
-    const pattern = /!\[\w+\]\((.*)\)\s+(.*)/;
+    const pattern = /!\[[- \w]+\]\((.*)\)\s+([^]*)/;
     const match = body.match(pattern);
     if (match)
         return [match[2], match[1]];
