@@ -36,7 +36,7 @@ function formatGames(data) {
     for (info of data.game_info) {
         const embed = new Discord.MessageEmbed()
             .setTitle(info.players.map(formatPlayer).join(' - '))
-            .setURL(`https://woogles.io/${info.game_id}`)
+            .setURL(`https://woogles.io/game/${info.game_id}`)
             .setThumbnail('https://woogles.io/logo192.png')
 	    .setImage(`https://woogles.io/gameimg/${info.game_id}-v2-a.gif`)
             .setDescription(`<t:${Math.round(timestamp.fromDate(info.created_at))}>`);
