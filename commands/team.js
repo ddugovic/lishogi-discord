@@ -25,11 +25,15 @@ function setTeams(teams) {
 
 function formatTeam(team) {
     return new Discord.MessageEmbed()
-        .setAuthor({name: team.leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+        .setAuthor({name: team.leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(team.leader.name)})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(team.description);
+}
+
+function getLink(name) {
+    return `https://lichess.org/@/${name}`;
 }
 
 function process(bot, msg, text) {
