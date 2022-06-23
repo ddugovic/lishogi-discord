@@ -17,7 +17,7 @@ const commands = {
     },
     "gif": {
         usage: "[user]",
-        description: "Shares your (or a user's) recent game",
+        description: "Shares your (or a user's) recent game as a GIF",
         process: gif.process,
         reply: gif.reply
     },
@@ -29,7 +29,7 @@ const commands = {
     },
     "recent": {
         usage: "[user]",
-        description: "Shares your (or a user's) recent game URL",
+        description: "Shares your (or a user's) recent game",
         process: recent.process,
         reply: recent.reply
     },

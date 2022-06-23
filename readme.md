@@ -21,9 +21,9 @@
 !deleteuser
     Delete your woogles username from the bot's database
 !recent [username]
-    Share your (or a user's) recent game URL
-!gif [username]
     Share your (or a user's) recent game
+!gif [username]
+    Share your (or a user's) recent game as a GIF
 !profile [username]
     Display your (or a user's) profile
 !news

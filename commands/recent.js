@@ -1,4 +1,6 @@
 const axios = require('axios');
+const Discord = require('discord.js');
+const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
 async function recent(author, username) {
@@ -22,19 +24,33 @@ async function recent(author, username) {
     };
     return axios.post(url, request, {headers: context})
         .then(response => formatGames(response.data))
-        .catch((err) => {
+        .catch(error => {
             console.log(`Error in recent(${author.username}, ${username}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
 function formatGames(data) {
     for (info of data.game_info) {
+        const embed = new Discord.MessageEmbed()
+            .setTitle(info.players.map(formatPlayer).join(' - '))
+            .setURL(`https://woogles.io/${info.game_id}`)
+            .setThumbnail('https://woogles.io/logo192.png')
+	    .setImage(`https://woogles.io/gameimg/${info.game_id}-v2-a.gif`)
+            .setDescription(`<t:${Math.round(timestamp.fromDate(info.created_at))}>`);
+        return { embeds: [ embed ] };
+
         return `https://woogles.io/${info.game_id}`;
     }
     return 'No games found!';
+}
+
+function formatPlayer(player) {
+    if (player.title)
+        return `${player.title} ${player.nickname}`;
+    return player.nickname;
 }
 
 function process(bot, msg, username) {

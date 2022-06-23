@@ -18,7 +18,8 @@
         "friendly-numbers": "^1.0.1",
         "mocha": "^10.0.0",
         "mongoose": "^6.4.0",
-        "plural": "^1.1.0"
+        "plural": "^1.1.0",
+        "unix-timestamp": "^1.0.2"
       },
       "devDependencies": {
         "nodemon": "^2.0.16"
@@ -2284,6 +2285,11 @@
         "node": ">=8"
       }
     },
+    "node_modules/unix-timestamp": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/unix-timestamp/-/unix-timestamp-1.0.2.tgz",
+      "integrity": "sha512-y4ilfqtBKxDeMeRl2cD0O8iZRt0oTMCZcCAu1JFodqdXpu++AtDkb+XRszCH79gh2V0eWijIvBtWAN5fkvUXVQ=="
+    },
     "node_modules/update-notifier": {
       "version": "5.1.0",
       "resolved": "https://registry.npmjs.org/update-notifier/-/update-notifier-5.1.0.tgz",
@@ -4188,6 +4194,11 @@
       "requires": {
         "crypto-random-string": "^2.0.0"
       }
+    },
+    "unix-timestamp": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/unix-timestamp/-/unix-timestamp-1.0.2.tgz",
+      "integrity": "sha512-y4ilfqtBKxDeMeRl2cD0O8iZRt0oTMCZcCAu1JFodqdXpu++AtDkb+XRszCH79gh2V0eWijIvBtWAN5fkvUXVQ=="
     },
     "update-notifier": {
       "version": "5.1.0",
