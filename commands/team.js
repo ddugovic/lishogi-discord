@@ -24,16 +24,25 @@ function setTeams(teams) {
 }
 
 function formatTeam(team) {
+    const [description, imageURL] = formatDescription(team.description);
     return new Discord.MessageEmbed()
         .setAuthor({name: team.leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(team.leader.name)})
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
-        .setDescription(team.description);
+        .setDescription(description);
 }
 
 function getLink(name) {
     return `https://lichess.org/@/${name}`;
+}
+
+function formatDescription(description) {
+    const pattern = /!\[[- \w]+\]\((.*)\)\s+([^]*)/;
+    const match = description.match(pattern);
+    if (match)
+        return [match[2], match[1]];
+    return [description, null];
 }
 
 function process(bot, msg, text) {
