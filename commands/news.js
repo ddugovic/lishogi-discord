@@ -10,7 +10,7 @@ async function news(author) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, {}, {headers: context})
-        .then(response => formatAnnouncement(response.data))
+        .then(response => setAnnouncements(response.data))
         .catch((error) => {
             console.log(`Error in announcement(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -19,16 +19,28 @@ async function news(author) {
         });
 }
 
-function formatAnnouncement(data) {
-    const announcement = data.announcements[0];
-    const link = formatLink(announcement.link);
+function setAnnouncements(data) {
+    return formatAnnouncement(data.announcements[0]);
+}
+
+function formatAnnouncement(announcement) {
+    const [description, imageURL] = formatBody(announcement.body);
     const embed = new Discord.MessageEmbed()
+        .setAuthor({name: 'Woogles', iconURL: 'https://woogles.io/logo192.png', url: 'https://woogles.io/'})
         .setColor(0x00FFFF)
         .setTitle(announcement.title)
-        .setURL(link)
-        .setThumbnail('https://woogles.io/logo192.png')
-        .setDescription(announcement.body);
+        .setURL(formatLink(announcement.link))
+        .setThumbnail(imageURL ?? 'https://woogles.io/logo192.png')
+        .setDescription(description);
     return { embeds: [ embed ] };
+}
+
+function formatBody(body) {
+    const pattern = /!\[\w+\]\((.*)\)\s+(.*)/;
+    const match = body.match(pattern);
+    if (match)
+        return [match[2], match[1]];
+    return [body, null];
 }
 
 function formatLink(link) {
