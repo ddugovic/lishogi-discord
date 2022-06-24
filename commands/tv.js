@@ -31,9 +31,9 @@ function formatTv(data, mode) {
                 .setColor(getColor(tv.rating))
                 .setAuthor({name: user, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-                .setTitle(`${channel} • ${user}`)
-                .setURL(`https://lichess.org/tv/${channel.toLowerCase()}`)
-                .setImage(`https://lichess1.org/game/export/gif/thumbnail/${tv.gameId}.gif`);
+                .setTitle(`${channel} • ${user} (${tv.rating})`)
+                .setURL(`https://lichess.org/tv/${camel(channel)}`)
+                .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
             return { embeds: [ embed ] };
         }
     }
@@ -47,6 +47,13 @@ function getColor(rating) {
 
 function formatUser(user) {
     return user.title ? `${user.title} ${user.name}` : user.name;
+}
+
+function camel(str) {
+    str = str.split(' ')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join('');
+    return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
 function process(bot, msg, mode) {
