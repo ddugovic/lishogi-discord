@@ -13,7 +13,7 @@
         "axios": "^0.27.2",
         "convert-seconds": "^1.0.1",
         "discord-lister": "^1.4.0",
-        "discord.js": "^13.8.0",
+        "discord.js": "^13.8.1",
         "emoji-flags": "^1.3.0",
         "friendly-numbers": "^1.0.1",
         "mocha": "^10.0.0",
@@ -701,9 +701,9 @@
       "integrity": "sha512-Y39dxl+jUVKCMtRHSdPmXHwT9pimTRKIAkzKx3gYoCJTNk+Dv2iZI1iRzx/JZlU6j40nzrHQke12sPcT23Bz0g=="
     },
     "node_modules/discord.js": {
-      "version": "13.8.0",
-      "resolved": "https://registry.npmjs.org/discord.js/-/discord.js-13.8.0.tgz",
-      "integrity": "sha512-EPAA/2VLycYN5wSzavqa4iJ6qj3UtQFtHw5TH/60Fj29ymfEsCQVn//o1mTpwDxzwb+rPIrWhkxKIGGnjfv0Iw==",
+      "version": "13.8.1",
+      "resolved": "https://registry.npmjs.org/discord.js/-/discord.js-13.8.1.tgz",
+      "integrity": "sha512-jOsD+4tEZWWx0RHVyH+FBcqoTrsL+d5Mm5p+ULQOdU0qSaxhLNkWYig+yDHNZoND7nlkXX3qi+BW+gO5erWylg==",
       "dependencies": {
         "@discordjs/builders": "^0.14.0",
         "@discordjs/collection": "^0.7.0",
@@ -3032,9 +3032,9 @@
       "integrity": "sha512-Y39dxl+jUVKCMtRHSdPmXHwT9pimTRKIAkzKx3gYoCJTNk+Dv2iZI1iRzx/JZlU6j40nzrHQke12sPcT23Bz0g=="
     },
     "discord.js": {
-      "version": "13.8.0",
-      "resolved": "https://registry.npmjs.org/discord.js/-/discord.js-13.8.0.tgz",
-      "integrity": "sha512-EPAA/2VLycYN5wSzavqa4iJ6qj3UtQFtHw5TH/60Fj29ymfEsCQVn//o1mTpwDxzwb+rPIrWhkxKIGGnjfv0Iw==",
+      "version": "13.8.1",
+      "resolved": "https://registry.npmjs.org/discord.js/-/discord.js-13.8.1.tgz",
+      "integrity": "sha512-jOsD+4tEZWWx0RHVyH+FBcqoTrsL+d5Mm5p+ULQOdU0qSaxhLNkWYig+yDHNZoND7nlkXX3qi+BW+gO5erWylg==",
       "requires": {
         "@discordjs/builders": "^0.14.0",
         "@discordjs/collection": "^0.7.0",
