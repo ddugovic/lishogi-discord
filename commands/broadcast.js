@@ -14,17 +14,21 @@ async function broadcast(author) {
 }
 
 function formatBroadcast(broadcast) {
-    console.log(broadcast);
     if (broadcast.tour) {
         const embed = new Discord.MessageEmbed()
             .setTitle(broadcast.tour.name)
             .setURL(broadcast.tour.url)
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(broadcast.tour.description);
+            .setDescription(broadcast.tour.description)
+            .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
         return { 'embeds': [ embed ] };
     } else {
         return 'No broadcast found!';
     }
+}
+
+function formatRound(round) {
+    return `<t:${round.startsAt / 1000}> ${round.name}`;
 }
 
 function process(bot, msg) {
