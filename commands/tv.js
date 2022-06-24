@@ -33,7 +33,7 @@ function formatTv(data, mode) {
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                 .setTitle(`${channel} • ${user}`)
                 .setURL(`https://lichess.org/tv/${channel.toLowerCase()}`)
-                .setImage(`https://lichess1.org/game/export/gif/${tv.gameId}.gif`);
+                .setImage(`https://lichess1.org/game/export/gif/thumbnail/${tv.gameId}.gif`);
             return { embeds: [ embed ] };
         }
     }
