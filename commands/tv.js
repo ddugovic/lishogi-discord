@@ -31,7 +31,7 @@ function formatTv(data, mode) {
                 .setColor(getColor(tv.rating))
                 .setAuthor({name: user, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-                .setTitle(`${channel} • ${user} (${tv.rating})`)
+                .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
                 .setURL(`https://lichess.org/tv/${camel(channel)}`)
                 .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
             return { embeds: [ embed ] };
