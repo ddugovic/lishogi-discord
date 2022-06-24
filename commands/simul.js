@@ -21,12 +21,15 @@ function setSimul(data) {
         simuls.push(...data[status]);
 
     if (simuls.length)
-        return formatSimul(simuls.sort((a,b) => b.nbApplicants + b.nbPairings - a.nbApplicants - a.nbPairings)[0]);
+        return formatSimul(simuls.sort((a,b) => rankSimul(b) - rankSimul(a))[0]);
     return 'No event found!';
 }
 
+function rankSimul(simul) {
+    return simul.isFinished ? 0 : simul.nbApplicants + simul.nbPairings;
+}
+
 function formatSimul(simul) {
-    console.log(simul);
     const players = simul.nbPairings == 1 ? '1 player competes' : `${simul.nbPairings} players compete`;
     const compete = simul.isFinished ? 'competed' : plural('compete', simul.nbPairings);
     var embed = new Discord.MessageEmbed()
