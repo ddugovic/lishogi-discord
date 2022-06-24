@@ -29,13 +29,15 @@ function formatSimul(simul) {
     console.log(simul);
     const players = simul.nbPairings == 1 ? '1 player competes' : `${simul.nbPairings} players compete`;
     const compete = simul.isFinished ? 'competed' : plural('compete', simul.nbPairings);
-    const embed = new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lichess.org/simul/${simul.id}`)
         .setDescription(`${players} in the ${simul.fullName}.`);
+    if (simul.host.gameId)
+        embed = embed.setImage(`https://lichess1.org/game/export/gif/${simul.host.gameId}.gif`);
     const text = formatText(simul.text.split(/\s+/) ?? []);
     if (text) {
         const data = new Discord.MessageEmbed()
