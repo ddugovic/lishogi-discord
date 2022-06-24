@@ -17,6 +17,7 @@
         "discord.js": "^13.8.1",
         "emoji-flags": "^1.3.0",
         "friendly-numbers": "^1.0.1",
+        "html-to-md": "^0.5.8",
         "mocha": "^10.0.0",
         "mongoose": "^6.4.0",
         "ndjson-parse": "^1.0.4",
@@ -1038,6 +1039,11 @@
       "bin": {
         "he": "bin/he"
       }
+    },
+    "node_modules/html-to-md": {
+      "version": "0.5.8",
+      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.5.8.tgz",
+      "integrity": "sha512-fMo/fVQaKLJ82X3CmbRSkKkDeCHsmKsr9I5IbF4DZdDDmCFr8DA5QVPX7o/L1BUYimX0HIG80gFWhPfm09WoJQ=="
     },
     "node_modules/http-cache-semantics": {
       "version": "4.1.0",
@@ -3326,6 +3332,11 @@
       "version": "1.2.0",
       "resolved": "https://registry.npmjs.org/he/-/he-1.2.0.tgz",
       "integrity": "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw=="
+    },
+    "html-to-md": {
+      "version": "0.5.8",
+      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.5.8.tgz",
+      "integrity": "sha512-fMo/fVQaKLJ82X3CmbRSkKkDeCHsmKsr9I5IbF4DZdDDmCFr8DA5QVPX7o/L1BUYimX0HIG80gFWhPfm09WoJQ=="
     },
     "http-cache-semantics": {
       "version": "4.1.0",

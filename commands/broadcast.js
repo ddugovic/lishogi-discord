@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const html2md=require('html-to-md');
 
 async function broadcast(author) {
     const url = 'https://lichess.org/api/broadcast?nb=1';
@@ -16,10 +17,11 @@ async function broadcast(author) {
 function formatBroadcast(broadcast) {
     if (broadcast.tour) {
         const embed = new Discord.MessageEmbed()
-            .setTitle(broadcast.tour.name)
+            .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+            .setTitle(broadcast.tour.description)
             .setURL(broadcast.tour.url)
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(broadcast.tour.description)
+            .setDescription(html2md(broadcast.tour.markup))
             .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
         return { 'embeds': [ embed ] };
     } else {
