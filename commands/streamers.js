@@ -8,6 +8,8 @@ async function streamers(author) {
         .then(response => setStreamers(response.data))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): \
+                ${error}`);
+            console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -34,17 +36,22 @@ function setStreamers(data) {
 }
 
 function formatStreamer(streamer) {
-    const name = formatName(streamer);
+    const [country, rating] = getCountryAndRating(streamer.profile);
+    const name = formatName(streamer, country, rating);
     const badges = streamer.patron ? '🦄' : '';
-    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
+    const [score, profile] = formatProfile(streamer.username, streamer.profile, rating, streamer.playTime);
     return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
 }
 
-function formatName(streamer) {
+function getCountryAndRating(profile) {
+    if (profile)
+        return [profile.country, profile.fideRating];
+}
+
+function formatName(streamer, country, rating) {
     var name = getLastName(streamer.profile) ?? streamer.username;
     if (streamer.title)
         name = `**${streamer.title}** ${name}`;
-    const [country, rating] = getCountryAndRating(streamer.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
     if (rating)
@@ -57,12 +64,7 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getCountryAndRating(profile) {
-    if (profile)
-        return [profile.country, profile.fideRating];
-}
-
-function formatProfile(username, profile, playTime) {
+function formatProfile(username, profile, fideRating, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
     const duration = formatSeconds(tv).split(', ')[0];
@@ -80,7 +82,7 @@ function formatProfile(username, profile, playTime) {
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
         if ((length = bio.length)) {
-            rating = getRating(profile) ?? 1000;
+            rating = fideRating ?? 1000;
             result.push(bio);
 	}
     }
