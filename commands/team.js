@@ -1,6 +1,8 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const headlineParser = require('eklem-headline-parser')
 const similarity = require("string-similarity");
+const sw = require('stopword')
 
 async function team(author, text) {
     if (!text)
@@ -27,8 +29,12 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
+    return team.nbMembers * similarity.compareTwoStrings(getKeywords(team), text);
+}
+
+function getKeywords(team) {
     const description = formatDescription(team.description)[0];
-    return team.nbMembers * (similarity.compareTwoStrings(team.name, text) * 4 + similarity.compareTwoStrings(description, text));
+    return headlineParser.findKeywords(sw.removeStopwords(team.name.split(' ')), description.split(' '), 3).join(' ');
 }
 
 function formatTeam(team) {
