@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const chess = require('chessops/chess');
 const cfen = require('chessops/fen');
+const formatColor = require('../lib/format-color');
 const san = require('chessops/san');
 const util = require('chessops/util');
 
@@ -25,14 +26,16 @@ async function eval(author, fen) {
 }
 
 function formatCloudEval(fen, setup, eval) {
-    const stats = `Nodes: ${Math.floor(eval['knodes']/1000)}M, Depth: ${eval['depth']}`;
+    const mnodes = Math.floor(eval.knodes / 1000);
+    const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
     for (const pv in eval.pvs)
         variations.push(formatVariation(fen, setup, eval.pvs[pv]));
+    const red = Math.min(mnodes, 255);
 
     fen = fen.replace(/ /g,'_');
     const embed = new Discord.MessageEmbed()
-        .setColor('#0000FF')
+        .setColor(formatColor(red, 0, 255 - red))
         .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(':cloud: Cloud Evaluation')
