@@ -1,12 +1,14 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const similarity = require("string-similarity");
 
 async function team(author, text) {
     if (!text)
         return 'You need to specify text to search by!';
-    const url = `https://lichess.org/api/team/search?text=${text}&nb=1`;
+    text = text.replace(/\s+/, '');
+    const url = `https://lichess.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setTeams(response.data))
+        .then(response => setTeams(response.data, text))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -15,12 +17,16 @@ async function team(author, text) {
         });
 }
 
-function setTeams(teams) {
+function setTeams(teams, text) {
     if (teams.nbResults) {
-        return { embeds: [ teams.currentPageResults.map(formatTeam)[0] ] };
+        return { embeds: [ teams.currentPageResults.sort((a,b) => score(b, text) - score(a, text)).map(formatTeam)[0] ] };
     } else {
         return 'No team found.';
     }
+}
+
+function score(team, text) {
+    return similarity.compareTwoStrings(team.name, text) * team.nbMembers;
 }
 
 function formatTeam(team) {

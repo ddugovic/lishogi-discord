@@ -23,7 +23,8 @@
         "mongoose": "^6.4.0",
         "ndjson-parse": "^1.0.4",
         "plural": "^1.1.0",
-        "rss-parser": "^3.12.0"
+        "rss-parser": "^3.12.0",
+        "string-similarity": "^4.0.4"
       },
       "devDependencies": {
         "nodemon": "^2.0.18"
@@ -2174,6 +2175,11 @@
         "memory-pager": "^1.0.2"
       }
     },
+    "node_modules/string-similarity": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/string-similarity/-/string-similarity-4.0.4.tgz",
+      "integrity": "sha512-/q/8Q4Bl4ZKAPjj8WerIBJWALKkaPRfrvhfF8k/B23i4nzrlRj2/go1m90In7nG/3XDSbOo0+pu6RvCTM9RGMQ=="
+    },
     "node_modules/string-width": {
       "version": "4.2.3",
       "resolved": "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz",
@@ -4191,6 +4197,11 @@
       "requires": {
         "memory-pager": "^1.0.2"
       }
+    },
+    "string-similarity": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/string-similarity/-/string-similarity-4.0.4.tgz",
+      "integrity": "sha512-/q/8Q4Bl4ZKAPjj8WerIBJWALKkaPRfrvhfF8k/B23i4nzrlRj2/go1m90In7nG/3XDSbOo0+pu6RvCTM9RGMQ=="
     },
     "string-width": {
       "version": "4.2.3",

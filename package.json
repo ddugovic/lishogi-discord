@@ -30,7 +30,8 @@
     "mongoose": "^6.4.0",
     "ndjson-parse": "^1.0.4",
     "plural": "^1.1.0",
-    "rss-parser": "^3.12.0"
+    "rss-parser": "^3.12.0",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
