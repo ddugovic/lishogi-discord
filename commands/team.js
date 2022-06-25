@@ -17,32 +17,46 @@ async function team(author, text) {
 
 function setTeams(teams) {
     if (teams.nbResults) {
-        return { embeds: [ teams.currentPageResults.slice(0, 1).map(formatTeam)[0] ] };
+        return { embeds: [ teams.currentPageResults.map(formatTeam)[0] ] };
     } else {
         return 'No team found.';
     }
 }
 
 function formatTeam(team) {
-    const [description, imageURL] = formatDescription(team.description);
-    return new Discord.MessageEmbed()
+    const [description, imageURL, images] = formatDescription(team.description);
+    var embed = new Discord.MessageEmbed()
         .setAuthor({name: team.leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(team.leader.name)})
         .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
+    if (images.length)
+        embed = embed.setImage(images[0]);
+    return embed;
 }
 
 function getLink(name) {
     return `https://lichess.org/@/${name}`;
 }
 
-function formatDescription(description) {
-    const pattern = /^!\[[- \w]+\]\((.*)\)\s+([^]*)$/;
-    const match = description.match(pattern);
+function formatDescription(text) {
+    const [description, images] = getImages(text, []);
+    const logo = /^!\[[- \w]+\]\((https?:.*)\)\s+([^]*)$/;
+    const match = description.match(logo);
     if (match)
-        return [match[2], match[1]];
-    return [description, null];
+        return [match[2], match[1], images];
+    return [description, null, images];
+}
+
+function getImages(text, images) {
+    const image = /^([^]*)\r?\n!\[\]\((.*)\)$/;
+    const match = text.match(image);
+    if (match) {
+        images.unshift(match[2]);
+        return getImages(match[1].trim(), images);
+    }
+    return [text, images];
 }
 
 function formatLink(text) {
