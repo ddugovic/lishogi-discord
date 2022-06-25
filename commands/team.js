@@ -29,13 +29,19 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
-    return team.nbMembers * similarity.compareTwoStrings(getKeywords(team), text.toLowerCase());
+    text = text.toLowerCase();
+    const keywords = getKeywords(team);
+    return team.nbMembers * (keywords.includes(text) ? 1 : similarity.compareTwoStrings(keywords.join(' '), text));
 }
 
 function getKeywords(team) {
-    const description = formatDescription(team.description)[0].toLowerCase().replaceAll(/[^\s\w]+/g, ' ').split(/(?:\r?\n)+/);
-    const headline = description[0].trim();
-    return headlineParser.findKeywords(sw.removeStopwords(headline.split(/ +/)), description.join('\n').split(/\s+/), 5).join(' ');
+    const description = removeLinks(team.description.toLowerCase()).replaceAll(/[^\s\w]+/g, ' ').split(/(?:\r?\n)+/);
+    const headline = `${team.name} ${description[0].trim()}`.toLowerCase();
+    return headlineParser.findKeywords(sw.removeStopwords(headline.split(/ +/)), description.slice(1).join('\n').split(/\s+/), 3);
+}
+
+function removeLinks(text) {
+    return text.replaceAll(/\(?https?:\/\S+\)?/g, '');
 }
 
 function formatTeam(team) {
