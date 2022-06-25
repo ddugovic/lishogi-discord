@@ -1,6 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const html2md=require('html-to-md');
+const html2md = require('html-to-md');
 
 async function broadcast(author) {
     const url = 'https://lichess.org/api/broadcast?nb=1';

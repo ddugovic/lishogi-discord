@@ -17,7 +17,7 @@ async function team(author, text) {
 
 function setTeams(teams) {
     if (teams.nbResults) {
-        return { embeds: [ teams.currentPageResults.map(formatTeam)[0] ] };
+        return { embeds: [ teams.currentPageResults.slice(0, 1).map(formatTeam)[0] ] };
     } else {
         return 'No team found.';
     }
@@ -30,7 +30,7 @@ function formatTeam(team) {
         .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
-        .setDescription(description);
+        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
 }
 
 function getLink(name) {
@@ -43,6 +43,14 @@ function formatDescription(description) {
     if (match)
         return [match[2], match[1]];
     return [description, null];
+}
+
+function formatLink(text) {
+    const pattern = /^([- \w]+):\s+(https?:\/\/[-\w\.\/]+)$/;
+    const match = text.match(pattern);
+    if (match)
+        return `[${match[1]}](${match[2]})`;
+    return text;
 }
 
 function process(bot, msg, text) {
