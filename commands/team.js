@@ -19,7 +19,8 @@ async function team(author, text) {
 
 function setTeams(teams, text) {
     if (teams.nbResults) {
-        return { embeds: [ teams.currentPageResults.sort((a,b) => score(b, text) - score(a, text)).map(formatTeam)[0] ] };
+        const team = teams.currentPageResults.sort((a,b) => score(b, text) - score(a, text))[0];
+        return { embeds: [ formatTeam(team) ] };
     } else {
         return 'No team found.';
     }
@@ -48,7 +49,7 @@ function getLink(name) {
 
 function formatDescription(text) {
     const [description, images] = getImages(text, []);
-    const logo = /^!\[[- \w]+\]\((https?:.*)\)\s+([^]*)$/;
+    const logo = /^!\[[- \w]+\]\((https?:.*?)\)\s+([^]*)$/;
     const match = description.match(logo);
     if (match)
         return [match[2], match[1], images];
@@ -56,7 +57,7 @@ function formatDescription(text) {
 }
 
 function getImages(text, images) {
-    const image = /^([^]*)\r?\n!\[\]\((.*)\)$/;
+    const image = /^([^]*)\r?\n!\[(?:[- \w]*?)\]\((.*?)\)$/;
     const match = text.match(image);
     if (match) {
         images.unshift(match[2]);
