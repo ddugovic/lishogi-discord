@@ -46,7 +46,7 @@ function formatDescription(description) {
 }
 
 function formatLink(text) {
-    text = formatUser(text.split(/ +/));
+    text = text.split(/ +/).map(formatUser).join(' ');
     const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
     const match = text.match(pattern);
     if (match)
@@ -55,13 +55,16 @@ function formatLink(text) {
 }
 
 function formatUser(text) {
-    const username = /^(?:https:\/\/lichess\.org\/@\/|@)(\w+)$/;
-    for (let i = 0; i < text.length; i++) {
-        const match = text[i].match(username);
-        if (match)
-            text[i] = `[@${match[1]}](https://lichess.org/@/${match[1]})`;
-    }
-    return text.join(' ');
+    var username = /^(?:https:\/\/lichess\.org\/@\/|@)(\w+)$/;
+    var match = text.match(username);
+    if (match)
+        return `[@${match[1]}](https://lichess.org/@/${match[1]})`;
+
+    user = /\[(\w+)\]\(https:\/\/lichess\.org\/@\/\1\/?\)/;
+    match = text.match(user);
+    if (match)
+        return text.replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
+    return text;
 }
 
 function process(bot, msg, text) {
