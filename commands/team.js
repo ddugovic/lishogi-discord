@@ -46,11 +46,21 @@ function formatDescription(description) {
 }
 
 function formatLink(text) {
-    const pattern = /^([- \w]+):\s+(https?:\/\/[-\w\.\/]+)$/;
+    text = formatUser(text.split(/ +/));
+    const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
     const match = text.match(pattern);
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
+}
+
+function formatUser(text) {
+    const username = /(?:https:\/\/lichess\.org\/@\/|@)(\w+)/g;
+    for (let i = 0; i < text.length; i++) {
+        for (match of text[i].matchAll(username))
+            text[i] = text[i].replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
+    }
+    return text.join(' ');
 }
 
 function process(bot, msg, text) {
