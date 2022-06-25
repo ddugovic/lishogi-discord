@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const User = require('../models/User');
 const Parser = require('rss-parser');
 
@@ -17,12 +18,15 @@ async function blog(author) {
 function formatBlog(blog) {
     const embeds = [];
     for (const entry of blog.items.values()) {
+        const description = formatEntry(entry);
+        const red = Math.min(Math.max(description.length - 150, 0), 255);
         embeds.push(new Discord.MessageEmbed()
+            .setColor(formatColor(red, 0, 255-red))
             .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(entry.author)})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(formatEntry(entry)));
+            .setDescription(description));
     }
     return { 'embeds': embeds.slice(0, 3) };
 }
