@@ -1,6 +1,7 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -30,12 +31,14 @@ function setPlayers(users, mode) {
         const ids = users.map(player => player.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
+                const fields = response.data.map(formatPlayer);
+                const rating = Math.max(...fields.map(field => field.rating));
                 const embed = new Discord.MessageEmbed()
-                    .setColor('#FFFF00')
+                    .setColor(getColor(rating))
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lichess.org/player')
-                    .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
+                    .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -43,23 +46,35 @@ function setPlayers(users, mode) {
     }
 }
 
-function formatPlayer(player) {
-    const name = formatName(player);
-    const badges = player.patron ? '🦄' : '';
-    const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs};
+function getColor(rating) {
+    console.log(rating);
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
-function formatName(player) {
+function formatPlayer(player) {
+    const fideRating = getRating(player.profile);
+    const [profile, rating] = formatProfile(player.username, player.profile, fideRating, player.playTime);
+    const name = formatName(player, rating);
+    const badges = player.patron ? '🦄' : '';
+    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs, 'rating': rating };
+}
+
+function formatName(player, rating) {
     var name = getLastName(player.profile) ?? player.username;
     if (player.title)
         name = `**${player.title}** ${name}`;
-    const [country, rating] = getCountryAndRating(player.profile) || [];
+    const country = getCountry(player.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    if (rating)
+    if (rating > 1000)
         name += ` (${rating})`;
     return name;
+}
+
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
 }
 
 function getLastName(profile) {
@@ -67,12 +82,12 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getCountryAndRating(profile) {
+function getRating(profile) {
     if (profile)
-        return [profile.country, profile.fideRating];
+        return profile.fideRating;
 }
 
-function formatProfile(username, profile, playTime) {
+function formatProfile(username, profile, fideRating, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
     const duration = formatSeconds(tv).split(', ')[0];
@@ -85,12 +100,15 @@ function formatProfile(username, profile, playTime) {
         for (link of getYouTube(links))
             result.push(`[YouTube](https://${link})`);
     }
+    var rating = 0;
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio.length)
+        if (bio.length) {
+            rating = fideRating ?? 1000;
             result.push(bio);
+        }
     }
-    return result.join('\n');
+    return [result.join('\n'), rating];
 }
 
 function getMaiaChess(links) {
