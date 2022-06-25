@@ -45,9 +45,10 @@ function removeLinks(text) {
 }
 
 function formatTeam(team) {
+    const leader = getLeader(team.leader, team.leaders);
     const [description, imageURL, images] = formatDescription(team.description);
     var embed = new Discord.MessageEmbed()
-        .setAuthor({name: team.leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(team.leader.name)})
+        .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
         .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
@@ -55,6 +56,11 @@ function formatTeam(team) {
     if (images.length)
         embed = embed.setImage(images[0]);
     return embed;
+}
+
+function getLeader(leader, leaders) {
+    if (leader in leaders) return leader;
+    return leaders.length ? leaders[Math.floor(Math.random() * leaders.length)] : leader;
 }
 
 function getLink(name) {
