@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const html2md = require('html-to-md');
+const dcTable = require('@hugop/discord-table/dist/discord-table.js')
 
 async function broadcast(author) {
     const url = 'https://lichess.org/api/broadcast?nb=1';
@@ -21,12 +22,33 @@ function formatBroadcast(broadcast) {
             .setTitle(broadcast.tour.description)
             .setURL(broadcast.tour.url)
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(html2md(broadcast.tour.markup))
+            .setDescription(formatDescription(broadcast.tour.markup))
             .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
         return { 'embeds': [ embed ] };
     } else {
         return 'No broadcast found!';
     }
+}
+
+function formatTable(text) {
+    const lines = text.split(/\r?\n/);
+    const headers = lines[0].split(/\|/).slice(1, -1).map(s => [s]);
+    const content = lines.slice(2).map(line => line.split(/\|/).slice(1, -1).map(s => [s]));
+    return dcTable.createDiscordTable({
+        headers: headers,
+        content: content,
+        spacesBetweenColumns: headers.slice(1).map(s => 5),
+        maxColumnLengths: headers.map(s => 30)
+    }).join('\n');
+}
+
+function formatDescription(text) {
+    text = html2md(text)
+    const pattern = /(\|(?:[-,\.\s\w]+\|)+)/;
+    const match = text.match(pattern);
+    if (match)
+        text = text.replace(match[1], formatTable(match[1]))
+    return text;
 }
 
 function formatRound(round) {
