@@ -26,7 +26,7 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
-    return similarity.compareTwoStrings(team.name, text) * team.nbMembers;
+    return team.nbMembers * (similarity.compareTwoStrings(team.name, text) * 4 + similarity.compareTwoStrings(team.description, text));
 }
 
 function formatTeam(team) {
