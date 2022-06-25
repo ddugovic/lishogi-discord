@@ -30,10 +30,9 @@ function formatBroadcast(broadcast) {
     }
 }
 
-function formatTable(text) {
-    const lines = text.split(/\r?\n/);
-    const headers = lines[0].split(/\|/).slice(1, -1).map(s => [s]);
-    const content = lines.slice(2).map(line => line.split(/\|/).slice(1, -1).map(s => [s]));
+function formatTable(headers, content) {
+    headers = headers.split(/\|/).slice(1, -1).map(s => [s]);
+    content = content.split(/\r?\n/).map(line => line.split(/\|/).slice(1, -1).map(s => [s]));
     return dcTable.createDiscordTable({
         headers: headers,
         content: content,
@@ -44,10 +43,10 @@ function formatTable(text) {
 
 function formatDescription(text) {
     text = html2md(text)
-    const pattern = /(\|(?:[-,\.\s\w]+\|)+)/;
+    const pattern = /(\|(?:[-,\. \w]+\|)+)\r?\n\|(?:-+\|)+((?:\r?\n\|(?:[-,\. \w]+\|)+)+)/;
     const match = text.match(pattern);
     if (match)
-        text = text.replace(match[1], formatTable(match[1]))
+        text = text.replace(match[0], formatTable(match[1], match[2].trim()))
     return text;
 }
 
