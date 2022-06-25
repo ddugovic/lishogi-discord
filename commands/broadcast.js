@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const html2md = require('html-to-md');
 const dcTable = require('@hugop/discord-table/dist/discord-table.js')
 
@@ -16,8 +17,10 @@ async function broadcast(author) {
 }
 
 function formatBroadcast(broadcast) {
+    const red = Math.min(broadcast.rounds.length * 20, 255);
     if (broadcast.tour) {
         const embed = new Discord.MessageEmbed()
+            .setColor(formatColor(red, 0, 255-red))
             .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
             .setTitle(broadcast.tour.description)
             .setURL(broadcast.tour.url)
