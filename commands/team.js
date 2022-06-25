@@ -27,7 +27,8 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
-    return team.nbMembers * (similarity.compareTwoStrings(team.name, text) * 4 + similarity.compareTwoStrings(team.description, text));
+    const description = formatDescription(team.description)[0];
+    return team.nbMembers * (similarity.compareTwoStrings(team.name, text) * 4 + similarity.compareTwoStrings(description, text));
 }
 
 function formatTeam(team) {
@@ -57,7 +58,7 @@ function formatDescription(text) {
 }
 
 function getImages(text, images) {
-    const image = /^([^]*)\r?\n!\[(?:[- \w]*?)\]\((.*?)\)$/;
+    const image = /^([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.*?)\)$/;
     const match = text.match(image);
     if (match) {
         images.unshift(match[2]);
