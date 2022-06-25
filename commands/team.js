@@ -38,7 +38,7 @@ function getLink(name) {
 }
 
 function formatDescription(description) {
-    const pattern = /!\[[- \w]+\]\((.*)\)\s+([^]*)/;
+    const pattern = /^!\[[- \w]+\]\((.*)\)\s+([^]*)$/;
     const match = description.match(pattern);
     if (match)
         return [match[2], match[1]];
