@@ -55,10 +55,11 @@ function formatLink(text) {
 }
 
 function formatUser(text) {
-    const username = /(?:https:\/\/lichess\.org\/@\/|@)(\w+)/g;
+    const username = /^(?:https:\/\/lichess\.org\/@\/|@)(\w+)$/;
     for (let i = 0; i < text.length; i++) {
-        for (match of text[i].matchAll(username))
-            text[i] = text[i].replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
+        const match = text[i].match(username);
+        if (match)
+            text[i] = `[@${match[1]}](https://lichess.org/@/${match[1]})`;
     }
     return text.join(' ');
 }
