@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
+const removeMarkdown = require("remove-markdown");
 const similarity = require("string-similarity");
 const sw = require('stopword')
 
@@ -35,13 +36,9 @@ function score(team, text) {
 }
 
 function getKeywords(team) {
-    const description = removeLinks(team.description.toLowerCase()).replaceAll(/[^\s\w]+/g, ' ').split(/(?:\r?\n)+/);
+    const description = removeMarkdown(team.description.toLowerCase()).replaceAll(/[^\s\w]+/g, ' ').split(/(?:\r?\n)+/);
     const headline = `${team.name} ${description[0].trim()}`.toLowerCase();
     return headlineParser.findKeywords(sw.removeStopwords(headline.split(/ +/)), description.slice(1).join('\n').split(/\s+/), 3);
-}
-
-function removeLinks(text) {
-    return text.replaceAll(/\(?https?:\/\S+\)?/g, '');
 }
 
 function formatTeam(team) {
