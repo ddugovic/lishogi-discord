@@ -18,11 +18,6 @@ async function puzzle(author) {
         });
 }
 
-function getColor(rating) {
-    const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
-    return formatColor(red, 0, 255-red);
-}
-
 function formatPuzzle(game, puzzle) {
     const players = game.players.map(formatPlayer).join(' - ');
     const pos = chess.Chess.default();
@@ -44,6 +39,11 @@ function formatPuzzle(game, puzzle) {
     const data = new Discord.MessageEmbed()
         .addField('Themes', puzzle.themes.map(title).join(', '));
     return { embeds: [ embed, data ] };
+}
+
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
 function formatPlayer(player) {

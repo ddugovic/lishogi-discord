@@ -1,14 +1,13 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
         .then(response => setStreamers(response.data))
         .catch(error => {
-            console.log(`Error in streamers(${author.username}): \
-                ${error}`);
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -22,12 +21,14 @@ function setStreamers(data) {
         const ids = data.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
+                const fields = response.data.map(formatStreamer);
+                const rating = Math.max(...fields.map(field => field.rating));
                 const embed = new Discord.MessageEmbed()
-                    .setColor('#FF0000')
+                    .setColor(getColor(rating))
                     .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:satellite: Lichess Streamers`)
                     .setURL('https://lichess.org/streamer')
-                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.score - a.score));
+                    .addFields(fields.sort((a,b) => b.score - a.score));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -35,12 +36,17 @@ function setStreamers(data) {
     }
 }
 
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
 function formatStreamer(streamer) {
-    const [country, rating] = getCountryAndRating(streamer.profile);
-    const name = formatName(streamer, country, rating);
+    const [country, fideRating] = getCountryAndRating(streamer.profile);
+    const name = formatName(streamer, country, fideRating);
     const badges = streamer.patron ? '🦄' : '';
-    const [score, profile] = formatProfile(streamer.username, streamer.profile, rating, streamer.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
+    const [profile, rating, score] = formatProfile(streamer.username, streamer.profile, fideRating, streamer.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
 }
 
 function getCountryAndRating(profile) {
@@ -86,7 +92,7 @@ function formatProfile(username, profile, fideRating, playTime) {
             result.push(bio);
 	}
     }
-    return [((length + rating) * 1000000 + tv * 1000 + playTime.total), result.join('\n')];
+    return [result.join('\n'), rating, ((length + rating) * 1000000 + tv * 1000 + playTime.total)];
 }
 
 function getMaiaChess(links) {
