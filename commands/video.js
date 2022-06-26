@@ -14,13 +14,13 @@ async function video(author) {
 
 function setVideos(document) {
     const embeds = [];
-    const pattern = /<span class="full-title">([ \w]+)<\/span><span class="author">(\w+)<\/span>.+?<a class="[ \w]+" href="(\/video\/\w+?\??)">/g;
+    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??)">.+?<span class="full-title">([ \w]+)<\/span><span class="author">(\w+)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3]));
     return embeds.length ? { embeds: embeds.slice(0, 3) } : 'No video found!';
 }
 
-function formatVideo(name, author, link) {
+function formatVideo(link, name, author) {
     return new Discord.MessageEmbed()
         .setAuthor({name: author, iconURL: null, url: 'https://youtube.com/${author}'})
         .setTitle(name)
