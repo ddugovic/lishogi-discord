@@ -1,9 +1,10 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
-const LDA = require('lda-topic-model');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
+const lda = require('@stdlib/nlp-lda');
+const stopwords = require('@stdlib/datasets-stopwords-en');
 
 async function team(author, text) {
     if (!text)
@@ -32,28 +33,28 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
-    const description = removeAccents(removeMarkdown(team.description)).toLowerCase();
-    const document = description.split(/(\r?\n)+/).map(formatText);
-    return team.nbMembers * (team.name.toLowerCase().includes(text) ? 2 : 1) * getTopics(document, text).map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
+    const description = strip(removeAccents(removeMarkdown(team.description)).toLowerCase());
+    const docs = description.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
+    const topics = getTopics(docs, text);
+    return team.nbMembers * docs.length * topics.map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
 }
 
-function formatText(text) {
-    return {id: text, text: text};
+function strip(description) {
+    for (word of stopwords())
+        description = description.replaceAll(` ${word} `, ' ');
+    return description;
 }
 
-function getTopics(document, text) {
-    const options = {
-        displayingStopwords: false,
-        language: 'en',
-        numberTopics: 50,
-        sweeps: 100,
-        stem: true,
-    };
-    return new LDA(options, document).getTopicWords();
+function getTopics(docs, text) {
+    const model = lda(docs, 10);
+    model.fit(1000, 100, 10)
+    const topics = [];
+    for (i = 0; i < 10; i++) { topics.push(model.getTerms(0, 20)); }
+    return topics;
 }
 
 function scoreTopic(topic, text) {
-    return topic.topicText.split(/ /).includes(text) ? topic.score : 0;
+    return topic.filter(term => term.word == text).map(term => term.prob)[0] ?? 0;
 }
 
 function formatTeam(team) {
