@@ -126,7 +126,7 @@ function setAbout(embed, username, profile, playTime) {
             result.push(`[YouTube](https://${link})`);
     }
     if (profile && profile.bio) {
-        const image = getImage(profile.bio);
+        const image = getThumbnail(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
         const bio = formatBio(profile.bio.split(/\s+/));
@@ -247,10 +247,10 @@ function formatBio(bio) {
     return bio.join(' ');
 }
 
-function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+function getThumbnail(text) {
+    const match = text.match(/(https:\/\/i.imgur.com\/\w+)\.(\w+)/);
     if (match)
-        return match[0];
+        return `${match[1]}t.${match[2]}`;
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
