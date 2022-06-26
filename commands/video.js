@@ -17,7 +17,11 @@ function setVideos(document) {
     const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??)">.+?<span class="full-title">([ \w]+)<\/span><span class="author">(\w+)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3]));
-    return embeds.length ? { embeds: embeds.slice(0, 3) } : 'No video found!';
+    return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
+}
+
+function shuffle(array) {
+    return array.sort(() => .5 - Math.random());
 }
 
 function formatVideo(link, name, author) {
