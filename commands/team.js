@@ -63,13 +63,16 @@ function formatTeam(team) {
     const leader = getLeader(team.leader, team.leaders);
     const image = getImage(team.description);
     const description = formatDescription(team.description);
-    return new Discord.MessageEmbed()
+    var embed = new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
-        .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(image ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
+    if (image)
+        embed = embed.setImage(image);
+    return embed;
 }
 
 function getLeader(leader, leaders) {
@@ -143,7 +146,7 @@ function formatUser(text) {
 }
 
 function formatBio(bio) {
-    const social = /\bdiscord.gg\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     const username = /@(\w+)/g;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
