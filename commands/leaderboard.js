@@ -47,7 +47,6 @@ function setPlayers(users, mode) {
 }
 
 function getColor(rating) {
-    console.log(rating);
     const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }

@@ -1,18 +1,27 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
+const User = require('../models/User');
 
 async function bots(author) {
+    const mode = await getMode(author) || 'blitz';
     return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => setBots(filter(parse(response.data))))
+        .then(response => setBots(filter(parse(response.data)), mode))
         .catch(error => {
             console.log(`Error in bots(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getMode(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.favoriteMode;
 }
 
 function filter(bots) {
@@ -25,10 +34,11 @@ function source(bot) {
         return bot.profile.links.match(git);
 }
 
-function setBots(bots) {
+function setBots(bots, mode) {
     if (bots.length) {
+        const rating = Math.max(...bots.map(bot => getRating(bot.perfs, mode) ?? 1500));
         const embed = new Discord.MessageEmbed()
-            .setColor('#00FFFF')
+            .setColor(getColor(rating))
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:robot: Lichess Bots`)
             .setURL('https://lichess.org/player/bots')
@@ -37,6 +47,16 @@ function setBots(bots) {
     } else {
         return 'No bots are currently online.';
     }
+}
+
+function getRating(perfs, mode) {
+    if (perfs && perfs[mode])
+        return perfs[mode].rating;
+}
+
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 4), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
 function formatBot(bot) {
