@@ -1,8 +1,8 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatTable = require('../lib/format-table');
 const html2md = require('html-to-md');
-const dcTable = require('@hugop/discord-table/dist/discord-table.js')
 
 async function broadcast(author) {
     const url = 'https://lichess.org/api/broadcast?nb=1';
@@ -31,17 +31,6 @@ function formatBroadcast(broadcast) {
     } else {
         return 'No broadcast found!';
     }
-}
-
-function formatTable(headers, content) {
-    headers = headers.split(/\|/).slice(1, -1).map(s => [s]);
-    content = content.split(/\r?\n/).map(line => line.split(/\|/).slice(1, -1).map(s => [s]));
-    return dcTable.createDiscordTable({
-        headers: headers,
-        content: content,
-        spacesBetweenColumns: headers.slice(1).map(s => 5),
-        maxColumnLengths: headers.map(s => 30)
-    }).join('\n');
 }
 
 function formatDescription(text) {
