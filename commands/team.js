@@ -1,10 +1,9 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
+const LDA = require('lda-topic-model');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
-const similarity = require("string-similarity");
-const sw = require('stopword')
 
 async function team(author, text) {
     if (!text)
@@ -22,8 +21,10 @@ async function team(author, text) {
 }
 
 function setTeams(teams, text) {
+    text = removeAccents(text).toLowerCase();
     if (teams.nbResults) {
-        const team = teams.currentPageResults.sort((a,b) => score(b, text) - score(a, text))[0];
+        teams.currentPageResults.forEach(team => team.score = score(team, text));
+        const team = teams.currentPageResults.sort((a,b) => b.score - a.score)[0];
         return { embeds: [ formatTeam(team) ] };
     } else {
         return 'No team found.';
@@ -31,15 +32,28 @@ function setTeams(teams, text) {
 }
 
 function score(team, text) {
-    text = removeAccents(text).toLowerCase();
-    const keywords = getKeywords(team);
-    return team.nbMembers * (keywords.includes(text) ? 1 : similarity.compareTwoStrings(keywords.join(' '), text));
+    const description = removeAccents(removeMarkdown(team.description)).toLowerCase();
+    const document = description.split(/(\r?\n)+/).map(formatText);
+    return team.nbMembers * (team.name.toLowerCase().includes(text) ? 2 : 1) * getTopics(document, text).map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
 }
 
-function getKeywords(team) {
-    const description = removeMarkdown(removeAccents(team.description).toLowerCase()).replaceAll(/[^\s\w]+/g, ' ').split(/(?:\r?\n)+/);
-    const headline = `${team.name} ${description[0].trim()}`.toLowerCase();
-    return headlineParser.findKeywords(sw.removeStopwords(headline.split(/ +/)), description.slice(1).join('\n').split(/\s+/), 3);
+function formatText(text) {
+    return {id: text, text: text};
+}
+
+function getTopics(document, text) {
+    const options = {
+        displayingStopwords: false,
+        language: 'en',
+        numberTopics: 50,
+        sweeps: 100,
+        stem: true,
+    };
+    return new LDA(options, document).getTopicWords();
+}
+
+function scoreTopic(topic, text) {
+    return topic.topicText.split(/ /).includes(text) ? topic.score : 0;
 }
 
 function formatTeam(team) {
