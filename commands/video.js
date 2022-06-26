@@ -1,4 +1,5 @@
 const axios = require('axios');
+const decode = require('decode-html');
 const Discord = require('discord.js');
 
 async function video(author, text) {
@@ -24,7 +25,7 @@ function setVideos(document) {
 function formatVideo(link, name, author) {
     return new Discord.MessageEmbed()
         .setAuthor({name: author, iconURL: null})
-        .setTitle(name)
+        .setTitle(decode(name))
         .setURL(`https://youtube.com${link}`)
         .setThumbnail(getImage(link));
 }
