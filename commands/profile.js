@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -45,7 +46,7 @@ function formatProfile(data, username) {
             bingos += record[3];
         }
         embed = embed
-            .setTitle(`${formatName(data, username)} Bingos: ${bingos}`)
+            .setTitle(`${formatName(data, username)} Bingos: ${fn.format(bingos)}`)
             .addFields(formatStats(ratings, records));
     }
     return { embeds: [ embed ] };
@@ -146,7 +147,7 @@ function formatRecord(wins, losses, draws, bingos) {
         result.push(`Draws: ${draws}`);
     }
     if (bingos) {
-        result.push(`Bingos: ${bingos}`);
+        result.push(`Bingos: ${fn.format(bingos)}`);
     }
     return `(${result.join(' ')})`
 }
