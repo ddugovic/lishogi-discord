@@ -61,18 +61,14 @@ function scoreTopic(topic, text) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
-    const image = getImage(team.description);
     const description = formatDescription(team.description);
-    var embed = new Discord.MessageEmbed()
+    return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
-        .setThumbnail(image ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
-    if (image)
-        embed = embed.setImage(image);
-    return embed;
 }
 
 function getLeader(leader, leaders) {
@@ -162,7 +158,7 @@ function formatBio(bio) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/[-\.\w\/]+\/\w+\.\w+/);
+    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
     if (match)
         return match[0];
 }
