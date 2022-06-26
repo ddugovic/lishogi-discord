@@ -15,7 +15,7 @@ async function video(author, text) {
 
 function setVideos(document) {
     const embeds = [];
-    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="full-title">(.+?)<\/span><span class="author">([ \w]+?)<\/span>/g;
+    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3]));
     return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
