@@ -22,6 +22,7 @@
     "@stdlib/nlp-lda": "^0.0.7",
     "axios": "^0.27.2",
     "convert-seconds": "^1.0.1",
+    "decode-html": "^2.0.0",
     "discord-lister": "^1.4.0",
     "discord.js": "^13.8.1",
     "eklem-headline-parser": "^3.0.2",
