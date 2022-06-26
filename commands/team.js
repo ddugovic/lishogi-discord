@@ -86,7 +86,15 @@ function formatDescription(text) {
     const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
-    return text;
+    const result = [];
+    for (link of getMaiaChess(text))
+        result.push(`[Maia Chess](https://${link})`);
+    for (link of getTwitch(text))
+        result.push(`[Twitch](https://${link})`);
+    for (link of getYouTube(text))
+        result.push(`[YouTube](https://${link})`);
+    result.push(formatBio(text.split(/\r?\n/)));
+    return result.join('\n');
 }
 
 function formatLink(text) {
@@ -96,6 +104,22 @@ function formatLink(text) {
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
+}
+
+function getMaiaChess(links) {
+    const pattern = /maiachess.com/g;
+    return links.matchAll(pattern);
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function formatUser(text) {
@@ -109,6 +133,22 @@ function formatUser(text) {
     if (match)
         return text.replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
     return text;
+}
+
+function formatBio(bio) {
+    const social = /\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio.splice(i, 1);
+            i -= 1;
+            continue;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
+        }
+    }
+    return bio.join('\n');
 }
 
 function getImage(text) {
