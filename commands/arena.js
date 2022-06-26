@@ -41,21 +41,26 @@ function filterArena(arena, mode) {
 
 function formatArena(arena) {
     const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
-    const start = Math.floor(arena.startsAt / 1000);
-    const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
-    const rated = arena.rated ? 'rated' : 'casual';
-    const players = arena.nbPlayers == 1 ? '1 player competes' : `${arena.nbPlayers} players compete`;
-    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` : 'Winner is not yet decided.';
     var embed = new Discord.MessageEmbed()
         .setColor(formatColor(255-speed, 0, speed))
         .setAuthor({name: arena.createdBy, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lichess.org/tournament/${arena.id}`)
-        .setDescription(`${players} in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}`);
+        .setDescription(getDescription(arena));
     if (arena.position)
 	embed = embed.setImage(`https://lichess.org/export/gif/${formatPosition(arena.position)}`);
     return { embeds: [ embed ] };
+}
+
+function getDescription(arena) {
+    const players = arena.nbPlayers == 1 ? '1 player competes' : `${arena.nbPlayers} players compete`;
+    const start = Math.floor(arena.startsAt / 1000);
+    const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
+    const rated = arena.rated ? 'rated' : 'casual';
+    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` : 'Winner is not yet decided.';
+    const restriction = !arena.winner && arena.minRatedGames ? `\n\n${arena.minRatedGames.nb} rated ${arena.minRatedGames.perf} games are required.` : '';
+    return `${players} in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}${restriction}`;
 }
 
 function formatPosition(position) {
@@ -71,7 +76,7 @@ function formatSchedule(schedule) {
 }
 
 function formatPlayer(player) {
-    const name = player.title ? `${player.title} ${player.name}` : player.name;
+    const name = player.title ? `${player.title} @${player.name}` : `@${player.name}`;
     return `[${name}](https://lichess.org/@/${player.name})`;
 }
 
