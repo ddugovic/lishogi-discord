@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
+const formatColor = require('../lib/format-color');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -58,9 +59,11 @@ function scoreTopic(topic, text) {
 }
 
 function formatTeam(team) {
+    const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
     const [description, imageURL, images] = formatDescription(team.description);
     var embed = new Discord.MessageEmbed()
+        .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
         .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
