@@ -32,9 +32,9 @@ function formatCoach(image, name, description, details) {
 }
 
 function getLink(coach) {
-    const match = coach.match(/\((\/@\/\w+)\)\|/);
+    const match = coach.match(/\(\/@\/(\w+)\)\|/);
     if (match)
-        return `https://lichess.org${match[1]}`;
+        return `https://lichess.org/coach/${match[1]}`;
 }
 
 function process(bot, msg) {
