@@ -73,12 +73,6 @@ const commands = {
         process: playing.process,
         reply: playing.reply
     },
-    "gif": {
-        usage: "[user]",
-        description: "Share your (or a user's) current game as a GIF",
-        process: playing.process,
-        reply: playing.reply
-    },
     "privacy": {
         usage: "",
         description: "View privacy policy",
