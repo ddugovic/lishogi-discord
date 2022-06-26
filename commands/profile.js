@@ -248,7 +248,7 @@ function formatBio(bio) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.png/);
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
     if (match)
         return match[0];
 }
