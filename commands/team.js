@@ -61,17 +61,15 @@ function scoreTopic(topic, text) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
-    const [description, images] = formatDescription(team.description, []);
-    var embed = new Discord.MessageEmbed()
+    const image = getImage(team.description);
+    const description = formatDescription(team.description);
+    return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
         .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
-    if (images.length)
-        embed = embed.setImage(images[0]);
-    return embed;
 }
 
 function getLeader(leader, leaders) {
@@ -83,14 +81,12 @@ function getLink(name) {
     return `https://lichess.org/@/${name}`;
 }
 
-function formatDescription(text, images) {
-    const image = /^([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.*?)\)$/;
+function formatDescription(text) {
+    const image = /^(?:!\[.+?\]\(https?:.+?\))?([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.+?)\)$/;
     const match = text.match(image);
-    if (match) {
-        images.unshift(match[2]);
-        return formatDescription(match[1].trim(), images);
-    }
-    return [text, images];
+    if (match)
+        return formatDescription(match[1].trim());
+    return text;
 }
 
 function formatLink(text) {
@@ -116,7 +112,7 @@ function formatUser(text) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/[-\.\w\/]+/);
+    const match = text.match(/https:\/\/[-\.\w\/]+\/\w+\.\w+/);
     if (match)
         return match[0];
 }
