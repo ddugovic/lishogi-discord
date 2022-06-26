@@ -51,7 +51,7 @@
 !tv [game mode]
     Share the featured game
 !video
-    Find a video
+    Search videos for a keyword
 !privacy
     View privacy policy
 !stop
