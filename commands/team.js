@@ -116,7 +116,7 @@ function formatUser(text) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    const match = text.match(/https:\/\/[-\.\w\/]+/);
     if (match)
         return match[0];
 }
