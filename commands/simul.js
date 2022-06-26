@@ -30,7 +30,8 @@ function rankSimul(simul) {
 
 function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
-    const compete = simul.isFinished ? 'competed' : (simul.nbPairings == 1 ? 'competes' : 'compete');
+    const compete = simul.isFinished ? 'competed' :
+        simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'will compete';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
