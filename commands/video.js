@@ -20,17 +20,21 @@ function setVideos(document) {
     return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
 }
 
-function shuffle(array) {
-    return array.sort(() => .5 - Math.random());
-}
-
 function formatVideo(link, name, author) {
     return new Discord.MessageEmbed()
         .setAuthor({name: author, iconURL: null})
         .setTitle(name)
         .setURL(`https://youtube.com${link}`)
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setDescription(name);
+        .setThumbnail(getImage(link));
+}
+
+function getImage(link) {
+    const match = link.match(/\/video\/(\w+)\??(?:q=\w+)?/);
+    return `https://img.youtube.com/vi/${match[1]}/0.jpg`;
+}
+
+function shuffle(array) {
+    return array.sort(() => .5 - Math.random());
 }
 
 function process(bot, msg) {
