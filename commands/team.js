@@ -61,11 +61,11 @@ function scoreTopic(topic, text) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
-    const [description, imageURL, images] = formatDescription(team.description);
+    const [description, images] = formatDescription(team.description, []);
     var embed = new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(leader.name)})
-        .setThumbnail(imageURL ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
@@ -83,21 +83,12 @@ function getLink(name) {
     return `https://lichess.org/@/${name}`;
 }
 
-function formatDescription(text) {
-    const [description, images] = getImages(text, []);
-    const logo = /^!\[[- \w]+\]\((https?:.*?)\)\s+([^]*)$/;
-    const match = description.match(logo);
-    if (match)
-        return [match[2], match[1], images];
-    return [description, null, images];
-}
-
-function getImages(text, images) {
+function formatDescription(text, images) {
     const image = /^([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.*?)\)$/;
     const match = text.match(image);
     if (match) {
         images.unshift(match[2]);
-        return getImages(match[1].trim(), images);
+        return formatDescription(match[1].trim(), images);
     }
     return [text, images];
 }
@@ -122,6 +113,12 @@ function formatUser(text) {
     if (match)
         return text.replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
     return text;
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    if (match)
+        return match[0];
 }
 
 function process(bot, msg, text) {
