@@ -5,11 +5,9 @@ const User = require('../models/User');
 
 async function playing(author, username) {
     if (!username) {
-        const user = await User.findById(author.id).exec();
-        if (!user || !user.lichessName) {
+        username = await getName(author);
+        if (!username)
             return 'You need to set your lichess username with setuser!';
-        }
-        username = user.lichessName;
     }
     const url = `https://lichess.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
@@ -20,6 +18,12 @@ async function playing(author, username) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.lichessName;
 }
 
 function formatGame(game) {

@@ -9,10 +9,9 @@ const User = require('../models/User');
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user || !user.lichessName) {
+        username = await getName(author);
+        if (!username)
             return 'You need to set your lichess username with setuser!';
-        }
-        username = user.lichessName;
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
@@ -24,6 +23,12 @@ async function profile(author, username) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.lichessName;
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
@@ -210,7 +215,7 @@ function formatRating(mode, r) {
 function formatStats(count, playTime, mode, rating, perf) {
     var category = title(mode);
     if (perf)
-        category += perf.rank ? ` #${perf.rank}` : ` (Top ${perf.percentile}%)`;
+        category += perf.rank ? ` #${perf.rank}` : ` (Top ${100 - Math.ceil(perf.percentile)}%)`;
     category += formatProgress(rating.prog);
     if (count.all)
         return [
