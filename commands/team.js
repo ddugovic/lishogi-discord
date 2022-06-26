@@ -59,19 +59,16 @@ function scoreTopic(topic, text) {
 }
 
 function formatTeam(team) {
-    const count = Math.min(Math.max(team.nbMembers, 0), 255);
+    const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
-    const [description, imageURL, images] = formatDescription(team.description);
-    var embed = new Discord.MessageEmbed()
+    const description = formatDescription(team.description);
+    return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setAuthor({name: leader.name, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(leader.name)})
-        .setThumbnail(imageURL ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lishogi.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
-    if (images.length)
-        embed = embed.setImage(images[0]);
-    return embed;
 }
 
 function getLeader(leader, leaders) {
@@ -84,22 +81,19 @@ function getLink(name) {
 }
 
 function formatDescription(text) {
-    const [description, images] = getImages(text, []);
-    const logo = /^!\[[- \w]+\]\((https?:.*?)\)\s+([^]*)$/;
-    const match = description.match(logo);
-    if (match)
-        return [match[2], match[1], images];
-    return [description, null, images];
-}
-
-function getImages(text, images) {
-    const image = /^([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.*?)\)$/;
+    const image = /^(?:!\[.+?\]\(https?:.+?\))?([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.+?)\)$/;
     const match = text.match(image);
-    if (match) {
-        images.unshift(match[2]);
-        return getImages(match[1].trim(), images);
-    }
-    return [text, images];
+    if (match)
+        return formatDescription(match[1].trim());
+    const result = [];
+    for (link of getDiscord(text))
+        result.push(`[Discord](https://${link})`);
+    for (link of getTwitch(text))
+        result.push(`[Twitch](https://${link})`);
+    for (link of getYouTube(text))
+        result.push(`[YouTube](https://${link})`);
+    result.push(formatAbout(text.split(/\r?\n/)));
+    return result.join('\n');
 }
 
 function formatLink(text) {
@@ -109,6 +103,22 @@ function formatLink(text) {
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
+}
+
+function getDiscord(links) {
+    const pattern = /discord.gg\/\w{7,8}/g;
+    return links.matchAll(pattern);
+}
+
+function getTwitch(links) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return links.matchAll(pattern);
+}
+
+function getYouTube(links) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return links.matchAll(pattern);
 }
 
 function formatUser(text) {
@@ -122,6 +132,27 @@ function formatUser(text) {
     if (match)
         return text.replace(match[0], `[@${match[1]}](https://lishogi.org/@/${match[1]})`);
     return text;
+}
+
+function formatAbout(about) {
+    const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < about.length; i++) {
+        if (about[i].match(social)) {
+            about.splice(i, 1);
+            i -= 1;
+            continue;
+        }
+        for (match of about[i].matchAll(username))
+            about[i] = about[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+    }
+    return about.join('\n');
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
+    if (match)
+        return match[0];
 }
 
 function process(bot, msg, text) {
