@@ -87,6 +87,8 @@ function formatDescription(text) {
     if (match)
         return formatDescription(match[1].trim());
     const result = [];
+    for (link of getDiscord(text))
+        result.push(`[Discord](https://${link})`);
     for (link of getMaiaChess(text))
         result.push(`[Maia Chess](https://${link})`);
     for (link of getTwitch(text))
@@ -104,6 +106,11 @@ function formatLink(text) {
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
+}
+
+function getDiscord(links) {
+    const pattern = /discord.gg\/\w{7,8}/g;
+    return links.matchAll(pattern);
 }
 
 function getMaiaChess(links) {
@@ -136,7 +143,7 @@ function formatUser(text) {
 }
 
 function formatBio(bio) {
-    const social = /\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /\bdiscord.gg\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     const username = /@(\w+)/g;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
