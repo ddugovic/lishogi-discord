@@ -50,6 +50,8 @@
     Search teams for a keyword
 !tv [game mode]
     Share the featured game
+!video
+    Find a video
 !privacy
     View privacy policy
 !stop

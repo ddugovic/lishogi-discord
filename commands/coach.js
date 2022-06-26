@@ -1,6 +1,5 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const formatTable = require('../lib/format-table');
 const html2md = require('html-to-md');
 
 async function coach(author) {
