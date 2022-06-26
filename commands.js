@@ -17,6 +17,7 @@ const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
 const team = require('./commands/team');
 const tv = require('./commands/tv');
+const video = require('./commands/video');
 
 const commands = {
     "arena": {
@@ -126,6 +127,12 @@ const commands = {
         description: "Share the featured game",
         process: tv.process,
         reply: tv.reply
+    },
+    "video": {
+        usage: "",
+        description: "Find a video",
+        process: video.process,
+        reply: video.reply
     }
 };
 
