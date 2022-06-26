@@ -129,8 +129,8 @@ const commands = {
         reply: tv.reply
     },
     "video": {
-        usage: "",
-        description: "Find a video",
+        usage: "[text]",
+        description: "Search videos for a keyword",
         process: video.process,
         reply: video.reply
     }
