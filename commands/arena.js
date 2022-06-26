@@ -4,11 +4,8 @@ const formatColor = require('../lib/format-color');
 const User = require('../models/User');
 
 async function arena(author, mode) {
-    if (!mode) {
-        const user = await User.findById(author.id).exec();
-        if (user)
-	    mode = user.favoriteMode;
-    }
+    if (!mode)
+        mode = await getMode(author);
     const url = 'https://lichess.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => setArena(response.data, mode))
@@ -18,6 +15,12 @@ async function arena(author, mode) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getMode(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.favoriteMode;
 }
 
 function setArena(data, mode) {

@@ -28,7 +28,7 @@
     Display top-rated players
 !playing [username]
     Share your (or a user's) current game
-!arena [username]
+!arena [game mode]
     Find an upcoming or recent arena created by lichess (or a user)
 !blog
     Display recent blog entries
@@ -42,13 +42,13 @@
     Get the cached evaluation of a position, if available
 !puzzle
     Display today's puzzle
-!simul
+!simul [variant]
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
     Display live streamers
 !team
     Search teams for a keyword
-!tv [game mode]
+!tv [channel]
     Share the featured game
 !video
     Search videos for a keyword

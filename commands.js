@@ -105,7 +105,7 @@ const commands = {
         reply: setUser.reply
     },
     "simul": {
-        usage: "",
+        usage: "[variant]",
         description: "Display a recently finished, ongoing, or upcoming simultanous exhibition",
         process: simul.process,
         reply: simul.reply
@@ -123,7 +123,7 @@ const commands = {
         reply: team.reply
     },
     "tv": {
-        usage: "[game mode]",
+        usage: "[channel]",
         description: "Share the featured game",
         process: tv.process,
         reply: tv.reply

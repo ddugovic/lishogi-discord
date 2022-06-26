@@ -1,11 +1,14 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const User = require('../models/User');
 
-async function simul(author) {
+async function simul(author, mode) {
+    if (!mode)
+        mode = await getMode(author);
     const url = 'https://lichess.org/api/simul';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setSimul(response.data))
+        .then(response => setSimul(response.data, mode))
         .catch(error => {
             console.log(`Error in simul(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -14,11 +17,22 @@ async function simul(author) {
         });
 }
 
-function setSimul(data) {
+async function getMode(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.favoriteMode;
+}
+
+function setSimul(data, mode) {
     const simuls = [];
     for (const status in data)
         simuls.push(...data[status]);
 
+    if (mode) {
+        const matches = simuls.filter(simul => simul.variants.map(variant => variant.key).includes(mode));
+        if (matches.length)
+            return formatSimul(matches.sort((a,b) => rankSimul(b) - rankSimul(a))[0]);
+    }
     if (simuls.length)
         return formatSimul(simuls.sort((a,b) => rankSimul(b) - rankSimul(a))[0]);
     return 'No event found!';
@@ -74,12 +88,12 @@ function formatText(text) {
     return text.join(' ');
 }
 
-function process(bot, msg) {
-    simul(msg.author).then(url => msg.channel.send(url))
+function process(bot, msg, favoriteMode) {
+    simul(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
-    return simul(interaction.user);
+    return simul(interaction.user, interaction.options.getString('variant'));
 }
 
 module.exports = {process, reply};
