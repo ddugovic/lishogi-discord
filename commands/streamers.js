@@ -74,7 +74,7 @@ function formatProfile(username, profile, fideRating, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
     const duration = formatSeconds(tv).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Stream](https://lichess.org/streamer/${username})`];
     if (links) {
         for (link of getDiscord(links))
             result.push(`[Discord](https://${link})`);
