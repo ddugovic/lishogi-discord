@@ -35,7 +35,7 @@ const commands = [
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username')),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username').setRequired(true)),
     new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true).addChoices(...titles)),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
