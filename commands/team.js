@@ -88,6 +88,8 @@ function formatDescription(text) {
     const result = [];
     for (link of getDiscord(text))
         result.push(`[Discord](https://${link})`);
+    for (link of getGitHub(text))
+        result.push(`[GitHub](https://${link})`);
     for (link of getMaiaChess(text))
         result.push(`[Maia Chess](https://${link})`);
     for (link of getTwitch(text))
@@ -111,6 +113,16 @@ function formatLink(text) {
 
 function getDiscord(text) {
     const pattern = /discord.gg\/\w{7,8}/g;
+    return text.matchAll(pattern);
+}
+
+function getDiscord(text) {
+    const pattern = /discord.gg\/\w{7,8}/g;
+    return text.matchAll(pattern);
+}
+
+function getGitHub(text) {
+    const pattern = /github.com\/[-\w]{4,39}/g;
     return text.matchAll(pattern);
 }
 

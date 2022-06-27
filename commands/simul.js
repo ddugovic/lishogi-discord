@@ -75,6 +75,10 @@ function formatHost(player) {
 
 function formatDescription(text) {
     var result = [];
+    for (link of getDiscord(text))
+        result.push(`[Discord](https://${link})`);
+    for (link of getGitHub(text))
+        result.push(`[GitHub](https://${link})`);
     for (link of getTwitch(text))
         result.push(`[Twitch](https://${link})`);
     for (link of getTwitter(text))
@@ -100,6 +104,16 @@ function formatAbout(text) {
             text[i] = text[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
     }
     return text;
+}
+
+function getDiscord(text) {
+    const pattern = /discord.gg\/\w{7,8}/g;
+    return text.matchAll(pattern);
+}
+
+function getGitHub(text) {
+    const pattern = /github.com\/[-\w]{4,39}/g;
+    return text.matchAll(pattern);
 }
 
 function getTwitch(text) {

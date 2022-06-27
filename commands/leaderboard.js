@@ -92,6 +92,10 @@ function formatProfile(username, profile, fideRating, playTime) {
     const duration = formatSeconds(tv).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
     if (links) {
+        for (link of getDiscord(links))
+            result.push(`[Discord](https://${link})`);
+        for (link of getGitHub(links))
+            result.push(`[GitHub](https://${link})`);
         for (link of getMaiaChess(links))
             result.push(`[Maia Chess](https://${link})`);
         for (link of getTwitch(links))
@@ -110,6 +114,16 @@ function formatProfile(username, profile, fideRating, playTime) {
         }
     }
     return [result.join('\n'), rating];
+}
+
+function getDiscord(text) {
+    const pattern = /discord.gg\/\w{7,8}/g;
+    return text.matchAll(pattern);
+}
+
+function getGitHub(text) {
+    const pattern = /github.com\/[-\w]{4,39}/g;
+    return text.matchAll(pattern);
 }
 
 function getMaiaChess(text) {
