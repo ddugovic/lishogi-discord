@@ -71,8 +71,8 @@ function getRating(profile) {
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
     const tv = playTime ? playTime.tv : 0;
-    const duration = formatSeconds.formatSeconds(tv).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
+    const duration = formatSeconds(tv).split(', ')[0];
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Stream](https://lishogi.org/streamer/${username})`];
     if (links) {
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
