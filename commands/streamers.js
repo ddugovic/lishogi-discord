@@ -80,6 +80,8 @@ function formatProfile(username, profile, fideRating, playTime) {
             result.push(`[Maia Chess](https://${link})`);
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
+        for (link of getTwitter(links))
+            result.push(`[Twitter](https://${link})`);
         for (link of getYouTube(links))
             result.push(`[YouTube](https://${link})`);
     }
@@ -95,20 +97,25 @@ function formatProfile(username, profile, fideRating, playTime) {
     return [result.join('\n'), rating, ((length + rating) * 1000000 + tv * 1000 + playTime.total)];
 }
 
-function getMaiaChess(links) {
+function getMaiaChess(text) {
     const pattern = /maiachess.com/g;
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
-function getTwitch(links) {
+function getTwitch(text) {
     const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
-function getYouTube(links) {
+function getTwitter(text) {
+    const pattern = /twitter.com\/\w{1,15}/g;
+    return text.matchAll(pattern);
+}
+
+function getYouTube(text) {
     // https://stackoverflow.com/a/65726047
     const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
 function formatBio(bio) {

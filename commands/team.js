@@ -92,6 +92,8 @@ function formatDescription(text) {
         result.push(`[Maia Chess](https://${link})`);
     for (link of getTwitch(text))
         result.push(`[Twitch](https://${link})`);
+    for (link of getTwitter(text))
+        result.push(`[Twitter](https://${link})`);
     for (link of getYouTube(text))
         result.push(`[YouTube](https://${link})`);
     result.push(formatBio(text.split(/\r?\n/)));
@@ -107,25 +109,30 @@ function formatLink(text) {
     return text;
 }
 
-function getDiscord(links) {
+function getDiscord(text) {
     const pattern = /discord.gg\/\w{7,8}/g;
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
-function getMaiaChess(links) {
+function getMaiaChess(text) {
     const pattern = /maiachess.com/g;
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
-function getTwitch(links) {
+function getTwitch(text) {
     const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
-function getYouTube(links) {
+function getTwitter(text) {
+    const pattern = /twitter.com\/\w{1,15}/g;
+    return text.matchAll(pattern);
+}
+
+function getYouTube(text) {
     // https://stackoverflow.com/a/65726047
     const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
+    return text.matchAll(pattern);
 }
 
 function formatUser(text) {

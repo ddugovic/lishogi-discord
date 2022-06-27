@@ -77,6 +77,8 @@ function formatDescription(text) {
     var result = [];
     for (link of getTwitch(text))
         result.push(`[Twitch](https://${link})`);
+    for (link of getTwitter(text))
+        result.push(`[Twitter](https://${link})`);
     for (link of getYouTube(text))
         result.push(`[YouTube](https://${link})`);
     const about = formatAbout(text.split(/(?:\r?\n)+/));
@@ -86,7 +88,7 @@ function formatDescription(text) {
 }
 
 function formatAbout(text) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /:\/\/|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
     const username = /@(\w+)/g;
     for (let i = 0; i < text.length; i++) {
         if (text[i].match(social)) {
@@ -102,6 +104,11 @@ function formatAbout(text) {
 
 function getTwitch(text) {
     const pattern = /twitch.tv\/\w{4,25}/g;
+    return text.matchAll(pattern);
+}
+
+function getTwitter(text) {
+    const pattern = /twitter.com\/\w{1,15}/g;
     return text.matchAll(pattern);
 }
 
