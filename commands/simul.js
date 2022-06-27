@@ -39,7 +39,7 @@ function setSimul(data, mode) {
 }
 
 function rankSimul(simul) {
-    return simul.isFinished ? simul.nbPairings : simul.nbApplicants + simul.nbPairings;
+    return simul.isFinished ? simul.nbPairings : (simul.nbApplicants + simul.nbPairings) * 10;
 }
 
 function formatSimul(simul) {
