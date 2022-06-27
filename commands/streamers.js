@@ -58,8 +58,9 @@ function getLastName(profile) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
+    const tv = playTime ? playTime.tv : 0;
+    const duration = formatSeconds(tv).split(', ')[0];
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Stream](https://playstrategy.org/streamer/${username})`];
     if (links) {
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
@@ -76,7 +77,7 @@ function formatProfile(username, profile, playTime) {
                 break;
             }
             for (match of bio[i].matchAll(username)) {
-                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://playstrategy.org/@/${match[1]})`);
             }
         }
         if (bio.length)
