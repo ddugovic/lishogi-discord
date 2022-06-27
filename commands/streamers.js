@@ -15,10 +15,10 @@ async function streamers(author) {
         });
 }
 
-function setStreamers(data) {
-    if (data.length) {
+function setStreamers(streamers) {
+    if (streamers.length) {
         const url = 'https://lichess.org/api/users';
-        const ids = data.map(streamer => streamer.id);
+        const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const fields = response.data.map(formatStreamer);
@@ -42,7 +42,7 @@ function getColor(rating) {
 }
 
 function formatStreamer(streamer) {
-    const [country, fideRating] = getCountryAndRating(streamer.profile);
+    const [country, fideRating] = getCountryAndRating(streamer.profile) ?? [];
     const name = formatName(streamer, country, fideRating);
     const badges = streamer.patron ? '🦄' : '';
     const [profile, rating, score] = formatProfile(streamer.username, streamer.profile, fideRating, streamer.playTime);
