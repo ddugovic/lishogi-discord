@@ -58,8 +58,9 @@ function getLastName(profile) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lidraughts.org/@/${username})`];
+    const tv = playTime ? playTime.tv : 0;
+    const duration = formatSeconds(tv).split(', ')[0];
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Stream](https://lidraughts.org/streamer/${username})`];
     if (links) {
         for (link of getTwitch(links))
             result.push(`[Twitch](https://${link})`);
