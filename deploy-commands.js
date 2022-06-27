@@ -56,7 +56,7 @@ const commands = [
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...ratings)),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your lidraughts username").addStringOption(option => option.setName('username').setDescription('Enter your lidraughts username')),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your lidraughts username").addStringOption(option => option.setName('username').setDescription('Enter your lidraughts username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
