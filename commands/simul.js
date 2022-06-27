@@ -39,7 +39,7 @@ function setSimul(data, mode) {
 }
 
 function rankSimul(simul) {
-    return simul.isFinished ? 0 : simul.nbApplicants + simul.nbPairings;
+    return simul.isFinished ? simul.nbPairings : simul.nbApplicants + simul.nbPairings;
 }
 
 function formatSimul(simul) {
@@ -55,11 +55,11 @@ function formatSimul(simul) {
         .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
     if (simul.host.gameId)
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${simul.host.gameId}.gif`);
-    const text = formatText(simul.text.split(/\s+/) ?? []);
-    if (text) {
-        const data = new Discord.MessageEmbed()
-            .addField('Description', text);
-        return { embeds: [ embed, data ] };
+    const description = formatDescription(simul.text);
+    if (description) {
+        const about = new Discord.MessageEmbed()
+            .addField('Description', description);
+        return { embeds: [ embed, about ] };
     }
     return { embeds: [ embed ] };
 }
@@ -73,19 +73,42 @@ function formatHost(player) {
     return player.title ? `${player.title} ${player.name}` : player.name;
 }
 
-function formatText(text) {
+function formatDescription(text) {
+    var result = [];
+    for (link of getTwitch(text))
+        result.push(`[Twitch](https://${link})`);
+    for (link of getYouTube(text))
+        result.push(`[YouTube](https://${link})`);
+    const about = formatAbout(text.split(/(?:\r?\n)+/));
+    if (about.length)
+        result.push(about.join('\n'));
+    return result.join('\n');
+}
+
+function formatAbout(text) {
     const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     const username = /@(\w+)/g;
     for (let i = 0; i < text.length; i++) {
         if (text[i].match(social)) {
-            text = text.slice(0, i);
-            break;
+            text.splice(i, 1);
+            i -= 1;
+            continue;
         }
-        for (match of text[i].matchAll(username)) {
+        for (match of text[i].matchAll(username))
             text[i] = text[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
-        }
     }
-    return text.join(' ');
+    return text;
+}
+
+function getTwitch(text) {
+    const pattern = /twitch.tv\/\w{4,25}/g;
+    return text.matchAll(pattern);
+}
+
+function getYouTube(text) {
+    // https://stackoverflow.com/a/65726047
+    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
+    return text.matchAll(pattern);
 }
 
 function process(bot, msg, favoriteMode) {
