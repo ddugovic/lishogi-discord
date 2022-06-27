@@ -92,12 +92,12 @@ client.on('interactionCreate', async interaction => {
             interaction.editReply(await command.reply(interaction));
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
-            interaction.editReply(`Command failed:\n ${e.stack}`);
+            interaction.editReply({ content: `Command failed:\n ${e.stack}`, ephemeral: true });
         }
     } else if (cmdTxt == 'help') {
-        await interaction.reply(help.reply(commands, interaction));
+        await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
     } else if (config.respondToInvalid) {
-        await interaction.reply('Invalid command!');
+        await interaction.reply({ content: 'Invalid command!', ephemeral: true });
     }
 });
 
