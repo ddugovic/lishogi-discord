@@ -1,6 +1,7 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
 
@@ -53,15 +54,12 @@ function getCountry(profile) {
 }
 
 function formatProfile(username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
-    if (links) {
-        for (link of getGitHub(links))
-            result.push(`[GitHub](https://${link})`);
-        for (link of getGitLab(links))
-            result.push(`[GitLab](https://${link})`);
-    }
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
     if (profile && profile.bio) {
         const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
         const username = /@(\w+)/g;
@@ -81,14 +79,19 @@ function formatProfile(username, profile, playTime) {
     return result.join('\n');
 }
 
-function getGitHub(links) {
-    const pattern = /github\.com\/[\w-]{4,39}(?:\/[\w-]+)?/g;
-    return links.matchAll(pattern);
-}
-
-function getGitLab(links) {
-    const pattern = /gitlab\.com\/[\w-]{8,255}(?:\/[\w-]+)?/g;
-    return links.matchAll(pattern);
+function formatBio(bio) {
+    const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
 }
 
 function process(bot, msg, mode) {

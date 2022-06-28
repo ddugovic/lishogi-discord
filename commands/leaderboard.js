@@ -1,6 +1,7 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -71,34 +72,20 @@ function getCountryAndRating(profile) {
         return [profile.country, profile.fideRating];
 }
 
-function formatProfile(username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
-    const tv = playTime ? playTime.tv : 0;
-    const duration = formatSeconds(tv).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
-    if (links) {
-        for (link of getTwitch(links))
-            result.push(`[Twitch](https://${link})`);
-        for (link of getYouTube(links))
-            result.push(`[YouTube](https://${link})`);
-    }
+function formatProfile(username, profile, fideRating, playTime) {
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lichess.org/@/${username})`);
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
+    var rating = 0;
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
         if (bio.length)
             result.push(bio);
     }
     return result.join('\n');
-}
-
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
 }
 
 function formatBio(bio) {
