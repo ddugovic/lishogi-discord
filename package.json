@@ -30,7 +30,7 @@
     "friendly-numbers": "^1.0.1",
     "html-to-md": "^0.5.8",
     "mocha": "^10.0.0",
-    "mongoose": "^6.4.0",
+    "mongoose": "^6.4.1",
     "ndjson-parse": "^1.0.4",
     "plural": "^1.1.0",
     "remove-accents": "^0.4.2",
