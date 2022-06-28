@@ -37,7 +37,7 @@ function formatCloudEval(fen, setup, eval) {
     const embed = new Discord.MessageEmbed()
         .setColor(formatColor(red, 0, 255 - red))
         .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
         .setTitle(':cloud: Cloud Evaluation')
         .setURL(`https://lichess.org/analysis/standard/${fen}#explorer`)
 	.setImage(`https://lichess.org/export/gif/${fen}`);
