@@ -149,30 +149,40 @@ function setHistory(embed, username) {
     const url = `https://lichess.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
-            const puzzles = getPuzzleSeries(response.data);
+            const perfs = response.data;
             const url = `https://lichess.org/api/storm/dashboard/${username}`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => graphHistory(embed, puzzles, getStormSeries(response.data)));
+                    .then(response => graphHistory(embed, perfs, response.data));
         })
 }
 
-function getPuzzleSeries(history) {
-    const puzzles = history.filter(perf => perf.name == 'Puzzles')[0];
-    return puzzles.points.slice(-100).map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } });
+function getSeries(perfs, name) {
+    const perf = perfs.filter(perf => perf.name == name)[0];
+    return perf.points.slice(-100).map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } });
 }
 
 function getStormSeries(storms) {
     return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } });
 }
 
-async function graphHistory(embed, puzzleSeries, stormSeries) {
-    const dates = [...puzzleSeries.map(puzzle => puzzle.t), ...stormSeries.map(storm => storm.t)];
-    const history = [{ label: 'Puzzle', data: puzzleSeries }];
-    if (stormSeries.length)
-        history.push({ label: 'Storm', data: stormSeries });
+async function graphHistory(embed, perfs, storms) {
+    const dates = [];
+    const history = [];
+    for (name of ['Blitz', 'Puzzles']) {
+        const series = getSeries(perfs, name);
+        if (series) {
+            dates.concat(series.map(point => point.t));
+            history.push({ label: name, data: series });
+        }
+    }
+    const series = getStormSeries(storms);
+    if (series.length) {
+        dates.concat(series.map(point => point.t));
+        history.push({ label: 'Storm', data: series });
+    }
     const image = await new QuickChart().setWidth(299).setHeight(200).setConfig({
         type: 'line',
-        data: { labels: dates, datasets: history },
+        data: { labels: dates.sort(), datasets: history },
         options: { scales: { xAxes: [{ type: 'time' }] } }
     }).getShortUrl();
     return embed.setImage(image);
