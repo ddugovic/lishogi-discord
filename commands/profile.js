@@ -156,10 +156,12 @@ function setHistory(embed, username) {
         })
 }
 
-function graphHistory(embed, perfs, storms) {
-    const promise = formatHistory(perfs, storms);
-    if (promise)
-        embed = embed.setImage(promise);
+async function graphHistory(embed, perfs, storms) {
+    const history = formatHistory(perfs, storms);
+    if (history) {
+        const image = await history;
+        embed = embed.setImage(image);
+    }
     return embed;
 }
 
@@ -178,7 +180,7 @@ function formatHistory(perfs, storms) {
                 type: 'line',
                 data: { labels: minmax, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
-            }).getUrl();
+            }).getShortUrl();
         }
     }
 }
