@@ -39,7 +39,7 @@ function setBots(bots, mode) {
         const rating = Math.max(...bots.map(bot => getRating(bot.perfs, mode) ?? 1500));
         const embed = new Discord.MessageEmbed()
             .setColor(getColor(rating))
-            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+            .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
             .setTitle(`:robot: Lichess Bots`)
             .setURL('https://lichess.org/player/bots')
             .addFields(bots.map(formatBot))
