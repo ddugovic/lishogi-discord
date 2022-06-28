@@ -58,13 +58,13 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
-            .then(embed => { return user.perfs.puzzle ? setPuzzleHistory(embed, username) : embed })
+            .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return user.perfs.puzzle ? setPuzzleHistory(embed, username) : embed })
+        .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -145,21 +145,37 @@ function formatTeams(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
 }
 
-function setPuzzleHistory(embed, username) {
+function setHistory(embed, username) {
     const url = `https://lichess.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => embed.setImage(graphHistory(response.data)));
+        .then(response => {
+            const puzzles = getPuzzleSeries(response.data);
+            const url = `https://lichess.org/api/storm/dashboard/${username}`;
+                return axios.get(url, { headers: { Accept: 'application/json' } })
+                    .then(response => graphHistory(embed, puzzles, getStormSeries(response.data)));
+        })
 }
 
-function graphHistory(history) {
+function getPuzzleSeries(history) {
     const puzzles = history.filter(perf => perf.name == 'Puzzles')[0];
-    const dates = puzzles.points.slice(-60).map(point => new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime());
-    const ratings = puzzles.points.slice(-60).map(point => point[3]);
-    return new QuickChart().setWidth(299).setHeight(200).setConfig({
+    return puzzles.points.slice(-100).map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } });
+}
+
+function getStormSeries(storms) {
+    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } });
+}
+
+async function graphHistory(embed, puzzleSeries, stormSeries) {
+    const dates = [...puzzleSeries.map(puzzle => puzzle.t), ...stormSeries.map(storm => storm.t)];
+    const history = [{ label: 'Puzzle', data: puzzleSeries }];
+    if (stormSeries.length)
+        history.push({ label: 'Storm', data: stormSeries });
+    const image = await new QuickChart().setWidth(299).setHeight(200).setConfig({
         type: 'line',
-        data: { labels: dates, datasets: [{ label: 'Puzzles', data: ratings }] },
+        data: { labels: dates, datasets: history },
         options: { scales: { xAxes: [{ type: 'time' }] } }
-    }).getUrl();
+    }).getShortUrl();
+    return embed.setImage(image);
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
