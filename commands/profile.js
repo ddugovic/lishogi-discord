@@ -222,7 +222,7 @@ function formatRating(mode, r) {
 function formatStats(count, playTime, mode, rating, perf) {
     var category = title(mode);
     if (perf)
-        category += perf.rank ? ` #${perf.rank}` : ` (Top ${(100 - roundPercentile(perf.percentile)).toFixed(1)}%)`;
+        category += ` ${formatPerf(perf)}`;
     category += formatProgress(rating.prog);
     if (count.all)
         return [
@@ -236,8 +236,12 @@ function formatStats(count, playTime, mode, rating, perf) {
        ];
 }
 
-function roundPercentile(percentile) {
-    return percentile >= 95 ? Math.floor(percentile * 10) / 10 : Math.floor(percentile);
+function formatPerf(perf) {
+    if (perf.rank)
+        return `#${perf.rank}`
+    if (perf.percentile >= 98)
+        return `(Top ${(100 - Math.floor(perf.percentile * 10) / 10).toFixed(1)}%)`;
+    return `(Top ${(100 - Math.floor(perf.percentile)).toFixed(0)}%)`;
 }
 
 function formatBio(bio) {
