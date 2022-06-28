@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
+const QuickChart = require('quickchart-js');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -56,13 +57,13 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
-            .then(embed => { return setActivity(embed, username) })
+            .then(embed => { return user.perfs.puzzle ? setPuzzleHistory(embed, username) : embed })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return setActivity(embed, username) })
+        .then(embed => { return user.perfs.puzzle ? setPuzzleHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -186,25 +187,23 @@ function formatTeams(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
 }
 
-function setActivity(embed, username) {
-    const url = `https://lichess.org/api/user/${username}/activity`;
+function setPuzzleHistory(embed, username) {
+    const url = `https://lichess.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const activity = formatActivity(response.data);
-            return activity ? embed.addField('Forum Activity', activity) : embed;
-        });
+        .then(response => graphPuzzleHistory(embed, response.data));
 }
 
-function formatActivity(activity) {
-    const result = [];
-    for (event of activity.filter(event => event.posts)) {
-        const start = event.interval.start / 1000;
-        for (messages of event.posts) {
-            const count = messages.posts.length;
-            result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lichess.org${messages.topicUrl})`);
-        }
-    }
-    return result.slice(0, 3).join('\n');
+async function graphPuzzleHistory(embed, history) {
+    const puzzles = history.filter(perf => perf.name == 'Puzzles')[0];
+    const dates = puzzles.points.slice(-200).map(point => new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime());
+    const ratings = puzzles.points.slice(-200).map(point => point[3]);
+
+    const image = await new QuickChart().setConfig({
+        type: 'line',
+        data: { labels: dates, datasets: [{ label: 'Puzzles', data: ratings }] },
+        options: { scales: { xAxes: [{ type: 'time' }] } }
+    }).getShortUrl();
+    return embed.setImage(image);
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
