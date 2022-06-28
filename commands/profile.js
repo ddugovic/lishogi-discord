@@ -119,7 +119,8 @@ function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://playstrategy.org/@/${username})`);
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     result.push(links.join(' | '));
     if (profile && profile.bio) {
         const image = getImage(profile.bio);
