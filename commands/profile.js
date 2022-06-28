@@ -49,8 +49,9 @@ function formatProfile(user, favoriteMode) {
     var embed = new Discord.MessageEmbed()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png');
+    if (user.online)
+        embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
