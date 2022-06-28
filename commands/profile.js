@@ -151,42 +151,46 @@ function setHistory(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
-            const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
+            const url = `https://lichess.org/api/storm/dashboard/${username}?days=360`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
                     .then(response => graphHistory(embed, perfs, response.data));
         })
 }
 
-async function graphHistory(embed, perfs, storms) {
-    const time = new Date().getTime() - (24*60*60*1000 * 90);
-    const dates = [];
-    const history = [];
-    for (name of ['Blitz', 'Bullet', 'Classical', 'Correspondence', 'Puzzles', 'Rapid']) {
-        const series = getSeries(perfs, name, time);
+function graphHistory(embed, perfs, storms) {
+    for (days of [10, 20, 30, 45, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]) {
+        const time = new Date().getTime() - (24*60*60*1000 * days);
+        const dates = [];
+        const history = [];
+        for (name of ['Blitz', 'Bullet', 'Classical', 'Correspondence', 'Puzzles', 'Rapid']) {
+            const series = getSeries(perfs, name, time) ?? [];
+            if (series.length) {
+                dates.push(...series.map(point => point.t));
+                history.push({ label: name, data: series });
+            }
+        }
+        const series = getStormSeries(storms, time);
         if (series.length) {
             dates.push(...series.map(point => point.t));
-            history.push({ label: name, data: series });
+            history.push({ label: 'Storm', data: series });
         }
-    }
-    const series = getStormSeries(storms, time);
-    if (series.length) {
-        dates.push(...series.map(point => point.t));
-        history.push({ label: 'Storm', data: series });
-    }
-    if (Math.min.apply(Math, dates) < Math.max.apply(Math, dates)) {
-        const image = await new QuickChart().setWidth(299).setHeight(200).setConfig({
-            type: 'line',
-            data: { labels: dates.sort(), datasets: history },
-            options: { scales: { xAxes: [{ type: 'time' }] } }
-        }).getShortUrl();
-        embed = embed.setImage(image);
+        if (dates.length > 10) {
+            const minmax = [Math.min(...dates), Math.max(...dates)];
+            const image = new QuickChart().setConfig({
+                type: 'line',
+                data: { labels: minmax, datasets: history },
+                options: { scales: { xAxes: [{ type: 'time' }] } }
+            }).getUrl();
+            return embed = embed.setImage(image);
+        }
     }
     return embed;
 }
 
 function getSeries(perfs, name, time) {
     const perf = perfs.filter(perf => perf.name == name)[0];
-    return perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-1000);
+    if (perf)
+        return perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-1000);
 }
 
 function getStormSeries(storms, time) {
@@ -235,7 +239,7 @@ function formatStats(count, playTime, mode, rating, perf) {
        ];
     else
         return [
-            { name: category, value: formatRating(stats.perfs, mode), inline: true }
+            { name: category, value: formatRating(mode, rating), inline: true }
        ];
 }
 
