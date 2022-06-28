@@ -8,7 +8,7 @@ async function arena(author, mode) {
         mode = await getMode(author);
     const url = 'https://lichess.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setArena(response.data, mode))
+        .then(response => setArenas(response.data, mode))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -23,7 +23,7 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function setArena(data, mode) {
+function setArenas(data, mode) {
     const arenas = [];
     for (const status in data)
         arenas.push(...data[status]);
@@ -31,15 +31,21 @@ function setArena(data, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
-            return formatArena(matches.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+            return setArena(matches.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     }
     if (arenas.length)
-        return formatArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+        return setArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
     return 'No tournament found!';
 }
 
 function filterArena(arena, mode) {
     return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
+}
+
+function setArena(arena) {
+    const url = `https://lichess.org/api/tournament/${arena.id}`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatArena(response.data));
 }
 
 function formatArena(arena) {
@@ -51,23 +57,25 @@ function formatArena(arena) {
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lichess.org/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
-    if (arena.position)
-	embed = embed.setImage(`https://lichess.org/export/gif/${formatPosition(arena.position)}`);
+    if (arena.featured)
+	embed = embed.setImage(`https://lichess.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
+    if (arena.isFinished) {
+        const stats = new Discord.MessageEmbed()
+            .addField('Berserks', `**${arena.stats.berserks}**`, true)
+            .addField('Games', `**${arena.stats.games}** (+**${arena.stats.whiteWins}** -**${arena.stats.blackWins}** =**${arena.stats.draws}**)`, true)
+            .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true)
+	    ;
+        return { embeds: [ embed, stats ] };
+    } else if (arena.minRatedGames) {
+        const restrictions = new Discord.MessageEmbed()
+            .addField('Restrictions', `**${arena.minRatedGames.nb}** rated **${arena.minRatedGames.perf}** games are required.`);
+        return { embeds: [ embed, restrictions ] };
+    }
     return { embeds: [ embed ] };
 }
 
-function getDescription(arena) {
-    const players = arena.nbPlayers == 1 ? '1 player competes' : `${arena.nbPlayers} players compete`;
-    const start = Math.floor(arena.startsAt / 1000);
-    const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
-    const rated = arena.rated ? 'rated' : 'casual';
-    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` : 'Winner is not yet decided.';
-    const restriction = !arena.winner && arena.minRatedGames ? `\n\n${arena.minRatedGames.nb} rated ${arena.minRatedGames.perf} games are required.` : '';
-    return `${players} in the <t:${start}:t> ${arena.fullName}. ${clock} ${rated} games are played during ${arena.minutes} minutes. ${winner}${restriction}`;
-}
-
-function formatPosition(position) {
-    return position.fen.replace(/ /g,'_');
+function formatGame(game) {
+    return game.fen.replace(/ /g,'_');
 }
 
 function formatSchedule(schedule) {
@@ -76,6 +84,16 @@ function formatSchedule(schedule) {
         schedule.freq == 'weekly' ? ' :calendar:' :
         schedule.freq == 'monthly' ? ' :calendar:' :
         schedule.freq == 'yearly' ? ' :calendar:' : '';
+}
+
+function getDescription(arena) {
+    const players = arena.nbPlayers == 1 ? '**1** player competes' : `**${arena.nbPlayers}** players compete`;
+    const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
+    const rated = arena.rated ? 'rated' : 'casual';
+    const winner = arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
+        arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>` :
+        arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` : '';
+    return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
