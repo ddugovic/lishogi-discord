@@ -117,7 +117,7 @@ function setStats(embed, username, count, playTime, mode, rating) {
 
 function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = formatLinks(profile ? (profile.links ?? profile.bio) : '');
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     result.push(links.join(' | '));
@@ -150,32 +150,24 @@ function setHistory(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
-            const url = `https://lichess.org/api/storm/dashboard/${username}`;
+            const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
                     .then(response => graphHistory(embed, perfs, response.data));
         })
 }
 
-function getSeries(perfs, name) {
-    const perf = perfs.filter(perf => perf.name == name)[0];
-    return perf.points.slice(-100).map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } });
-}
-
-function getStormSeries(storms) {
-    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } });
-}
-
 async function graphHistory(embed, perfs, storms) {
+    const time = new Date().getTime() - (24*60*60*1000 * 90);
     const dates = [];
     const history = [];
-    for (name of ['Blitz', 'Puzzles']) {
-        const series = getSeries(perfs, name);
-        if (series) {
+    for (name of ['Blitz', 'Bullet', 'Classical', 'Correspondence', 'Puzzles', 'Rapid']) {
+        const series = getSeries(perfs, name, time);
+        if (series.length) {
             dates.concat(series.map(point => point.t));
             history.push({ label: name, data: series });
         }
     }
-    const series = getStormSeries(storms);
+    const series = getStormSeries(storms, time);
     if (series.length) {
         dates.concat(series.map(point => point.t));
         history.push({ label: 'Storm', data: series });
@@ -186,6 +178,15 @@ async function graphHistory(embed, perfs, storms) {
         options: { scales: { xAxes: [{ type: 'time' }] } }
     }).getShortUrl();
     return embed.setImage(image);
+}
+
+function getSeries(perfs, name, time) {
+    const perf = perfs.filter(perf => perf.name == name)[0];
+    return perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-1000);
+}
+
+function getStormSeries(storms, time) {
+    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } }).filter(point => (point.t >= time));
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
