@@ -2,6 +2,7 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
 const User = require('../models/User');
@@ -79,17 +80,12 @@ function getCountry(profile) {
 }
 
 function formatProfile(username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
-    if (links) {
-        for (link of getGitHub(links))
-            result.push(`[GitHub](https://${link})`);
-        for (link of getGitLab(links))
-            result.push(`[GitLab](https://${link})`);
-        for (link of getMaiaChess(links))
-            result.push(`[Maia Chess](https://${link})`);
-    }
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lichess.org/@/${username})`);
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
         if (bio)
@@ -111,21 +107,6 @@ function formatBio(bio) {
         }
     }
     return bio.join(' ');
-}
-
-function getGitHub(links) {
-    const pattern = /github\.com\/[\w-]{4,39}(?:\/[\w-]+)?/g;
-    return links.matchAll(pattern);
-}
-
-function getGitLab(links) {
-    const pattern = /gitlab\.com\/[\w-]{8,255}(?:\/[\w-]+)?/g;
-    return links.matchAll(pattern);
-}
-
-function getMaiaChess(links) {
-    const pattern = /maiachess.com/g;
-    return links.matchAll(pattern);
 }
 
 function process(bot, msg, mode) {
