@@ -4,6 +4,7 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -115,23 +116,11 @@ function setStats(embed, username, count, playTime, mode, rating) {
 }
 
 function setAbout(embed, username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lichess.org/@/${username})`];
-    if (links) {
-        for (link of getDiscord(links))
-            result.push(`[Discord](https://${link})`);
-        for (link of getGitHub(links))
-            result.push(`[GitHub](https://${link})`);
-        for (link of getMaiaChess(links))
-            result.push(`[Maia Chess](https://${link})`);
-        for (link of getTwitch(links))
-            result.push(`[Twitch](https://${link})`);
-        for (link of getTwitter(links))
-            result.push(`[Twitter](https://${link})`);
-        for (link of getYouTube(links))
-            result.push(`[YouTube](https://${link})`);
-    }
+    const links = formatLinks(profile ? (profile.links ?? profile.bio) : '');
+    links.unshift(`[Profile](https://lichess.org/@/${username})`);
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
     if (profile && profile.bio) {
         const image = getImage(profile.bio);
         if (image)
@@ -141,37 +130,6 @@ function setAbout(embed, username, profile, playTime) {
             result.push(bio);
     }
     return embed.addField('About', result.join('\n'), true);
-}
-
-function getDiscord(text) {
-    const pattern = /discord.gg\/\w{7,8}/g;
-    return text.matchAll(pattern);
-}
-
-function getGitHub(text) {
-    const pattern = /github.com\/[-\w]{4,39}/g;
-    return text.matchAll(pattern);
-}
-
-function getMaiaChess(text) {
-    const pattern = /maiachess.com/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitch(text) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitter(text) {
-    const pattern = /twitter.com\/\w{1,15}/g;
-    return text.matchAll(pattern);
-}
-
-function getYouTube(text) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return text.matchAll(pattern);
 }
 
 function setTeams(embed, username) {
