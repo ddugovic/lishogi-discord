@@ -3,17 +3,19 @@ const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
+const QuickChart = require('quickchart-js');
+const formatLinks = require('../lib/format-links');
+const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user || !user.chessName) {
+        username = await getName(author);
+        if (!username)
             return 'You need to set your chess.com username with setuser!';
-        }
-        username = user.chessName;
     }
-    const favoriteMode = user.favoriteMode;
+    const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://api.chess.com/pub/player/${username}`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => formatProfile(response.data, favoriteMode))
@@ -25,44 +27,106 @@ async function profile(author, username) {
         });
 }
 
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.chessName;
+}
+
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, favoriteMode) {
-    if (data.status == 'closed' || data.status == 'closed:fair_play_violations')
+function formatProfile(user, favoriteMode) {
+    if (user.status == 'closed' || user.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
-    const firstName = getFirstName(data) || title(data.username);
+    const firstName = getFirstName(user) || title(user.username);
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF);
-    return setName(embed, data, firstName)
-        .then(embed => setStats(embed, data, favoriteMode))
-        .then(embed => setStreamer(embed, data, firstName))
-        .then(embed => setClubs(embed, data))
-        .then(embed => setGames(embed, data))
+    return setName(embed, user, firstName)
+        .then(embed => setStats(embed, user, favoriteMode))
+        .then(embed => setStreamer(embed, user, firstName))
+        .then(embed => setClubs(embed, user.username))
+        .then(embed => setGames(embed, user.username))
         .then(embed => { return { embeds: [ embed ] } });
+
+    /*
+    const username = user.username;
+    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
+    var nickname = firstName ?? lastName ?? username;
+    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
+    if (country && countryFlags.countryCode(country))
+        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+
+    var embed = new Discord.MessageEmbed()
+        .setColor(color)
+        .setAuthor({name: author, iconURL: 'https://chess.com1.org/assets/logo/chess.com-favicon-32-invert.png', url: user.playing ?? user.url})
+        .setThumbnail('https://chess.com1.org/assets/logo/chess.com-favicon-64.png');
+    if (user.online)
+        embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setURL(`https://chess.com/?user=${username}#friend`);
+
+    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
+    if (unranked(mode, rating)) {
+        embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
+        embed = setAbout(embed, username, user.profile, user.playTime);
+        return setClubs(embed, username)
+            .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
+            .then(embed => { return { embeds: [ embed ] } });
+    }
+    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
+        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
+        .then(embed => { return setClubs(embed, username) })
+        .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
+        .then(embed => { return { embeds: [ embed ] } });
+    */
 }
 
-function getFirstName(data) {
-    return data.name ? data.name.split(' ')[0] : undefined;
+function getFirstName(user) {
+    return user.name ? user.name.split(' ')[0] : undefined;
 }
 
-function setName(embed, data, firstName) {
-    return axios.get(data.country, { headers: { Accept: 'application/nd-json' } })
+function setName(embed, user, firstName) {
+    return axios.get(user.country, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             return embed
-                .setAuthor({ name: formatName(data, response), iconURL: data.avatar, url: data.url })
-                .setThumbnail(data.avatar)
+                .setAuthor({ name: formatName(user, response), iconURL: user.avatar, url: user.url })
+                .setThumbnail(user.avatar)
                 .setTitle(`Challenge ${formatNickname(firstName, response)} to a game!`)
-                .setURL(`https://chess.com/play/${data.username}`);
+                .setURL(`https://chess.com/play/${user.username}`);
 
     });
 }
 
-function formatName(data, response) {
-    var name = data.name || data.username;
-    if (data.title)
-        name = `${data.title} ${name}`;
-    if (data.location)
-        name += ` (${data.location})`;
+function unranked(mode, rating) {
+    // Players whose RD is above this threshold are unranked
+    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
+    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
+}
+
+function getCountryAndName(profile) {
+    if (profile)
+        return [profile.country, profile.firstName, profile.lastName];
+}
+
+function setRating(embed, username, count, playTime, mode, rating) {
+    const url = `https://chess.com/api/user/${username}/perf/${mode}`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => {
+            return embed
+                .setAuthor({ name: formatName(user, response), iconURL: user.avatar, url: user.url })
+                .setThumbnail(user.avatar)
+                .setTitle(`Challenge ${formatNickname(firstName, response)} to a game!`)
+                .setURL(`https://chess.com/play/${user.username}`);
+
+    });
+}
+
+function formatName(user, response) {
+    var name = user.name || user.username;
+    if (user.title)
+        name = `${user.title} ${name}`;
+    if (user.location)
+        name += ` (${user.location})`;
     else if (response && response.data)
         name += ` (${response.data.name})`;
     return name;
@@ -82,35 +146,52 @@ function getFlagEmoji(code) {
         return countryFlags.countryCode(code).emoji;
 }
 
-function setStats(embed, data, favoriteMode) {
-    const url = `https://api.chess.com/pub/player/${data.username}/stats`;
+function setStats(embed, user, favoriteMode) {
+    const url = `https://api.chess.com/pub/player/${user.username}/stats`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
-            return embed.addFields(formatStats(embed, data, response, favoriteMode));
+            return embed.addFields(formatStats(embed, user, response, favoriteMode));
         });
 }
 
-function formatStats(embed, data, response, favoriteMode) {
+function formatStats(embed, user, response, favoriteMode) {
     const [mode, rating] = getMostRecentMode(response.data, favoriteMode);
     const category = title(mode.replace('chess_',''));
     return [
-        { name: 'Followers', value: `**${fn.format(data.followers)}**`, inline: true },
-        { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
-        { name: 'Last Login', value: `<t:${data.last_online}:R>`, inline: true }
+        { name: 'Followers', value: `**${fn.format(user.followers)}**`, inline: true },
+        { name: category, value: rating.last ? formatRecord(mode, rating.last, rating.record) : 'None', inline: true },
+        { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
    ];
 }
 
-function setStreamer(embed, data, firstName) {
-    if (data.is_streamer) {
+function setStreamer(embed, user, firstName) {
+    if (user.is_streamer) {
         embed = embed
             .setTitle(`Watch ${firstName} on Twitch!`)
-            .setURL(data.twitch_url);
+            .setURL(user.twitch_url);
     }
     return embed
 }
 
-function setClubs(embed, data) {
-    const url = `https://api.chess.com/pub/player/${data.username}/clubs`;
+function setAbout(embed, username, profile, playTime) {
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://chess.com/@/${username})`);
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
+    if (profile && profile.bio) {
+        const image = getImage(profile.bio);
+        if (image)
+            embed = embed.setThumbnail(image);
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if (bio)
+            result.push(bio);
+    }
+    return embed.addField('About', result.join('\n'), true);
+}
+
+function setClubs(embed, username) {
+    const url = `https://api.chess.com/pub/player/${username}/clubs`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             const clubs = response.data.clubs;
@@ -118,8 +199,8 @@ function setClubs(embed, data) {
         });
 }
 
-function setGames(embed, data) {
-    const url = `https://api.chess.com/pub/player/${data.username}/games`;
+function setGames(embed, username) {
+    const url = `https://api.chess.com/pub/player/${username}/games`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             const games = response.data.games;
@@ -131,6 +212,53 @@ function formatGame(game) {
     const due = game.move_by ? `due <t:${game.move_by}:R>` : `last move <t:${game.last_activity}:R>`;
     const [white, black] = (game.turn ? [':chess_pawn:', ''] : ['', ':chess_pawn:']);
     return `${white}[${formatPlayer(game.white)} - ${formatPlayer(game.black)}](${game.url})${black} ${due}`;
+}
+
+function formatClubs(teams) {
+    return teams.slice(0, 10).map(team => `[${team.name}](https://chess.com/team/${team.id})`).join('\n');
+}
+
+function setHistory(embed, username) {
+    const url = `https://chess.com/api/user/${username}/rating-history`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => graphHistory(embed, response.data))
+}
+
+function graphHistory(embed, perfs) {
+    const promise = formatHistory(perfs);
+    if (promise)
+        embed = embed.setImage(promise);
+    return embed;
+}
+
+function formatHistory(perfs) {
+    for (days of [...Array(360).keys()]) {
+        const time = new Date().getTime() - (24*60*60*1000 * (days + 1));
+        const [data, history] = getSeries(perfs, time);
+
+        if (data.length >= (days == 359 ? 2 : 30)) {
+            const dates = data.map(point => point.t);
+            const minmax = [Math.min(...dates), Math.max(...dates)];
+            return new QuickChart().setConfig({
+                type: 'line',
+                data: { labels: minmax, datasets: history.filter(series => series.data.length) },
+                options: { scales: { xAxes: [{ type: 'time' }] } }
+            }).getUrl();
+        }
+    }
+}
+
+function getSeries(perfs, time) {
+    const data = [];
+    const history = [];
+    for (perf of Object.values(perfs)) {
+        const series = perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-100);
+        if (series.length) {
+            data.push(...series);
+            history.push({ label: perf.name, data: series });
+        }
+    }
+    return [data, history];
 }
 
 function formatPlayer(player) {
@@ -156,7 +284,7 @@ function getMostRecentMode(stats, favoriteMode) {
     return [mostRecentMode, mostRecentRating];
 }
 
-function formatRating(mode, last, record) {
+function formatRecord(mode, last, record) {
     const games = record.win + record.loss + record.draw;
     const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
     return `**${last.rating}** ± **${(2 * last.rd)}** over **${fn.format(games)}** ${plural((puzzleModes.includes(mode) ? 'attempt' : ' game'), games)}`;
@@ -168,7 +296,53 @@ function title(str) {
         .join(' ');
 }
 
-// For sorting through modes... chess api does not put these in an array so we do it ourselves
+function formatRating(count, playTime, mode, rating, perf) {
+    var category = title(mode);
+    if (perf)
+        category += ` ${formatPerf(perf)}`;
+    category += formatProgress(rating.prog);
+    if (count.all)
+        return [
+            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
+            { name: category, value: formatRating(mode, rating), inline: true },
+            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
+       ];
+    else
+        return [
+            { name: category, value: formatRating(mode, rating), inline: true }
+       ];
+}
+
+function formatPerf(perf) {
+    if (perf.rank)
+        return `#${perf.rank}`
+    if (perf.percentile >= 98)
+        return `(Top ${(100 - Math.floor(perf.percentile * 10) / 10).toFixed(1)}%)`;
+    return `(Top ${(100 - Math.floor(perf.percentile)).toFixed(0)}%)`;
+}
+
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://chess.com/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    if (match)
+        return match[0];
+}
+
+// For sorting through modes... chess.com api does not put these in an array so we do it ourselves
 function modesArray(list) {
     var array = [];
     // Count up number of keys...
