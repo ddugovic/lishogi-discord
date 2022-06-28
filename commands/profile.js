@@ -224,10 +224,12 @@ function setHistory(embed, username) {
         .then(response => graphHistory(embed, response.data))
 }
 
-function graphHistory(embed, perfs) {
-    const promise = formatHistory(perfs);
-    if (promise)
-        embed = embed.setImage(promise);
+async function graphHistory(embed, perfs, storms) {
+    const history = formatHistory(perfs, storms);
+    if (history) {
+        const image = await history;
+        embed = embed.setImage(image);
+    }
     return embed;
 }
 
@@ -243,7 +245,7 @@ function formatHistory(perfs) {
                 type: 'line',
                 data: { labels: minmax, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
-            }).getUrl();
+            }).getShortUrl();
         }
     }
 }
