@@ -222,7 +222,7 @@ function formatRating(mode, r) {
 function formatStats(count, playTime, mode, rating, perf) {
     var category = title(mode);
     if (perf)
-        category += perf.rank ? ` #${perf.rank}` : ` (Top ${100 - Math.ceil(perf.percentile)}%)`;
+        category += perf.rank ? ` #${perf.rank}` : ` (Top ${(100 - roundPercentile(perf.percentile)).toFixed(1)}%)`;
     category += formatProgress(rating.prog);
     if (count.all)
         return [
@@ -234,6 +234,10 @@ function formatStats(count, playTime, mode, rating, perf) {
         return [
             { name: category, value: formatRating(stats.perfs, mode), inline: true }
        ];
+}
+
+function roundPercentile(percentile) {
+    return percentile >= 95 ? Math.floor(percentile * 10) / 10 : Math.floor(percentile);
 }
 
 function formatBio(bio) {
