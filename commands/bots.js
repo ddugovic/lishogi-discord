@@ -54,7 +54,7 @@ function getCountry(profile) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
     if (links) {
         for (link of getGitHub(links))

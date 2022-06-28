@@ -3,20 +3,21 @@ const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
+const QuickChart = require('quickchart-js');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user || !user.lishogiName) {
+        username = await getName(author);
+        if (!username)
             return 'You need to set your lishogi username with setuser!';
-        }
-        username = user.lishogiName;
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
@@ -24,6 +25,12 @@ async function profile(author, username) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.lishogiName;
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
@@ -42,8 +49,9 @@ function formatProfile(user, favoriteMode) {
     var embed = new Discord.MessageEmbed()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png');
+    if (user.online)
+        embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lishogi.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
@@ -51,13 +59,13 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
-            .then(embed => { return setActivity(embed, username) })
+            .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return setActivity(embed, username) })
+        .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -101,23 +109,22 @@ function getCountryAndName(profile) {
 
 function setStats(embed, username, count, playTime, mode, rating) {
     const url = `https://lishogi.org/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
         });
 }
 
 function setAbout(embed, username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
-    const duration = formatSeconds.formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lishogi.org/@/${username})`];
-    if (links) {
-        for (link of getTwitch(links))
-            result.push(`[Twitch](https://${link})`);
-        for (link of getYouTube(links))
-            result.push(`[YouTube](https://${link})`);
-    }
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
+    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
     if (profile && profile.bio) {
+        const image = getImage(profile.bio);
+        if (image)
+            embed = embed.setThumbnail(image);
         const bio = formatBio(profile.bio.split(/\s+/));
         if (bio)
             result.push(bio);
@@ -125,20 +132,9 @@ function setAbout(embed, username, profile, playTime) {
     return embed.addField('About', result.join('\n'), true);
 }
 
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
-}
-
 function setTeams(embed, username) {
     const url = `https://lishogi.org/api/team/of/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const teams = formatTeams(response.data);
             return teams ? embed.addField('Teams', teams, true) : embed;
@@ -149,25 +145,59 @@ function formatTeams(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://lishogi.org/team/${team.id})`).join('\n');
 }
 
-function setActivity(embed, username) {
-    const url = `https://lishogi.org/api/user/${username}/activity`;
+function setHistory(embed, username) {
+    const url = `https://lishogi.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
-            const activity = formatActivity(response.data);
-            return activity ? embed.addField('Forum Activity', activity) : embed;
-        });
+            const perfs = response.data;
+            const url = `https://lishogi.org/api/storm/dashboard/${username}?days=360`;
+                return axios.get(url, { headers: { Accept: 'application/json' } })
+                    .then(response => graphHistory(embed, perfs, response.data))
+        })
 }
 
-function formatActivity(activity) {
-    const result = [];
-    for (event of activity.filter(event => event.posts)) {
-        const start = event.interval.start / 1000;
-        for (messages of event.posts) {
-            const count = messages.posts.length;
-            result.push(`<t:${start}:R> Posted ${count} ${plural('message', count)} in [${messages.topicName}](https://lishogi.org${messages.topicUrl})`);
+function graphHistory(embed, perfs, storms) {
+    const promise = formatHistory(perfs, storms);
+    if (promise)
+        embed = embed.setImage(promise);
+    return embed;
+}
+
+function formatHistory(perfs, storms) {
+    for (days of [...Array(360).keys()]) {
+        const time = new Date().getTime() - (24*60*60*1000 * (days + 1));
+        const [data, history] = getSeries(perfs, time);
+        const series = getStormSeries(storms, time);
+        data.push(...series);
+        history.push({ label: 'Storm', data: series });
+
+        if (data.length >= (days == 359 ? 2 : 30)) {
+            const dates = data.map(point => point.t);
+            const minmax = [Math.min(...dates), Math.max(...dates)];
+            return new QuickChart().setConfig({
+                type: 'line',
+                data: { labels: minmax, datasets: history.filter(series => series.data.length) },
+                options: { scales: { xAxes: [{ type: 'time' }] } }
+            }).getUrl();
         }
     }
-    return result.slice(0, 5).join('\n');
+}
+
+function getSeries(perfs, time) {
+    const data = [];
+    const history = [];
+    for (perf of Object.values(perfs)) {
+        const series = perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-100);
+        if (series.length) {
+            data.push(...series);
+            history.push({ label: perf.name, data: series });
+        }
+    }
+    return [data, history];
+}
+
+function getStormSeries(storms, time) {
+    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } }).filter(point => (point.t >= time));
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
@@ -202,18 +232,26 @@ function formatRating(mode, r) {
 function formatStats(count, playTime, mode, rating, perf) {
     var category = title(mode);
     if (perf)
-        category += perf.rank ? ` #${perf.rank}` : ` (Top ${perf.percentile}%)`;
+        category += ` ${formatPerf(perf)}`;
     category += formatProgress(rating.prog);
     if (count.all)
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds.formatSeconds(playTime ? playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
     else
         return [
-            { name: category, value: formatRating(stats.perfs, mode), inline: true }
+            { name: category, value: formatRating(mode, rating), inline: true }
        ];
+}
+
+function formatPerf(perf) {
+    if (perf.rank)
+        return `#${perf.rank}`
+    if (perf.percentile >= 98)
+        return `(Top ${(100 - Math.floor(perf.percentile * 10) / 10).toFixed(1)}%)`;
+    return `(Top ${(100 - Math.floor(perf.percentile)).toFixed(0)}%)`;
 }
 
 function formatBio(bio) {
@@ -229,6 +267,12 @@ function formatBio(bio) {
         }
     }
     return bio.join(' ');
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    if (match)
+        return match[0];
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
