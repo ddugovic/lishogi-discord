@@ -164,21 +164,24 @@ async function graphHistory(embed, perfs, storms) {
     for (name of ['Blitz', 'Bullet', 'Classical', 'Correspondence', 'Puzzles', 'Rapid']) {
         const series = getSeries(perfs, name, time);
         if (series.length) {
-            dates.concat(series.map(point => point.t));
+            dates.push(...series.map(point => point.t));
             history.push({ label: name, data: series });
         }
     }
     const series = getStormSeries(storms, time);
     if (series.length) {
-        dates.concat(series.map(point => point.t));
+        dates.push(...series.map(point => point.t));
         history.push({ label: 'Storm', data: series });
     }
-    const image = await new QuickChart().setWidth(299).setHeight(200).setConfig({
-        type: 'line',
-        data: { labels: dates.sort(), datasets: history },
-        options: { scales: { xAxes: [{ type: 'time' }] } }
-    }).getShortUrl();
-    return embed.setImage(image);
+    if (Math.min.apply(Math, dates) < Math.max.apply(Math, dates)) {
+        const image = await new QuickChart().setWidth(299).setHeight(200).setConfig({
+            type: 'line',
+            data: { labels: dates.sort(), datasets: history },
+            options: { scales: { xAxes: [{ type: 'time' }] } }
+        }).getShortUrl();
+        embed = embed.setImage(image);
+    }
+    return embed;
 }
 
 function getSeries(perfs, name, time) {
