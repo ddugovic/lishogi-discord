@@ -24,6 +24,7 @@
         "mongoose": "^6.4.1",
         "ndjson-parse": "^1.0.4",
         "plural": "^1.1.0",
+        "quickchart-js": "^3.0.1",
         "remove-accents": "^0.4.2",
         "remove-markdown": "^0.5.0",
         "rss-parser": "^3.12.0"
@@ -8274,6 +8275,14 @@
         "node": ">=6"
       }
     },
+    "node_modules/@types/chart.js": {
+      "version": "2.9.37",
+      "resolved": "https://registry.npmjs.org/@types/chart.js/-/chart.js-2.9.37.tgz",
+      "integrity": "sha512-9bosRfHhkXxKYfrw94EmyDQcdjMaQPkU1fH2tDxu8DWXxf1mjzWQAV4laJF51ZbC2ycYwNDvIm1rGez8Bug0vg==",
+      "dependencies": {
+        "moment": "^2.10.2"
+      }
+    },
     "node_modules/@types/node": {
       "version": "17.0.17",
       "resolved": "https://registry.npmjs.org/@types/node/-/node-17.0.17.tgz",
@@ -8748,6 +8757,14 @@
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/convert-seconds/-/convert-seconds-1.0.1.tgz",
       "integrity": "sha1-+gzE5lZO1Y2XbMkkaEk9Jx1DCwI="
+    },
+    "node_modules/cross-fetch": {
+      "version": "3.1.5",
+      "resolved": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.5.tgz",
+      "integrity": "sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==",
+      "dependencies": {
+        "node-fetch": "2.6.7"
+      }
     },
     "node_modules/crypto-random-string": {
       "version": "2.0.0",
@@ -9427,6 +9444,11 @@
       "integrity": "sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==",
       "dev": true
     },
+    "node_modules/javascript-stringify": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/javascript-stringify/-/javascript-stringify-2.1.0.tgz",
+      "integrity": "sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg=="
+    },
     "node_modules/js-yaml": {
       "version": "4.1.0",
       "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz",
@@ -9746,6 +9768,14 @@
       },
       "engines": {
         "node": ">=10"
+      }
+    },
+    "node_modules/moment": {
+      "version": "2.29.3",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.3.tgz",
+      "integrity": "sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==",
+      "engines": {
+        "node": "*"
       }
     },
     "node_modules/mongodb": {
@@ -10125,6 +10155,16 @@
       },
       "engines": {
         "node": ">=8"
+      }
+    },
+    "node_modules/quickchart-js": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.1.tgz",
+      "integrity": "sha512-QZe7pzsJDwNS+Q29yWjUSS4gvxNDPAdXwbyEqCel+jm04mNo8xAgTGtysMCXEPxCVZb/qqOX3e4Ux8Vd29sx2A==",
+      "dependencies": {
+        "@types/chart.js": "^2.9.34",
+        "cross-fetch": "^3.1.5",
+        "javascript-stringify": "^2.1.0"
       }
     },
     "node_modules/randombytes": {
@@ -14030,6 +14070,14 @@
         "defer-to-connect": "^1.0.1"
       }
     },
+    "@types/chart.js": {
+      "version": "2.9.37",
+      "resolved": "https://registry.npmjs.org/@types/chart.js/-/chart.js-2.9.37.tgz",
+      "integrity": "sha512-9bosRfHhkXxKYfrw94EmyDQcdjMaQPkU1fH2tDxu8DWXxf1mjzWQAV4laJF51ZbC2ycYwNDvIm1rGez8Bug0vg==",
+      "requires": {
+        "moment": "^2.10.2"
+      }
+    },
     "@types/node": {
       "version": "17.0.17",
       "resolved": "https://registry.npmjs.org/@types/node/-/node-17.0.17.tgz",
@@ -14389,6 +14437,14 @@
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/convert-seconds/-/convert-seconds-1.0.1.tgz",
       "integrity": "sha1-+gzE5lZO1Y2XbMkkaEk9Jx1DCwI="
+    },
+    "cross-fetch": {
+      "version": "3.1.5",
+      "resolved": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.5.tgz",
+      "integrity": "sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==",
+      "requires": {
+        "node-fetch": "2.6.7"
+      }
     },
     "crypto-random-string": {
       "version": "2.0.0",
@@ -14866,6 +14922,11 @@
       "integrity": "sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==",
       "dev": true
     },
+    "javascript-stringify": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/javascript-stringify/-/javascript-stringify-2.1.0.tgz",
+      "integrity": "sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg=="
+    },
     "js-yaml": {
       "version": "4.1.0",
       "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz",
@@ -15131,6 +15192,11 @@
           }
         }
       }
+    },
+    "moment": {
+      "version": "2.29.3",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.3.tgz",
+      "integrity": "sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw=="
     },
     "mongodb": {
       "version": "4.7.0",
@@ -15400,6 +15466,16 @@
       "dev": true,
       "requires": {
         "escape-goat": "^2.0.0"
+      }
+    },
+    "quickchart-js": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.1.tgz",
+      "integrity": "sha512-QZe7pzsJDwNS+Q29yWjUSS4gvxNDPAdXwbyEqCel+jm04mNo8xAgTGtysMCXEPxCVZb/qqOX3e4Ux8Vd29sx2A==",
+      "requires": {
+        "@types/chart.js": "^2.9.34",
+        "cross-fetch": "^3.1.5",
+        "javascript-stringify": "^2.1.0"
       }
     },
     "randombytes": {
