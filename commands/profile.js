@@ -156,7 +156,7 @@ async function graphPuzzleHistory(embed, history) {
     const dates = puzzles.points.slice(-200).map(point => new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime());
     const ratings = puzzles.points.slice(-200).map(point => point[3]);
 
-    const image = await new QuickChart().setConfig({
+    const image = await new QuickChart().setWidth(299).setConfig({
         type: 'line',
         data: { labels: dates, datasets: [{ label: 'Puzzles', data: ratings }] },
         options: { scales: { xAxes: [{ type: 'time' }] } }
