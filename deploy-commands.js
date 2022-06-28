@@ -49,16 +49,21 @@ const leaderboards = [
     { name: 'Three-check', value: 'threeCheck' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
-const simuls = [
+const ratings = [
     { name: 'Antichess', value: 'antichess' },
     { name: 'Atomic', value: 'atomic' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
     { name: 'Chess960', value: 'chess960' },
+    { name: 'Classical', value: 'classical' },
     { name: 'Crazyhouse', value: 'crazyhouse' },
     { name: 'Horde', value: 'Horde' },
     { name: 'King of the Hill', value: 'kingOfTheHill' },
+    { name: 'Puzzle', value: 'puzzle' },
     { name: 'Racing Kings', value: 'racingKings' },
-    { name: 'Standard', value: 'standard' },
-    { name: 'Three-check', value: 'threeCheck' }
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Three-check', value: 'threeCheck' },
+    { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const variants = [
     { name: 'Antichess', value: 'antichess' },
@@ -89,7 +94,7 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
-    new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Select your favorite game (or puzzle) mode').addChoices(...simuls)),
+    new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Select your favorite game (or puzzle) mode').addChoices(...ratings)),
     new SlashCommandBuilder().setName('setuser').setDescription("Set your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition").addStringOption(option => option.setName('variant').setDescription('Select a chess variant').addChoices(...variants)),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
