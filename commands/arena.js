@@ -68,7 +68,7 @@ function formatArena(arena) {
         return { embeds: [ embed, stats ] };
     } else if (arena.minRatedGames) {
         const restrictions = new Discord.MessageEmbed()
-            .addField('Restrictions', `**${arena.minRatedGames.nb}** rated **${arena.minRatedGames.perf}** games are required.`);
+            .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
         return { embeds: [ embed, restrictions ] };
     }
     return { embeds: [ embed ] };
