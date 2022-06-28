@@ -158,27 +158,19 @@ function setHistory(embed, username) {
 }
 
 function graphHistory(embed, perfs, storms) {
-    for (days of [10, 20, 30, 45, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]) {
+    for (days of [...Array(360).keys()]) {
         const time = new Date().getTime() - (24*60*60*1000 * days);
-        const dates = [];
-        const history = [];
-        for (name of ['Blitz', 'Bullet', 'Classical', 'Correspondence', 'Puzzles', 'Rapid']) {
-            const series = getSeries(perfs, name, time) ?? [];
-            if (series.length) {
-                dates.push(...series.map(point => point.t));
-                history.push({ label: name, data: series });
-            }
-        }
+        const [data, history] = getSeries(perfs, time);
         const series = getStormSeries(storms, time);
-        if (series.length) {
-            dates.push(...series.map(point => point.t));
-            history.push({ label: 'Storm', data: series });
-        }
-        if (dates.length > 10) {
+        data.push(...series);
+        history.push({ label: 'Storm', data: series });
+
+        if (data.length >= 20) {
+            const dates = data.map(point => point.t);
             const minmax = [Math.min(...dates), Math.max(...dates)];
             const image = new QuickChart().setConfig({
                 type: 'line',
-                data: { labels: minmax, datasets: history },
+                data: { labels: minmax, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
             }).getUrl();
             return embed = embed.setImage(image);
@@ -187,10 +179,17 @@ function graphHistory(embed, perfs, storms) {
     return embed;
 }
 
-function getSeries(perfs, name, time) {
-    const perf = perfs.filter(perf => perf.name == name)[0];
-    if (perf)
-        return perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-1000);
+function getSeries(perfs, time) {
+    const data = [];
+    const history = [];
+    for (perf of Object.values(perfs)) {
+        const series = perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2], 0, 0, 0, 0).getTime(), y: point[3] } }).filter(point => (point.t >= time)).slice(-100);
+        if (series.length) {
+            data.push(...series);
+            history.push({ label: perf.name, data: series });
+        }
+    }
+    return [data, history];
 }
 
 function getStormSeries(storms, time) {
