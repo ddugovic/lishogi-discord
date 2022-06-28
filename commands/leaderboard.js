@@ -1,6 +1,8 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -10,8 +12,8 @@ async function leaderboard(author, mode) {
     const url = `https://lidraughts.org/player/top/10/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
         .then(response => setPlayers(response.data.users, mode))
-        .catch((error) => {
-            console.log(`Error in leaderboard(${author.username}, ${mode}): \
+        .catch(error => {
+            console.log(`Error in leaderboard(${author.username} ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -30,11 +32,14 @@ function setPlayers(users, mode) {
         const ids = users.map(player => player.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
+                const fields = response.data.map(formatPlayer);
+                const rating = Math.max(...fields.map(field => field.rating));
                 const embed = new Discord.MessageEmbed()
+                    .setColor(getColor(rating))
                     .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lidraughts.org/player')
-                    .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
+                    .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
                 return { embeds: [ embed ] };
         });
     } else {
@@ -42,23 +47,34 @@ function setPlayers(users, mode) {
     }
 }
 
-function formatPlayer(player) {
-    const name = formatName(player);
-    const badges = player.patron ? '⛃' : '';
-    const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs};
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
-function formatName(player) {
+function formatPlayer(player) {
+    const fmjdRating = getRating(player.profile);
+    const [profile, rating] = formatProfile(player.username, player.profile, fmjdRating, player.playTime);
+    const name = formatName(player, rating);
+    const badges = player.patron ? '⛃' : '';
+    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs, 'rating': rating };
+}
+
+function formatName(player, rating) {
     var name = getLastName(player.profile) ?? player.username;
     if (player.title)
         name = `**${player.title}** ${name}`;
-    const [country, rating] = getCountryAndRating(player.profile) || [];
+    const country = getCountry(player.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    if (rating)
+    if (rating > 1000)
         name += ` (${rating})`;
     return name;
+}
+
+function getCountry(profile) {
+    if (profile)
+        return profile.country;
 }
 
 function getLastName(profile) {
@@ -66,39 +82,27 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getCountryAndRating(profile) {
+function getRating(profile) {
     if (profile)
-        return [profile.country, profile.fideRating];
+        return profile.fmjdRating;
 }
 
-function formatProfile(username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
-    const tv = playTime ? playTime.tv : 0;
-    const duration = formatSeconds(tv).split(', ')[0];
-    var result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Profile](https://lidraughts.org/@/${username})`];
-    if (links) {
-        for (link of getTwitch(links))
-            result.push(`[Twitch](https://${link})`);
-        for (link of getYouTube(links))
-            result.push(`[YouTube](https://${link})`);
-    }
+function formatProfile(username, profile, fmjdRating, playTime) {
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
+    var rating = 0;
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio.length)
+        if (bio.length) {
+            rating = fmjdRating ?? 1000;
             result.push(bio);
+        }
     }
-    return result.join('\n');
-}
-
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
+    return [result.join('\n'), rating];
 }
 
 function formatBio(bio) {

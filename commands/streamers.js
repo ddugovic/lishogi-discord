@@ -1,5 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatLinks = require('../lib/format-links');
+const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
     return axios.get('https://lidraughts.org/streamer/live')
@@ -57,16 +59,14 @@ function getLastName(profile) {
 }
 
 function formatProfile(username, profile, playTime) {
-    const links = profile ? (profile.links ?? profile.bio) : '';
-    const tv = playTime ? playTime.tv : 0;
-    const duration = formatSeconds(tv).split(', ')[0];
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}\n[Stream](https://lidraughts.org/streamer/${username})`];
-    if (links) {
-        for (link of getTwitch(links))
-            result.push(`[Twitch](https://${link})`);
-        for (link of getYouTube(links))
-            result.push(`[YouTube](https://${link})`);
-    }
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
+
+    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    result.push(links.join(' | '));
+    var length = 0;
+    var rating = 0;
     if (profile && profile.bio) {
         const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
         const username = /@(\w+)/g;
@@ -83,18 +83,7 @@ function formatProfile(username, profile, playTime) {
         if (bio.length)
             result.push(bio.join(' '));
     }
-    return result.join('\n');
-}
-
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
+    return [((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total), result.join('\n')];
 }
 
 function process(bot, msg, mode) {
