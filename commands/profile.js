@@ -153,11 +153,20 @@ function setHistory(embed, username) {
             const perfs = response.data;
             const url = `https://lichess.org/api/storm/dashboard/${username}?days=360`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => graphHistory(embed, perfs, response.data));
+                    .then(response => graphHistory(embed, perfs, response.data))
         })
 }
 
-function graphHistory(embed, perfs, storms) {
+async function graphHistory(embed, perfs, storms) {
+    const history = formatHistory(perfs, storms);
+    if (history) {
+        const image = await history;
+        embed = embed.setImage(image);
+    }
+    return embed;
+}
+
+function formatHistory(perfs, storms) {
     for (days of [...Array(360).keys()]) {
         const time = new Date().getTime() - (24*60*60*1000 * days);
         const [data, history] = getSeries(perfs, time);
@@ -165,18 +174,16 @@ function graphHistory(embed, perfs, storms) {
         data.push(...series);
         history.push({ label: 'Storm', data: series });
 
-        if (data.length >= 20) {
+        if (data.length >= 30 || days == 360) {
             const dates = data.map(point => point.t);
             const minmax = [Math.min(...dates), Math.max(...dates)];
-            const image = new QuickChart().setConfig({
+            return new QuickChart().setConfig({
                 type: 'line',
                 data: { labels: minmax, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
-            }).getUrl();
-            return embed = embed.setImage(image);
+            }).getShortUrl();
         }
     }
-    return embed;
 }
 
 function getSeries(perfs, time) {
