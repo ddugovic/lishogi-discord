@@ -144,12 +144,8 @@ function setHistory(embed, username) {
 }
 
 async function graphHistory(embed, perfs, storms) {
-    const history = formatHistory(perfs, storms);
-    if (history) {
-        const image = await history;
-        embed = embed.setImage(image);
-    }
-    return embed;
+    const promise = formatHistory(perfs, storms);
+    return promise ? embed.setImage(await promise) : embed;
 }
 
 function formatHistory(perfs) {
