@@ -24,8 +24,8 @@ async function leaderboard(author, mode) {
         });
 }
 
-function formatLeaderboard(data, mode) {
-    return data[mode] ? data[mode][0].url : data['live_blitz'][0].url;
+function formatLeaderboard(leaderboards, mode) {
+    return leaderboards[mode] ? leaderboards[mode][0].url : leaderboards['live_blitz'][0].url;
 }
 
 function formatPlayer(player) {
