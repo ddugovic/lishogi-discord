@@ -164,19 +164,19 @@ async function graphHistory(embed, perfs, storms) {
 }
 
 function formatHistory(perfs, storms) {
+    const now = new Date().getTime();
     for (days of [...Array(360).keys()]) {
-        const time = new Date().getTime() - (24*60*60*1000 * (days + 1));
+        const time = now - (24*60*60*1000 * (days + 1));
         const [data, history] = getSeries(perfs, time);
         const series = getStormSeries(storms, time);
         data.push(...series);
         history.push({ label: 'Storm', data: series });
 
-        if (data.length >= (days == 359 ? 2 : 30)) {
-            const dates = data.map(point => point.t);
-            const minmax = [Math.min(...dates), Math.max(...dates)];
+        if (data.length >= (days == 359 ? 1 : 30)) {
+            const domain = [Math.min(...data.map(point => point.t)), now];
             const chart = new QuickChart().setConfig({
                 type: 'line',
-                data: { labels: minmax, datasets: history.filter(series => series.data.length) },
+                data: { labels: domain, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
             });
             const url = chart.getUrl();
