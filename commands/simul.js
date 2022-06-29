@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const User = require('../models/User');
 
 async function simul(author, mode) {
@@ -74,17 +75,8 @@ function formatHost(player) {
 }
 
 function formatDescription(text) {
-    var result = [];
-    for (link of getDiscord(text))
-        result.push(`[Discord](https://${link})`);
-    for (link of getGitHub(text))
-        result.push(`[GitHub](https://${link})`);
-    for (link of getTwitch(text))
-        result.push(`[Twitch](https://${link})`);
-    for (link of getTwitter(text))
-        result.push(`[Twitter](https://${link})`);
-    for (link of getYouTube(text))
-        result.push(`[YouTube](https://${link})`);
+    const links = formatLinks(text) ?? [];
+    const result = [links.join(' | '))];
     const about = formatAbout(text.split(/(?:\r?\n)+/));
     if (about.length)
         result.push(about.join('\n'));
@@ -104,32 +96,6 @@ function formatAbout(text) {
             text[i] = text[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
     }
     return text;
-}
-
-function getDiscord(text) {
-    const pattern = /discord.gg\/\w{7,8}/g;
-    return text.matchAll(pattern);
-}
-
-function getGitHub(text) {
-    const pattern = /github.com\/[-\w]{4,39}/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitch(text) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitter(text) {
-    const pattern = /twitter.com\/\w{1,15}/g;
-    return text.matchAll(pattern);
-}
-
-function getYouTube(text) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return text.matchAll(pattern);
 }
 
 function process(bot, msg, favoriteMode) {
