@@ -121,12 +121,12 @@ function formatStats(embed, user, stats, favoriteMode) {
     if (games)
         return [
             { name: 'Games', value: `**${fn.format(games)}**`, inline: true },
-            { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
+            { name: category, value: formatRating(mode, rating.last, rating.record) ?? 'None', inline: true },
             { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
        ];
     else
         return [
-            { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
+            { name: category, value: formatRating(mode, rating.last, rating.record) ?? 'None', inline: true },
             { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
        ];
 }
@@ -239,10 +239,13 @@ function getMostRecentMode(stats, favoriteMode) {
     return [games, mostRecentMode, mostRecentRating];
 }
 
-function formatRating(mode, last, record) {
-    const games = record.win + record.loss + record.draw;
-    const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
-    return `**${last.rating}** ± **${(2 * last.rd)}** over **${fn.format(games)}** ${plural((puzzleModes.includes(mode) ? 'attempt' : ' game'), games)}`;
+function formatRating(rating, mode) {
+    if (rating.last) {
+        const games = rating.record.win + rating.record.loss + rating.record.draw;
+        return `**${rating.last.rating}** ± **${2 * rating.last.rd} ** over **${fn.format(games)}** ${plural('game', games)}`;
+    }
+    if (rating.best)
+        return `**${rating.best.score}** over **${fn.format(rating.best.total_attempts)}** ${plural('attempt', rating.best.total_attempts)}`;
 }
 
 function title(str) {
