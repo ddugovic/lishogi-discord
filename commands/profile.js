@@ -171,7 +171,7 @@ function getSeries(perfs, time) {
     const data = [];
     const history = [];
     for (perf of Object.values(perfs)) {
-        const series = perf.points.map(point => { return { t: new Date(point[0], point[1]-1, point[2]).getTime(), y: point[3] } }).filter(point => (point.t >= time));
+        const series = perf.points.map(point => { return { t: new Date(point[0], point[1], point[2]).getTime(), y: point[3] } }).filter(point => (point.t >= time));
         if (series.length) {
             data.push(...series);
             history.push({ label: perf.name, data: series });
