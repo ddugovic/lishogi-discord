@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -85,13 +86,8 @@ function formatDescription(text) {
     const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
-    const result = [];
-    for (link of getDiscord(text))
-        result.push(`[Discord](https://${link})`);
-    for (link of getTwitch(text))
-        result.push(`[Twitch](https://${link})`);
-    for (link of getYouTube(text))
-        result.push(`[YouTube](https://${link})`);
+    const links = formatLinks(text);
+    const result = links.length ? [links.join(' | ')] : [];
     result.push(formatAbout(text.split(/\r?\n/)));
     return result.join('\n');
 }
@@ -103,22 +99,6 @@ function formatLink(text) {
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
-}
-
-function getDiscord(links) {
-    const pattern = /discord.gg\/\w{7,8}/g;
-    return links.matchAll(pattern);
-}
-
-function getTwitch(links) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return links.matchAll(pattern);
-}
-
-function getYouTube(links) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return links.matchAll(pattern);
 }
 
 function formatUser(text) {
