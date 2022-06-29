@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -85,19 +86,8 @@ function formatDescription(text) {
     const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
-    const result = [];
-    for (link of getDiscord(text))
-        result.push(`[Discord](https://${link})`);
-    for (link of getGitHub(text))
-        result.push(`[GitHub](https://${link})`);
-    for (link of getMaiaChess(text))
-        result.push(`[Maia Chess](https://${link})`);
-    for (link of getTwitch(text))
-        result.push(`[Twitch](https://${link})`);
-    for (link of getTwitter(text))
-        result.push(`[Twitter](https://${link})`);
-    for (link of getYouTube(text))
-        result.push(`[YouTube](https://${link})`);
+    const links = formatLinks(text);
+    const result = links.length ? [links.join(' | ')] : [];
     result.push(formatBio(text.split(/\r?\n/)));
     return result.join('\n');
 }
@@ -109,42 +99,6 @@ function formatLink(text) {
     if (match)
         return `[${match[1]}](${match[2]})`;
     return text;
-}
-
-function getDiscord(text) {
-    const pattern = /discord.gg\/\w{7,8}/g;
-    return text.matchAll(pattern);
-}
-
-function getDiscord(text) {
-    const pattern = /discord.gg\/\w{7,8}/g;
-    return text.matchAll(pattern);
-}
-
-function getGitHub(text) {
-    const pattern = /github.com\/[-\w]{4,39}/g;
-    return text.matchAll(pattern);
-}
-
-function getMaiaChess(text) {
-    const pattern = /maiachess.com/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitch(text) {
-    const pattern = /twitch.tv\/\w{4,25}/g;
-    return text.matchAll(pattern);
-}
-
-function getTwitter(text) {
-    const pattern = /twitter.com\/\w{1,15}/g;
-    return text.matchAll(pattern);
-}
-
-function getYouTube(text) {
-    // https://stackoverflow.com/a/65726047
-    const pattern = /youtube\.com\/(?:channel\/UC[\w-]{21}[AQgw]|(?:c\/|user\/)?[\w-]+)/g
-    return text.matchAll(pattern);
 }
 
 function formatUser(text) {
