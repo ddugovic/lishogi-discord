@@ -39,46 +39,18 @@ function formatProfile(user, favoriteMode) {
         return 'This account is closed.';
 
     const firstName = getFirstName(user) || title(user.username);
+    /*const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
+        playing ? 0x00FF00 :
+        online ? 0x007F00 : 0x000000;*/
     const embed = new Discord.MessageEmbed()
         .setColor(0xFFFFFF);
     return setName(embed, user, firstName)
         .then(embed => setStats(embed, user, favoriteMode))
-        .then(embed => setStreamer(embed, user, firstName))
+        .then(embed => { return user.is_streamer ? setStreamer(embed, user.twitch_url, firstName) : embed })
         .then(embed => setClubs(embed, user.username))
         .then(embed => setGames(embed, user.username))
+        //.then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
-
-    /*
-    const username = user.username;
-    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
-    var nickname = firstName ?? lastName ?? username;
-    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && countryFlags.countryCode(country))
-        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
-
-    var embed = new Discord.MessageEmbed()
-        .setColor(color)
-        .setAuthor({name: author, iconURL: 'https://chess.com1.org/assets/logo/chess.com-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail('https://chess.com1.org/assets/logo/chess.com-favicon-64.png');
-    if (user.online)
-        embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://chess.com/?user=${username}#friend`);
-
-    const [mode, rating] = getMostRecentMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating)) {
-        embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-        embed = setAbout(embed, username, user.profile, user.playTime);
-        return setClubs(embed, username)
-            .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-            .then(embed => { return { embeds: [ embed ] } });
-    }
-    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
-        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
-        .then(embed => { return setClubs(embed, username) })
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => { return { embeds: [ embed ] } });
-    */
 }
 
 function getFirstName(user) {
@@ -95,17 +67,6 @@ function setName(embed, user, firstName) {
                 .setURL(`https://chess.com/play/${user.username}`);
 
     });
-}
-
-function unranked(mode, rating) {
-    // Players whose RD is above this threshold are unranked
-    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
-    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
-}
-
-function getCountryAndName(profile) {
-    if (profile)
-        return [profile.country, profile.firstName, profile.lastName];
 }
 
 function setRating(embed, username, count, playTime, mode, rating) {
@@ -150,12 +111,12 @@ function setStats(embed, user, favoriteMode) {
     const url = `https://api.chess.com/pub/player/${user.username}/stats`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
-            return embed.addFields(formatStats(embed, user, response, favoriteMode));
+            return embed.addFields(formatStats(embed, user, response.data, favoriteMode));
         });
 }
 
-function formatStats(embed, user, response, favoriteMode) {
-    const [mode, rating] = getMostRecentMode(response.data, favoriteMode);
+function formatStats(embed, user, stats, favoriteMode) {
+    const [mode, rating] = getMostRecentMode(stats, favoriteMode);
     const category = title(mode.replace('chess_',''));
     return [
         { name: 'Followers', value: `**${fn.format(user.followers)}**`, inline: true },
@@ -164,31 +125,15 @@ function formatStats(embed, user, response, favoriteMode) {
    ];
 }
 
-function setStreamer(embed, user, firstName) {
-    if (user.is_streamer) {
-        embed = embed
-            .setTitle(`Watch ${firstName} on Twitch!`)
-            .setURL(user.twitch_url);
-    }
-    return embed
-}
-
-function setAbout(embed, username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://chess.com/@/${username})`);
-
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
-    if (profile && profile.bio) {
-        const image = getImage(profile.bio);
-        if (image)
-            embed = embed.setThumbnail(image);
-        const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio)
-            result.push(bio);
-    }
-    return embed.addField('About', result.join('\n'), true);
+function setStreamer(embed, twitchUrl, firstName) {
+    const url = 'https://api.chess.com/pub/streamers';
+    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+        .then(response => {
+            const streamer = response.data.streamers.filter(streamer => streamer.twitch_url == twitchUrl)[0];
+            return embed.setThumbnail(streamer.avatar)
+                .setTitle(streamer.is_live ? `📡 Watch ${firstName} live on Twitch!` : `📡 Follow ${firstName} on Twitch!`)
+                .setURL(twitchUrl);
+        });
 }
 
 function setClubs(embed, username) {
@@ -266,33 +211,6 @@ function stripPlayer(player) {
     return player.replace('https://api.chess.com/pub/player/','');
 }
 
-function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
-    const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
-        playing ? 0x00FF00 :
-        online ? 0x007F00 : 0x000000;
-    if (title)
-        name = `${title} ${name}`;
-    var badges = patron ? '⛩️' : '';
-    for (const trophy of trophies) {
-        badges +=
-            trophy.type == 'developer' ? '🛠️':
-            trophy.type == 'moderator' ? '🔱':
-            trophy.type == 'verified' ? '✔️':
-            trophy.type.startsWith('marathon') ? '🌐' :
-            trophy.top == 1 ? '🥇' :
-            trophy.top == 10 ? '🥈' :
-            trophy.top ? '🥉' : '🏆';
-    }
-
-    // A player is a) streaming and playing b) streaming c) playing d) online e) offline
-    var status = streaming ? '  📡 Streaming' : '';
-    if (playing)
-        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
-    else if (!status && online)
-        status = '  📶 Online';
-    return [color, `${name}${status}  ${badges}`];
-}
-
 function getMostRecentMode(stats, favoriteMode) {
     var modes = modesArray(stats);
     var mostRecentMode = modes[0][0];
@@ -347,27 +265,6 @@ function formatPerf(perf) {
     if (perf.percentile >= 98)
         return `(Top ${(100 - Math.floor(perf.percentile * 10) / 10).toFixed(1)}%)`;
     return `(Top ${(100 - Math.floor(perf.percentile)).toFixed(0)}%)`;
-}
-
-function formatBio(bio) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio = bio.slice(0, i);
-            break;
-        }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://chess.com/@/${match[1]})`);
-        }
-    }
-    return bio.join(' ');
-}
-
-function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
-    if (match)
-        return match[0];
 }
 
 // For sorting through modes... chess.com api does not put these in an array so we do it ourselves
