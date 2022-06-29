@@ -238,11 +238,13 @@ function formatHistory(perfs) {
         if (data.length >= (days == 359 ? 2 : 30)) {
             const dates = data.map(point => point.t);
             const minmax = [Math.min(...dates), Math.max(...dates)];
-            return new QuickChart().setConfig({
+            const chart = new QuickChart().setConfig({
                 type: 'line',
                 data: { labels: minmax, datasets: history.filter(series => series.data.length) },
                 options: { scales: { xAxes: [{ type: 'time' }] } }
-            }).getShortUrl();
+            });
+            const url = chart.getUrl();
+            return url.length <= 2000 ? url : chart.getShortUrl();
         }
     }
 }
