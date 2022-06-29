@@ -65,7 +65,7 @@ function formatProfile(user, favoriteMode) {
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://chess.com/?user=${username}#friend`);
 
-    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
+    const [mode, rating] = getMostRecentMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     if (unranked(mode, rating)) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
@@ -212,7 +212,7 @@ function setGames(embed, username) {
 function formatGame(game) {
     const due = game.move_by ? `due <t:${game.move_by}:R>` : `last move <t:${game.last_activity}:R>`;
     const [white, black] = (game.turn ? [':chess_pawn:', ''] : ['', ':chess_pawn:']);
-    return `${white}[${formatPlayer(game.white)} - ${formatPlayer(game.black)}](${game.url})${black} ${due}`;
+    return `${white}[${stripPlayer(game.white)} - ${stripPlayer(game.black)}](${game.url})${black} ${due}`;
 }
 
 function formatClubs(teams) {
@@ -262,8 +262,35 @@ function getSeries(perfs, time) {
     return [data, history];
 }
 
-function formatPlayer(player) {
+function stripPlayer(player) {
     return player.replace('https://api.chess.com/pub/player/','');
+}
+
+function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+    const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
+        playing ? 0x00FF00 :
+        online ? 0x007F00 : 0x000000;
+    if (title)
+        name = `${title} ${name}`;
+    var badges = patron ? '⛩️' : '';
+    for (const trophy of trophies) {
+        badges +=
+            trophy.type == 'developer' ? '🛠️':
+            trophy.type == 'moderator' ? '🔱':
+            trophy.type == 'verified' ? '✔️':
+            trophy.type.startsWith('marathon') ? '🌐' :
+            trophy.top == 1 ? '🥇' :
+            trophy.top == 10 ? '🥈' :
+            trophy.top ? '🥉' : '🏆';
+    }
+
+    // A player is a) streaming and playing b) streaming c) playing d) online e) offline
+    var status = streaming ? '  📡 Streaming' : '';
+    if (playing)
+        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
+    else if (!status && online)
+        status = '  📶 Online';
+    return [color, `${name}${status}  ${badges}`];
 }
 
 function getMostRecentMode(stats, favoriteMode) {
