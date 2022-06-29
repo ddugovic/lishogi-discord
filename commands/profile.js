@@ -49,7 +49,6 @@ function formatProfile(user, favoriteMode) {
         .then(embed => { return user.is_streamer ? setStreamer(embed, user.twitch_url, firstName) : embed })
         .then(embed => setClubs(embed, user.username))
         .then(embed => setGames(embed, user.username))
-        //.then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -59,19 +58,6 @@ function getFirstName(user) {
 
 function setName(embed, user, firstName) {
     return axios.get(user.country, { headers: { Accept: 'application/nd-json' } })
-        .then(response => {
-            return embed
-                .setAuthor({ name: formatName(user, response), iconURL: user.avatar, url: user.url })
-                .setThumbnail(user.avatar)
-                .setTitle(`Challenge ${formatNickname(firstName, response)} to a game!`)
-                .setURL(`https://chess.com/play/${user.username}`);
-
-    });
-}
-
-function setRating(embed, username, count, playTime, mode, rating) {
-    const url = `https://chess.com/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             return embed
                 .setAuthor({ name: formatName(user, response), iconURL: user.avatar, url: user.url })
@@ -111,23 +97,24 @@ function setStats(embed, user, favoriteMode) {
     const url = `https://api.chess.com/pub/player/${user.username}/stats`;
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
-            return embed.addFields(formatStats(embed, user, response.data, favoriteMode));
+            const [games, mode, rating] = getMostRecentMode(response.data, favoriteMode);
+            embed = embed.addFields(formatStats(embed, user.last_online, games, mode, rating));
+            return games ? setHistory(embed, user.username) : embed;
         });
 }
 
-function formatStats(embed, user, stats, favoriteMode) {
-    const [games, mode, rating] = getMostRecentMode(stats, favoriteMode);
+function formatStats(embed, lastOnline, games, mode, rating) {
     const category = title(mode.replace('chess_',''));
     if (games)
         return [
             { name: 'Games', value: `**${fn.format(games)}**`, inline: true },
             { name: category, value: formatRating(mode, rating.last, rating.record) ?? 'None', inline: true },
-            { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
+            { name: 'Last Login', value: `<t:${lastOnline}:R>`, inline: true }
        ];
     else
         return [
             { name: category, value: formatRating(mode, rating.last, rating.record) ?? 'None', inline: true },
-            { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
+            { name: 'Last Login', value: `<t:${lastOnline}:R>`, inline: true }
        ];
 }
 
@@ -156,7 +143,7 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             const games = response.data.games;
-            return games.length ? embed.addField('Games', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
+            return games.length ? embed.addField('Rating', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
         });
 }
 
@@ -171,46 +158,48 @@ function formatClubs(teams) {
 }
 
 function setHistory(embed, username) {
-    const url = `https://chess.com/api/user/${username}/rating-history`;
+    const url = `https://api.chess.com/pub/player/${username}/games/archives`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => graphHistory(embed, response.data))
+        .then(response => {
+            const archive = response.data.archives.pop();
+            return axios.get(archive, { headers: { Accept: 'application/json' } })
+                .then(response => graphHistory(embed, response.data.games, username));
+        });
 }
 
-async function graphHistory(embed, perfs, storms) {
-    const promise = formatHistory(perfs, storms);
+async function graphHistory(embed, games, username) {
+    const promise = formatHistory(games, username);
     return promise ? embed.setImage(await promise) : embed;
 }
 
-function formatHistory(perfs) {
+function formatHistory(games, username) {
     const now = new Date().getTime();
-    for (days of [...Array(360).keys()]) {
-        const time = now - (24*60*60*1000 * (days + 1));
-        const [data, history] = getSeries(perfs, time);
-
-        if (data.length >= (days == 359 ? 1 : 30)) {
-            const domain = [Math.min(...data.map(point => point.t)), now];
-            const chart = new QuickChart().setConfig({
-                type: 'line',
-                data: { labels: domain, datasets: history.filter(series => series.data.length) },
-                options: { scales: { xAxes: [{ type: 'time' }] } }
-            });
-            const url = chart.getUrl();
-            return url.length <= 2000 ? url : chart.getShortUrl();
-        }
+    const [data, history] = getSeries(games, username);
+    if (data.length >= 1) {
+        const domain = [Math.min(...data.map(point => point.t)), Math.max(...data.map(point => point.t))];
+        const chart = new QuickChart().setConfig({
+            type: 'line',
+            data: { labels: domain, datasets: history.filter(series => series.data.length) },
+            options: { scales: { xAxes: [{ type: 'time' }] } }
+        });
+        const url = chart.getUrl();
+        return url.length <= 2000 ? url : chart.getShortUrl();
     }
 }
 
-function getSeries(perfs, time) {
+function getSeries(games, username) {
     const data = [];
     const history = [];
-    for (perf of Object.values(perfs)) {
-        const series = perf.points.map(point => { return { t: Date.UTC(point[0], point[1], point[2]), y: point[3] } }).filter(point => (point.t >= time));
-        if (series.length) {
-            data.push(...series);
-            history.push({ label: perf.name, data: series });
-        }
+    const series = games.map(game => { return { t: game.end_time * 1000, y: getRating(game, username) ?? 0 } });
+    if (series.length) {
+        data.push(...series);
+        history.push({ label: 'Games', data: series });
     }
     return [data, history];
+}
+
+function getRating(game, username) {
+    return [game.white, game.black].filter(player => player.username.toLowerCase() == username.toLowerCase()).map(player => player.rating)[0];
 }
 
 function stripPlayer(player) {
