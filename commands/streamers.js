@@ -1,12 +1,14 @@
 const axios = require('axios');
+const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
     return axios.get('https://lidraughts.org/streamer/live')
         .then(response => setStreamers(response.data))
-        .catch((error) => {
+        .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -14,43 +16,54 @@ async function streamers(author) {
         });
 }
 
-function setStreamers(data) {
-    if (data.length) {
-        const embed = new Discord.MessageEmbed()
-            .setColor(0xFFFFFF)
-            .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
-            .setTitle(`:satellite: Lidraughts Streamers`)
-            .setURL('https://lidraughts.org/streamer')
-            .addFields(formatStreamers(data));
-        return { embeds: [ embed ] };
+function setStreamers(streamers) {
+    if (streamers.length) {
+        const url = 'https://lidraughts.org/api/users';
+        const ids = streamers.map(streamer => streamer.id);
+        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+            .then(response => {
+                const fields = response.data.map(formatStreamer);
+                const rating = Math.max(...fields.map(field => field.rating));
+                const embed = new Discord.MessageEmbed()
+                    .setColor(getColor(rating))
+                    .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
+                    .setTitle(`:satellite: Lidraughts Streamers`)
+                    .setURL('https://lidraughts.org/streamer')
+                    .addFields(fields.sort((a,b) => b.score - a.score));
+                return { embeds: [ embed ] };
+        });
     } else {
         return 'No streamers are currently live.';
     }
 }
 
-function formatStreamers(data) {
-    var streamers = [];
-    for (streamer of data) {
-        const name = formatName(streamer);
-        const badges = data.patron ? '⛃' : '';
-        streamers.push({ name : `${name} ${badges}`, value: `[Profile](https://lidraughts.org/@/${streamer.name})`, inline: true })
-    }
-    return streamers;
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
-function formatName(streamer) {
+function formatStreamer(streamer) {
+    const [country, fmjdRating] = getCountryAndRating(streamer.profile) ?? [];
+    const name = formatName(streamer, country, fmjdRating);
+    const badges = data.patron ? '⛃' : '';
+    const [profile, rating, score] = formatProfile(streamer.username, streamer.profile, fmjdRating, streamer.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
+}
+
+function getCountryAndRating(profile) {
+    if (profile)
+        return [profile.country, profile.fmjdRating];
+}
+
+function formatName(streamer, country, rating) {
     var name = getLastName(streamer.profile) ?? streamer.username;
     if (streamer.title)
         name = `**${streamer.title}** ${name}`;
-    const country = getCountry(streamer.profile);
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    if (rating)
+        name += ` (${rating})`;
     return name;
-}
-
-function getCountry(profile) {
-    if (profile)
-        return profile.country;
 }
 
 function getLastName(profile) {
@@ -58,7 +71,7 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function formatProfile(username, profile, playTime) {
+function formatProfile(username, profile, fmjdRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
@@ -68,22 +81,28 @@ function formatProfile(username, profile, playTime) {
     var length = 0;
     var rating = 0;
     if (profile && profile.bio) {
-        const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-        const username = /@(\w+)/g;
-        var bio = profile.bio.split(/\s+/);
-        for (let i = 0; i < bio.length; i++) {
-            if (bio[i].match(social)) {
-                bio = bio.slice(0, i);
-                break;
-            }
-            for (match of bio[i].matchAll(username)) {
-                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
-            }
-        }
-        if (bio.length)
-            result.push(bio.join(' '));
+        const bio = formatBio(profile.bio.split(/\s+/));
+        if ((length = bio.length)) {
+            rating = fmjdRating ?? 1000;
+            result.push(bio);
+	}
     }
-    return [((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total), result.join('\n')];
+    return [result.join('\n'), rating, ((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total)];
+}
+
+function formatBio(bio) {
+    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < bio.length; i++) {
+        if (bio[i].match(social)) {
+            bio = bio.slice(0, i);
+            break;
+        }
+        for (match of bio[i].matchAll(username)) {
+            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
+        }
+    }
+    return bio.join(' ');
 }
 
 function process(bot, msg, mode) {
