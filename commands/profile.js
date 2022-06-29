@@ -169,13 +169,13 @@ async function graphHistory(embed, perfs, storms) {
 
 function formatHistory(perfs, storms) {
     for (days of [...Array(360).keys()]) {
-        const time = new Date().getTime() - (24*60*60*1000 * days);
+        const time = new Date().getTime() - (24*60*60*1000 * (days + 1));
         const [data, history] = getSeries(perfs, time);
         const series = getStormSeries(storms, time);
         data.push(...series);
         history.push({ label: 'Storm', data: series });
 
-        if (data.length >= 30 || days == 360) {
+        if (data.length >= (days == 359 ? 2 : 30)) {
             const dates = data.map(point => point.t);
             const minmax = [Math.min(...dates), Math.max(...dates)];
             return new QuickChart().setConfig({
