@@ -1,10 +1,8 @@
-const axios = require('axios');
-const User = require('../models/User');
+const ChessWebAPI = require('chess-web-api');
 
 async function titled(author, title) {
-    const url = `https://api.chess.com/pub/titled/${title}`;
-    return axios.get(url)
-        .then(response => formatPlayers(response.data))
+    return new ChessWebAPI().getTitledPlayers(title)
+        .then(response => formatPlayers(response.body))
         .catch((error) => {
             console.log(`Error in titled(${author.username}, ${title}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -20,7 +18,7 @@ function formatPlayers(data) {
 }
 
 function process(bot, msg, title) {
-    titled(msg.author, title).then(message => msg.channel.send(message));
+    titled(msg.author, title.toUpperCase()).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {

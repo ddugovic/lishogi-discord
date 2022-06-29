@@ -1,12 +1,12 @@
-const axios = require('axios');
+const ChessWebAPI = require('chess-web-api');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
-    return axios.get('https://api.chess.com/pub/streamers')
-        .then(response => formatStreamers(filter(response.data)) || 'No streamers are currently live.')
+    return new ChessWebAPI().getStreamers()
+        .then(response => formatStreamers(filterStreamers(response.body.streamers)) || 'No streamers are currently live.')
         .catch((error) => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -15,13 +15,12 @@ async function streamers(author) {
         });
 }
 
-function filter(streamer) {
-    return streamer.is_live;
+function filterStreamers(streamers) {
+    return streamers.filter(streamer => streamer.is_live);
 }
 
-function formatStreamers(data) {
-    if (streamers)
-        return streamers.map(streamer => `<${streamer.twitch_url}>`).join('\n');
+function formatStreamers(streamers) {
+    return streamers.map(streamer => `<${streamer.twitch_url}>`).join('\n');
 }
 
 function formatName(streamer) {

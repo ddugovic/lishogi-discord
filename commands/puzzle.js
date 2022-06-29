@@ -1,19 +1,14 @@
-const axios = require('axios');
+const ChessWebAPI = require('chess-web-api');
 
-async function puzzle(author, favoriteMode) {
-    url = 'https://api.chess.com/pub/puzzle';
-    return axios.get(url)
-        .then(response => formatPuzzle(response.data, favoriteMode))
-        .catch((err) => {
+async function puzzle(author) {
+    return new ChessWebAPI().getDailyPuzzle()
+        .then(response => response.body.url)
+        .catch(error => {
             console.log(`Error in puzzle(${author.username}): \
-                ${err.response.status} ${err.response.statusText}`);
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function formatPuzzle(data) {
-    return data.url;
 }
 
 function process(bot, msg) {

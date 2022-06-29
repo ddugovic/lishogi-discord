@@ -1,4 +1,4 @@
-const axios = require('axios');
+const ChessWebAPI = require('chess-web-api');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatLinks = require('../lib/format-links');
@@ -6,7 +6,7 @@ const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function leaderboard(author, mode) {
-    var favoriteMode = mode;
+    var favoriteMode;
     if (!mode) {
         const user = await User.findById(author.id).exec();
         if (!user || !user.chessName) {
@@ -14,11 +14,10 @@ async function leaderboard(author, mode) {
         }
         favoriteMode = user.favoriteMode;
     }
-    const url = 'https://api.chess.com/pub/leaderboards';
-    return axios.get(url)
-        .then(response => formatLeaderboard(response.data, favoriteMode))
+    return new ChessWebAPI().getLeaderboards()
+        .then(response => formatLeaderboard(response.body, mode ?? favoriteMode ?? 'live_blitz'))
         .catch((err) => {
-            console.log(`Error in leaderboard(${author.username}): \
+            console.log(`Error in leaderboard(${author.username}, ${mode}): \
                 ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
@@ -26,11 +25,7 @@ async function leaderboard(author, mode) {
 }
 
 function formatLeaderboard(data, mode) {
-    if (mode && data[mode]) {
-        return data[mode][0].url;
-    } else {
-        return data['live_blitz'][0].url;
-    }
+    return data[mode] ? data[mode][0].url : data['live_blitz'][0].url;
 }
 
 function formatPlayer(player) {
