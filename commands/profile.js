@@ -116,13 +116,19 @@ function setStats(embed, user, favoriteMode) {
 }
 
 function formatStats(embed, user, stats, favoriteMode) {
-    const [mode, rating] = getMostRecentMode(stats, favoriteMode);
+    const [games, mode, rating] = getMostRecentMode(stats, favoriteMode);
     const category = title(mode.replace('chess_',''));
-    return [
-        { name: 'Followers', value: `**${fn.format(user.followers)}**`, inline: true },
-        { name: category, value: rating.last ? formatRecord(mode, rating.last, rating.record) : 'None', inline: true },
-        { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
-   ];
+    if (games)
+        return [
+            { name: 'Games', value: `**${fn.format(games)}**`, inline: true },
+            { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
+            { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
+       ];
+    else
+        return [
+            { name: category, value: rating.last ? formatRating(mode, rating.last, rating.record) : 'None', inline: true },
+            { name: 'Last Login', value: `<t:${user.last_online}:R>`, inline: true }
+       ];
 }
 
 function setStreamer(embed, twitchUrl, firstName) {
@@ -221,16 +227,19 @@ function getMostRecentMode(stats, favoriteMode) {
             mostRecentRating = modes[i][1];
         }
     }
+    var games = 0;
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostRecentMode = modes[i][0];
             mostRecentRating = modes[i][1];
         }
+        if (modes[i][1].record)
+            games += modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
     }
-    return [mostRecentMode, mostRecentRating];
+    return [games, mostRecentMode, mostRecentRating];
 }
 
-function formatRecord(mode, last, record) {
+function formatRating(mode, last, record) {
     const games = record.win + record.loss + record.draw;
     const puzzleModes = ['lessons', 'puzzle_rush', 'tactics'];
     return `**${last.rating}** ± **${(2 * last.rd)}** over **${fn.format(games)}** ${plural((puzzleModes.includes(mode) ? 'attempt' : ' game'), games)}`;
@@ -240,31 +249,6 @@ function title(str) {
     return str.split('_')
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
-}
-
-function formatRating(count, playTime, mode, rating, perf) {
-    var category = title(mode);
-    if (perf)
-        category += ` ${formatPerf(perf)}`;
-    category += formatProgress(rating.prog);
-    if (count.all)
-        return [
-            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
-            { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
-       ];
-    else
-        return [
-            { name: category, value: formatRating(mode, rating), inline: true }
-       ];
-}
-
-function formatPerf(perf) {
-    if (perf.rank)
-        return `#${perf.rank}`
-    if (perf.percentile >= 98)
-        return `(Top ${(100 - Math.floor(perf.percentile * 10) / 10).toFixed(1)}%)`;
-    return `(Top ${(100 - Math.floor(perf.percentile)).toFixed(0)}%)`;
 }
 
 // For sorting through modes... chess.com api does not put these in an array so we do it ourselves
