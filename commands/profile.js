@@ -59,13 +59,13 @@ function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
         embed = setAbout(embed, username, user.profile, user.playTime);
         return setTeams(embed, username)
-            .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
+            .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
             .then(embed => { return { embeds: [ embed ] } });
     }
     return setStats(embed, user.username, user.count, user.playTime, mode, rating)
         .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
         .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return user.perfs.puzzle ? setHistory(embed, username) : embed })
+        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => { return { embeds: [ embed ] } });
 }
 
