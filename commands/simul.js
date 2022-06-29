@@ -41,11 +41,13 @@ function formatSimul(simul) {
         .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
     if (simul.host.gameId)
         embed = embed.setImage(`https://lishogi1.org/game/export/gif/${simul.host.gameId}.gif`);
-    const description = formatDescription(simul.text);
-    if (description) {
-        const about = new Discord.MessageEmbed()
-            .addField('Description', description);
-        return { embeds: [ embed, about ] };
+    if (simul.text) {
+        const description = formatDescription(simul.text);
+        if (description) {
+            const about = new Discord.MessageEmbed()
+                .addField('Description', description);
+            return { embeds: [ embed, about ] };
+        }
     }
     return { embeds: [ embed ] };
 }
@@ -63,7 +65,7 @@ function formatDescription(text) {
     const links = formatLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
     const about = formatAbout(text.split(/(?:\r?\n)+/));
-    if (about.length)
+    if (about.length && about.join('').length)
         result.push(about.join('\n'));
     return result.join('\n');
 }
