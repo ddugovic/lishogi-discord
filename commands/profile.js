@@ -281,7 +281,7 @@ function process(bot, msg, username) {
 }
 
 async function reply(interaction) {
-    return profile(interaction.user, interaction.options.getString('username'));
+    return await profile(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};
