@@ -4,8 +4,6 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
-const formatLinks = require('../lib/format-links');
-const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -187,15 +185,21 @@ function formatHistory(games, username) {
     }
 }
 
-function getSeries(games, username) {
+function getSeries(document, username) {
     const data = [];
     const history = [];
-    const series = games.map(game => { return { t: game.end_time * 1000, y: getRating(game, username) ?? 0 } });
-    if (series.length) {
-        data.push(...series);
-        history.push({ label: 'Games', data: series });
+    for (const [category, games] of groupBy(document, getCategory).entries()) {
+        const series = games.map(game => { return { t: game.end_time * 1000, y: getRating(game, username) ?? 0 } });
+        if (series.length) {
+            data.push(...series);
+            history.push({ label: title(category), data: series });
+        }
     }
     return [data, history];
+}
+
+function getCategory(game) {
+    return game.rules == 'chess' ? game.time_class : game.rules;
 }
 
 function getRating(game, username) {
@@ -256,6 +260,20 @@ function modesArray(list) {
         array[i] = Object.entries(list)[i];
     }
     return array;
+}
+
+function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+         const key = keyGetter(item);
+         const collection = map.get(key);
+         if (!collection) {
+             map.set(key, [item]);
+         } else {
+             collection.push(item);
+         }
+    });
+    return map;
 }
 
 function process(bot, msg, username) {
