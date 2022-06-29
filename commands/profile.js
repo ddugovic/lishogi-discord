@@ -221,6 +221,10 @@ function getMostPlayedMode(perfs, favoriteMode) {
     return [mostPlayedMode, mostPlayedRating];
 }
 
+function formatProgress(progress) {
+    return (progress > 0) ? ` ▲**${progress}**📈` : (progress < 0) ? ` ▼**${Math.abs(progress)}**📉` : '';
+}
+
 function formatRating(mode, rating) {
     return `**${rating.rating}** ± **${2 * rating.rd}** over **${fn.format(rating.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), rating.games)}`;
 }
@@ -237,7 +241,7 @@ function formatStats(count, playTime, mode, rating, perf) {
     category += formatProgress(rating.prog);
     if (count.all)
         return [
-            { name: 'Games', value: `**${fn.format(stats.count.rated)}** rated, **${fn.format(stats.count.all - stats.count.rated)}** casual`, inline: true },
+            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
             { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
        ];
