@@ -141,7 +141,7 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/nd-json' } })
         .then(response => {
             const games = response.data.games;
-            return games.length ? embed.addField('Rating', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
+            return games.length ? embed.addField('Games', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
         });
 }
 
