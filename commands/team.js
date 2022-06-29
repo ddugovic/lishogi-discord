@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
+const formatLinks = require('../lib/format-links');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -88,18 +89,11 @@ function formatDescription(text) {
     const logo = /^!\[[- \w]+\]\((https?:.*?)\)\s+([^]*)$/;
     const match = description.match(logo);
     if (match)
-        return [match[2], match[1], images];
-    return [description, null, images];
-}
-
-function getImages(text, images) {
-    const image = /^([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.*?)\)$/;
-    const match = text.match(image);
-    if (match) {
-        images.unshift(match[2]);
-        return getImages(match[1].trim(), images);
-    }
-    return [text, images];
+        return formatDescription(match[1].trim());
+    const links = formatLinks(text);
+    const result = links.length ? [links.join(' | ')] : [];
+    result.push(formatAbout(text.split(/\r?\n/)));
+    return result.join('\n');
 }
 
 function formatLink(text) {
