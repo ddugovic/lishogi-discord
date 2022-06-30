@@ -89,7 +89,7 @@ function formatDescription(text) {
         return formatDescription(match[1].trim());
     const links = formatLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
-    result.push(formatBio(text.split(/\r?\n/)));
+    result.push(formatAbout(text.split(/\r?\n/)));
     return result.join('\n');
 }
 
@@ -115,20 +115,19 @@ function formatUser(text) {
     return text;
 }
 
-function formatBio(bio) {
+function formatAbout(about) {
     const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     const username = /@(\w+)/g;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio.splice(i, 1);
+    for (let i = 0; i < about.length; i++) {
+        if (about[i].match(social)) {
+            about.splice(i, 1);
             i -= 1;
             continue;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
-        }
+        for (match of about[i].matchAll(username))
+            about[i] = about[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
     }
-    return bio.join('\n');
+    return about.join('\n');
 }
 
 function getImage(text) {
