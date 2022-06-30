@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
 const formatLinks = require('../lib/format-links');
+const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -65,11 +66,11 @@ function formatTeam(team) {
     const description = formatDescription(team.description);
     return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
-        .setAuthor({name: leader.name, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(leader.name)})
         .setThumbnail(getImage(team.description) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lishogi.org/team/${team.id}`)
-        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
+        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'))
+        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
 }
 
 function getLeader(leader, leaders) {
@@ -77,8 +78,8 @@ function getLeader(leader, leaders) {
     return leaders.length ? leaders[Math.floor(Math.random() * leaders.length)] : leader;
 }
 
-function getLink(name) {
-    return `https://lishogi.org/@/${name}`;
+function formatLeader(user) {
+    return `[@${user.name}](https://lishogi.org/@/${user.name})`;
 }
 
 function formatDescription(text) {
@@ -93,7 +94,7 @@ function formatDescription(text) {
 }
 
 function formatLink(text) {
-    text = text.split(/ +/).map(formatUser).join(' ');
+    text = formatUser(text);
     const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
     const match = text.match(pattern);
     if (match)
