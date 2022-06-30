@@ -171,7 +171,7 @@ function formatHistory(perfs, storms) {
         data.push(...series);
         history.push({ label: 'Storm', data: series });
 
-        if (data.length >= (days == 359 ? 1 : 1000)) {
+        if (data.length >= (days == 359 ? 1 : 200)) {
             const domain = [Math.min(...data.map(point => point.t)), now];
             const chart = new QuickChart().setConfig({
                 type: 'line',
