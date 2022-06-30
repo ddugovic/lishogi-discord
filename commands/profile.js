@@ -163,16 +163,17 @@ async function graphHistory(embed, perfs, storms) {
 }
 
 function formatHistory(perfs, storms) {
-    const now = new Date().getTime();
+    const now = new Date();
+    const today = now.setUTCHours(0, 0, 0, 0);
     for (days of [...Array(360).keys()]) {
-        const time = now - (24*60*60*1000 * (days + 1));
+        const time = today - (24*60*60*1000 * days);
         const [data, history] = getSeries(perfs, time);
         const series = getStormSeries(storms, time);
         data.push(...series);
         history.push({ label: 'Storm', data: series });
 
         if (data.length >= (days == 359 ? 1 : 200)) {
-            const domain = [Math.min(...data.map(point => point.t)), now];
+            const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
             const chart = new QuickChart().setConfig({
                 type: 'line',
                 data: { labels: domain, datasets: history.filter(series => series.data.length) },
