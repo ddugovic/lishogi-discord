@@ -159,7 +159,7 @@ function setHistory(embed, username) {
         });
 }
 
-function formatHistory(perfs, storms) {
+async function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
     const days = 180;
@@ -177,7 +177,7 @@ function formatHistory(perfs, storms) {
             options: { scales: { xAxes: [{ type: 'time' }] } }
         });
         const url = chart.getUrl();
-        return url.length <= 2000 ? url : chart.getShortUrl();
+        return url.length <= 2000 ? url : await chart.getShortUrl();
     }
 }
 
@@ -299,7 +299,7 @@ function process(bot, msg, username) {
 }
 
 async function reply(interaction) {
-    return await profile(interaction.user, interaction.options.getString('username'));
+    return profile(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};
