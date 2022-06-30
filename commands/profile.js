@@ -153,14 +153,20 @@ function formatClubs(teams) {
 function setHistory(embed, username) {
     return new ChessWebAPI().getPlayerMonthlyArchives(username)
         .then(response => {
-            const archive = response.body.archives.pop();
-            if (archive) {
-                const [year, month] = archive.split(/(?:\/)/).slice(-2);
-                return new ChessWebAPI().getPlayerCompleteMonthlyArchives(username, year, month)
-                    .then(response => graphHistory(embed, response.body.games, username));
+            const archives = response.body.archives;
+            if (archives.length) {
+                return getHistory(username, response.body.archives)
+                    .then(games => graphHistory(embed, games, username));
 	    }
 	    return embed;
         });
+}
+
+async function getHistory(username, archives) {
+    const archive = archives.pop();
+    const [year, month] = archive.split(/(?:\/)/).slice(-2);
+    return new ChessWebAPI().getPlayerCompleteMonthlyArchives(username, year, month)
+        .then(response => response.body.games);
 }
 
 async function graphHistory(embed, games, username) {
