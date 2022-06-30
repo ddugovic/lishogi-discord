@@ -21,8 +21,6 @@ async function profile(author, username) {
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
-                ${error}`);
-            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -142,12 +140,8 @@ function formatTeams(teams) {
 function setHistory(embed, username) {
     const url = `https://lidraughts.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => graphHistory(embed, response.data));
-}
-
-async function graphHistory(embed, perfs) {
-    const promise = formatHistory(perfs);
-    return promise ? embed.setImage(await promise) : embed;
+        .then(response => formatHistory(response.data))
+        .then(image => embed.setImage(image));
 }
 
 function formatHistory(perfs) {
