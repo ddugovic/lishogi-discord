@@ -154,13 +154,9 @@ function setHistory(embed, username) {
             const perfs = response.data;
             const url = `https://lichess.org/api/storm/dashboard/${username}?days=360`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => graphHistory(embed, perfs, response.data))
-        })
-}
-
-async function graphHistory(embed, perfs, storms) {
-    const promise = formatHistory(perfs, storms);
-    return promise ? embed.setImage(await promise) : embed;
+                    .then(response => formatHistory(perfs, response.data))
+                    .then(image => embed.setImage(image));
+        });
 }
 
 function formatHistory(perfs, storms) {
