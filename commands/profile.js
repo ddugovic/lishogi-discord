@@ -18,8 +18,6 @@ async function profile(author, username) {
         .then(response => formatProfile(response.body, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
-                ${error}`);
-            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -138,14 +136,14 @@ function setDailyChess(embed, username) {
     return new ChessWebAPI().getPlayerCurrentDailyChess(username)
         .then(response => {
             const games = response.body.games;
-            return games.length ? embed.addField('Daily Chess', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
+            return games.length ? embed.addField('Daily Chess', games.slice(0, 5).map(formatGame).join('\n\n'), true) : embed;
         });
 }
 
 function formatGame(game) {
-    const due = game.move_by ? `due <t:${game.move_by}:R>` : `last move <t:${game.last_activity}:R>`;
-    const [white, black] = (game.turn ? [':chess_pawn:', ''] : ['', ':chess_pawn:']);
-    return `${white}[${stripPlayer(game.white)} - ${stripPlayer(game.black)}](${game.url})${black} ${due}`;
+    const status = game.move_by ? `due <t:${game.move_by}:R>` : `moved <t:${game.last_activity}:R>`;
+    const [white, black] = (game.turn == 'white' ? [':chess_pawn:', ''] : ['', ':chess_pawn:']);
+    return `${white}[${stripPlayer(game.white)} - ${stripPlayer(game.black)}](${game.url})${black}\n${status}`;
 }
 
 function formatClubs(teams) {
