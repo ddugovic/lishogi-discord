@@ -179,9 +179,9 @@ async function graphHistory(embed, games, username) {
 
 function formatHistory(games, username) {
     const now = new Date().getTime();
-    const [data, history] = getSeries(games, username);
-    if (data.length >= 1) {
-        const domain = [Math.min(...data.map(point => point.t)), Math.max(...data.map(point => point.t))];
+    const [dates, history] = getSeries(games, username);
+    if (dates.length >= 1) {
+        const domain = [Math.min(...dates), Math.max(...dates)];
         const chart = new QuickChart().setConfig({
             type: 'line',
             data: { labels: domain, datasets: history.filter(series => series.data.length) },
@@ -193,20 +193,26 @@ function formatHistory(games, username) {
 }
 
 function getSeries(document, username) {
-    const data = [];
+    const dates = [];
     const history = [];
     for (const [category, games] of groupBy(document, getCategory).entries()) {
-        const series = games.map(game => { return { t: game.end_time * 1000, y: getRating(game, username) ?? 0 } });
-        if (series.length) {
-            data.push(...series);
-            history.push({ label: title(category), data: series });
+        const series = [];
+        for (const [date, day] of groupBy(games, getDate).entries()) {
+            const rating = Math.max(...day.map(game => getRating(game, username) ?? 0));
+            dates.push(date);
+            series.push({ t: date, y: rating });
         }
+        history.push({ label: title(category), data: series });
     }
-    return [data, history];
+    return [dates, history];
 }
 
 function getCategory(game) {
     return game.rules == 'chess' ? game.time_class : game.rules;
+}
+
+function getDate(game) {
+    return new Date(game.end_time * 1000).setUTCHours(0, 0, 0, 0);
 }
 
 function getRating(game, username) {
