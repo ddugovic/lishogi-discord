@@ -154,7 +154,7 @@ function formatHistory(perfs) {
         const time = now - (24*60*60*1000 * (days + 1));
         const [data, history] = getSeries(perfs, time);
 
-        if (data.length >= (days == 359 ? 1 : 30)) {
+        if (data.length >= (days == 359 ? 1 : 1000)) {
             const domain = [Math.min(...data.map(point => point.t)), now];
             const chart = new QuickChart().setConfig({
                 type: 'line',
@@ -285,7 +285,7 @@ function process(bot, msg, username) {
 }
 
 async function reply(interaction) {
-    return profile(interaction.user, interaction.options.getString('username'));
+    return await profile(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};
