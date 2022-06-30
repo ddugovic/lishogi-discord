@@ -21,6 +21,8 @@ async function profile(author, username) {
         .then(response => formatProfile(response.data, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
+                ${error}`);
+            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -149,7 +151,7 @@ async function graphHistory(embed, perfs) {
 }
 
 function formatHistory(perfs) {
-    const now = new Date().getTime();
+    const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
     for (days of [...Array(360).keys()]) {
         const time = today - (24*60*60*1000 * days);
