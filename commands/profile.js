@@ -155,30 +155,29 @@ function setHistory(embed, username) {
             const url = `https://lichess.org/api/storm/dashboard/${username}?days=360`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
                     .then(response => formatHistory(perfs, response.data))
-                    .then(image => embed.setImage(image));
+                    .then(image => image ? embed.setImage(image) : embed);
         });
 }
 
 function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
-    for (days of [...Array(360).keys()]) {
-        const time = today - (24*60*60*1000 * days);
-        const [data, history] = getSeries(perfs, time);
-        const series = getStormSeries(storms, time);
-        data.push(...series);
-        history.push({ label: 'Storm', data: series });
+    const days = 180;
+    const time = today - (24*60*60*1000 * days);
+    const [data, history] = getSeries(perfs, time);
+    const series = getStormSeries(storms, time);
+    data.push(...series);
+    history.push({ label: 'Storm', data: series });
 
-        if (data.length >= (days == 359 ? 1 : 200)) {
-            const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
-            const chart = new QuickChart().setConfig({
-                type: 'line',
-                data: { labels: domain, datasets: history.filter(series => series.data.length) },
-                options: { scales: { xAxes: [{ type: 'time' }] } }
-            });
-            const url = chart.getUrl();
-            return url.length <= 2000 ? url : chart.getShortUrl();
-        }
+    if (data.length) {
+        const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
+        const chart = new QuickChart().setConfig({
+            type: 'line',
+            data: { labels: domain, datasets: history.filter(series => series.data.length) },
+            options: { scales: { xAxes: [{ type: 'time' }] } }
+        });
+        const url = chart.getUrl();
+        return url.length <= 2000 ? url : chart.getShortUrl();
     }
 }
 
