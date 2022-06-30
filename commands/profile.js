@@ -155,18 +155,21 @@ function setHistory(embed, username) {
         .then(response => {
             const archives = response.body.archives;
             if (archives.length) {
-                return getHistory(username, response.body.archives)
+                return getGames(username, archives.slice(-2), [])
                     .then(games => graphHistory(embed, games, username));
 	    }
 	    return embed;
         });
 }
 
-async function getHistory(username, archives) {
-    const archive = archives.pop();
+async function getGames(username, archives, games) {
+    const archive = archives.shift();
     const [year, month] = archive.split(/(?:\/)/).slice(-2);
     return new ChessWebAPI().getPlayerCompleteMonthlyArchives(username, year, month)
-        .then(response => response.body.games);
+        .then(response => {
+            games = games.concat(...response.body.games);
+            return archives.length ? getGames(username, archives, games) : games;
+        });
 }
 
 async function graphHistory(embed, games, username) {
