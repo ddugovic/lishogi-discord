@@ -32,7 +32,7 @@ function setPlayers(users, mode) {
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const embed = new Discord.MessageEmbed()
-                    .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://playstrategy.org/player')
                     .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
@@ -75,7 +75,7 @@ function getCountryAndRating(profile) {
 function formatProfile(username, profile, fideRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://lichess.org/@/${username})`);
+    links.unshift(`[Profile](https://playstrategy.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     result.push(links.join(' | '));

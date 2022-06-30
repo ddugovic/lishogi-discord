@@ -21,7 +21,7 @@ function formatBlog(blog) {
             .setAuthor({name: entry.author, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: getLink(entry.author)})
             .setTitle(entry.title)
             .setURL(entry.link)
-            .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+            .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
             .setDescription(formatEntry(entry)));
     }
     return { 'embeds': embeds.slice(0, 3) };

@@ -49,7 +49,7 @@ function formatProfile(user, favoriteMode) {
     var embed = new Discord.MessageEmbed()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+        .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
     if (user.online)
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://playstrategy.org/?user=${username}#friend`);

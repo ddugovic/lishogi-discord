@@ -5,8 +5,8 @@ const formatLinks = require('../lib/format-links');
 const User = require('../models/User');
 
 async function simul(author) {
-    const url = 'https://lishogi.org/api/simul';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    const url = 'https://playstrategy.org/api/simul';
+    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
         .then(response => setSimul(response.data))
         .catch(error => {
             console.log(`Error in simul(${author.username}): \
@@ -34,13 +34,13 @@ function formatSimul(simul) {
         simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'will compete';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
-        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setAuthor({name: formatHost(simul.host), iconURL: 'https://playstrategy1.org/assets/logo/playstrategy-favicon-32-invert.png'})
+        .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setTitle(simul.fullName)
-        .setURL(`https://lishogi.org/simul/${simul.id}`)
+        .setURL(`https://playstrategy.org/simul/${simul.id}`)
         .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
     if (simul.host.gameId)
-        embed = embed.setImage(`https://lishogi1.org/game/export/gif/${simul.host.gameId}.gif`);
+        embed = embed.setImage(`https://playstrategy1.org/game/export/gif/${simul.host.gameId}.gif`);
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description) {
@@ -80,7 +80,7 @@ function formatAbout(text) {
             continue;
         }
         for (match of text[i].matchAll(username))
-            text[i] = text[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
+            text[i] = text[i].replace(match[0], `[${match[0]}](https://playstrategy.org/@/${match[1]})`);
     }
     return text;
 }
