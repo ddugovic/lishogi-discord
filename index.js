@@ -13,7 +13,7 @@ mongoose.connect(config.mongourl, {
 const client = new Discord.Client({
     disableEveryone: true,
     disabledEvents: ['TYPING_START'],
-    intents: ["GUILDS", "GUILD_MESSAGES"]
+    intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES]
 });
 
 // Set up commands
