@@ -152,7 +152,7 @@ function setHistory(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
-            const url = `https://lichess.org/api/storm/dashboard/${username}?days=360`;
+            const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
                     .then(response => formatHistory(perfs, response.data))
                     .then(image => image ? embed.setImage(image) : embed);
@@ -162,7 +162,7 @@ function setHistory(embed, username) {
 async function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
-    const days = 180;
+    const days = 90;
     const time = today - (24*60*60*1000 * days);
     const [data, history] = getSeries(perfs, time);
     const series = getStormSeries(storms, time);
