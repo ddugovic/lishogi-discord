@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
 const formatLinks = require('../lib/format-links');
+const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
@@ -60,19 +61,16 @@ function scoreTopic(topic, text) {
 }
 
 function formatTeam(team) {
-    const count = Math.min(Math.max(team.nbMembers, 0), 255);
+    const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const leader = getLeader(team.leader, team.leaders);
-    const [description, imageURL, images] = formatDescription(team.description);
-    var embed = new Discord.MessageEmbed()
+    const description = formatDescription(team.description);
+    return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
-        .setAuthor({name: leader.name, iconURL: 'https://lidraughts.org/assets/images/favicon-32-black.png', url: getLink(leader.name)})
-        .setThumbnail(imageURL ?? 'https://lidraughts.org/assets/favicon.64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lidraughts.org/assets/favicon.64.png')
         .setTitle(team.name)
         .setURL(`https://lidraughts.org/team/${team.id}`)
-        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'));
-    if (images.length)
-        embed = embed.setImage(images[0]);
-    return embed;
+        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'))
+        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
 }
 
 function getLeader(leader, leaders) {
@@ -80,14 +78,13 @@ function getLeader(leader, leaders) {
     return leaders.length ? leaders[Math.floor(Math.random() * leaders.length)] : leader;
 }
 
-function getLink(name) {
-    return `https://lidraughts.org/@/${name}`;
+function formatLeader(user) {
+    return `[@${user.name}](https://lidraughts.org/@/${user.name})`;
 }
 
 function formatDescription(text) {
-    const [description, images] = getImages(text, []);
-    const logo = /^!\[[- \w]+\]\((https?:.*?)\)\s+([^]*)$/;
-    const match = description.match(logo);
+    const image = /^(?:!\[.+?\]\(https?:.+?\))?([^]*)\r?\n!\[(?:[^\]]*?)\]\((https?:.+?)\)$/;
+    const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
     const links = formatLinks(text);
@@ -97,7 +94,7 @@ function formatDescription(text) {
 }
 
 function formatLink(text) {
-    text = text.split(/ +/).map(formatUser).join(' ');
+    text = formatUser(text);
     const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
     const match = text.match(pattern);
     if (match)
@@ -116,6 +113,27 @@ function formatUser(text) {
     if (match)
         return text.replace(match[0], `[@${match[1]}](https://lidraughts.org/@/${match[1]})`);
     return text;
+}
+
+function formatAbout(about) {
+    const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const username = /@(\w+)/g;
+    for (let i = 0; i < about.length; i++) {
+        if (about[i].match(social)) {
+            about.splice(i, 1);
+            i -= 1;
+            continue;
+        }
+        for (match of about[i].matchAll(username))
+            about[i] = about[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
+    }
+    return about.join('\n');
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
+    if (match)
+        return match[0];
 }
 
 function process(bot, msg, text) {
