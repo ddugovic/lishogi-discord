@@ -1,4 +1,4 @@
-const axios = require('axios');
+const ChessWebAPI = require('chess-web-api');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
@@ -14,10 +14,11 @@ async function profile(author, username) {
             return 'You need to set your chess.com username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
-    const url = `https://api.chess.com/pub/player/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
-        .then(response => formatProfile(response.data, favoriteMode))
+    return new ChessWebAPI().getPlayer(username)
+        .then(response => formatProfile(response.body, favoriteMode))
         .catch(error => {
+            console.log(`Error in profile(${author.username}, ${username}): \
+                ${error}`);
             console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -46,7 +47,7 @@ function formatProfile(user, favoriteMode) {
         .then(embed => setStats(embed, user, favoriteMode))
         .then(embed => { return user.is_streamer ? setStreamer(embed, user.twitch_url, firstName) : embed })
         .then(embed => setClubs(embed, user.username))
-        .then(embed => setGames(embed, user.username))
+        .then(embed => setDailyChess(embed, user.username))
         .then(embed => { return { embeds: [ embed ] } });
 }
 
@@ -55,31 +56,31 @@ function getFirstName(user) {
 }
 
 function setName(embed, user, firstName) {
-    return axios.get(user.country, { headers: { Accept: 'application/nd-json' } })
+    const iso = user.country.split(/(?:\/)/).pop();
+    return new ChessWebAPI().getCountry(iso)
         .then(response => {
             return embed
-                .setAuthor({ name: formatName(user, response), iconURL: user.avatar, url: user.url })
+                .setAuthor({ name: formatName(user, response.body.name), iconURL: user.avatar, url: user.url })
                 .setThumbnail(user.avatar)
-                .setTitle(`Challenge ${formatNickname(firstName, response)} to a game!`)
+                .setTitle(`Challenge ${formatNickname(firstName, response.body.code)} to a game!`)
                 .setURL(`https://chess.com/play/${user.username}`);
-
-    });
+        });
 }
 
-function formatName(user, response) {
+function formatName(user, name) {
     var name = user.name || user.username;
     if (user.title)
         name = `${user.title} ${name}`;
     if (user.location)
         name += ` (${user.location})`;
-    else if (response && response.data)
-        name += ` (${response.data.name})`;
+    else if (name)
+        name += ` (${name})`;
     return name;
 }
 
-function formatNickname(firstName, response) {
-    if (response && response.data) {
-        const flag = getFlagEmoji(response.data.code);
+function formatNickname(firstName, code) {
+    if (code) {
+        const flag = getFlagEmoji(code);
         if (flag)
             return `${flag} ${firstName}`;
     }
@@ -92,10 +93,9 @@ function getFlagEmoji(code) {
 }
 
 function setStats(embed, user, favoriteMode) {
-    const url = `https://api.chess.com/pub/player/${user.username}/stats`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+    return new ChessWebAPI().getPlayerStats(user.username)
         .then(response => {
-            const [games, mode, rating] = getMostRecentMode(response.data, favoriteMode);
+            const [games, mode, rating] = getMostRecentMode(response.body, favoriteMode);
             embed = embed.addFields(formatStats(embed, user.last_online, games, mode, rating));
             return games ? setHistory(embed, user.username) : embed;
         });
@@ -117,10 +117,9 @@ function formatStats(embed, lastOnline, games, mode, rating) {
 }
 
 function setStreamer(embed, twitchUrl, firstName) {
-    const url = 'https://api.chess.com/pub/streamers';
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+    return new ChessWebAPI().getStreamers()
         .then(response => {
-            const streamer = response.data.streamers.filter(streamer => streamer.twitch_url == twitchUrl)[0];
+            const streamer = response.body.streamers.filter(streamer => streamer.twitch_url == twitchUrl)[0];
             return embed.setThumbnail(streamer.avatar)
                 .setTitle(streamer.is_live ? `📡 Watch ${firstName} live on Twitch!` : `📡 Follow ${firstName} on Twitch!`)
                 .setURL(twitchUrl);
@@ -128,20 +127,18 @@ function setStreamer(embed, twitchUrl, firstName) {
 }
 
 function setClubs(embed, username) {
-    const url = `https://api.chess.com/pub/player/${username}/clubs`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+    return new ChessWebAPI().getPlayerClubs(username)
         .then(response => {
-            const clubs = response.data.clubs;
+            const clubs = response.body.clubs;
             return clubs.length ? embed.addField('Clubs', clubs.map(club => club.name).join('\n'), true) : embed;
         });
 }
 
-function setGames(embed, username) {
-    const url = `https://api.chess.com/pub/player/${username}/games`;
-    return axios.get(url, { headers: { Accept: 'application/nd-json' } })
+function setDailyChess(embed, username) {
+    return new ChessWebAPI().getPlayerCurrentDailyChess(username)
         .then(response => {
-            const games = response.data.games;
-            return games.length ? embed.addField('Games', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
+            const games = response.body.games;
+            return games.length ? embed.addField('Daily Chess', games.slice(0, 5).map(formatGame).join('\n'), true) : embed;
         });
 }
 
@@ -156,12 +153,15 @@ function formatClubs(teams) {
 }
 
 function setHistory(embed, username) {
-    const url = `https://api.chess.com/pub/player/${username}/games/archives`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    return new ChessWebAPI().getPlayerMonthlyArchives(username)
         .then(response => {
-            const archive = response.data.archives.pop();
-            return axios.get(archive, { headers: { Accept: 'application/json' } })
-                .then(response => graphHistory(embed, response.data.games, username));
+            const archive = response.body.archives.pop();
+            if (archive) {
+                const [year, month] = archive.split(/(?:\/)/).slice(-2);
+                return new ChessWebAPI().getPlayerCompleteMonthlyArchives(username, year, month)
+                    .then(response => graphHistory(embed, response.body.games, username));
+	    }
+	    return embed;
         });
 }
 
