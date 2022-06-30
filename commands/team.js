@@ -62,7 +62,6 @@ function scoreTopic(topic, text) {
 
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
-    const leader = getLeader(team.leader, team.leaders);
     const description = formatDescription(team.description);
     return new Discord.MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
@@ -71,11 +70,6 @@ function formatTeam(team) {
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'))
         .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
-}
-
-function getLeader(leader, leaders) {
-    if (leader in leaders) return leader;
-    return leaders.length ? leaders[Math.floor(Math.random() * leaders.length)] : leader;
 }
 
 function formatLeader(user) {
