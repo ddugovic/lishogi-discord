@@ -27,7 +27,7 @@ client.on('ready', () => {
 });
 
 client.on('guildCreate', (guild) => {
-    console.log(`Joining guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
+    console.log(`Joining guild ${guild.id} [${guild.name}], owned by @${guild.ownerId}.`);
 });
 
 client.on('messageCreate', (msg) => {
