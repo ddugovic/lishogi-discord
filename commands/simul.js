@@ -1,7 +1,8 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatLinks = require('../lib/format-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
 const User = require('../models/User');
 
 async function simul(author, mode) {
@@ -46,7 +47,7 @@ function rankSimul(simul) {
 function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
     const compete = simul.isFinished ? 'competed' :
-        simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'will compete';
+        simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'await';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
@@ -77,27 +78,25 @@ function formatHost(player) {
 }
 
 function formatDescription(text) {
-    const links = formatLinks(text);
+    const links = formatSocialLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
-    const about = formatAbout(text.split(/(?:\r?\n)+/));
-    if (about.length && about.join('').length)
-        result.push(about.join('\n'));
+    const about = formatAbout(text.split(/(?:\r?\n)+/)).join('\n').trim();
+    if (about)
+        result.push(about);
     return result.join('\n');
 }
 
-function formatAbout(text) {
+function formatAbout(about) {
     const social = /:\/\/|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
-    for (let i = 0; i < text.length; i++) {
-        if (text[i].match(social)) {
-            text.splice(i, 1);
+    for (let i = 0; i < about.length; i++) {
+        if (about[i].match(social)) {
+            about.splice(i, 1);
             i -= 1;
             continue;
         }
-        for (match of text[i].matchAll(username))
-            text[i] = text[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
+        about[i] = formatUserLinks(about[i]);
     }
-    return text;
+    return about;
 }
 
 function process(bot, msg, favoriteMode) {

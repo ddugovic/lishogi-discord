@@ -2,7 +2,8 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
-const formatLinks = require('../lib/format-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
@@ -68,12 +69,8 @@ function formatTeam(team) {
         .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
-        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'))
+        .setDescription(description.split(/\r?\n/).map(formatUserLinks).map(formatLink).join('\n'))
         .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
-}
-
-function formatLeader(user) {
-    return `[@${user.name}](https://lichess.org/@/${user.name})`;
 }
 
 function formatDescription(text) {
@@ -81,53 +78,33 @@ function formatDescription(text) {
     const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
-    const links = formatLinks(text);
+    const links = formatSocialLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
-    result.push(formatAbout(text.split(/\r?\n/)));
+    result.push(formatAbout(text.split(/\r?\n/)).join('\n'));
     return result.join('\n');
-}
-
-function formatLink(text) {
-    text = formatUser(text);
-    const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
-    const match = text.match(pattern);
-    if (match)
-        return `[${match[1]}](${match[2]})`;
-    return text;
-}
-
-function formatUser(text) {
-    var username = /^(?:https:\/\/lichess\.org\/@\/|@)(\w+)$/;
-    var match = text.match(username);
-    if (match)
-        return `[@${match[1]}](https://lichess.org/@/${match[1]})`;
-
-    user = /\[(\w+)\]\(https:\/\/lichess\.org\/@\/\1\/?\)/;
-    match = text.match(user);
-    if (match)
-        return text.replace(match[0], `[@${match[1]}](https://lichess.org/@/${match[1]})`);
-    return text;
 }
 
 function formatAbout(about) {
     const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
     for (let i = 0; i < about.length; i++) {
         if (about[i].match(social)) {
             about.splice(i, 1);
             i -= 1;
             continue;
         }
-        for (match of about[i].matchAll(username))
-            about[i] = about[i].replace(match[0], `[${match[0]}](https://lichess.org/@/${match[1]})`);
+        about[i] = formatUserLinks(about[i]);
     }
-    return about.join('\n');
+    return about;
 }
 
 function getImage(text) {
     const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
     if (match)
         return match[0];
+}
+
+function formatLeader(user) {
+    return `[@${user.name}](https://lichess.org/@/${user.name})`;
 }
 
 function process(bot, msg, text) {
