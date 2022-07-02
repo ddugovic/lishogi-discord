@@ -44,7 +44,7 @@ function formatStreamer(streamer) {
 }
 
 function formatStream(username, title, streamer, stream) {
-    const links = [`[Profile](https://lichess.org/@/${username})`];
+    const links = [`:satellite: [Stream](https://lichess.org/streamer/${username})`];
     if (streamer.twitch)
         links.push(formatSocialLinks(streamer.twitch));
     if (streamer.youTube)
