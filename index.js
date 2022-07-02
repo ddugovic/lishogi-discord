@@ -13,7 +13,8 @@ mongoose.connect(config.mongourl, {
 const client = new Discord.Client({
     disableEveryone: true,
     disabledEvents: ['TYPING_START'],
-    intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES]
+    intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+    presence: { activities: [{ name: 'woogles.io' , type: 'WATCHING' }], status: 'online' }
 });
 
 // Set up commands
@@ -22,7 +23,6 @@ const help = require('./commands/help');
 const stop = require('./commands/stop');
 
 client.on('ready', () => {
-    client.user.setActivity('woogles.io'); //you can set a default game
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
 });
 
