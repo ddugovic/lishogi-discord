@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatLinks = require('../lib/format-links');
+const { formatLinks, formatUserLink, formatUserLinks } = require('../lib/format-links');
 const User = require('../models/User');
 
 async function simul(author) {
@@ -72,15 +72,13 @@ function formatDescription(text) {
 
 function formatAbout(text) {
     const social = /:\/\/|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
     for (let i = 0; i < text.length; i++) {
         if (text[i].match(social)) {
             text.splice(i, 1);
             i -= 1;
             continue;
         }
-        for (match of text[i].matchAll(username))
-            text[i] = text[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
+        bio[i] = formatUserLinks(bio[i]);
     }
     return text;
 }

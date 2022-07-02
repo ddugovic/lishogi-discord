@@ -2,7 +2,7 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatLinks = require('../lib/format-links');
+const { formatLinks, formatUserLink, formatUserLinks } = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
@@ -92,15 +92,12 @@ function formatProfile(username, profile, fmjdRating, playTime) {
 
 function formatBio(bio) {
     const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
             break;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lidraughts.org/@/${match[1]})`);
-        }
+        bio[i] = formatUserLinks(bio[i]);
     }
     return bio.join(' ');
 }
