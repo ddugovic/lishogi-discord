@@ -39,7 +39,7 @@ function getColor(rating) {
 function formatStreamer(streamer) {
     const name = streamer.title ? `**${streamer.title}** ${streamer.name}` : streamer.name;
     const badges = streamer.patron ? '🦄' : '';
-    const [profile, rating, score] = formatStream(streamer.username, streamer.title, streamer.streamer, streamer.stream);
+    const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
     return { name : `${name} ${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
 }
 
@@ -56,11 +56,11 @@ function formatStream(username, title, streamer, stream) {
     if (streamer.headline && streamer.description) {
         const text = `*${streamer.headline}*\n${formatDescription(streamer.description.split(/\s+/))}`;
         if ((length = text.length)) {
-            rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 1000;
+            rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
             result.push(text);
 	}
     }
-    return [result.join('\n'), rating, (length + rating) * 1000000];
+    return [result.join('\n'), rating, length + rating];
 }
 
 function formatDescription(text) {
