@@ -89,10 +89,9 @@ client.on('interactionCreate', async interaction => {
     if (command) {
         await interaction.deferReply();
         try {
-            interaction.editReply(await command.reply(interaction));
+            await interaction.editReply(await command.reply(interaction));
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
-            interaction.editReply({ content: `Command failed:\n ${e.stack}`, ephemeral: true });
         }
     } else if (cmdTxt == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
