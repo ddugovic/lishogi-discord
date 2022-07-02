@@ -1,7 +1,8 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
-const formatLinks = require('../lib/format-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
 
@@ -55,41 +56,27 @@ function getCountry(profile) {
 
 function formatProfile(username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     result.push(links.join(' | '));
     if (profile && profile.bio) {
-        const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-        const username = /@(\w+)/g;
-        var bio = profile.bio.split(/\s+/);
-        for (let i = 0; i < bio.length; i++) {
-            if (bio[i].match(social)) {
-                bio = bio.slice(0, i);
-                break;
-            }
-            for (match of bio[i].matchAll(username)) {
-                bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
-            }
-        }
-        if (bio.length)
-            result.push(bio.join(' '));
+        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
+        if (bio)
+            result.push(bio);
     }
     return result.join('\n');
 }
 
 function formatBio(bio) {
     const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
             break;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
-        }
+        bio[i] = formatUserLinks(bio[i]);
     }
     return bio.join(' ');
 }

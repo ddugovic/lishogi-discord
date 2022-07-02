@@ -4,7 +4,8 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
-const formatLinks = require('../lib/format-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -117,7 +118,7 @@ function setStats(embed, username, count, playTime, mode, rating) {
 
 function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
@@ -126,7 +127,7 @@ function setAbout(embed, username, profile, playTime) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
-        const bio = formatBio(profile.bio.split(/\s+/));
+        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
         if (bio)
             result.push(bio);
     }
@@ -253,18 +254,15 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
+    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
             break;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://lishogi.org/@/${match[1]})`);
-        }
+        bio[i] = formatUserLinks(bio[i]);
     }
-    return bio.join(' ');
+    return bio;
 }
 
 function getImage(text) {
