@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
@@ -10,13 +11,13 @@ const removeMarkdown = require("remove-markdown");
 const lda = require('@stdlib/nlp-lda');
 const stopwords = require('@stdlib/datasets-stopwords-en');
 
-async function team(author, text) {
+function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
     const url = `https://lishogi.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setTeams(response.data, text))
+        .then(response => setTeams(response.data, text, interaction))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -25,12 +26,14 @@ async function team(author, text) {
         });
 }
 
-function setTeams(teams, text) {
+function setTeams(teams, text, interaction) {
     text = removeAccents(text).toLowerCase();
     if (teams.nbResults) {
         teams.currentPageResults.forEach(team => team.score = score(team, text));
-        const team = teams.currentPageResults.sort((a,b) => b.score - a.score)[0];
-        return { embeds: [ formatTeam(team) ] };
+        teams = teams.currentPageResults.sort((a,b) => b.score - a.score);
+        if (interaction)
+            return formatPages(teams.map(formatTeam), interaction);
+        return { embeds: [ formatTeam(teams[0]) ] };
     } else {
         return 'No team found.';
     }
@@ -111,8 +114,8 @@ function process(bot, msg, text) {
     team(msg.author, text).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return team(interaction.user, interaction.options.getString('text'));
+function interact(interaction) {
+    return team(interaction.user, interaction.options.getString('text'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
