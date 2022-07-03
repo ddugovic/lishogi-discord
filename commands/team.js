@@ -40,10 +40,12 @@ function setTeams(teams, text, interaction) {
 }
 
 function score(team, text) {
-    const description = strip(removeAccents(removeMarkdown(team.description).replaceAll(/(https?:\/\/[^\s]+)/g, '')).toLowerCase());
+    const links = removeAccents(removeMarkdown(team.description)).toLowerCase().matchAll(/(https?:\/\/[^\s]+)/g);
+    const noise = [...links].reduce((partialSum, a) => partialSum + a[0].length, 0);
+    const description = strip(removeAccents(removeMarkdown(team.description).replace(/(https?:\/\/[^\s]+)/g, '')).toLowerCase());
     const docs = description.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
     const topics = getTopics(docs, text);
-    return team.nbMembers * docs.length * topics.map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
+    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
 }
 
 function strip(description) {
