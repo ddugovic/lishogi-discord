@@ -127,7 +127,7 @@ const commands = {
         usage: "<text>",
         description: "Search teams for a keyword",
         process: team.process,
-        reply: team.reply
+        interact: team.interact
     },
     "tv": {
         usage: "[channel]",
