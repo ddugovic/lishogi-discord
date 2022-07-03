@@ -4,7 +4,7 @@ const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
-const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
+const { formatUserLinks } = require('../lib/format-user-links');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
@@ -28,8 +28,9 @@ function team(author, text, interaction) {
 
 function setTeams(teams, text, interaction) {
     text = removeAccents(text).toLowerCase();
+    const description = cleanDescription(formatDescription(text));
     if (teams.nbResults) {
-        teams.currentPageResults.forEach(team => team.score = score(team, text));
+        teams.currentPageResults.forEach(team => team.score = score(team, description));
         teams = teams.currentPageResults.sort((a,b) => b.score - a.score);
         if (interaction)
             return formatPages(teams.map(formatTeam), interaction);
@@ -39,13 +40,14 @@ function setTeams(teams, text, interaction) {
     }
 }
 
-function score(team, text) {
-    const links = removeAccents(removeMarkdown(team.description)).toLowerCase().matchAll(/(https?:\/\/[^\s]+)/g);
+function score(team, description) {
+    console.log(team.name, description);
+    const links = removeMarkdown(team.description)).matchAll(/(https?:\/\/[^\s]+)/g;
     const noise = [...links].reduce((partialSum, a) => partialSum + a[0].length, 0);
-    const description = strip(removeAccents(removeMarkdown(team.description).replace(/(https?:\/\/[^\s]+)/g, '')).toLowerCase());
+    const description = strip(removeMarkdown(team.description).replace(/(https?:\/\/[^\s]+)/g, ''));
     const docs = description.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
-    const topics = getTopics(docs, text);
-    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
+    const topics = getTopics(docs, description);
+    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, description)).reduce((partialSum, a) => partialSum + a, 0);
 }
 
 function strip(description) {
@@ -74,8 +76,12 @@ function formatTeam(team) {
         .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
-        .setDescription(description.split(/\r?\n/).map(formatUserLinks).map(formatLink).join('\n'))
+        .setDescription(cleanDescription(description))
         .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
+}
+
+function cleanDescription(description) {
+    return description.split(/\r?\n/).map(formatUserLinks).map(formatLink).join('\n');
 }
 
 function formatDescription(text) {
