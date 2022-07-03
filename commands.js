@@ -139,7 +139,7 @@ const commands = {
         usage: "[text]",
         description: "Search videos for a keyword",
         process: video.process,
-        reply: video.reply
+        interact: video.interact
     }
 };
 
