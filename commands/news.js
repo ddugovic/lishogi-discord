@@ -23,17 +23,14 @@ function formatNews(news, interaction) {
         if (entry.title.startsWith('NEWS')) {
             const summary = formatEntry(entry);
             const red = Math.min(Math.max(summary.length - 150, 0), 255);
-            var embed = new Discord.MessageEmbed()
+            const image = getImage(html2md(entry.content));
+            embeds.push(new Discord.MessageEmbed()
                 .setColor(formatColor(red, 0, 255-red))
-                .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(entry.author)})
+                .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
                 .setTitle(entry.title)
                 .setURL(entry.link)
-                .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                .setDescription(summary);
-            const image = getImage(html2md(entry.content));
-            if (image)
-                embed = embed.setImage(image)
-            embeds.push(embed);
+                .setThumbnail(image ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+                .setDescription(summary));
         }
     }
     if (interaction) {
@@ -50,6 +47,12 @@ function formatNews(news, interaction) {
     return { 'embeds': embeds.slice(0, 1) };
 }
 
+function getImage(content) {
+    const match = content.match(/!\[.*?\]\((\S+)\)/)
+    if (match)
+        return match[1];
+}
+
 function formatEntry(entry) {
     if (entry.contentSnippet.length < 200)
         return entry.contentSnippet;
@@ -58,17 +61,6 @@ function formatEntry(entry) {
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
     return message.trim();
-}
-
-function getLink(author) {
-    for (match of author.matchAll(/@(\w+)/g)) {
-        return `https://lishogi.org/@/${match[1]}`;
-    }
-}
-
-function getImage(content) {
-    for (match of content.matchAll(/!\[\]\((\S+)\)/g))
-        return match[1];
 }
 
 function process(bot, msg) {
