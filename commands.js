@@ -30,7 +30,7 @@ const commands = {
         usage: "",
         description: "Display recent blog entries",
         process: blog.process,
-        reply: blog.reply
+        interact: blog.interact
     },
     "bots": {
         usage: "",
