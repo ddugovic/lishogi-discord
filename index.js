@@ -85,11 +85,15 @@ client.on('interactionCreate', async interaction => {
     const cmdTxt = interaction.commandName;
     let command = commands[cmdTxt];
     if (command) {
-        await interaction.deferReply();
-        try {
-            await interaction.editReply(await command.reply(interaction));
-        } catch (e) {
-            console.log(`Command failed:\n ${e.stack}`);
+        if (command.interact) {
+            command.interact(interaction);
+	} else {
+            await interaction.deferReply();
+            try {
+                await interaction.editReply(await command.reply(interaction));
+            } catch (e) {
+                console.log(`Command failed:\n ${e.stack}`);
+            }
         }
     } else if (cmdTxt == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
