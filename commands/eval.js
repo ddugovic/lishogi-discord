@@ -1,13 +1,13 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const chess = require('chessops/chess');
+const { Chess } = require('chessops/chess');
 const cfen = require('chessops/fen');
 const formatColor = require('../lib/format-color');
 const san = require('chessops/san');
-const util = require('chessops/util');
+const { parseUci } = require('chessops/util');
 
 async function eval(author, fen) {
-    const parse = cfen.parseFen(fen || cfen.INITIAL_FEN);
+    const parse = cfen.parseFen(fen.replace(/_/g, ' ') || cfen.INITIAL_FEN);
     if (parse.isOk) {
         const setup = parse.unwrap();
         fen = cfen.makeFen(setup);
@@ -30,25 +30,41 @@ function formatCloudEval(fen, setup, eval) {
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
     for (const pv in eval.pvs)
-        variations.push(formatVariation(fen, setup, eval.pvs[pv]));
+        variations.push(formatVariation(setup, eval.pvs[pv]));
     const red = Math.min(mnodes, 255);
 
     fen = fen.replace(/ /g,'_');
-    const embed = new Discord.MessageEmbed()
-        .setColor(formatColor(red, 0, 255 - red))
-        .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
-        .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
-        .setTitle(':cloud: Cloud Evaluation')
-        .setURL(`https://lichess.org/analysis/standard/${fen}#explorer`)
-	.setImage(`https://lichess.org/export/gif/${fen}`);
-    const data = new Discord.MessageEmbed()
-        .addField(stats, variations.join('\n'));
-    return { embeds: [ embed, data ] };
+    const embeds = [
+        new Discord.MessageEmbed()
+            .setColor(formatColor(red, 0, 255 - red))
+            .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+            .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
+            .setTitle(':cloud: Cloud Evaluation')
+            .setURL(`https://lichess.org/analysis/standard/${fen}#explorer`)
+	    .setImage(`https://lichess.org/export/gif/${fen}`),
+        new Discord.MessageEmbed()
+            .addField(stats, variations.join('\n'))
+    ];
+    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&moves=0&topGames=3`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatGames(embeds, fen, setup, response.data.topGames));
 }
 
-function formatVariation(fen, setup, pv) {
-    const pos = chess.Chess.fromSetup(setup).unwrap();
-    const variation = pv.moves.split(' ').map(uci => util.parseUci(uci));
+function formatGames(embeds, fen, setup, games) {
+    if (games.length)
+        embeds.push(new Discord.MessageEmbed().addField('Master Games', games.map(game => formatGame(setup, game)).join('\n')));
+    return { embeds: embeds };
+}
+
+function formatGame(setup, game) {
+    const pos = Chess.fromSetup(setup).unwrap();
+    const variation = [parseUci(game.uci)];
+    return `${san.makeSanVariation(pos, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+}
+
+function formatVariation(setup, pv) {
+    const pos = Chess.fromSetup(setup).unwrap();
+    const variation = pv.moves.split(' ').map(parseUci);
     return `**${formatEval(pv)}**: ${san.makeSanVariation(pos, variation)}`;
 }
 
