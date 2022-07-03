@@ -29,7 +29,7 @@ function formatVideo(link, duration, title, author) {
     return new Discord.MessageEmbed()
         .setColor(formatColor(score, 0, 255-score))
         .setAuthor({name: author, iconURL: null})
-        .setTitle(decode(title))
+        .setTitle(`${decode(title)} (${duration})`)
         .setURL(`https://youtube.com${link}`)
         .setThumbnail(getImage(link));
 }
