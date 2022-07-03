@@ -2,11 +2,12 @@ const axios = require('axios');
 const decode = require('decode-html');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 
-async function video(author, text) {
+function video(author, text, interaction) {
     text = text ? text.replace(/\s+/, '') : '';
     return axios.get(`https://lichess.org/video?q=${text}`)
-        .then(response => setVideos(response.data))
+        .then(response => setVideos(response.data, interaction))
         .catch(error => {
             console.log(`Error in video(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -15,12 +16,17 @@ async function video(author, text) {
         });
 }
 
-function setVideos(document) {
+function setVideos(document, interaction) {
     const embeds = [];
     const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3], match[4]));
-    return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
+    if (embeds.length) {
+        if (interaction)
+            return formatPages(embeds, interaction);
+        return { embeds: shuffle(embeds).slice(0, 3) };
+    }
+    return 'No video found!';
 }
 
 function formatVideo(link, duration, title, author) {
@@ -47,8 +53,8 @@ function process(bot, msg, text) {
     video(msg.author, text).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return video(interaction.user, interaction.options.getString('text'));
+function interact(interaction) {
+    video(interaction.user, interaction.options.getString('text'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

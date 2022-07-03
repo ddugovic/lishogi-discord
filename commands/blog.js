@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const paginationEmbed = require('discordjs-button-pagination');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
 const User = require('../models/User');
 const Parser = require('rss-parser');
@@ -34,17 +34,8 @@ function formatBlog(blog, interaction) {
             embed = embed.setImage(image)
         embeds.push(embed);
     }
-    if (interaction) {
-        const button1 = new Discord.MessageButton()
-            .setCustomId('previousbtn')
-            .setLabel('Previous')
-            .setStyle('PRIMARY');
-        const button2 = new Discord.MessageButton()
-            .setCustomId('nextbtn')
-            .setLabel('Next')
-            .setStyle('PRIMARY');
-        return paginationEmbed(interaction, embeds, [button1, button2]);
-    }
+    if (interaction)
+        return formatPages(embeds, interaction);
     return { 'embeds': embeds.slice(0, 1) };
 }
 
