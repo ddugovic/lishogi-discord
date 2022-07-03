@@ -1,11 +1,12 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const paginationEmbed = require('discordjs-button-pagination');
 const User = require('../models/User');
 const Parser = require('rss-parser');
 
-async function blog(author) {
+function blog(author, interaction) {
     return new Parser().parseURL('https://lishogi.org/blog.atom')
-        .then(feed => formatBlog(feed))
+        .then(feed => formatBlog(feed, interaction))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -14,7 +15,7 @@ async function blog(author) {
         });
 }
 
-function formatBlog(blog) {
+function formatBlog(blog, interaction) {
     const embeds = [];
     for (const entry of blog.items.values()) {
         embeds.push(new Discord.MessageEmbed()
@@ -23,6 +24,17 @@ function formatBlog(blog) {
             .setURL(entry.link)
             .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
             .setDescription(formatEntry(entry)));
+    }
+    if (interaction) {
+        const button1 = new Discord.MessageButton()
+            .setCustomId('previousbtn')
+            .setLabel('Previous')
+            .setStyle('DANGER');
+        const button2 = new Discord.MessageButton()
+            .setCustomId('nextbtn')
+            .setLabel('Next')
+            .setStyle('SUCCESS');
+        return paginationEmbed(interaction, embeds, [button1, button2]);
     }
     return { 'embeds': embeds.slice(0, 3) };
 }
@@ -47,8 +59,8 @@ function process(bot, msg) {
     blog(msg.author).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return blog(interaction.user);
+function interact(interaction) {
+    return blog(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
