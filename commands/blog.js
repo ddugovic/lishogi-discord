@@ -29,7 +29,7 @@ function formatBlog(blog, interaction) {
         const button1 = new Discord.MessageButton()
             .setCustomId('previousbtn')
             .setLabel('Previous')
-            .setStyle('DANGER');
+            .setStyle('SUCCESS');
         const button2 = new Discord.MessageButton()
             .setCustomId('nextbtn')
             .setLabel('Next')
