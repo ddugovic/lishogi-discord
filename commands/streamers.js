@@ -2,7 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-user-links');
+const { formatUserLinks } = require('../lib/format-site-links');
 
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
