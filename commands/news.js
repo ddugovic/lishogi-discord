@@ -27,7 +27,6 @@ function formatNews(news, interaction) {
             .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: news.link})
             .setTitle(entry.title)
             .setURL(entry.link)
-            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setDescription(summary);
         if (entry.categories)
             embed = embed.addField('Categories', entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', '));
