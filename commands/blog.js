@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const paginationEmbed = require('discordjs-button-pagination');
+const html2md = require('html-to-md');
 const User = require('../models/User');
 const Parser = require('rss-parser');
 
@@ -18,12 +19,16 @@ function blog(author, interaction) {
 function formatBlog(blog, interaction) {
     const embeds = [];
     for (const entry of blog.items.values()) {
-        embeds.push(new Discord.MessageEmbed()
+        var embed = new Discord.MessageEmbed()
             .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(entry.author)})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-            .setDescription(formatEntry(entry)));
+            .setDescription(formatEntry(entry));
+        const image = getImage(html2md(entry.content));
+        if (image)
+            embed = embed.setImage(image)
+        embeds.push(embed);
     }
     if (interaction) {
         const button1 = new Discord.MessageButton()
@@ -43,6 +48,11 @@ function getLink(author) {
     for (match of author.matchAll(/@(\w+)/g)) {
         return `https://lishogi.org/@/${match[1]}`;
     }
+}
+
+function getImage(content) {
+    for (match of content.matchAll(/!\[\]\((\S+)\)/g))
+        return match[1];
 }
 
 function formatEntry(entry) {
