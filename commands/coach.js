@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 const html2md = require('html-to-md');
 
 async function coach(author) {
@@ -23,6 +24,7 @@ function setCoaches(document) {
 
 function formatCoach(image, name, description, details) {
     return new Discord.MessageEmbed()
+        .setColor(getColor(getRating(details) ?? 0))
         .setAuthor({name: 'Lichess Coach', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: 'https://lichess.org/coach/'})
         .setTitle(name)
         .setURL(getLink(details))
@@ -30,8 +32,19 @@ function formatCoach(image, name, description, details) {
         .setDescription(description);
 }
 
-function getLink(coach) {
-    const match = coach.match(/\(\/@\/(\w+)\)\|/);
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
+function getRating(details) {
+    const match = details.match(/\|Rating\|FIDE: (\d+)/);
+    if (match)
+        return match[1];
+}
+
+function getLink(details) {
+    const match = details.match(/\(\/@\/(\w+)\)\|/);
     if (match)
         return `https://lichess.org/coach/${match[1]}`;
 }
