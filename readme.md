@@ -38,6 +38,8 @@
     Display online bots
 !coach
     Find a coach
+!news
+    Display recent news
 !puzzle
     Display today's puzzle
 !simul
