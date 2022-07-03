@@ -34,11 +34,11 @@ function formatBlog(blog, interaction) {
         const button1 = new Discord.MessageButton()
             .setCustomId('previousbtn')
             .setLabel('Previous')
-            .setStyle('SUCCESS');
+            .setStyle('PRIMARY');
         const button2 = new Discord.MessageButton()
             .setCustomId('nextbtn')
             .setLabel('Next')
-            .setStyle('SUCCESS');
+            .setStyle('PRIMARY');
         return paginationEmbed(interaction, embeds, [button1, button2]);
     }
     return { 'embeds': embeds.slice(0, 3) };
