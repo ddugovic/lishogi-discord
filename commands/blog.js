@@ -59,13 +59,14 @@ function formatEntry(entry) {
 }
 
 function getLink(author) {
-    for (match of author.matchAll(/@(\w+)/g)) {
+    const match = author.match(/@(\w+)/)
+    if (match)
         return `https://lichess.org/@/${match[1]}`;
-    }
 }
 
 function getImage(content) {
-    for (match of content.matchAll(/!\[\]\((\S+)\)/g))
+    const match = content.match(/!\[\]\((\S+)\)/)
+    if (match)
         return match[1];
 }
 
