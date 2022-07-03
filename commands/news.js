@@ -11,8 +11,6 @@ function news(author, interaction) {
         .then(feed => formatNews(feed, interaction))
         .catch(error => {
             console.log(`Error in news(${author.username}): \
-                ${error}`);
-            console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
