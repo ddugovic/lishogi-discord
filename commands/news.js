@@ -1,9 +1,8 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const paginationEmbed = require('discordjs-button-pagination');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
-const User = require('../models/User');
 const Parser = require('rss-parser');
 
 function news(author, interaction) {
@@ -24,26 +23,19 @@ function formatNews(news, interaction) {
             const summary = formatEntry(entry);
             const red = Math.min(Math.max(summary.length - 150, 0), 255);
             const image = getImage(html2md(entry.content));
-            embeds.push(new Discord.MessageEmbed()
+            var embed = new Discord.MessageEmbed()
                 .setColor(formatColor(red, 0, 255-red))
                 .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
                 .setTitle(entry.title)
                 .setURL(entry.link)
-                .setThumbnail(image ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                .setDescription(summary));
+                .setDescription(summary);
+            if (image)
+                embed = embed.setThumbnail(image)
+            embeds.push(embed);
         }
     }
-    if (interaction) {
-        const button1 = new Discord.MessageButton()
-            .setCustomId('previousbtn')
-            .setLabel('Previous')
-            .setStyle('PRIMARY');
-        const button2 = new Discord.MessageButton()
-            .setCustomId('nextbtn')
-            .setLabel('Next')
-            .setStyle('PRIMARY');
-        return paginationEmbed(interaction, embeds, [button1, button2]);
-    }
+    if (interaction)
+        return formatPages(embeds, interaction);
     return { 'embeds': embeds.slice(0, 1) };
 }
 
