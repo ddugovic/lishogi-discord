@@ -18,7 +18,7 @@ function video(author, text, interaction) {
 
 function setVideos(document, interaction) {
     const embeds = [];
-    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
+    const pattern = /<a class="[ \w]+" href="(\/video\/[-\w]+?\??(?:q=\w+)?)">.+?<span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3], match[4]));
     if (interaction)
