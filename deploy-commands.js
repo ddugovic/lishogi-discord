@@ -90,6 +90,7 @@ const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lichess username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Select a leaderboard').addChoices(...leaderboards)),
+    new SlashCommandBuilder().setName('news').setDescription("Display recent news"),
     new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
