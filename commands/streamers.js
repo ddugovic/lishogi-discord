@@ -2,7 +2,7 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatTitledUserLink, formatUserLink, formatUserLinks } = require('../lib/format-user-links');
+const { formatUserLinks } = require('../lib/format-user-links');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
