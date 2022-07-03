@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const paginationEmbed = require('discordjs-button-pagination');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const User = require('../models/User');
 const Parser = require('rss-parser');
 
