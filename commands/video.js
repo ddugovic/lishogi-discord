@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 
 async function video(author, text) {
-    text = text.replace(/\s+/, '');
+    text = text ? text.replace(/\s+/, '') : '';
     return axios.get(`https://lichess.org/video?q=${text}`)
         .then(response => setVideos(response.data))
         .catch(error => {
