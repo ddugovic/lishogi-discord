@@ -76,7 +76,7 @@ function getCountryAndRating(profile) {
 function formatProfile(username, profile, fideRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://lichess.org/@/${username})`);
+    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     result.push(links.join(' | '));
