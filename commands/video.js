@@ -1,6 +1,7 @@
 const axios = require('axios');
 const decode = require('decode-html');
 const Discord = require('discord.js');
+const formatColor = require('../lib/format-color');
 
 async function video(author, text) {
     text = text.replace(/\s+/, '');
@@ -16,16 +17,19 @@ async function video(author, text) {
 
 function setVideos(document) {
     const embeds = [];
-    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
+    const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
-        embeds.push(formatVideo(match[1], match[2], match[3]));
+        embeds.push(formatVideo(match[1], match[2], match[3], match[4]));
     return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
 }
 
-function formatVideo(link, name, author) {
+function formatVideo(link, duration, title, author) {
+    const seconds = duration.split(':').reduce((acc,time) => (60 * acc) + +time);
+    const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
     return new Discord.MessageEmbed()
+        .setColor(formatColor(score, 0, 255-score))
         .setAuthor({name: author, iconURL: null})
-        .setTitle(decode(name))
+        .setTitle(decode(title))
         .setURL(`https://youtube.com${link}`)
         .setThumbnail(getImage(link));
 }
