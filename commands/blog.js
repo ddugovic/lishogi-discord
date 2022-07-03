@@ -45,7 +45,7 @@ function formatBlog(blog, interaction) {
             .setStyle('PRIMARY');
         return paginationEmbed(interaction, embeds, [button1, button2]);
     }
-    return { 'embeds': embeds.slice(0, 3) };
+    return { 'embeds': embeds.slice(0, 1) };
 }
 
 function formatEntry(entry) {
