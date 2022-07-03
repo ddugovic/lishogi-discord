@@ -40,7 +40,7 @@ function setTeams(teams, text, interaction) {
 }
 
 function score(team, text) {
-    const description = strip(removeAccents(removeMarkdown(team.description)).toLowerCase());
+    const description = strip(removeAccents(removeMarkdown(team.description).replaceAll(/(https?:\/\/[^\s]+)/g, '')).toLowerCase());
     const docs = description.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
     const topics = getTopics(docs, text);
     return team.nbMembers * docs.length * topics.map(topic => scoreTopic(topic, text)).reduce((partialSum, a) => partialSum + a, 0);
