@@ -21,12 +21,9 @@ function setVideos(document, interaction) {
     const pattern = /<a class="[ \w]+" href="(\/video\/\w+?\??(?:q=\w+)?)">.+?<span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
         embeds.push(formatVideo(match[1], match[2], match[3], match[4]));
-    if (embeds.length) {
-        if (interaction)
-            return formatPages(embeds, interaction);
-        return { embeds: shuffle(embeds).slice(0, 3) };
-    }
-    return 'No video found!';
+    if (interaction)
+        return embeds.length ? formatPages(embeds, interaction) : interaction.editReply('No video found!');
+    return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
 }
 
 function formatVideo(link, duration, title, author) {
