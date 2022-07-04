@@ -45,12 +45,21 @@ function setBots(bots, mode, interaction) {
 }
 
 function formatBot(bot, mode) {
+    const username = bot.username;
+    const [country, firstName, lastName] = getCountryAndName(bot.profile) ?? [];
+    var nickname = firstName ?? lastName ?? username;
+    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
+    if (country && countryFlags.countryCode(country))
+        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+
+    const badges = bot.patron ? '🦄' : '';
     return new Discord.MessageEmbed()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
-        .setTitle(`:robot: Lichess Bots`)
-        .setURL('https://lichess.org/player/bots')
-        .addFields(formatAbout(bot));
+        .setAuthor({name: `${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})
+        .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setURL(`https://lichess.org/?user=${bot.username}#friend`)
+        .addField('About', formatProfile(bot.username, bot.profile, bot.playTime));
 }
 
 function getRating(perfs, mode) {
@@ -63,32 +72,17 @@ function getColor(rating) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatAbout(bot) {
-    const name = formatName(bot);
-    const badges = bot.patron ? '🦄' : '';
-    return { name : `${name} ${badges}`, value: formatProfile(bot.username, bot.profile, bot.playTime), inline: true };
-}
-
-function formatName(bot) {
-    var name = bot.username;
-    const country = getCountry(bot.profile);
-    if (country && countryFlags.countryCode(country))
-        name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    return name;
-}
-
-function getCountry(profile) {
+function getCountryAndName(profile) {
     if (profile)
-        return profile.country;
+        return [profile.country, profile.firstName, profile.lastName];
 }
 
 function formatProfile(username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://lichess.org/@/${username})`);
-
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (links.length)
+        result.push(links.join(' | '));
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
         if (bio)
