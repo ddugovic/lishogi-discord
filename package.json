@@ -35,7 +35,7 @@
     "nodemon": "^2.0.18"
   },
   "scripts": {
-    "prestart": "if git pull origin woogles | grep 'package'; then npm ci --production; fi",
+    "prestart": "if git pull origin woogles | grep 'package'; then npm ci --omit-dev; fi",
     "start": "node index.js"
   }
 }
