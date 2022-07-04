@@ -4,7 +4,7 @@ const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
-const { formatTeamLinks, formatUserLinks } = require('../lib/format-site-links');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
@@ -85,7 +85,7 @@ function formatTeam(team) {
 }
 
 function cleanDescription(description) {
-    return description.split(/\r?\n/).map(formatTeamLinks).map(formatUserLinks).map(formatLink).join('\n');
+    return description.split(/\r?\n/).map(formatSiteLinks).map(formatLink).join('\n');
 }
 
 function formatDescription(text) {
