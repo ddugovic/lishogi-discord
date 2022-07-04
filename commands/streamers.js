@@ -2,7 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
+const { formatSiteLinks } = require('../lib/format-site-links');
 
 async function streamers(author) {
     return axios.get('https://lichess.org/streamer/live')
@@ -70,7 +70,7 @@ function formatDescription(text) {
             text = text.slice(0, i);
             break;
         }
-        text[i] = formatUserLinks(text[i]);
+        text[i] = formatSiteLinks(text[i]);
     }
     return text.join(' ');
 }

@@ -5,7 +5,7 @@ const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -260,7 +260,7 @@ function formatBio(bio) {
             bio = bio.slice(0, i);
             break;
         }
-        bio[i] = formatUserLinks(bio[i]);
+        bio[i] = formatSiteLinks(bio[i]);
     }
     return bio;
 }

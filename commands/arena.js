@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatTitledUserLink, formatUserLinks } = require('../lib/format-site-links');
+const { formatTitledUserLink } = require('../lib/format-site-links');
 const User = require('../models/User');
 
 async function arena(author, mode) {

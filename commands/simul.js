@@ -2,7 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const User = require('../models/User');
 
 async function simul(author, mode) {
@@ -94,7 +94,7 @@ function formatAbout(about) {
             i -= 1;
             continue;
         }
-        about[i] = formatUserLinks(about[i]);
+        about[i] = formatSiteLinks(about[i]);
     }
     return about;
 }
