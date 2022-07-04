@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 
@@ -30,13 +30,17 @@ function formatNews(news, interaction) {
 function formatEntry(entry) {
     const [description, imageURL] = formatBody(entry.body);
     const red = Math.min(Math.max(description.length - 150, 0), 255);
-    return new Discord.MessageEmbed()
+    var embed = new MessageEmbed()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: 'Woogles', iconURL: 'https://woogles.io/logo192.png', url: 'https://woogles.io/'})
         .setTitle(entry.title)
         .setURL(formatLink(entry.link))
-        .setThumbnail(imageURL ?? 'https://woogles.io/logo192.png')
         .setDescription(description);
+    if (imageURL)
+        embed = embed.setThumbnail(imageURL)
+            .setAuthor({name: 'Woogles', iconURL: 'https://woogles.io/logo192.png', url: 'https://woogles.io/'});
+    else
+        embed = embed.setThumbnail('https://woogles.io/logo192.png');
+    return embed;
 }
 
 function formatBody(body) {
