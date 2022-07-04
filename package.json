@@ -36,7 +36,7 @@
     "nodemon": "^2.0.18"
   },
   "scripts": {
-    "prestart": "if git pull origin chess | grep 'package'; then npm ci --production; fi",
+    "prestart": "if git pull origin chess | grep 'package'; then npm ci --omit-dev; fi",
     "start": "node index.js"
   }
 }
