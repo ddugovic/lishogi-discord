@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatLink } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
 function news(author, interaction) {
@@ -33,7 +34,7 @@ function formatEntry(entry) {
     var embed = new MessageEmbed()
         .setColor(formatColor(red, 0, 255-red))
         .setTitle(entry.title)
-        .setURL(formatLink(entry.link))
+        .setURL(formatURI(entry.link) ?? entry.link)
         .setDescription(description);
     if (imageURL)
         embed = embed.setThumbnail(imageURL)
@@ -44,6 +45,7 @@ function formatEntry(entry) {
 }
 
 function formatBody(body) {
+    body = body.split(/ +/).map(formatLink).join(' ');
     const pattern = /!\[[- \w]+\]\((.*)\)\s+([^]*)/;
     const match = body.match(pattern);
     if (match)
@@ -51,8 +53,9 @@ function formatBody(body) {
     return [body, null];
 }
 
-function formatLink(link) {
-    return link.startsWith('/') ? `https://woogles.io${link}` : link;
+function formatURI(link) {
+    if (link.startsWith('/'))
+        return `https://woogles.io${link}`;
 }
 
 function process(bot, msg) {

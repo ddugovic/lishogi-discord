@@ -27,7 +27,8 @@
     "mocha": "^10.0.0",
     "mongoose": "^6.4.2",
     "plural": "^1.1.0",
-    "unix-timestamp": "^1.0.2"
+    "unix-timestamp": "^1.0.2",
+    "url-regex": "^5.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
