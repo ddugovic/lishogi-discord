@@ -56,7 +56,7 @@ function formatBot(bot, mode) {
     return new Discord.MessageEmbed()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
-        .setAuthor({name: `${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})
+        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lichess.org/?user=${bot.username}#friend`)
         .addField('About', formatProfile(bot.username, bot.profile, bot.playTime));
@@ -92,7 +92,7 @@ function formatProfile(username, profile, playTime) {
 }
 
 function formatBio(bio) {
-    const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
