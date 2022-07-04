@@ -25,7 +25,7 @@ const commands = {
         usage: "",
         description: "Displays the latest announcement",
         process: news.process,
-        reply: news.reply
+        interact: news.interact
     },
     "recent": {
         usage: "[user]",

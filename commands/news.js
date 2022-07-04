@@ -1,8 +1,9 @@
 const axios = require('axios');
 const Discord = require('discord.js');
-const User = require('../models/User');
+const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 
-async function news(author) {
+function news(author, interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
     const context = {
         'authority': 'woogles.io',
@@ -10,29 +11,32 @@ async function news(author) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, {}, {headers: context})
-        .then(response => setAnnouncements(response.data))
+        .then(response => formatNews(response.data.announcements, interaction))
         .catch((error) => {
-            console.log(`Error in announcement(${author.username}): \
+            console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
 }
 
-function setAnnouncements(data) {
-    return formatAnnouncement(data.announcements[0]);
+function formatNews(news, interaction) {
+    const embeds = news.map(formatEntry);
+    if (interaction)
+        return formatPages(embeds, interaction);
+    return { 'embeds': embeds.slice(0, 1) };
 }
 
-function formatAnnouncement(announcement) {
-    const [description, imageURL] = formatBody(announcement.body);
-    const embed = new Discord.MessageEmbed()
+function formatEntry(entry) {
+    const [description, imageURL] = formatBody(entry.body);
+    const red = Math.min(Math.max(description.length - 150, 0), 255);
+    return new Discord.MessageEmbed()
+        .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: 'Woogles', iconURL: 'https://woogles.io/logo192.png', url: 'https://woogles.io/'})
-        .setColor(0x00FFFF)
-        .setTitle(announcement.title)
-        .setURL(formatLink(announcement.link))
+        .setTitle(entry.title)
+        .setURL(formatLink(entry.link))
         .setThumbnail(imageURL ?? 'https://woogles.io/logo192.png')
         .setDescription(description);
-    return { embeds: [ embed ] };
 }
 
 function formatBody(body) {
@@ -51,8 +55,8 @@ function process(bot, msg) {
     news(msg.author).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return news(interaction.user);
+function interact(interaction) {
+    return news(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
