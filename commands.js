@@ -37,7 +37,7 @@ const commands = {
         usage: "",
         description: "Display online bots with source code",
         process: bots.process,
-        reply: bots.reply
+        interact: bots.interact
     },
     "broadcast": {
         usage: "",

@@ -4,14 +4,15 @@ const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
+const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
 const User = require('../models/User');
 
-async function bots(author) {
+async function bots(author, interaction) {
     const mode = await getMode(author) || 'blitz';
     return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => setBots(filter(parse(response.data)), mode))
+        .then(response => setBots(filter(parse(response.data)), mode, interaction))
         .catch(error => {
             console.log(`Error in bots(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -27,7 +28,7 @@ async function getMode(author) {
 }
 
 function filter(bots) {
-    return bots.filter(bot => !bot.tosViolation && source(bot)).sort((a, b) => a.seenAt - b.seenAt).slice(0, 15);
+    return bots.filter(bot => !bot.tosViolation && source(bot)).sort((a, b) => a.seenAt - b.seenAt);
 }
 
 function source(bot) {
@@ -36,19 +37,20 @@ function source(bot) {
         return bot.profile.links.match(git);
 }
 
-function setBots(bots, mode) {
-    if (bots.length) {
-        const rating = Math.max(...bots.map(bot => getRating(bot.perfs, mode) ?? 1500));
-        const embed = new Discord.MessageEmbed()
-            .setColor(getColor(rating))
-            .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
-            .setTitle(`:robot: Lichess Bots`)
-            .setURL('https://lichess.org/player/bots')
-            .addFields(bots.map(formatBot))
-        return { embeds: [ embed ] };
-    } else {
-        return 'No bots are currently online.';
-    }
+function setBots(bots, mode, interaction) {
+    const embeds = bots.map(bot => formatBot(bot, mode));
+    if (interaction)
+        return embeds.length ? formatPages(embeds, interaction) : interaction.editReply('No bots are currently online.');
+    return bots.length ? { embeds: embeds.slice(0, 3) } : 'No bots are currently online.';
+}
+
+function formatBot(bot, mode) {
+    return new Discord.MessageEmbed()
+        .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
+        .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
+        .setTitle(`:robot: Lichess Bots`)
+        .setURL('https://lichess.org/player/bots')
+        .addFields(formatAbout(bot));
 }
 
 function getRating(perfs, mode) {
@@ -61,7 +63,7 @@ function getColor(rating) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatBot(bot) {
+function formatAbout(bot) {
     const name = formatName(bot);
     const badges = bot.patron ? '🦄' : '';
     return { name : `${name} ${badges}`, value: formatProfile(bot.username, bot.profile, bot.playTime), inline: true };
@@ -111,8 +113,8 @@ function process(bot, msg, mode) {
     bots(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return bots(interaction.user);
+function interact(interaction) {
+    return bots(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = { process, interact };
