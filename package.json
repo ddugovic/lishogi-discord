@@ -4,6 +4,7 @@
   "description": "A Discord bot to interact with the Chess.com API",
   "main": "index.js",
   "scripts": {
+    "prestart": "if git pull origin chess | grep 'package'; then npm ci --omit-dev; fi",
     "start": "node index.js",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
@@ -34,9 +35,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
-  },
-  "scripts": {
-    "prestart": "if git pull origin chess | grep 'package'; then npm ci --omit-dev; fi",
-    "start": "node index.js"
   }
 }
