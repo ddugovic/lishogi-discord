@@ -33,5 +33,9 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
+  },
+  "scripts": {
+    "prestart": "if git pull origin woogles | grep 'package'; then npm ci --production; fi",
+    "start": "node index.js"
   }
 }
