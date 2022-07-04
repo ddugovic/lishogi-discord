@@ -28,9 +28,8 @@ function team(author, text, interaction) {
 
 function setTeams(teams, text, interaction) {
     text = removeAccents(text).toLowerCase();
-    const description = cleanDescription(formatDescription(text));
     if (teams.nbResults) {
-        teams.currentPageResults.forEach(team => team.score = score(team, description));
+        teams.currentPageResults.forEach(team => team.score = score(team, text));
         teams = teams.currentPageResults.sort((a,b) => b.score - a.score);
         if (interaction)
             return formatPages(teams.map(formatTeam), interaction);
@@ -40,14 +39,15 @@ function setTeams(teams, text, interaction) {
     }
 }
 
-function score(team, description) {
-    console.log(team.name, description);
-    const links = removeMarkdown(team.description)).matchAll(/(https?:\/\/[^\s]+)/g;
+function score(team, text) {
+    const description = cleanDescription(formatDescription(removeAccents(team.description).toLowerCase()));
+    const links = removeMarkdown(description).matchAll(/(https?:\/\/[^\s]+)/g);
     const noise = [...links].reduce((partialSum, a) => partialSum + a[0].length, 0);
-    const description = strip(removeMarkdown(team.description).replace(/(https?:\/\/[^\s]+)/g, ''));
-    const docs = description.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
-    const topics = getTopics(docs, description);
-    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, description)).reduce((partialSum, a) => partialSum + a, 0);
+
+    const prose = strip(removeMarkdown(description).replace(/(https?:\/\/[^\s]+)/g, ''));
+    const docs = prose.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
+    const topics = getTopics(docs, prose);
+    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, prose)).reduce((partialSum, a) => partialSum + a, 0);
 }
 
 function strip(description) {
