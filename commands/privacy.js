@@ -1,11 +1,11 @@
-const message = 'This bot only stores your Chess.com username and favorite game mode. Contact Toadofsky#0954 on Tadpole Pond if you need your data removed and cannot figure out how to use the deleteuser command.';
+const message = 'This bot only stores your Chess.com username and favorite game mode. Contact <@161060630726574080> if you need your data removed and cannot figure out how to use the deleteuser command.';
 
 function process(bot, msg, username) {
-    msg.channel.send(message);
+    msg.channel.send(message, { allowedMentions: { users : [] } });
 }
 
 function reply(interaction) {
-    return message;
+    return { content: message, allowedMentions: { users: [] } };
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };
