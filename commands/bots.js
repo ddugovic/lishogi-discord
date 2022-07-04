@@ -3,7 +3,7 @@ const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLink } = require('../lib/format-site-links');
 const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
@@ -53,13 +53,18 @@ function formatBot(bot, mode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '🦄' : '';
-    return new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
         .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lichess.org/?user=${bot.username}#friend`)
-        .addField('About', formatProfile(bot.username, bot.profile, bot.playTime));
+        .setURL(`https://lichess.org/?user=${bot.username}#friend`);
+    return setAbout(embed, bot.username, bot.profile, bot.playTime);
+}
+
+function getCountryAndName(profile) {
+    if (profile)
+        return [profile.country, profile.firstName, profile.lastName];
 }
 
 function getRating(perfs, mode) {
@@ -72,35 +77,27 @@ function getColor(rating) {
     return formatColor(red, 0, 255-red);
 }
 
-function getCountryAndName(profile) {
-    if (profile)
-        return [profile.country, profile.firstName, profile.lastName];
-}
-
-function formatProfile(username, profile, playTime) {
+function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     if (links.length)
         result.push(links.join(' | '));
     if (profile && profile.bio) {
-        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
+        const image = getImage(profile.bio);
+        if (image)
+            embed = embed.setThumbnail(image);
+        const bio = profile.bio.split(/\s+/).map(formatSiteLink).join(' ');
         if (bio)
             result.push(bio);
     }
-    return result.join('\n');
+    return embed.addField('About', result.join('\n'), true);
 }
 
-function formatBio(bio) {
-    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio = bio.slice(0, i);
-            break;
-        }
-        bio[i] = formatSiteLinks(bio[i]);
-    }
-    return bio;
+function getImage(text) {
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    if (match)
+        return match[0];
 }
 
 function process(bot, msg, mode) {
