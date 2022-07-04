@@ -45,7 +45,7 @@ function formatProfile(user, favoriteMode) {
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies, user.online, user.playing, user.streaming);
+    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
         .setColor(color)
