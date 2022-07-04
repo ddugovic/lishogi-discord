@@ -44,7 +44,6 @@ function formatEntry(entry) {
 }
 
 function formatBody(body) {
-    body = body.replace(/woogles@woogles\.io/g, '[woogles@woogles.io](mailto:woogles@woogles.io)');
     const pattern = /!\[[- \w]+\]\((.*)\)\s+([^]*)/;
     const match = body.match(pattern);
     if (match)
