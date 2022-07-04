@@ -11,7 +11,7 @@ mongoose.connect(config.mongourl, {
 
 // Initialize client
 const client = new Discord.Client({
-    disableEveryone: true,
+    allowedMentions: { parse: [] },
     disabledEvents: ['TYPING_START'],
     intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
     presence: { activities: [{ name: 'playstrategy.org' , type: 'WATCHING' }], status: 'online' }
