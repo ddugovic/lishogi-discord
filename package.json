@@ -4,6 +4,7 @@
   "description": "A Discord bot to interact with the Lishogi API",
   "main": "index.js",
   "scripts": {
+    "prestart": "if git pull origin master | grep 'package'; then npm install; fi",
     "start": "node index.js",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
@@ -43,9 +44,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.18"
-  },
-  "scripts": {
-    "prestart": "if git pull origin master | grep 'package'; then npm install; fi",
-    "start": "node index.js"
   }
 }
