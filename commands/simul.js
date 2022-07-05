@@ -2,15 +2,15 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
-const User = require('../models/User');
 
-async function simul(author, mode) {
-    if (!mode)
-        mode = await getMode(author);
+function simul(author, mode, interaction) {
     const url = 'https://lichess.org/api/simul';
+    const message = mode ? `No ${mode} event found!` : `No event found!`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setSimul(response.data, mode))
+        .then(response => formatSimuls(response.data, mode))
+        .then(embeds => formatPages(embeds, interaction, message))
         .catch(error => {
             console.log(`Error in simul(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -19,25 +19,13 @@ async function simul(author, mode) {
         });
 }
 
-async function getMode(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.favoriteMode;
-}
-
-function setSimul(data, mode) {
-    const simuls = [];
+function formatSimuls(data, mode) {
+    var simuls = [];
     for (const status in data)
         simuls.push(...data[status]);
-
-    if (mode) {
-        const matches = simuls.filter(simul => simul.variants.map(variant => variant.key).includes(mode));
-        if (matches.length)
-            return formatSimul(matches.sort((a,b) => rankSimul(b) - rankSimul(a))[0]);
-    }
-    if (simuls.length)
-        return formatSimul(simuls.sort((a,b) => rankSimul(b) - rankSimul(a))[0]);
-    return 'No event found!';
+    if (mode)
+        simuls = simuls.filter(simul => simul.variants.map(variant => variant.key).includes(mode));
+    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul);
 }
 
 function rankSimul(simul) {
@@ -59,13 +47,10 @@ function formatSimul(simul) {
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${simul.host.gameId}.gif`);
     if (simul.text) {
         const description = formatDescription(simul.text);
-        if (description) {
-            const about = new Discord.MessageEmbed()
-                .addField('Description', description);
-            return { embeds: [ embed, about ] };
-        }
+        if (description)
+            embed = embed.addField('Description', description);
     }
-    return { embeds: [ embed ] };
+    return embed;
 }
 
 function getColor(rating) {
@@ -103,8 +88,8 @@ function process(bot, msg, favoriteMode) {
     simul(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
+function interact(interaction) {
     return simul(interaction.user, interaction.options.getString('variant'));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

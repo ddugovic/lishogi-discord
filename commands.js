@@ -122,7 +122,7 @@ const commands = {
         usage: "[variant]",
         description: "Display a recently finished, ongoing, or upcoming simultanous exhibition",
         process: simul.process,
-        reply: simul.reply
+        interact: simul.interact
     },
     "streamers": {
         usage: "",
