@@ -6,8 +6,8 @@ const html2md = require('html-to-md');
 
 function coach(author, interaction) {
     return axios.get('https://lichess.org/coach/en-US/all/login')
-        .then(response => setCoaches(response.data))
-        .then(embeds => { return embeds.length ? formatPages(embeds, interaction) : 'No coach found!' })
+        .then(response => formatCoaches(response.data))
+        .then(embeds => formatPages(embeds, interaction, 'No coach found!'))
         .catch(error => {
             console.log(`Error in coach(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,7 +16,7 @@ function coach(author, interaction) {
         });
 }
 
-function setCoaches(document) {
+function formatCoaches(document) {
     const embeds = [];
     const pattern = /!\[.+\]\((.+)\)(?:\r?\n)+## (.+)(?:\r?\n)+(.*)(?:\r?\n)+\|\|\r?\n\|(?:-+\|)+((?:\r?\n\|(?:.+\|)+)+)\r?\n\|Active\|/g
     for (match of html2md(document).matchAll(pattern))

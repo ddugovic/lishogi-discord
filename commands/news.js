@@ -7,7 +7,8 @@ const Parser = require('rss-parser');
 
 function news(author, interaction) {
     return new Parser().parseURL('http://www.thechessmind.net/blog/rss.xml')
-        .then(feed => formatNews(feed, interaction))
+        .then(feed => formatEntries(feed))
+        .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,14 +17,14 @@ function news(author, interaction) {
         });
 }
 
-function formatNews(news, interaction) {
+function formatEntries(feed) {
     const embeds = [];
-    for (const entry of news.items.values()) {
+    for (const entry of feed.items.values()) {
         const summary = formatEntry(entry);
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new Discord.MessageEmbed()
             .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: news.link})
+            .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(summary);
@@ -31,9 +32,7 @@ function formatNews(news, interaction) {
             embed = embed.addField('Categories', entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', '));
         embeds.push(embed);
     }
-    if (interaction)
-        return formatPages(embeds, interaction);
-    return { 'embeds': embeds.slice(0, 1) };
+    return embeds;
 }
 
 function formatEntry(entry) {

@@ -7,20 +7,14 @@ const formatPages = require('../lib/format-pages');
 function video(author, text, interaction) {
     text = text ? text.replace(/\s+/, '') : '';
     return axios.get(`https://lichess.org/video?q=${text}`)
-        .then(response => setVideos(response.data, interaction))
+        .then(response => getVideos(response.data).map(formatVideo))
+        .then(embeds => formatPages(shuffle(embeds), interaction, 'No video found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function setVideos(document, interaction) {
-    const embeds = getVideos(document).map(video => formatVideo(...video));
-    if (interaction)
-        return embeds.length ? formatPages(embeds, interaction) : interaction.editReply('No video found!');
-    return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
 }
 
 function getVideos(document) {
@@ -31,7 +25,8 @@ function getVideos(document) {
     return videos;
 }
 
-function formatVideo(link, duration, name, author, target, tags) {
+function formatVideo(video) {
+    const [link, duration, name, author, target, tags] = video;
     const seconds = duration.split(':').reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
     return new Discord.MessageEmbed()

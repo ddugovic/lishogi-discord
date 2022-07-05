@@ -7,7 +7,8 @@ const Parser = require('rss-parser');
 
 function blog(author, interaction) {
     return new Parser().parseURL('https://lichess.org/blog.atom')
-        .then(feed => formatBlog(feed, interaction))
+        .then(feed => formatBlog(feed))
+        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,7 +17,7 @@ function blog(author, interaction) {
         });
 }
 
-function formatBlog(blog, interaction) {
+function formatBlog(blog) {
     const embeds = [];
     for (const entry of blog.items.values()) {
         const summary = formatEntry(entry);
@@ -33,9 +34,7 @@ function formatBlog(blog, interaction) {
             embed = embed.setImage(image)
         embeds.push(embed);
     }
-    if (interaction)
-        return formatPages(embeds, interaction);
-    return { 'embeds': embeds.slice(0, 1) };
+    return embeds;
 }
 
 function formatEntry(entry) {

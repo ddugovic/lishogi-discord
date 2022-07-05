@@ -9,10 +9,11 @@ const formatSeconds = require('../lib/format-seconds');
 const parse = require('ndjson-parse');
 const User = require('../models/User');
 
-async function bots(author, interaction) {
-    const mode = await getMode(author) || 'blitz';
+function bots(author, interaction) {
+    const mode = getMode(author) || 'blitz';
     return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => setBots(filter(parse(response.data)), mode, interaction))
+        .then(response => filter(parse(response.data)).map(bot => formatBot(bot, mode)))
+        .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -35,13 +36,6 @@ function source(bot) {
     const git = /\bgit(?:hub|lab)?\b/;
     if (bot.profile && bot.profile.links)
         return bot.profile.links.match(git);
-}
-
-function setBots(bots, mode, interaction) {
-    const embeds = bots.map(bot => formatBot(bot, mode));
-    if (interaction)
-        return embeds.length ? formatPages(embeds, interaction) : interaction.editReply('No bots are currently online.');
-    return bots.length ? { embeds: embeds.slice(0, 3) } : 'No bots are currently online.';
 }
 
 function formatBot(bot, mode) {

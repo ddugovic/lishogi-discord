@@ -18,7 +18,8 @@ function team(author, text, interaction) {
     text = text.replace(/\s+/, '');
     const url = `https://lichess.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setTeams(response.data, text, interaction))
+        .then(response => setTeams(response.data, text))
+        .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -27,17 +28,9 @@ function team(author, text, interaction) {
         });
 }
 
-function setTeams(teams, text, interaction) {
-    text = removeAccents(text).toLowerCase();
-    if (teams.nbResults) {
-        teams.currentPageResults.forEach(team => team.score = score(team, text));
-        teams = teams.currentPageResults.sort((a,b) => b.score - a.score);
-        if (interaction)
-            return formatPages(teams.map(formatTeam), interaction);
-        return { embeds: [ formatTeam(teams[0]) ] };
-    } else {
-        return 'No team found.';
-    }
+function setTeams(teams, text) {
+    teams.currentPageResults.forEach(team => team.score = score(team, text));
+    return teams.currentPageResults.sort((a,b) => b.score - a.score).map(formatTeam);
 }
 
 function score(team, text) {
