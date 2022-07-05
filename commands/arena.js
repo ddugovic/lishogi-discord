@@ -62,16 +62,13 @@ function formatArena(arena) {
     if (arena.featured)
 	embed = embed.setImage(`https://lishogi.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
     if (arena.isFinished) {
-        const stats = new Discord.MessageEmbed()
+        embed = embed
             .addField('Berserks', `**${arena.stats.berserks}**`, true)
             .addField('Games', `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, true)
-            .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true)
-	    ;
-        return { embeds: [ embed, stats ] };
+            .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
     } else if (arena.minRatedGames) {
-        const restrictions = new Discord.MessageEmbed()
+        embed = embed
             .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
-        return { embeds: [ embed, restrictions ] };
     }
     return { embeds: [ embed ] };
 }
