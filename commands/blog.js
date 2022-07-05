@@ -3,7 +3,6 @@ const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
-const User = require('../models/User');
 const Parser = require('rss-parser');
 
 function blog(author, interaction) {
