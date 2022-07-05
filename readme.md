@@ -40,6 +40,8 @@
     Find a coach
 !eval [fen]
     Get the cached evaluation of a position, if available
+!log
+    Display recent changes
 !news
     Display recent news
 !puzzle

@@ -7,6 +7,7 @@ const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const leaderboard = require('./commands/leaderboard');
+const log = require('./commands/log');
 const news = require('./commands/news');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -68,6 +69,12 @@ const commands = {
         description: "Display top-rated players",
         process: leaderboard.process,
         reply: leaderboard.reply
+    },
+    "log": {
+        usage: "",
+        description: "Display recent changes",
+        process: log.process,
+        interact: log.interact
     },
     "news": {
         usage: "",
