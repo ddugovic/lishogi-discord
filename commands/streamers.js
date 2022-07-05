@@ -2,7 +2,8 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatLinks, formatUserLink, formatUserLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
+const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 
 async function streamers(author) {
@@ -73,7 +74,7 @@ function getLastName(profile) {
 
 function formatProfile(username, profile, fmjdRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];

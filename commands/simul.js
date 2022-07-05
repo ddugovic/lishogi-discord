@@ -1,7 +1,8 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatLinks, formatUserLink, formatUserLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
+const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
 const User = require('../models/User');
 
 async function simul(author) {
@@ -62,7 +63,7 @@ function formatHost(player) {
 }
 
 function formatDescription(text) {
-    const links = formatLinks(text);
+    const links = formatSocialLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
     const about = formatAbout(text.split(/(?:\r?\n)+/));
     if (about.length && about.join('').length)

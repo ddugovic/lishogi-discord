@@ -2,7 +2,8 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const headlineParser = require('eklem-headline-parser')
 const formatColor = require('../lib/format-color');
-const { formatLinks, formatUserLink, formatUserLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
+const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
@@ -81,7 +82,7 @@ function formatDescription(text) {
     const match = text.match(image);
     if (match)
         return formatDescription(match[1].trim());
-    const links = formatLinks(text);
+    const links = formatSocialLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
     result.push(formatAbout(text.split(/\r?\n/)));
     return result.join('\n');
