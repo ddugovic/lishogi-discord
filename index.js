@@ -58,8 +58,10 @@ client.on('messageCreate', (msg) => {
             msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
         }
     } else if (cmdTxt == 'help') {
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         help.process(commands, msg, suffix);
     } else if (cmdTxt == 'stop') {
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         stop.process(client, msg, suffix);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
