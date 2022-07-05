@@ -6,7 +6,7 @@ function help(commands) {
         helpText += `${formatCommand(cmd, command)}\n`;
     }
     helpText += '```';
-    return `Available Commands: \n${helpText}`;
+    return helpText;
 }
 
 function formatCommand(cmd, command) {
@@ -19,11 +19,11 @@ function formatCommand(cmd, command) {
 }
 
 function process(commands, msg, username) {
-    msg.channel.send(help(commands));
+    msg.channel.send(`https://discord.com/blog/slash-commands-are-here ! Re-invite this bot to enable them!\n${help(commands)}`);
 }
 
 function reply(commands, interaction) {
-    return help(commands);
+    return `Available Commands:\n${help(commands)}`;
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };
