@@ -163,23 +163,35 @@ function setHistory(embed, username) {
 async function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
-    const days = 90;
-    const time = today - (24*60*60*1000 * days);
+    for (const days of Array(91).keys()) {
+        const time = today - (24*60*60*1000 * (90 - days));
+        const [data, history] = filterHistory(perfs, storms, time);
+        if (data.length) {
+            const chart = chartHistory(data, history, now);
+            const url = chart.getUrl();
+            if (url.length <= 2000)
+                return url;
+            if (days == 90)
+                return await chart.getShortUrl();
+        }
+    }
+}
+
+function filterHistory(perfs, storms, time) {
     const [data, history] = getSeries(perfs, time);
     const series = getStormSeries(storms, time);
     data.push(...series);
     history.push({ label: 'Storm', data: series });
+    return [data, history];
+}
 
-    if (data.length) {
-        const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
-        const chart = new QuickChart().setConfig({
-            type: 'line',
-            data: { labels: domain, datasets: history.filter(series => series.data.length) },
-            options: { scales: { xAxes: [{ type: 'time' }] } }
-        });
-        const url = chart.getUrl();
-        return url.length <= 2000 ? url : await chart.getShortUrl();
-    }
+function chartHistory(data, history, now) {
+    const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
+    return new QuickChart().setConfig({
+        type: 'line',
+        data: { labels: domain, datasets: history.filter(series => series.data.length) },
+        options: { scales: { xAxes: [{ type: 'time' }] } }
+    });
 }
 
 function getSeries(perfs, time) {
