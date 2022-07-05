@@ -12,12 +12,11 @@ const lda = require('@stdlib/nlp-lda');
 const stopwords = require('@stdlib/datasets-stopwords-en');
 
 function team(author, text, interaction) {
-    if (!text)
-        return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
     const url = `https://lishogi.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => setTeams(response.data, text, interaction))
+        .then(embeds => formatPages(embeds, interaction, 'No teams found.'))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -28,15 +27,8 @@ function team(author, text, interaction) {
 
 function setTeams(teams, text, interaction) {
     text = removeAccents(text).toLowerCase();
-    if (teams.nbResults) {
-        teams.currentPageResults.forEach(team => team.score = score(team, text));
-        teams = teams.currentPageResults.sort((a,b) => b.score - a.score);
-        if (interaction)
-            return formatPages(teams.map(formatTeam), interaction);
-        return { embeds: [ formatTeam(teams[0]) ] };
-    } else {
-        return 'No team found.';
-    }
+    teams.currentPageResults.forEach(team => team.score = score(team, text));
+    return teams.currentPageResults.sort((a,b) => b.score - a.score).map(formatTeam);
 }
 
 function score(team, text) {
@@ -121,6 +113,8 @@ function formatLeader(user) {
 }
 
 function process(bot, msg, text) {
+    if (!text)
+        return msg.channel.send('You need to specify text to search by!');
     team(msg.author, text).then(message => msg.channel.send(message));
 }
 

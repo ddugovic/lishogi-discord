@@ -8,6 +8,7 @@ const Parser = require('rss-parser');
 function news(author, interaction) {
     return new Parser().parseURL('http://shogihub.com/updates.atom')
         .then(feed => formatNews(feed, interaction))
+        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -34,9 +35,7 @@ function formatNews(news, interaction) {
             embeds.push(embed);
         }
     }
-    if (interaction)
-        return formatPages(embeds, interaction);
-    return { 'embeds': embeds.slice(0, 1) };
+    return embeds;
 }
 
 function getImage(content) {

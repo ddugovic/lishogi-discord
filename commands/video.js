@@ -8,6 +8,7 @@ function video(author, text, interaction) {
     text = text ? text.replace(/\s+/, '') : '';
     return axios.get(`https://lishogi.org/video?q=${text}`)
         .then(response => setVideos(response.data, interaction))
+        .then(embeds => formatPages(embeds, interaction, 'No videos found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -17,10 +18,7 @@ function video(author, text, interaction) {
 }
 
 function setVideos(document, interaction) {
-    const embeds = getVideos(document).map(video => formatVideo(...video));
-    if (interaction)
-        return embeds.length ? formatPages(embeds, interaction) : interaction.editReply('No video found!');
-    return embeds.length ? { embeds: shuffle(embeds).slice(0, 3) } : 'No video found!';
+    return getVideos(document).map(video => formatVideo(...video));
 }
 
 function getVideos(document) {

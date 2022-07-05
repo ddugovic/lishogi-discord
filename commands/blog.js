@@ -8,6 +8,7 @@ const Parser = require('rss-parser');
 function blog(author, interaction) {
     return new Parser().parseURL('https://lishogi.org/blog.atom')
         .then(feed => formatBlog(feed, interaction))
+        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -33,9 +34,7 @@ function formatBlog(blog, interaction) {
             embed = embed.setImage(image)
         embeds.push(embed);
     }
-    if (interaction)
-        return formatPages(embeds, interaction);
-    return { 'embeds': embeds.slice(0, 1) };
+    return embeds;
 }
 
 function formatEntry(entry) {
