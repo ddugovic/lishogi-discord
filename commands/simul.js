@@ -25,7 +25,7 @@ function formatSimuls(data, mode) {
         simuls.push(...data[status]);
     if (mode)
         simuls = simuls.filter(simul => hasVariant(simul.variants, mode));
-    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul).slice(0, 10);
+    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul);
 }
 
 function hasVariant(variants, mode) {
@@ -93,7 +93,7 @@ function process(bot, msg, favoriteMode) {
 }
 
 function interact(interaction) {
-    return simul(interaction.user, interaction.options.getString('variant'));
+    return simul(interaction.user, interaction.options.getString('variant'), interaction);
 }
 
 module.exports = {process, interact};
