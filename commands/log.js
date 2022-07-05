@@ -17,7 +17,7 @@ function log(author, interaction) {
 
 function formatLog(document) {
     const embeds = [];
-    const pattern = /##(.+)\r?\n\r?\n((?:.+\r?\n)+)/g;
+    const pattern = /\r?\n## (.+)\r?\n\r?\n((?:.+\r?\n)+)/g;
     for (match of html2md(document).matchAll(pattern))
         embeds.push(formatEntry(match[1], match[2]));
     return embeds;
