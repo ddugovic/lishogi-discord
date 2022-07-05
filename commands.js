@@ -49,7 +49,7 @@ const commands = {
         usage: "",
         description: "Find a coach",
         process: coach.process,
-        reply: coach.reply
+        interact: coach.interact
     },
     "deleteuser": {
         usage: "",
