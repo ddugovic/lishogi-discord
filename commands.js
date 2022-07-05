@@ -2,6 +2,7 @@
 const arena = require('./commands/arena');
 const blog = require('./commands/blog');
 const bots = require('./commands/bots');
+const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
@@ -37,7 +38,13 @@ const commands = {
         usage: "",
         description: "Display online bots",
         process: bots.process,
-        reply: bots.reply
+        interact: bots.interact
+    },
+    "broadcast": {
+        usage: "",
+        description: "Display an incoming, ongoing, or finished official broadcast",
+        process: broadcast.process,
+        interact: broadcast.interact
     },
     "coach": {
         usage: "",
