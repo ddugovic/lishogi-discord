@@ -20,7 +20,6 @@ const client = new Discord.Client({
 // Set up commands
 const commands = require('./commands');
 const help = require('./commands/help');
-const stop = require('./commands/stop');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
@@ -62,7 +61,7 @@ client.on('messageCreate', (msg) => {
         help.process(commands, msg, suffix);
     } else if (cmdTxt == 'stop') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        stop.process(client, msg, suffix);
+        stop(client, msg.author.id);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
     }
@@ -72,11 +71,13 @@ client.on('messageCreate', (msg) => {
 process.on('uncaughtException', (err) => {
     const errorMsg = err.stack.replace(new RegExp(`${__dirname}/`, 'g'), './');
     console.error('Uncaught Exception: ', errorMsg);
+    client.destroy();
     process.exit(1); //Gracefully exit so systemd service may restart
 });
 
 process.on('unhandledRejection', err => {
     console.error('Uncaught Promise Error: ', err);
+    client.destroy();
     process.exit(1); //Gracefully exit so systemd service may restart
 });
 
@@ -105,9 +106,12 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// Catch Errors before they crash the app.
-process.on('uncaughtException', (err) => {
-});
+function stop(client, userid) {
+    if (userid == config.ownerId) {
+        client.destroy();
+        process.exit(0); //Gracefully exit so systemd service may restart
+    }
+}
 
 function publish(config, client) {
     console.log(`${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
