@@ -24,8 +24,12 @@ function formatSimuls(data, mode) {
     for (const status in data)
         simuls.push(...data[status]);
     if (mode)
-        simuls = simuls.filter(simul => simul.variants.map(variant => variant.key).includes(mode));
-    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul);
+        simuls = simuls.filter(simul => hasVariant(simul.variants, mode));
+    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul).slice(0, 10);
+}
+
+function hasVariant(variants, mode) {
+    return variants.map(variant => variant.key).includes(mode);
 }
 
 function rankSimul(simul) {
