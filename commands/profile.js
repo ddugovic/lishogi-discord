@@ -4,7 +4,7 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
-const formatLinks = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -117,7 +117,7 @@ function setStats(embed, username, count, playTime, mode, rating) {
 
 function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://playstrategy.org/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
