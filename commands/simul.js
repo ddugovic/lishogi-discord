@@ -83,7 +83,7 @@ function formatAbout(about) {
             i -= 1;
             continue;
         }
-        about[i] = formatSiteLinks(about[i]);
+        about[i] = formatLink(formatSiteLinks(about[i]));
     }
     return about;
 }
