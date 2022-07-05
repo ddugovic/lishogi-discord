@@ -53,7 +53,7 @@ function process(bot, msg) {
 }
 
 function interact(interaction) {
-    broadcast(interaction.user);
+    broadcast(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
