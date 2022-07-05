@@ -36,6 +36,8 @@
     Display recent blog entries
 !bots
     Display online bots
+!broadcast
+    Display an incoming, ongoing, or finished official broadcast
 !coach
     Find a coach
 !news
