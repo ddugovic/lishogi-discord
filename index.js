@@ -20,7 +20,6 @@ const client = new Discord.Client({
 // Set up commands
 const commands = require('./commands');
 const help = require('./commands/help');
-const stop = require('./commands/stop');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
@@ -40,9 +39,11 @@ client.on('messageCreate', (msg) => {
     if (msg.content[0] === config.prefix) {
         const text = msg.content.substring(1);
         if (text.includes(' '))
-            [cmdTxt, suffix] = text.split(/ +/, 2);
+            [cmdTxt, ...suffix] = text.split(/ +/);
         else
             [cmdTxt, suffix] = [text, ''];
+        if (suffix)
+            suffix = suffix.join(' ');
     } else {
         return;
     }
@@ -56,9 +57,11 @@ client.on('messageCreate', (msg) => {
             msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
         }
     } else if (cmdTxt == 'help') {
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         help.process(commands, msg, suffix);
     } else if (cmdTxt == 'stop') {
-        stop.process(client, msg, suffix);
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
+        stop(client, msg.author.id);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
     }
@@ -68,11 +71,13 @@ client.on('messageCreate', (msg) => {
 process.on('uncaughtException', (err) => {
     const errorMsg = err.stack.replace(new RegExp(`${__dirname}/`, 'g'), './');
     console.error('Uncaught Exception: ', errorMsg);
+    client.destroy();
     process.exit(1); //Gracefully exit so systemd service may restart
 });
 
 process.on('unhandledRejection', err => {
     console.error('Uncaught Promise Error: ', err);
+    client.destroy();
     process.exit(1); //Gracefully exit so systemd service may restart
 });
 
@@ -89,7 +94,7 @@ client.on('interactionCreate', async interaction => {
         try {
             if (command.interact)
                 command.interact(interaction);
-	    else
+            else
                 await interaction.editReply(await command.reply(interaction));
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
@@ -101,9 +106,12 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// Catch Errors before they crash the app.
-process.on('uncaughtException', (err) => {
-});
+function stop(client, userid) {
+    if (userid == config.ownerId) {
+        client.destroy();
+        process.exit(0); //Gracefully exit so systemd service may restart
+    }
+}
 
 function publish(config, client) {
     console.log(`${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
