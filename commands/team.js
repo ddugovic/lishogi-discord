@@ -5,6 +5,7 @@ const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 const removeAccents = require('remove-accents');
 const removeMarkdown = require("remove-markdown");
@@ -81,7 +82,8 @@ function formatTeam(team) {
         .setTitle(team.name)
         .setURL(`https://lichess.org/team/${team.id}`)
         .setDescription(cleanDescription(description))
-        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
+        .addField('Members', `**${fn.format(team.nbMembers)}**`, true)
+        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '), true);
 }
 
 function cleanDescription(description) {
