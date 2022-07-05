@@ -93,7 +93,7 @@ client.on('interactionCreate', async interaction => {
         try {
             if (command.interact)
                 command.interact(interaction);
-	    else
+            else
                 await interaction.editReply(await command.reply(interaction));
         } catch (e) {
             console.log(`Command failed:\n ${e.stack}`);
