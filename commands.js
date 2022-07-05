@@ -44,7 +44,7 @@ const commands = {
         usage: "",
         description: "Display an incoming, ongoing, or finished official broadcast",
         process: broadcast.process,
-        reply: broadcast.reply
+        interact: broadcast.interact
     },
     "coach": {
         usage: "",

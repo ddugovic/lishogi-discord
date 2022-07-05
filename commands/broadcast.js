@@ -1,13 +1,16 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const html2md = require('html-to-md');
+const parse = require('ndjson-parse');
 
-async function broadcast(author) {
-    const url = 'https://lichess.org/api/broadcast?nb=1';
+function broadcast(author, interaction) {
+    const url = 'https://lichess.org/api/broadcast';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatBroadcast(response.data))
+        .then(response => formatDocument(response.data).map(formatBroadcast))
+        .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,21 +19,20 @@ async function broadcast(author) {
         });
 }
 
+function formatDocument(document) {
+    return (typeof document == 'string') ? parse(document) : [document];
+}
+
 function formatBroadcast(broadcast) {
     const red = Math.min(broadcast.rounds.length * 20, 255);
-    if (broadcast.tour) {
-        const embed = new Discord.MessageEmbed()
-            .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
-            .setTitle(broadcast.tour.description)
-            .setURL(broadcast.tour.url)
-            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(formatDescription(broadcast.tour.markup))
-            .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
-        return { 'embeds': [ embed ] };
-    } else {
-        return 'No broadcast found!';
-    }
+    return new MessageEmbed()
+        .setColor(formatColor(red, 0, 255-red))
+        .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+        .setTitle(broadcast.tour.description)
+        .setURL(broadcast.tour.url)
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setDescription(formatDescription(broadcast.tour.markup))
+        .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
 }
 
 function formatDescription(text) {
@@ -50,8 +52,8 @@ function process(bot, msg) {
     broadcast(msg.author).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return broadcast(interaction.user);
+function interact(interaction) {
+    broadcast(interaction.user);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
