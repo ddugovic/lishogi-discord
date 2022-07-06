@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
@@ -63,7 +63,7 @@ function formatTeam(team) {
 }
 
 function cleanDescription(description) {
-    return description.split(/\r?\n/).map(formatSiteLinks).map(formatLink).join('\n');
+    return description.split(/\r?\n/).map(formatSiteLinks).join('\n');
 }
 
 function formatDescription(text) {
