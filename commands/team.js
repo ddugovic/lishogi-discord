@@ -13,7 +13,7 @@ function team(author, text, interaction) {
     text = text.replace(/\s+/, '');
     const url = `https://lichess.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setTeams(response.data, text))
+        .then(response => response.data.currentPageResults.map(formatTeam))
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
@@ -21,32 +21,6 @@ function team(author, text, interaction) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function setTeams(teams, text) {
-    return teams.currentPageResults.map(formatTeam);
-}
-
-function removeImages(text) {
-    return text.replaceAll(/!\[\]\(\S+\)/g, '');
-}
-
-function strip(description) {
-    for (word of stopwords())
-        description = description.replaceAll(` ${word} `, ' ');
-    return description;
-}
-
-function getTopics(docs, text) {
-    const model = lda(docs, 10);
-    model.fit(1000, 100, 10)
-    const topics = [];
-    for (i = 0; i < 10; i++) { topics.push(model.getTerms(0, 20)); }
-    return topics;
-}
-
-function scoreTopic(topic, text) {
-    return topic.filter(term => term.word == text).map(term => term.prob)[0] ?? 0;
 }
 
 function formatTeam(team) {
