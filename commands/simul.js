@@ -79,7 +79,7 @@ function formatDescription(text) {
 }
 
 function formatAbout(about) {
-    const social = /(?::\/\/|www\.)|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /(?::\/\/|www\.)|\bdiscord\.gg\b|\bgithub\.com\b|\binstagram\.com\b|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < about.length; i++) {
         if (about[i].match(social)) {
             about.splice(i, 1);
