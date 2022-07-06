@@ -58,7 +58,7 @@ client.on('messageCreate', (msg) => {
         }
     } else if (cmdTxt == 'help') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        help.process(commands, client, msg);
+        help.process(commands, msg.channel);
     } else if (cmdTxt == 'stop') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         stop(client, msg.author.id);
