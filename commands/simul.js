@@ -43,12 +43,10 @@ function formatSimul(simul) {
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(getImage(simul.host) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lichess.org/simul/${simul.id}`)
         .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
-    if (simul.host.gameId)
-        embed = embed.setImage(`https://lichess1.org/game/export/gif/${simul.host.gameId}.gif`);
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
@@ -64,6 +62,11 @@ function getColor(rating) {
 
 function formatHost(player) {
     return player.title ? `${player.title} ${player.name}` : player.name;
+}
+
+function getImage(host) {
+    if (host.gameId)
+        return `https://lichess1.org/game/export/gif/${host.gameId}.gif`;
 }
 
 function formatDescription(text) {
