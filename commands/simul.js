@@ -2,13 +2,15 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
-const User = require('../models/User');
+const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
 
-async function simul(author) {
+function simul(author, mode, interaction) {
     const url = 'https://lishogi.org/api/simul';
-    return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => setSimul(response.data))
+    const message = mode ? `No ${mode} event found!` : `No event found!`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatSimuls(response.data, mode))
+        .then(embeds => formatPages(embeds, interaction, message))
         .catch(error => {
             console.log(`Error in simul(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -17,12 +19,17 @@ async function simul(author) {
         });
 }
 
-function setSimul(data) {
-    for ([key, simuls] of Object.entries(data)) {
-        if (simuls.length)
-            return formatSimul(simuls[0]);
-    }
-    return 'No events found!';
+function formatSimuls(data, mode) {
+    var simuls = [];
+    for (const status in data)
+        simuls.push(...data[status]);
+    if (mode)
+        simuls = simuls.filter(simul => hasVariant(simul.variants, mode));
+    return simuls.sort((a,b) => rankSimul(b) - rankSimul(a)).map(formatSimul);
+}
+
+function hasVariant(variants, mode) {
+    return variants.map(variant => variant.key).includes(mode);
 }
 
 function rankSimul(simul) {
@@ -36,21 +43,16 @@ function formatSimul(simul) {
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setThumbnail(getImage(simul.host) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lishogi.org/simul/${simul.id}`)
         .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
-    if (simul.host.gameId)
-        embed = embed.setImage(`https://lishogi1.org/game/export/gif/${simul.host.gameId}.gif`);
     if (simul.text) {
         const description = formatDescription(simul.text);
-        if (description) {
-            const about = new Discord.MessageEmbed()
-                .addField('Description', description);
-            return { embeds: [ embed, about ] };
-        }
+        if (description)
+            embed = embed.addField('Description', description);
     }
-    return { embeds: [ embed ] };
+    return embed;
 }
 
 function getColor(rating) {
@@ -60,6 +62,11 @@ function getColor(rating) {
 
 function formatHost(player) {
     return player.title ? `${player.title} ${player.name}` : player.name;
+}
+
+function getImage(host) {
+    if (host.gameId)
+        return `https://lishogi1.org/game/export/gif/${host.gameId}.gif`;
 }
 
 function formatDescription(text) {
@@ -79,7 +86,7 @@ function formatAbout(about) {
             i -= 1;
             continue;
         }
-        about[i] = formatUserLinks(about[i]);
+        about[i] = formatLink(formatSiteLinks(about[i]));
     }
     return about;
 }
@@ -88,8 +95,8 @@ function process(bot, msg, favoriteMode) {
     simul(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return simul(interaction.user);
+function interact(interaction) {
+    return simul(interaction.user, interaction.options.getString('variant'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
