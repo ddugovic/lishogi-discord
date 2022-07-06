@@ -2,7 +2,6 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatTitledUserLink } = require('../lib/format-site-links');
-const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
 async function arena(author, mode) {
@@ -92,7 +91,7 @@ function getDescription(arena) {
     const winner = arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
         arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>` :
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` : '';
-    return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during ${formatSeconds(arena.minutes * 60)}. ${winner}`;
+    return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
