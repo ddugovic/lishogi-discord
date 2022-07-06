@@ -1,16 +1,11 @@
 const axios = require('axios');
-const Discord = require('discord.js');
-const headlineParser = require('eklem-headline-parser')
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
 const plural = require('plural');
-const removeAccents = require('remove-accents');
-const removeMarkdown = require("remove-markdown");
-const lda = require('@stdlib/nlp-lda');
-const stopwords = require('@stdlib/datasets-stopwords-en');
 
 function team(author, text, interaction) {
     if (!text)
@@ -29,19 +24,7 @@ function team(author, text, interaction) {
 }
 
 function setTeams(teams, text) {
-    teams.currentPageResults.forEach(team => team.score = score(team, text));
-    return teams.currentPageResults.sort((a,b) => b.score - a.score).map(formatTeam);
-}
-
-function score(team, text) {
-    const description = cleanDescription(formatDescription(removeAccents(team.description).toLowerCase()));
-    const links = removeMarkdown(removeImages(description)).matchAll(/(https?:\/\/[^\s]+)/g);
-    const noise = [...links].reduce((partialSum, a) => partialSum + a[0].length, 0);
-
-    const prose = strip(removeMarkdown(description).replace(/(https?:\/\/[^\s]+)/g, ''));
-    const docs = prose.replaceAll(/[^\s\w]+/g, ' ').trim().split(/(?:\r?\n)+/);
-    const topics = getTopics(docs, prose);
-    return team.nbMembers * (docs.length * 10 - noise) * topics.map(topic => scoreTopic(topic, prose)).reduce((partialSum, a) => partialSum + a, 0);
+    return teams.currentPageResults.map(formatTeam);
 }
 
 function removeImages(text) {
@@ -69,7 +52,7 @@ function scoreTopic(topic, text) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const description = formatDescription(team.description);
-    return new Discord.MessageEmbed()
+    return new MessageEmbed()
         .setColor(formatColor(count, 0, 255-count))
         .setThumbnail(getImage(team.description) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
