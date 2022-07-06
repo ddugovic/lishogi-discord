@@ -63,15 +63,9 @@ function formatTeam(team) {
 }
 
 function cleanDescription(description) {
-    const lines = description.split(/\r?\n/);
-    for (var i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        lines[i] = formatSiteLinks(line);
-        if (lines.join('\n') > 4000) {
-            lines[i] = line;
-            break;
-        }
-    }
+    const lines = description.split(/\r?\n/).map(formatSiteLinks);
+    while (lines.join('\n').length > 4000)
+        lines.pop();
     return lines.join('\n');
 }
 
