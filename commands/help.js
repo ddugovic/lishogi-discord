@@ -1,5 +1,4 @@
 const config = require('../config.json');
-const { Permissions } = require('discord.js');
 
 function help(commands) {
     var helpText = '```';
@@ -19,11 +18,8 @@ function formatCommand(cmd, command) {
     return info;
 }
 
-function process(commands, permissions, channel) {
-    if (! permissions.any(Permissions.FLAGS.USE_APPLICATION_COMMANDS))
-        channel.send(`https://discord.com/blog/slash-commands-are-here ! Re-invite this bot to enable them!\n${help(commands)}`);
-    else
-        channel.send(`Available Commands:\n${help(commands)}`);
+function process(commands, channel) {
+    channel.send(`https://discord.com/blog/slash-commands-are-here ! Re-invite this bot to enable them!\n${help(commands)}`);
 }
 
 function reply(commands, interaction) {
