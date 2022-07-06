@@ -61,7 +61,8 @@ function getColor(rating) {
 }
 
 function formatHost(player) {
-    return player.title ? `${player.title} ${player.name}` : player.name;
+    const badges = player.patron ? '🦄' : '';
+    return player.title ? `${player.title} ${player.name} ${badges}` : `${player.name} ${badges}`;
 }
 
 function getImage(host) {
