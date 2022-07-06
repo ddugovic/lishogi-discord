@@ -28,6 +28,7 @@ function formatEntry(name, description) {
     return new MessageEmbed()
         .setTitle(name)
         .setURL('https://lichess.org/changelog')
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(formatSiteLinks(description));
 }
 
