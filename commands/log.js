@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const html2md = require('html-to-md');
 
 function log(author, interaction) {
@@ -27,7 +28,7 @@ function formatEntry(name, description) {
     return new MessageEmbed()
         .setTitle(name)
         .setURL('https://lichess.org/changelog')
-        .setDescription(description);
+        .setDescription(formatSiteLinks(description));
 }
 
 function process(bot, msg) {
