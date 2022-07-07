@@ -35,7 +35,7 @@ function formatLeaders(leaders, mode) {
     return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
         .then(response => {
             const players = response.data.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
-            return chunk(players, 15).map(fields => new MessageEmbed()
+            return chunk(players, 6).map(fields => new MessageEmbed()
                 .setColor(getColor(fields[0].rating))
                 .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                 .setTitle(`:trophy: ${title(mode)} Leaderboard`)
