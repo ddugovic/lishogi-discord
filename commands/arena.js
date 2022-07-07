@@ -10,8 +10,8 @@ async function arena(author, mode, interaction) {
         mode = await getMode(author);
     const url = 'https://lishogi.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => setArenas(response.data, mode))
-        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
+        .then(response => setArenas(mergeArenas(response.data), mode))
+        .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -26,27 +26,28 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function compareArenas(a, b) {
-    return b.nbPlayers / (b.status || 10) - (a.nbPlayers / (a.status || 10));
-}
-
-function setArenas(data, mode) {
+function mergeArenas(data) {
     const arenas = [];
     for (const status in data)
         arenas.push(...data[status]);
+    return arenas;
+}
 
+function setArenas(areans, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
             return matches.sort(compareArenas).map(formatArena);
     }
-    if (arenas.length)
-        return arenas.sort(compareArenas).map(formatArena);
-    return 'No tournament found!';
+    return arenas.sort(compareArenas).map(formatArena);
 }
 
 function filterArena(arena, mode) {
     return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
+}
+
+function compareArenas(a, b) {
+    return b.nbPlayers / (b.status || 10) - (a.nbPlayers / (a.status || 10));
 }
 
 function formatArena(arena) {
