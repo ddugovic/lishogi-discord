@@ -1,15 +1,17 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const User = require('../models/User');
 
-async function arena(author, mode) {
+async function arena(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author);
     const url = 'https://lishogi.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => setArenas(response.data, mode))
+        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -36,21 +38,15 @@ function setArenas(data, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
-            return setArena(matches.sort(compareArenas)[0]);
+            return matches.sort(compareArenas).map(formatArena);
     }
     if (arenas.length)
-        return setArena(arenas.sort(compareArenas)[0]);
+        return arenas.sort(compareArenas).map(formatArena);
     return 'No tournament found!';
 }
 
 function filterArena(arena, mode) {
     return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
-}
-
-function setArena(arena) {
-    const url = `https://lishogi.org/api/tournament/${arena.id}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatArena(response.data));
 }
 
 function formatArena(arena) {
@@ -64,16 +60,17 @@ function formatArena(arena) {
         .setDescription(getDescription(arena));
     if (arena.featured)
 	embed = embed.setImage(`https://lishogi.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
-    if (arena.isFinished) {
+    if (arena.stats) {
         embed = embed
             .addField('Berserks', `**${arena.stats.berserks}**`, true)
             .addField('Games', `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, true)
             .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
-    } else if (arena.minRatedGames) {
+    }
+    if (arena.minRatedGames) {
         embed = embed
             .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
     }
-    return { embeds: [ embed ] };
+    return embed;
 }
 
 function formatGame(game) {
@@ -89,13 +86,14 @@ function formatSchedule(schedule) {
 }
 
 function getDescription(arena) {
-    const players = arena.nbPlayers == 1 ? '**1** player competes' : `**${arena.nbPlayers}** players compete`;
+    const players = arena.nbPlayers == 1 ? '**1** player' : `**${arena.nbPlayers}** players`;
+    const play = arena.status == 30 ? 'competed in' : arena.status == 20 ? `${(arena.nbPlayers == 1 ? 'competes' : 'compete')} in` : 'await';
     const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
     const rated = arena.rated ? 'rated' : 'casual';
-    const winner = arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
-        arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>` :
-        arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` : '';
-    return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
+    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
+        arena.status < 20 ? `Starts <t:${arena.startsAt}:R>` : '';
+        arena.status < 30 ? `Finishes <t:${arena.finishesAt}:R>` : '';
+    return `${players} ${play} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
@@ -106,8 +104,8 @@ function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'));
+async function interact(interaction) {
+    return arena(interaction.user, interaction.options.getString('mode'), interact);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
