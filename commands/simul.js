@@ -38,15 +38,15 @@ function rankSimul(simul) {
 
 function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
-    const compete = simul.isFinished ? 'competed' :
-        simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'await';
+    const play = simul.isFinished ? 'competed in' :
+        simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lishogi.org/simul/${simul.id}`)
-        .setDescription(`${players} ${compete} in the ${simul.fullName}.`);
+        .setDescription(`${players} ${play} the ${simul.fullName}.`);
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
