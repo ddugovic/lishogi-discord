@@ -97,7 +97,7 @@ function getColor(index, length) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatProfile(username, profile, fideRating, playTime) {
+function formatProfile(username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
