@@ -45,7 +45,7 @@ function formatEntry(entry) {
 }
 
 function link(str) {
-    return str.toLowerCase().replace(/\s+/, '-');
+    return str.toLowerCase().replaceAll(/\s+/g, '-');
 }
 
 function process(bot, msg) {
