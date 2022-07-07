@@ -39,7 +39,7 @@ function trimSummary(snippet) {
         return snippet;
     const lines = snippet.split(/\r?\n/);
     var message = '';
-    while (message.length < 80)
+    while (message.length < 120)
         message += `${lines.shift()}\n`;
     return message.trim();
 }
