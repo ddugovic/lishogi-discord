@@ -42,7 +42,7 @@ function formatSimul(simul) {
         simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'await';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
-        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
+        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lichess.org/simul/${simul.id}`)
