@@ -32,10 +32,10 @@ function setArenas(data, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
-            return setArena(matches.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+            return setArena(matches.sort(compareArenas)[0]);
     }
     if (arenas.length)
-        return setArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+        return setArena(arenas.sort(compareArenas)[0]);
     return 'No tournament found!';
 }
 
@@ -47,6 +47,10 @@ function setArena(arena) {
     const url = `https://lichess.org/api/tournament/${arena.id}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatArena(response.data));
+}
+
+function compareArenas(a, b) {
+    return b.nbPlayers / (b.status || 10) - (a.nbPlayers / (a.status || 10));
 }
 
 function formatArena(arena) {
