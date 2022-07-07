@@ -42,7 +42,7 @@ function formatSimul(simul) {
         simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'await';
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(simul.host.rating))
-        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
+        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(simul.fullName)
         .setURL(`https://lishogi.org/simul/${simul.id}`)
@@ -80,7 +80,7 @@ function formatDescription(text) {
 }
 
 function formatAbout(about) {
-    const social = /(?::\/\/|www\.)|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /(?::\/\/|www\.)|\bdiscord\.gg\b|\bgithub\.com\b|\binstagram\.com\b|\btwitch\.tv\b|\btwitter\.com\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < about.length; i++) {
         if (about[i].match(social)) {
             about.splice(i, 1);
