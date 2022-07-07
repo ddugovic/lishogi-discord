@@ -11,9 +11,9 @@ const User = require('../models/User');
 async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
-    const url = `https://lichess.org/player/top/10/${mode}`;
+    const url = `https://lichess.org/player/top/30/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
-        .then(response => formatPlayers(response.data.users, mode))
+        .then(response => formatLeaders(response.data.users, mode))
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username} ${mode}): \
@@ -29,28 +29,26 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function formatPlayers(leaders, mode) {
-    const rating = Math.max(...leaders.map(field => field.perfs[mode].rating));
+function formatLeaders(leaders, mode) {
     const url = 'https://lichess.org/api/users';
     const ids = leaders.map(leader => leader.id);
     return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
         .then(response => {
-            const fields = response.data.map(formatPlayer);
-            const embed = new MessageEmbed()
-                .setColor(getColor(rating))
+            const players = response.data.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
+            return chunk(players, 15).map(fields => new MessageEmbed()
+                .setColor(getColor(fields[0].rating))
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                 .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                 .setURL('https://lichess.org/player')
-                .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
-            return [ embed ];
+                .addFields(fields));
         });
 }
 
-function formatPlayer(player) {
+function formatPlayers(player, mode) {
     const name = formatName(player);
     const badges = player.patron ? '⛩️' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs};
+    return { name : `${name} ${badges}`, value: profile, inline: true, rating: player.perfs[mode].rating};
 }
 
 function formatName(player) {
@@ -106,6 +104,12 @@ function formatBio(bio) {
         bio[i] = formatSiteLinks(bio[i]);
     }
     return bio;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 function title(str) {
