@@ -11,7 +11,7 @@ const User = require('../models/User');
 async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
-    const url = `https://lishogi.org/player/top/30/${mode}`;
+    const url = `https://lishogi.org/player/top/150/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => formatLeaders(response.data.users, mode))
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
