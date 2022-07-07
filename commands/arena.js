@@ -33,7 +33,7 @@ function mergeArenas(data) {
     return arenas;
 }
 
-function setArenas(areans, mode) {
+function setArenas(arenas, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
