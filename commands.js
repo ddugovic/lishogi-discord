@@ -6,7 +6,6 @@ const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
-const gif = require('./commands/gif');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
 const setUser = require('./commands/setUser');
@@ -81,12 +80,6 @@ const commands = {
         description: "Share your (or a user's) current game",
         process: playing.process,
         reply: playing.reply
-    },
-    "gif": {
-        usage: "[user]",
-        description: "Share your (or a user's) current game as a GIF",
-        process: gif.process,
-        reply: gif.reply
     },
     "privacy": {
         usage: "",
