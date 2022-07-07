@@ -1,19 +1,22 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
+const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
+const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-async function leaderboard(author, mode) {
+async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://lishogi.org/player/top/10/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
-        .then(response => setPlayers(response.data.users, mode))
-        .catch((error) => {
-            console.log(`Error in leaderboard(${author.username}, ${mode}): \
+        .then(response => formatPlayers(response.data.users, mode))
+        .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
+        .catch(error => {
+            console.log(`Error in leaderboard(${author.username} ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -26,22 +29,21 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function setPlayers(users, mode) {
-    if (users.length) {
-        const url = 'https://lishogi.org/api/users';
-        const ids = users.map(player => player.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const embed = new Discord.MessageEmbed()
-                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                    .setTitle(`:trophy: ${title(mode)} Leaderboard`)
-                    .setURL('https://lishogi.org/player')
-                    .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
-                return { embeds: [ embed ] };
+function formatPlayers(leaders, mode) {
+    const rating = Math.max(...leaders.map(field => field.perfs[mode].rating));
+    const url = 'https://lishogi.org/api/users';
+    const ids = leaders.map(leader => leader.id);
+    return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const fields = response.data.map(formatPlayer);
+            const embed = new MessageEmbed()
+                .setColor(getColor(rating))
+                .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+                .setTitle(`:trophy: ${title(mode)} Leaderboard`)
+                .setURL('https://lishogi.org/player')
+                .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
+            return [ embed ];
         });
-    } else {
-        return 'Leader not found!';
-    }
 }
 
 function formatPlayer(player) {
@@ -73,6 +75,11 @@ function getCountryAndRating(profile) {
         return [profile.country, profile.fideRating];
 }
 
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
 function formatProfile(username, profile, fideRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
@@ -96,7 +103,7 @@ function formatBio(bio) {
             bio = bio.slice(0, i);
             break;
         }
-        bio[i] = formatUserLinks(bio[i]);
+        bio[i] = formatSiteLinks(bio[i]);
     }
     return bio;
 }
@@ -111,8 +118,8 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return leaderboard(interaction.user, interaction.options.getString('mode'));
+function interact(interaction) {
+    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
