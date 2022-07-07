@@ -105,8 +105,8 @@ function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'), interact);
+function interact(interaction) {
+    arena(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};
