@@ -24,6 +24,10 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
+function compareArenas(a, b) {
+    return b.nbPlayers - b.status - (a.nbPlayers - a.status);
+}
+
 function setArenas(data, mode) {
     const arenas = [];
     for (const status in data)
@@ -32,10 +36,10 @@ function setArenas(data, mode) {
     if (mode) {
         const matches = arenas.filter(arena => filterArena(arena, mode));
         if (matches.length)
-            return setArena(matches.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+            return setArena(matches.sort(compareArenas)[0]);
     }
     if (arenas.length)
-        return setArena(arenas.sort((a,b) => b.nbPlayers - a.nbPlayers)[0]);
+        return setArena(arenas.sort(compareArenas)[0]);
     return 'No tournament found!';
 }
 
