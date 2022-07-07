@@ -30,25 +30,39 @@ async function getMode(author) {
 }
 
 function formatLeaders(leaders, mode) {
+    const ranks = {};
+    var i = 0;
+    for (leader of leaders)
+        ranks[leader.id] = ++i;
+
     const url = 'https://lishogi.org/api/users';
     const ids = leaders.map(leader => leader.id);
     return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
         .then(response => {
-            const players = response.data.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
-            return chunk(players, 6).map(fields => new MessageEmbed()
-                .setColor(getColor(fields[0].rating))
-                .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                .setTitle(`:trophy: ${title(mode)} Leaderboard`)
-                .setURL('https://lishogi.org/player')
-                .addFields(fields));
-        });
+            const players = rankPlayers(response.data, ranks).sort((a,b) => a.rank - b.rank);
+            return chunk(players.map(formatPlayer), 6).map((fields, index) =>
+                new MessageEmbed()
+                    .setColor(getColor(index))
+                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+                    .setTitle(`:trophy: ${title(mode)} Leaderboard`)
+                    .setURL('https://lishogi.org/player')
+                    .addFields(fields)
+                );
+            }
+        );
 }
 
-function formatPlayers(player, mode) {
+function rankPlayers(players, ranks) {
+    for (player of players)
+        player.rank = ranks[player.id];
+    return players;
+}
+
+function formatPlayer(player) {
     const name = formatName(player);
-    const badges = player.patron ? '⛩️' : '';
+    const badges = player.patron ? ' ⛩️' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, rating: player.perfs[mode].rating};
+    return { name : `${name}${badges} #${player.rank}`, value: profile, inline: true };
 }
 
 function formatName(player) {
@@ -73,8 +87,8 @@ function getCountryAndRating(profile) {
         return [profile.country, profile.fideRating];
 }
 
-function getColor(rating) {
-    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+function getColor(index, length) {
+    const red = Math.min(Math.max(255 - index * 10, 0), 255);
     return formatColor(red, 0, 255-red);
 }
 
