@@ -19,7 +19,7 @@ function news(author, interaction) {
 function formatEntries(feed) {
     const embeds = [];
     for (const entry of feed.items.values()) {
-        const summary = formatEntry(entry);
+        const summary = formatSummary(trimSummary(entry.contentSnippet));
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new Discord.MessageEmbed()
             .setColor(formatColor(red, 0, 255-red))
@@ -34,14 +34,18 @@ function formatEntries(feed) {
     return embeds;
 }
 
-function formatEntry(entry) {
-    if (entry.contentSnippet.length < 200)
-        return entry.contentSnippet;
-    const snippet = entry.contentSnippet.split(/\r?\n/);
+function trimSummary(snippet) {
+    if (snippet.length < 200)
+        return snippet;
+    const lines = snippet.split(/\r?\n/);
     var message = '';
     while (message.length < 80)
-        message += `${snippet.shift()}\n`;
+        message += `${lines.shift()}\n`;
     return message.trim();
+}
+
+function formatSummary(snippet) {
+    return trimSummary(snippet).replace(/published here/, `published [here](https://thechessmind.substack.com/)`);
 }
 
 function link(str) {
