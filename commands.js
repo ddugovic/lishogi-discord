@@ -68,7 +68,7 @@ const commands = {
         usage: "[game mode]",
         description: "Display top-rated players",
         process: leaderboard.process,
-        reply: leaderboard.reply
+        interact: leaderboard.interact
     },
     "log": {
         usage: "",
