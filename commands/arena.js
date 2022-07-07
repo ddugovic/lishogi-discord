@@ -25,7 +25,7 @@ async function getMode(author) {
 }
 
 function compareArenas(a, b) {
-    return b.nbPlayers - b.status - (a.nbPlayers - a.status);
+    return b.nbPlayers - b.status * 2 - (a.nbPlayers - a.status * 2);
 }
 
 function setArenas(data, mode) {
