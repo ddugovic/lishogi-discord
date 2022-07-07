@@ -30,11 +30,7 @@ async function getMode(author) {
 }
 
 function formatLeaders(leaders, mode) {
-    const ranks = {};
-    var i = 0;
-    for (leader of leaders)
-        ranks[leader.id] = ++i;
-
+    const ranks = rankLeaders(leaders);
     const url = 'https://lishogi.org/api/users';
     const ids = leaders.map(leader => leader.id);
     return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
@@ -50,6 +46,15 @@ function formatLeaders(leaders, mode) {
                 );
             }
         );
+}
+
+// Neither the leaderboard nor api/users return player ranks
+function rankLeaders(leaders) {
+    const ranks = {};
+    var i = 0;
+    for (leader of leaders)
+        ranks[leader.id] = ++i;
+    return ranks;
 }
 
 function rankPlayers(players, ranks) {
