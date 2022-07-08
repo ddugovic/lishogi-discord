@@ -72,7 +72,7 @@ function formatPlayer(player) {
 }
 
 function formatUser(user) {
-    return user.title ? `${user.title} ${user.name}` : user.name;
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
 function formatClock(clock) {
