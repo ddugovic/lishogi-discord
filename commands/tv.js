@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const parse = require('ndjson-parse');
 const User = require('../models/User');
 
 async function tv(author, mode) {
@@ -9,8 +10,11 @@ async function tv(author, mode) {
     const url = 'https://lichess.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => getChannel(response.data, mode ?? 'blitz'))
-        .then(channel => { return channel ? formatChannel(...channel) : 'Channel not found!' })
+        .then(channel => { if (channel) return formatChannel(...channel); })
+        .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
+            console.log(`Error in tv(${author.username}, ${mode}): \
+                ${error} ${error.stack}`);
             console.log(`Error in tv(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -31,7 +35,6 @@ function getChannel(data, mode) {
 }
 
 function formatChannel(channel, tv) {
-    console.log(channel, tv);
     const user = formatUser(tv.user);
     const embed = new Discord.MessageEmbed()
         .setColor(getColor(tv.rating))
@@ -40,7 +43,20 @@ function formatChannel(channel, tv) {
         .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
         .setURL(`https://lichess.org/tv/${camel(channel)}`)
         .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
-    return { embeds: [ embed ] };
+    return setGames(embed, channel);
+}
+
+function setGames(embed, channel) {
+    const url = `https://lichess.org/api/tv/${channel.toLowerCase()}?nb=5&moves=false&tags=false&opening=true`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => { return embed.addField('Live Games', parse(response.data).map(formatGame).join('\n')) });
+}
+
+function formatGame(game) {
+    const url = `https://lichess.org/${game.id}`;
+    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
+    const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
+    return `${formatClock(game.clock)} [${players}](${url})${opening}`;
 }
 
 function getColor(rating) {
@@ -48,8 +64,16 @@ function getColor(rating) {
     return formatColor(red, 0, 255-red);
 }
 
+function formatPlayer(player) {
+    return player.user ? formatUser(player.user) : `Level ${player.aiLevel}`;
+}
+
 function formatUser(user) {
     return user.title ? `${user.title} ${user.name}` : user.name;
+}
+
+function formatClock(clock) {
+    return `${clock.initial / 60}+${clock.increment}`;
 }
 
 function camel(str) {
