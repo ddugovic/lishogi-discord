@@ -14,8 +14,6 @@ async function tv(author, mode) {
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in tv(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -47,9 +45,14 @@ function formatChannel(channel, tv) {
 }
 
 function setGames(embed, channel) {
-    const url = `https://lichess.org/api/tv/${channel.toLowerCase()}?nb=5&moves=false&tags=false&opening=true`;
+    const url = `https://lichess.org/api/tv/${camel(channel)}?nb=5&moves=false&tags=false&opening=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => { return embed.addField('Live Games', parse(response.data).map(formatGame).join('\n')) });
+        .then(response => parseDocument(response.data))
+        .then(games => { return embed.addField('Live Games', games.map(formatGame).join('\n')) });
+}
+
+function parseDocument(document) {
+    return (typeof document == 'string') ? parse(document) : [document];
 }
 
 function formatGame(game) {
@@ -77,7 +80,7 @@ function formatClock(clock) {
 }
 
 function camel(str) {
-    str = str.split(' ')
+    str = str.split(/\W/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join('');
     return str.charAt(0).toLowerCase() + str.slice(1);
