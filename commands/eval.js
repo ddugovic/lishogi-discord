@@ -81,7 +81,7 @@ function process(bot, msg, fen) {
 }
 
 async function reply(interaction) {
-    return eval(interaction.user, interaction.options.getString('fen'));
+    return eval(interaction.user, interaction.options.getString('fen') ?? '');
 }
 
 module.exports = {process, reply};
