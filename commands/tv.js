@@ -28,7 +28,7 @@ async function getMode(author) {
 
 function getChannel(data, mode) {
     for (const [channel, tv] of Object.entries(data))
-        if (channel.toLowerCase() == mode.toLowerCase())
+        if (camel(channel).toLowerCase() == camel(mode).toLowerCase())
             return [channel, tv];
 }
 
@@ -76,7 +76,8 @@ function formatUser(user) {
 }
 
 function formatClock(clock) {
-    return `${clock.initial / 60}+${clock.increment}`;
+    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
+    return `${base}+${clock.increment}`;
 }
 
 function camel(str) {
