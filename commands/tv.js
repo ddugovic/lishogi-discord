@@ -65,7 +65,7 @@ function getColor(rating) {
 }
 
 function formatPlayer(player) {
-    return player.user ? formatUser(player.user) : `Level ${player.aiLevel}`;
+    return player.user ? formatUser(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
 }
 
 function formatUser(user) {
