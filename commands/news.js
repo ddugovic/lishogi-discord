@@ -21,7 +21,7 @@ function formatNews(news, interaction) {
     const embeds = [];
     for (const entry of news.items.values()) {
         if (entry.title.startsWith('NEWS')) {
-            const summary = formatEntry(entry);
+            const summary = formatEntry(html2md(entry.contentSnippet));
             const red = Math.min(Math.max(summary.length - 150, 0), 255);
             const image = getImage(html2md(entry.content));
             var embed = new Discord.MessageEmbed()
@@ -44,10 +44,10 @@ function getImage(content) {
         return match[1];
 }
 
-function formatEntry(entry) {
-    if (entry.contentSnippet.length < 200)
-        return entry.contentSnippet;
-    const snippet = entry.contentSnippet.split(/\r?\n/);
+function formatEntry(contentSnippet) {
+    if (contentSnippet.length < 200)
+        return contentSnippet;
+    const snippet = contentSnippet.split(/\r?\n/);
     var message = '';
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
