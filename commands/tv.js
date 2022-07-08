@@ -36,7 +36,7 @@ function formatChannel(channel, tv) {
     const user = formatUser(tv.user);
     const embed = new Discord.MessageEmbed()
         .setColor(getColor(tv.rating))
-        .setAuthor({name: user, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
+        .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
         .setURL(`https://lichess.org/tv/${camel(channel)}`)
