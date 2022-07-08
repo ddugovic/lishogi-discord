@@ -8,7 +8,8 @@ async function tv(author, mode) {
         mode = await getMode(author);
     const url = 'https://lichess.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatTv(response.data, mode ?? 'blitz'))
+        .then(response => getChannel(response.data, mode ?? 'blitz'))
+        .then(channel => { return channel ? formatChannel(...channel) : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -23,21 +24,23 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function formatTv(data, mode) {
-    for (const [channel, tv] of Object.entries(data)) {
-        if (channel.toLowerCase() == mode.toLowerCase()) {
-            const user = formatUser(tv.user);
-            const embed = new Discord.MessageEmbed()
-                .setColor(getColor(tv.rating))
-                .setAuthor({name: user, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
-                .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-                .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
-                .setURL(`https://lichess.org/tv/${camel(channel)}`)
-                .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
-            return { embeds: [ embed ] };
-        }
-    }
-    return `Channel not found!`;
+function getChannel(data, mode) {
+    for (const [channel, tv] of Object.entries(data))
+        if (channel.toLowerCase() == mode.toLowerCase())
+            return [channel, tv];
+}
+
+function formatChannel(channel, tv) {
+    console.log(channel, tv);
+    const user = formatUser(tv.user);
+    const embed = new Discord.MessageEmbed()
+        .setColor(getColor(tv.rating))
+        .setAuthor({name: user, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
+        .setURL(`https://lichess.org/tv/${camel(channel)}`)
+        .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
+    return { embeds: [ embed ] };
 }
 
 function getColor(rating) {
