@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
+const parse = require('ndjson-parse');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
@@ -46,7 +47,7 @@ function formatProfile(user, favoriteMode) {
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+    const [color, author] = formatAbout(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
         .setColor(color)
@@ -63,10 +64,11 @@ function formatProfile(user, favoriteMode) {
         embed = setStats(embed, user.username, user.count, user.playTime, mode, rating);
     embed = setAbout(embed, username, user.profile, user.playTime);
     return setTeams(embed, username)
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed });
+        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
+        .then(embed => setGames(embed, username));
 }
 
-function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+function formatAbout(title, name, patron, trophies, online, playing, streaming) {
     const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;
@@ -277,6 +279,37 @@ function getImage(text) {
     const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
     if (match)
         return match[0];
+}
+
+function setGames(embed, username) {
+    const url = `https://lichess.org/api/games/user/${username}?max=5&moves=false&tags=false&opening=true&ongoing=true`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => parseDocument(response.data))
+        .then(games => { return embed.addField('Recent Games', games.map(formatGame).join('\n')) });
+}
+
+function parseDocument(document) {
+    return (typeof document == 'string') ? parse(document) : [document];
+}
+
+function formatGame(game) {
+    const url = `https://lichess.org/${game.id}`;
+    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
+    const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
+    return `${formatClock(game.clock)} [${players}](${url})${opening}`;
+}
+
+function formatPlayer(player) {
+    return player.user ? formatUser(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUser(user) {
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function formatClock(clock) {
+    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
+    return `${base}+${clock.increment}`;
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
