@@ -37,7 +37,7 @@ async function getName(author) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(user, favoriteMode) {
+async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
@@ -61,7 +61,7 @@ function formatProfile(user, favoriteMode) {
     if (unranked(mode, rating))
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
     else
-        embed = setStats(embed, user.username, user.count, user.playTime, mode, rating);
+        embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
     embed = setAbout(embed, username, user.profile, user.playTime);
     return setTeams(embed, username)
         .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
