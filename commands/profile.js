@@ -47,7 +47,7 @@ async function formatProfile(user, favoriteMode) {
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatAbout(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+    const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
         .setColor(color)
@@ -68,7 +68,7 @@ async function formatProfile(user, favoriteMode) {
         .then(embed => setGames(embed, username));
 }
 
-function formatAbout(title, name, patron, trophies, online, playing, streaming) {
+function formatUser(title, name, patron, trophies, online, playing, streaming) {
     const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;
@@ -294,16 +294,16 @@ function parseDocument(document) {
 
 function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
-    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
+    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
     return `${formatClock(game.clock)} [${players}](${url})${opening}`;
 }
 
-function formatPlayer(player) {
-    return player.user ? formatUser(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
+function formatPlayerName(player) {
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
 }
 
-function formatUser(user) {
+function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
