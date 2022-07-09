@@ -20,6 +20,7 @@ async function profile(author, username) {
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatProfile(response.data, favoriteMode))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -56,18 +57,13 @@ function formatProfile(user, favoriteMode) {
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating)) {
+    if (unranked(mode, rating))
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-        embed = setAbout(embed, username, user.profile, user.playTime);
-        return setTeams(embed, username)
-            .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-            .then(embed => { return { embeds: [ embed ] } });
-    }
-    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
-        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
-        .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => { return { embeds: [ embed ] } });
+    else
+        embed = setStats(embed, user.username, user.count, user.playTime, mode, rating);
+    embed = setAbout(embed, username, user.profile, user.playTime);
+    return setTeams(embed, username)
+        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed });
 }
 
 function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
