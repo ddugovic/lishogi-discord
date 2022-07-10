@@ -315,7 +315,7 @@ function formatUserName(user) {
 function formatClock(clock, daysPerTurn) {
     if (clock) {
         const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-        return `${base}+${clock.increment}`;
+        return clock.byoyomi ? `${base}|${clock.byoyomi}` : clock.increment ? `${base}+${clock.increment}` : base;
     }
     return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
 }
