@@ -45,17 +45,23 @@ function formatChannel(channel, tv) {
 }
 
 function setGames(embed, channel) {
-    const url = `https://lichess.org/api/tv/${camel(channel)}?nb=5&moves=false&tags=false&opening=true`;
+    const url = `https://lichess.org/api/tv/${camel(channel)}?nb=3&opening=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField('Live Games', games.map(formatGame).join('\n')) });
+        .then(games => { return embed.addField('Live Games', games.map(formatGame).join('\n\n')) });
 }
 
 function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
-    const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
+    const opening = game.moves ? `\n${formatOpening(game.variant, game.opening, game.moves)}` : '';
     return `${formatClock(game.clock)} [${players}](${url})${opening}`;
+}
+
+function formatOpening(variant, opening, moves) {
+    const ply = variant == 'standard' ? opening.ply : 10;
+    const line = moves.replaceAll(/\*/g, '\\*').split(/ /).slice(0, ply).join(' ');
+    return variant == 'standard' ? `${opening.name} *${line}*` : `*${line}*`;
 }
 
 function getColor(rating) {
