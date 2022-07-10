@@ -59,14 +59,14 @@ function setGames(embed, channel) {
 function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
-    const opening = game.moves ? `\n${formatOpening(game.variant, game.opening, game.moves)}` : '';
+    const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
     return `${formatClock(game.clock)} [${players}](${url})${opening}`;
 }
 
-function formatOpening(variant, opening, moves) {
-    const ply = variant == 'standard' ? opening.ply : 10;
-    const line = moves.replaceAll(/\*/g, '\\*').split(/ /).slice(0, ply).join(' ');
-    return variant == 'standard' ? `${opening.name} *${line}*` : `*${line}*`;
+function formatOpening(opening, moves) {
+    const ply = opening ? opening.ply : 10;
+    const line = moves.split(/ /).slice(0, ply).join(' ');
+    return opening ? `${opening.name} *${line}*` : `*${line}*`;
 }
 
 function getColor(rating) {
