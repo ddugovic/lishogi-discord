@@ -99,9 +99,8 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
 
 function unranked(mode, rating) {
     // Players whose RD is above this threshold are unranked
-    const correspondence = ['correspondence','puzzle'];
     const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
-    return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
+    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
 function getCountryAndName(profile) {
