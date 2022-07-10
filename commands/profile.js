@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
+const parse = require('ndjson-parse');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
@@ -20,6 +21,7 @@ async function profile(author, username) {
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatProfile(response.data, favoriteMode))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -35,7 +37,7 @@ async function getName(author) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(user, favoriteMode) {
+async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
@@ -45,32 +47,30 @@ function formatProfile(user, favoriteMode) {
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+    const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new Discord.MessageEmbed()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png');
+        .setThumbnail(user.title == 'BOT' ? 'https://lishogi1.org/assets/images/icons/bot.png' : 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png');
     if (user.online)
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lishogi.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating)) {
+    if (unranked(mode, rating))
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-        embed = setAbout(embed, username, user.profile, user.playTime);
-        return setTeams(embed, username)
-            .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-            .then(embed => { return { embeds: [ embed ] } });
-    }
-    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
-        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
-        .then(embed => { return setTeams(embed, username) })
+    else
+        embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
+    const about = formatAbout(embed, username, user.profile);
+    if (about)
+        embed = embed.addField('About', about);
+    return setTeams(embed, username)
         .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => { return { embeds: [ embed ] } });
+        .then(embed => setGames(embed, username));
 }
 
-function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+function formatUser(title, name, patron, trophies, online, playing, streaming) {
     const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;
@@ -91,7 +91,7 @@ function formatPlayer(title, name, patron, trophies, online, playing, streaming)
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
     var status = streaming ? '  📡 Streaming' : '';
     if (playing)
-        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
+        status += playing.includes('sente') ? '  ♙ Playing' : '  ♟️ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
@@ -116,13 +116,11 @@ function setStats(embed, username, count, playTime, mode, rating) {
         });
 }
 
-function setAbout(embed, username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+function formatAbout(embed, username, profile) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const result = [links.join(' | ')];
     if (profile && profile.bio) {
         const image = getImage(profile.bio);
         if (image)
@@ -131,7 +129,7 @@ function setAbout(embed, username, profile, playTime) {
         if (bio)
             result.push(bio);
     }
-    return embed.addField('About', result.join('\n'), true);
+    return result.join('\n');
 }
 
 function setTeams(embed, username) {
@@ -248,12 +246,21 @@ function formatStats(count, playTime, mode, rating, perf) {
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatTimePlayed(playTime), inline: true }
        ];
     else
         return [
             { name: category, value: formatRating(mode, rating), inline: true }
        ];
+}
+
+function formatTimePlayed(playTime) {
+    const result = [formatSeconds(playTime ? playTime.total : 0)];
+    if (playTime && playTime.total) {
+        const duration = formatSeconds(playTime.tv).split(', ')[0];
+        result.push(`:tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`)
+    }
+    return result.join('\n');
 }
 
 function formatPerf(perf) {
@@ -280,6 +287,36 @@ function getImage(text) {
     const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
     if (match)
         return match[0];
+}
+
+function setGames(embed, username) {
+    const url = `https://lishogi.org/api/games/user/${username}?max=5&moves=false&tags=false&ongoing=true`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => parseDocument(response.data))
+        .then(games => { return embed.addField('Recent Games', games.map(formatGame).join('\n')) });
+}
+
+function parseDocument(document) {
+    return (typeof document == 'string') ? parse(document) : [document];
+}
+
+function formatGame(game) {
+    const url = `https://lishogi.org/${game.id}`;
+    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
+    return `${formatClock(game.clock)} [${players}](${url})`;
+}
+
+function formatPlayerName(player) {
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUserName(user) {
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function formatClock(clock) {
+    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
+    return `${base}+${clock.increment}`;
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
