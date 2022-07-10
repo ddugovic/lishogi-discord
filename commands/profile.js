@@ -281,7 +281,7 @@ function setGames(embed, username) {
     const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField('Recent Games', games.map(formatGame).join('\n\n')) });
+        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.map(formatGame).join('\n\n')) });
 }
 
 function formatGame(game) {
