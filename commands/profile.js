@@ -302,7 +302,7 @@ function formatGame(game) {
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
     const score = game.winner == 'white' ? ['○', '●'] : game.winner = 'black' ? ['●', '○'] : [' ', ' '];
-    return `${formatClock(game.clock)} ${score[0]}[${players}](${url})${score[1]}${opening}`;
+    return `${formatClock(game.clock)} ${score[0]} [${players}](${url}) ${score[1]}${opening}`;
 }
 
 function formatPlayerName(player) {
