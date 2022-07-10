@@ -281,16 +281,15 @@ function setGames(embed, username) {
     const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.map(formatGame).join('\n\n')) });
+        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n')) });
 }
 
 function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
-    const opening = game.opening ? formatOpening(game.opening, game.moves) : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]}\n${opening}`;
-    return `<t:${Math.floor(game.createdAt / 1000)}:R> ${status[0]} [${players}](${url}) ${status[1]} ${formatClock(game.clock, game.daysPerTurn)}\n${opening}`;
+    const opening = game.moves ? `\n${formatOpening(game.variant, game.opening, game.moves)}` : '';
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]}${opening}`;
 }
 
 function formatStatus(game) {
@@ -301,9 +300,10 @@ function formatRatingDiff(ratingDiff) {
     return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
 }
 
-function formatOpening(opening, moves) {
-    const line = moves.split(/ /).slice(0, opening.ply).join(' ');
-    return `${opening.name} *${line}*`;
+function formatOpening(variant, opening, moves) {
+    const ply = variant == 'standard' ? opening.ply : 10;
+    const line = moves.replaceAll(/\*/g, '\\*').split(/ /).slice(0, ply).join(' ');
+    return variant == 'standard' ? `${opening.name} *${line}*` : `*${line}*`;
 }
 
 function formatPlayerName(player) {
