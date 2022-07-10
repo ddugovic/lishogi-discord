@@ -65,9 +65,9 @@ async function formatProfile(user, favoriteMode) {
     const about = formatAbout(embed, username, user.profile);
     if (about)
         embed = embed.addField('About', about);
-    return setTeams(embed, username)
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => setGames(embed, username));
+    if (user.count.rated || user.perfs.puzzle)
+        embed = await setHistory(embed, username);
+    return setGames(embed, username);
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
@@ -99,8 +99,9 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
 
 function unranked(mode, rating) {
     // Players whose RD is above this threshold are unranked
+    const correspondence = ['correspondence','puzzle'];
     const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
-    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
+    return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
 function getCountryAndName(profile) {
@@ -130,19 +131,6 @@ function formatAbout(embed, username, profile) {
             result.push(bio);
     }
     return result.join('\n');
-}
-
-function setTeams(embed, username) {
-    const url = `https://lishogi.org/api/team/of/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const teams = formatTeams(response.data);
-            return teams ? embed.addField('Teams', teams) : embed;
-        });
-}
-
-function formatTeams(teams) {
-    return teams.slice(0, 10).map(team => `[${team.name}](https://lishogi.org/team/${team.id})`).join('\n');
 }
 
 function setHistory(embed, username) {
@@ -290,38 +278,31 @@ function getImage(text) {
 }
 
 function setGames(embed, username) {
-    const url = `https://lishogi.org/api/games/user/${username}?max=5&moves=false&tags=false&ongoing=true`;
+    const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField('Recent Games', games.map(formatGame).join('\n')) });
+        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.map(formatGame).join('\n\n')) });
 }
 
 function formatGame(game) {
     const url = `https://lishogi.org/${game.id}`;
-    const score = game.winner == 'sente' ? ['○', '●'] : game.winner = 'gote' ? ['●', '○'] : [' ', ' '];
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
-    return `${formatClock(game.clock)} ${score[0]} [${players}](${url}) ${score[1]} (${formatHandicap(game)})`;
+    const status = formatStatus(game);
+    const opening = game.moves ? formatOpening(game.moves) : '';
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]}\n${opening}`;
 }
 
-function formatHandicap(game, lang) {
-    const handicaps = {
-        'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['平手', 'Even'],
-        'lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['香落ち', 'Lance Down'],
-        '1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['右香落ち', 'Lance Down'],
-        'lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['角落ち', 'Bishop Down'],
-        'lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['飛車落ち', 'Rook+Lance Down'],
-        'lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['飛香落ち', 'Rook+Lance Down'],
-        'lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['二枚落ち', '2p Down'],
-        'lnsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['三枚落ち', '3p Down'],
-        '1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['四枚落ち', '4p Down'],
-        '2sgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['五枚落ち', '5p Down'],
-        '1nsgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['左五枚落ち', '5p Down'],
-        '2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['六枚落ち', '4p Down'],
-        '3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['八枚落ち', '6p Down'],
-        '4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1': ['十枚落ち', '8p Down'],
-    };
-    const sfen = game.initialFen ?? 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1';
-    return (handicaps[sfen] ?? ['その他', 'Other'])[lang == 'jp' ? 0 : 1];
+function formatStatus(game) {
+    return [game.players.sente.ratingDiff, game.players.gote.ratingDiff].map(formatRatingDiff);
+}
+
+function formatRatingDiff(ratingDiff) {
+    return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
+}
+
+function formatOpening(moves) {
+    const line = moves.split(/ /).slice(0, 10).join(' ');
+    return `*${line}*`;
 }
 
 function formatPlayerName(player) {
@@ -332,9 +313,12 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function formatClock(clock) {
-    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-    return `${base}+${clock.increment}`;
+function formatClock(clock, daysPerTurn) {
+    if (clock) {
+        const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
+        return `${base}+${clock.increment}`;
+    }
+    return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
