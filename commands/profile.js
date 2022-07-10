@@ -289,7 +289,7 @@ function formatGame(game) {
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
     const opening = game.moves ? `\n${formatOpening(game.variant, game.opening, game.moves)}` : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]}${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
