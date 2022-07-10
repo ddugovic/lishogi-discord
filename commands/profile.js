@@ -302,8 +302,9 @@ function parseDocument(document) {
 
 function formatGame(game) {
     const url = `https://lishogi.org/${game.id}`;
+    const score = game.winner == 'sente' ? ['○', '●'] : game.winner = 'gote' ? ['●', '○'] : [' ', ' '];
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
-    return `${formatClock(game.clock)} [${players}](${url})`;
+    return `${formatClock(game.clock)} ${score[0]}[${players}](${url})${score[1]}`;
 }
 
 function formatPlayerName(player) {
