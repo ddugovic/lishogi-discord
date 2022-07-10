@@ -62,7 +62,9 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
     else
         embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
-    embed = setAbout(embed, username, user.profile, user.playTime);
+    const about = formatAbout(embed, username, user.profile);
+    if (about)
+        embed = embed.addField('About', about);
     return setTeams(embed, username)
         .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
         .then(embed => setGames(embed, username));
@@ -115,13 +117,11 @@ function setStats(embed, username, count, playTime, mode, rating) {
         });
 }
 
-function setAbout(embed, username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+function formatAbout(embed, username, profile) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const result = [links.join(' | ')];
     if (profile && profile.bio) {
         const image = getImage(profile.bio);
         if (image)
@@ -130,7 +130,7 @@ function setAbout(embed, username, profile, playTime) {
         if (bio)
             result.push(bio);
     }
-    return embed.addField('About', result.join('\n'), true);
+    return result.join('\n');
 }
 
 function setTeams(embed, username) {
@@ -247,12 +247,21 @@ function formatStats(count, playTime, mode, rating, perf) {
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatTimePlayed(playTime), inline: true }
        ];
     else
         return [
             { name: category, value: formatRating(mode, rating), inline: true }
        ];
+}
+
+function formatTimePlayed(playTime) {
+    const result = [formatSeconds(playTime ? playTime.total : 0)];
+    if (playTime && playTime.total) {
+        const duration = formatSeconds(playTime.tv).split(', ')[0];
+        result.push(`:tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`)
+    }
+    return result.join('\n');
 }
 
 function formatPerf(perf) {
