@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
@@ -9,8 +9,12 @@ async function tv(author, mode) {
         mode = await getMode(author);
     const url = 'https://lichess.org/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => getChannel(response.data, mode ?? 'blitz'))
-        .then(channel => { if (channel) return formatChannel(...channel); })
+        .then(response => {
+            if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
+                const embed = formatChannel(...channel);
+                return embed.channel == 'Top Rated' ? embed : setGames(embed, embed.channel);
+            }
+        })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): \
@@ -34,14 +38,15 @@ function getChannel(data, mode) {
 
 function formatChannel(channel, tv) {
     const user = formatUser(tv.user);
-    const embed = new Discord.MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(getColor(tv.rating))
         .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
         .setThumbnail(channel == 'Computer' ? 'https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
         .setURL(`https://lichess.org/tv/${camel(channel)}`)
         .setDescription(`Sit back, relax, and watch the best ${channel} games on Lichess!`);
-    return setGames(embed, channel);
+    embed.channel = channel;
+    return embed;
 }
 
 function setGames(embed, channel) {
