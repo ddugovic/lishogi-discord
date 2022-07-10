@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const parse = require('ndjson-parse');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 async function tv(author, mode) {
@@ -49,10 +49,6 @@ function setGames(embed, channel) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
         .then(games => { return embed.addField('Live Games', games.map(formatGame).join('\n')) });
-}
-
-function parseDocument(document) {
-    return (typeof document == 'string') ? parse(document) : [document];
 }
 
 function formatGame(game) {
