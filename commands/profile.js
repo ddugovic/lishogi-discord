@@ -301,7 +301,7 @@ function formatRatingDiff(ratingDiff) {
 }
 
 function formatOpening(moves) {
-    const line = moves.split(/ /).slice(0, 10).join(' ');
+    const line = moves.replaceAll(/\*/g, '\\*').split(/ /).slice(0, 10).join(' ');
     return `*${line}*`;
 }
 
