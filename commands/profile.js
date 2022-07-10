@@ -288,7 +288,7 @@ function formatGame(game) {
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
     const opening = game.moves ? formatOpening(game.moves) : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]}\n${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>\n${opening}`;
 }
 
 function formatStatus(game) {
