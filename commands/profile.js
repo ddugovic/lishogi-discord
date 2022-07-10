@@ -305,7 +305,7 @@ function formatOpening(opening, moves) {
 }
 
 function formatPlayerName(player) {
-    return player.user ? formatUserName(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engein level ${player.aiLevel}` : 'Anonymous';
 }
 
 function formatUserName(user) {
