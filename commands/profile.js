@@ -280,15 +280,15 @@ function setGames(embed, username) {
     const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.map(formatGame).join('\n\n')) });
+        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n')) });
 }
 
 function formatGame(game) {
     const url = `https://lishogi.org/${game.id}`;
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
-    const opening = game.moves ? formatOpening(game.moves) : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>\n${opening}`;
+    const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
@@ -299,9 +299,9 @@ function formatRatingDiff(ratingDiff) {
     return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
 }
 
-function formatOpening(moves) {
+function formatOpening(opening, moves) {
     const line = moves.replaceAll(/\*/g, '\\*').split(/ /).slice(0, 10).join(' ');
-    return `*${line}*`;
+    return opening ? `${opening.name} *${line}*` : `*${line}*`;
 }
 
 function formatPlayerName(player) {
