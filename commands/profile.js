@@ -2,12 +2,12 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
-const parse = require('ndjson-parse');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -294,10 +294,6 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
         .then(games => { return embed.addField('Recent Games', games.map(formatGame).join('\n')) });
-}
-
-function parseDocument(document) {
-    return (typeof document == 'string') ? parse(document) : [document];
 }
 
 function formatGame(game) {
