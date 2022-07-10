@@ -305,7 +305,8 @@ function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
-    return `${formatClock(game.clock)} [${players}](${url})${opening}`;
+    const score = game.winner == 'white' ? ['○', '●'] : game.winner = 'black' ? ['●', '○'] : [' ', ' '];
+    return `${formatClock(game.clock)} ${score[0]}[${players}](${url})${score[1]}${opening}`;
 }
 
 function formatPlayerName(player) {
