@@ -138,7 +138,7 @@ function setTeams(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const teams = formatTeams(response.data);
-            return teams ? embed.addField('Teams', teams, true) : embed;
+            return teams ? embed.addField('Teams', teams) : embed;
         });
 }
 
