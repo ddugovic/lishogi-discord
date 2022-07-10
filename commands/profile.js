@@ -65,9 +65,9 @@ async function formatProfile(user, favoriteMode) {
     const about = formatAbout(embed, username, user.profile);
     if (about)
         embed = embed.addField('About', about);
-    return setTeams(embed, username)
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => setGames(embed, username));
+    if (user.count.rated || user.perfs.puzzle)
+        embed = await setHistory(embed, username);
+    return setGames(embed, username);
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
@@ -131,19 +131,6 @@ function formatAbout(embed, username, profile) {
             result.push(bio);
     }
     return result.join('\n');
-}
-
-function setTeams(embed, username) {
-    const url = `https://lichess.org/api/team/of/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const teams = formatTeams(response.data);
-            return teams ? embed.addField('Teams', teams) : embed;
-        });
-}
-
-function formatTeams(teams) {
-    return teams.slice(0, 10).map(team => `[${team.name}](https://lichess.org/team/${team.id})`).join('\n');
 }
 
 function setHistory(embed, username) {
@@ -302,7 +289,7 @@ function formatGame(game) {
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.opening ? ` (${game.opening.name.split(/:/)[0]})` : '';
     const score = game.winner == 'white' ? ['○', '●'] : game.winner = 'black' ? ['●', '○'] : [' ', ' '];
-    return `${formatClock(game.clock)} ${score[0]} [${players}](${url}) ${score[1]}${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${score[0]} [${players}](${url}) ${score[1]}${opening}`;
 }
 
 function formatPlayerName(player) {
@@ -313,9 +300,12 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function formatClock(clock) {
-    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-    return `${base}+${clock.increment}`;
+function formatClock(clock, daysPerTurn) {
+    if (clock) {
+        const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
+        return `${base}+${clock.increment}`;
+    }
+    return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
