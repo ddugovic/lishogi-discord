@@ -336,9 +336,14 @@ function formatUserName(user) {
 function formatClock(clock, daysPerTurn) {
     if (clock) {
         const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-        return clock.byoyomi ? `${base}|${clock.byoyomi}` : clock.increment ? `${base}+${clock.increment}` : base;
+        return clock.byoyomi ? formatClockByoyomi(base, clock) : clock.increment ? `${base}+${clock.increment}` : base;
     }
     return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
+}
+
+function formatClockByoyomi(base, clock) {
+    const periods = clock.periods > 1 ? ` (${clock.periods})` : '';
+    return `${base}|${clock.byoyomi}${periods}`;
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
