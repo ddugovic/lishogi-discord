@@ -40,7 +40,7 @@ function formatChannel(channel, tv) {
         .setThumbnail(channel == 'Computer' ? 'https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
         .setURL(`https://lichess.org/tv/${camel(channel)}`)
-        .setDescription(`Sit back, relax, and watch the best ${channel} players compete on Lichess TV`);
+        .setDescription(`Sit back, relax, and watch the best ${channel} games on Lichess!`);
     return setGames(embed, channel);
 }
 
