@@ -12,7 +12,7 @@ async function tv(author, mode) {
         .then(response => {
             if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
                 const embed = formatChannel(...channel);
-                return embed.channel == 'Top Rated' ? embed : setGames(embed, embed.channel);
+                return setGames(embed, embed.channel == 'Top Rated' ? 'Blitz' : embed.channel);
             }
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
