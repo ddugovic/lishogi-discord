@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatSanVariation } = require('../lib/format-variation');
+const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
@@ -67,7 +67,7 @@ function formatGame(game) {
 function formatOpening(opening, moves) {
     const ply = opening ? opening.ply : 10;
     const variation = moves.split(/ /).slice(0, ply);
-    return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${variation.join(' ')}*`;
+    return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
 function getColor(rating) {
