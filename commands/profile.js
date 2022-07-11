@@ -285,9 +285,10 @@ function setGames(embed, username) {
 }
 
 function formatGame(game) {
+console.log(game);
     const url = `https://lichess.org/${game.id}`;
-    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
+    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
@@ -300,12 +301,6 @@ function formatRatingDiff(ratingDiff) {
     return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
 }
 
-function formatOpening(opening, moves) {
-    const ply = opening ? opening.ply : 10;
-    const line = moves.split(/ /).slice(0, ply).join(' ');
-    return opening ? `${opening.name} *${line}*` : `*${line}*`;
-}
-
 function formatPlayerName(player) {
     return player.user ? formatUserName(player.user) : player.aiLevel ? `Level ${player.aiLevel}` : 'Anonymous';
 }
@@ -314,12 +309,18 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
+function formatOpening(opening, moves) {
+    const ply = opening ? opening.ply : 10;
+    const line = moves.split(/ /).slice(0, ply).join(' ');
+    return opening ? `${opening.name} *${line}*` : `*${line}*`;
+}
+
 function formatClock(clock, daysPerTurn) {
     if (clock) {
         const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
         return `${base}+${clock.increment}`;
     }
-    return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
+    return daysPerTurn ? `${daysPerTurn} ${plural('day', daysPerTurn)}` : '∞';
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
