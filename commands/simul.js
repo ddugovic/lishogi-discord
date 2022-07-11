@@ -37,6 +37,8 @@ function rankSimul(simul) {
 }
 
 function formatSimul(simul) {
+    const timestamp = simul.finishedAt ?? simul.startedAt ?? simul.estimatedStartAt;
+    const date = new Date(timestamp).toLocaleString('default', { month: 'long', day: 'numeric' });
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
     const play = simul.isFinished ? 'competed in' :
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
@@ -44,9 +46,9 @@ function formatSimul(simul) {
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(simul.fullName)
+        .setTitle(`${date} ${simul.fullName}`)
         .setURL(`https://lichess.org/simul/${simul.id}`)
-        .setDescription(`${players} ${play} the ${simul.fullName}.`);
+        .setDescription(`<t:${Math.round(timestamp / 1000)}:R> ${players} ${play} the ${simul.fullName}.`);
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
