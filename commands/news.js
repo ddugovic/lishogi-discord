@@ -19,6 +19,7 @@ function news(author, interaction) {
 function formatEntries(feed) {
     const embeds = [];
     for (const entry of feed.items.values()) {
+        const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
         const summary = formatSummary(trimSummary(entry.contentSnippet));
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new Discord.MessageEmbed()
@@ -26,7 +27,7 @@ function formatEntries(feed) {
             .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
             .setTitle(entry.title)
             .setURL(entry.link)
-            .setDescription(summary);
+            .setDescription(`<t:${timestamp}:F>\n${summary}`);
         if (entry.categories)
             embed = embed.addField('Categories', entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', '));
         embeds.push(embed);
