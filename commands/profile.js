@@ -233,7 +233,7 @@ function formatStats(count, playTime, mode, rating, perf) {
     category += formatProgress(rating.prog);
     if (count.all)
         return [
-            { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
+            { name: 'Games', value: `**${fn.format(count.rated)}** rated\n**${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
             { name: 'Time Played', value: formatTimePlayed(playTime), inline: true }
        ];
