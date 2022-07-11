@@ -13,7 +13,7 @@ async function tv(author, mode) {
         .then(response => {
             if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
                 const embed = formatChannel(...channel);
-                return setGames(embed, embed.channel == 'Top Rated' ? 'Blitz' : embed.channel);
+                return setGames(embed, channel[0]);
             }
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
@@ -34,24 +34,22 @@ async function getMode(author) {
 function getChannel(data, mode) {
     for (const [channel, tv] of Object.entries(data))
         if (camel(channel).toLowerCase() == camel(mode).toLowerCase())
-            return [channel, tv];
+            return [channel == 'Top Rated' ? 'best' : camel(channel), channel, tv];
 }
 
-function formatChannel(channel, tv) {
+function formatChannel(channel, name, tv) {
     const user = formatUser(tv.user);
-    const embed = new MessageEmbed()
+    return new MessageEmbed()
         .setColor(getColor(tv.rating))
         .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
         .setThumbnail(`https://lichess1.org/game/export/gif/thumbnail/${tv.gameId}.gif`)
-        .setTitle(`${channel} :tv: ${user} (${tv.rating})`)
-        .setURL(`https://lichess.org/tv/${channel == 'Top Rated' ? 'best' : camel(channel)}`)
-        .setDescription(`Sit back, relax, and watch the best ${channel} games on Lichess!`);
-    embed.channel = channel;
-    return embed;
+        .setTitle(`${name} :tv: ${user} (${tv.rating})`)
+        .setURL(`https://lichess.org/tv/${channel}`)
+        .setDescription(`Sit back, relax, and watch the best ${name} games on Lichess!`);
 }
 
 function setGames(embed, channel) {
-    const url = `https://lichess.org/api/tv/${camel(channel)}?nb=3&opening=true`;
+    const url = `https://lichess.org/api/tv/${channel}?nb=3&opening=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
         .then(games => { return embed.addField('Live Games', games.map(formatGame).join('\n\n')) });
