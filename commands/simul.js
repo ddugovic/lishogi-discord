@@ -39,7 +39,7 @@ function rankSimul(simul) {
 function formatSimul(simul) {
     const timestamp = simul.finishedAt ?? simul.startedAt ?? simul.estimatedStartAt;
     const date = new Date(timestamp).toLocaleString('default', { month: 'long', day: 'numeric' });
-    const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
+    const players = simul.nbPairings == 1 ? '**1** player' : `**${simul.nbPairings}** players`;
     const play = simul.isFinished ? 'competed in' :
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
     var embed = new Discord.MessageEmbed()
@@ -48,7 +48,7 @@ function formatSimul(simul) {
         .setThumbnail(getImage(simul.host) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${date} ${simul.fullName}`)
         .setURL(`https://lichess.org/simul/${simul.id}`)
-        .setDescription(`<t:${Math.round(timestamp / 1000)}:R> ${players} ${play} the ${simul.fullName}.`);
+        .setDescription(`${players} ${play} the ${simul.fullName} <t:${Math.round(timestamp / 1000)}:R>.`);
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
