@@ -285,7 +285,6 @@ function setGames(embed, username) {
 }
 
 function formatGame(game) {
-console.log(game);
     const url = `https://lichess.org/${game.id}`;
     const status = formatStatus(game);
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
