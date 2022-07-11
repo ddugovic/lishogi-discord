@@ -45,7 +45,7 @@ function formatDescription(text) {
 }
 
 function formatRound(round) {
-    return `<t:${round.startsAt / 1000}:F> – ${round.name}`;
+    return `<t:${round.startsAt / 1000}> – ${round.name} *<t:${round.startsAt / 1000}:R>*`;
 }
 
 function process(bot, msg) {
