@@ -1,16 +1,16 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const { Chess } = require('chessops/chess');
-const cfen = require('chessops/fen');
+const { INITIAL_FEN, makeFen, parseFen } = require('chessops/fen');
 const formatColor = require('../lib/format-color');
-const san = require('chessops/san');
+const { makeSanVariation } = require('chessops/san');
 const { parseUci } = require('chessops/util');
 
 async function eval(author, fen) {
-    const parse = cfen.parseFen(fen.replace(/_/g, ' ') || cfen.INITIAL_FEN);
+    const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         const setup = parse.unwrap();
-        fen = cfen.makeFen(setup);
+        fen = makeFen(setup);
         const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/json' } })
             .then(response => formatCloudEval(fen, setup, response.data))
@@ -59,20 +59,20 @@ function formatGames(embeds, fen, setup, games) {
 function formatGame(setup, game) {
     const pos = Chess.fromSetup(setup).unwrap();
     const variation = [parseUci(game.uci)];
-    return `${san.makeSanVariation(pos, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+    return `${makeSanVariation(pos, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
 }
 
 function formatVariation(setup, pv) {
     const pos = Chess.fromSetup(setup).unwrap();
     const variation = pv.moves.split(' ').map(parseUci);
-    return `**${formatEval(pv)}**: ${san.makeSanVariation(pos, variation)}`;
+    return `**${formatEval(pv)}**: ${makeSanVariation(pos, variation)}`;
 }
 
 function formatEval(pv) {
     if (pv.mate)
         return `#${pv.mate}`.replace('#-', '-#');
 
-    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'always' });
+    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'exceptZero' });
     return formatter.format(pv.cp/100);
 }
 
