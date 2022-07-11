@@ -37,7 +37,7 @@ function formatBroadcast(broadcast) {
 
 function formatDescription(text) {
     text = html2md(text)
-    const pattern = /(\|(?:[-,\. \w]+\|)+)\r?\n\|(?:-+\|)+((?:\r?\n\|(?:[-,\. \w]+\|)+)+)/;
+    const pattern = /(\|(?:[^\|]+\|)+)\r?\n\|(?:-+\|)+((?:\r?\n\|(?:[^\|]+\|)+)+)/;
     const match = text.match(pattern);
     if (match)
         text = text.replace(match[0], formatTable(match[1], match[2].trim()))
