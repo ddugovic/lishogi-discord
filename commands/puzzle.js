@@ -1,10 +1,6 @@
 const axios = require('axios');
-const Discord = require('discord.js');
-const chess = require('chessops/chess');
-const fen = require('chessops/fen');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const san = require('chessops/san');
-const util = require('chessops/util');
 
 async function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
@@ -20,23 +16,14 @@ async function puzzle(author) {
 
 function formatPuzzle(game, puzzle) {
     const players = game.players.map(formatPlayer).join(' - ');
-    const pos = chess.Chess.default();
-    var move;
-    for (move of game.pgn.split(' ')) {
-        move = san.parseSan(pos, move);
-        pos.play(move);
-    }
-    const uri = fen.makeFen(pos.toSetup()).replaceAll(' ', '_');
-    const uci = util.makeUci(move);
-
-    const embed = new Discord.MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(getColor(puzzle.rating))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
         .setURL(`https://lichess.org/training/${puzzle.id}`)
-	.setImage(`https://lichess.org/export/gif/${uri}?lastMove=${uci}`);
-    const data = new Discord.MessageEmbed()
+        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
+    const data = new MessageEmbed()
         .addField('Themes', puzzle.themes.map(title).join(', '));
     return { embeds: [ embed, data ] };
 }
