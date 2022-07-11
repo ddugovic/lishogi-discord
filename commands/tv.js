@@ -66,8 +66,8 @@ function formatGame(game) {
 
 function formatOpening(opening, moves) {
     const ply = opening ? opening.ply : 10;
-    const variation = formatSanVariation(null, moves.split(/ /).slice(0, ply));
-    return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
+    const variation = moves.split(/ /).slice(0, ply);
+    return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${variation.join(' ')}*`;
 }
 
 function getColor(rating) {
