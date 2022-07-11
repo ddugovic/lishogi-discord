@@ -1,19 +1,16 @@
 const axios = require('axios');
-const Discord = require('discord.js');
-const { Chess } = require('chessops/chess');
 const { INITIAL_FEN, makeFen, parseFen } = require('chessops/fen');
+const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { makeSanVariation } = require('chessops/san');
-const { parseUci } = require('chessops/util');
+const { formatUciVariation } = require('../lib/format-variation');
 
 async function eval(author, fen) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
-        const setup = parse.unwrap();
-        fen = makeFen(setup);
+        fen = makeFen(parse.unwrap());
         const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
         return axios.get(url, { headers: { Accept: 'application/json' } })
-            .then(response => formatCloudEval(fen, setup, response.data))
+            .then(response => formatCloudEval(fen, response.data))
             .catch(error => {
                 console.log(`Error in eval(${author.username}): \
                     ${error.response.status} ${error.response.statusText}`);
@@ -25,47 +22,45 @@ async function eval(author, fen) {
     }
 }
 
-function formatCloudEval(fen, setup, eval) {
+function formatCloudEval(fen, eval) {
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
     for (const pv in eval.pvs)
-        variations.push(formatVariation(setup, eval.pvs[pv]));
+        variations.push(formatVariation(fen, eval.pvs[pv]));
     const red = Math.min(mnodes, 255);
 
-    fen = fen.replace(/ /g,'_');
+    const fenUri = fen.replace(/ /g,'_');
     const embeds = [
         new Discord.MessageEmbed()
             .setColor(formatColor(red, 0, 255 - red))
             .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(':cloud: Cloud Evaluation')
-            .setURL(`https://lichess.org/analysis/standard/${fen}#explorer`)
-	    .setImage(`https://lichess.org/export/gif/${fen}`),
+            .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
+	    .setImage(`https://lichess.org/export/gif/${fenUri}`),
         new Discord.MessageEmbed()
             .addField(stats, variations.join('\n'))
     ];
-    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&moves=0&topGames=3`;
+    const url = `https://explorer.lichess.ovh/masters?fen=${fenUri}&moves=0&topGames=3`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatGames(embeds, fen, setup, response.data.topGames));
+        .then(response => formatGames(embeds, fen, response.data.topGames));
 }
 
-function formatGames(embeds, fen, setup, games) {
+function formatGames(embeds, fen, games) {
     if (games.length)
-        embeds.push(new Discord.MessageEmbed().addField('Master Games', games.map(game => formatGame(setup, game)).join('\n')));
+        embeds.push(new Discord.MessageEmbed().addField('Master Games', games.map(game => formatGame(fen, game)).join('\n')));
     return { embeds: embeds };
 }
 
-function formatGame(setup, game) {
-    const pos = Chess.fromSetup(setup).unwrap();
-    const variation = [parseUci(game.uci)];
-    return `${makeSanVariation(pos, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+function formatGame(fen, game) {
+    const variation = [game.uci];
+    return `${formatUciVariation(fen, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
 }
 
-function formatVariation(setup, pv) {
-    const pos = Chess.fromSetup(setup).unwrap();
-    const variation = pv.moves.split(' ').map(parseUci);
-    return `**${formatEval(pv)}**: ${makeSanVariation(pos, variation)}`;
+function formatVariation(fen, pv) {
+    const variation = pv.moves.split(' ');
+    return `**${formatEval(pv)}**: ${formatUciVariation(fen, variation)}`;
 }
 
 function formatEval(pv) {
