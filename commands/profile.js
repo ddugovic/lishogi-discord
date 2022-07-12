@@ -326,7 +326,7 @@ function formatHandicap(game, lang) {
 }
 
 function formatPlayerName(player) {
-    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engein level ${player.aiLevel}` : 'Anonymous';
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engine level ${player.aiLevel}` : 'Anonymous';
 }
 
 function formatUserName(user) {
