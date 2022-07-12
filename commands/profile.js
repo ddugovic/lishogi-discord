@@ -285,8 +285,8 @@ function setGames(embed, username) {
 
 function formatGame(game) {
     const url = `https://lishogi.org/${game.id}`;
-    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const status = formatStatus(game);
+    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
@@ -297,6 +297,14 @@ function formatStatus(game) {
 
 function formatRatingDiff(ratingDiff) {
     return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
+}
+
+function formatPlayerName(player) {
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engine level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUserName(user) {
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
 function formatOpening(opening, moves) {
@@ -323,14 +331,6 @@ function formatHandicap(game, lang) {
     };
     const sfen = game.initialFen ?? 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1';
     return (handicaps[sfen] ?? ['その他', 'Other'])[lang == 'jp' ? 0 : 1];
-}
-
-function formatPlayerName(player) {
-    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engine level ${player.aiLevel}` : 'Anonymous';
-}
-
-function formatUserName(user) {
-    return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
 function formatClock(clock, daysPerTurn) {
