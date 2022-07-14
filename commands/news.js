@@ -28,7 +28,7 @@ function formatNews(feed) {
 function formatEntry(entry, link) {
     const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
-    const blue = Math.min(Math.max(Math.round((timestamp - now) / (3600 * 24)), 0), 255);
+    const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
     const summary = formatSummary(html2md(entry.contentSnippet));
     const image = getImage(html2md(entry.content));
     var embed = new Discord.MessageEmbed()
