@@ -1,7 +1,8 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
+const getUserLink = require('../lib/get-site-links');
 const html2md = require('html-to-md');
 const Parser = require('rss-parser');
 
@@ -10,6 +11,8 @@ function blog(author, interaction) {
         .then(feed => Array.from(feed.items.values(), formatEntry))
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
+            console.log(`Error in blog(${author.username}): \
+                ${error} ${error.stack}`);
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -20,9 +23,9 @@ function blog(author, interaction) {
 function formatEntry(entry) {
     const summary = formatSnippet(entry);
     const red = Math.min(Math.max(summary.length - 150, 0), 255);
-    var embed = new Discord.MessageEmbed()
+    var embed = new MessageEmbed()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(entry.author)})
+        .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(entry.author)})
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
@@ -41,12 +44,6 @@ function formatSnippet(entry) {
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
     return message.trim();
-}
-
-function getLink(author) {
-    const match = author.match(/@(\w+)/)
-    if (match)
-        return `https://lichess.org/@/${match[1]}`;
 }
 
 function getImage(content) {
