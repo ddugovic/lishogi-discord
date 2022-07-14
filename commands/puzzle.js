@@ -24,7 +24,7 @@ function formatPuzzle(game, puzzle) {
         .setURL(`https://lichess.org/training/${puzzle.id}`)
         .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
     const data = new MessageEmbed()
-        .addField('Themes', puzzle.themes.map(title).join(', '));
+        .addField('Themes', puzzle.themes.map(theme => `[${title(theme)}](https://lichess.org/training/${theme})`).join(', '));
     return { embeds: [ embed, data ] };
 }
 
@@ -40,7 +40,7 @@ function formatPlayer(player) {
 }
 
 function title(str) {
-    str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    str = str.replace(/([a-z])([A-Z1-9])/g, '$1 $2');
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
