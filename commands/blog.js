@@ -26,17 +26,17 @@ function formatEntry(entry) {
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setDescription(formatSnippet(entry));
+        .setDescription(formatSnippet(entry.contentSnippet));
     const image = getImage(html2md(entry.content));
     if (image)
         embed = embed.setImage(image)
     return embed;
 }
 
-function formatSnippet(entry) {
-    if (entry.contentSnippet.length < 200)
-        return entry.contentSnippet;
-    const snippet = entry.contentSnippet.split(/\r?\n/);
+function formatSnippet(contentSnippet) {
+    if (contentSnippet.length < 200)
+        return contentSnippet;
+    const snippet = contentSnippet.split(/\r?\n/);
     var message = '';
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
