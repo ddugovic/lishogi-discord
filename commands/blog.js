@@ -18,15 +18,16 @@ function blog(author, interaction) {
 }
 
 function formatEntry(entry) {
-    const timeago = new Date().getTime() - new Date(entry.isoDate).getTime();
-    const blue = Math.min(Math.max(Math.round(timeago / (1000 * 3600 * 24)), 0), 255);
+    const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
+    const now = Math.floor(new Date().getTime() / 1000);
+    const blue = Math.min(Math.max(Math.round((timestamp - now) / (3600 * 24)), 0), 255);
     var embed = new MessageEmbed()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setDescription(formatSnippet(entry.contentSnippet));
+        .setDescription(`<t:${timestamp}:F>\n${formatSnippet(entry.contentSnippet)}`);
     const image = getImage(html2md(entry.content));
     if (image)
         embed = embed.setImage(image)
