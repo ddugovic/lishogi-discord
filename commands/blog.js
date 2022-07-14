@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
@@ -19,15 +18,15 @@ function blog(author, interaction) {
 }
 
 function formatEntry(entry) {
-    const summary = formatSnippet(entry);
-    const red = Math.min(Math.max(summary.length - 150, 0), 255);
+    const timeago = new Date().getTime() - new Date(entry.isoDate).getTime();
+    const red = Math.min(Math.max(Math.round(timeago / (1000 * 3600 * 24), 0), 255));
     var embed = new MessageEmbed()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(entry.author)})
+        .setAuthor({ name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setDescription(summary);
+        .setDescription(formatSnippet(entry));
     const image = getImage(html2md(entry.content));
     if (image)
         embed = embed.setImage(image)
