@@ -19,9 +19,9 @@ function blog(author, interaction) {
 
 function formatEntry(entry) {
     const timeago = new Date().getTime() - new Date(entry.isoDate).getTime();
-    const red = Math.min(Math.max(Math.round(timeago / (1000 * 3600 * 24)), 0), 255);
+    const blue = Math.min(Math.max(Math.round(timeago / (1000 * 3600 * 24)), 0), 255);
     var embed = new MessageEmbed()
-        .setColor(formatColor(red, 0, 255-red))
+        .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)
         .setURL(entry.link)
