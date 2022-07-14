@@ -12,8 +12,6 @@ function blog(author, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
