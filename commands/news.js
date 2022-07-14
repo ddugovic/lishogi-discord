@@ -7,8 +7,8 @@ const Parser = require('rss-parser');
 
 function news(author, interaction) {
     return new Parser().parseURL('http://shogihub.com/updates.atom')
-        .then(feed => formatNews(feed, interaction))
-        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
+        .then(feed => formatNews(feed))
+        .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -17,41 +17,45 @@ function news(author, interaction) {
         });
 }
 
-function formatNews(news, interaction) {
+function formatNews(feed) {
     const embeds = [];
-    for (const entry of news.items.values()) {
-        if (entry.title.startsWith('NEWS')) {
-            const summary = formatEntry(html2md(entry.contentSnippet));
-            const red = Math.min(Math.max(summary.length - 150, 0), 255);
-            const image = getImage(html2md(entry.content));
-            var embed = new Discord.MessageEmbed()
-                .setColor(formatColor(red, 0, 255-red))
-                .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
-                .setTitle(entry.title)
-                .setURL(entry.link)
-                .setDescription(summary);
-            if (image)
-                embed = embed.setThumbnail(image)
-            embeds.push(embed);
-        }
-    }
+    for (const entry of feed.items.values())
+        if (entry.title.startsWith('NEWS'))
+            embeds.push(formatEntry(entry, feed.link));
     return embeds;
+}
+
+function formatEntry(entry, link) {
+    const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
+    const now = Math.floor(new Date().getTime() / 1000);
+    const blue = Math.min(Math.max(Math.round((timestamp - now) / (3600 * 24)), 0), 255);
+    const summary = formatSummary(html2md(entry.contentSnippet));
+    const image = getImage(html2md(entry.content));
+    var embed = new Discord.MessageEmbed()
+        .setColor(formatColor(255-blue, 0, blue))
+        .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
+        .setTitle(entry.title)
+        .setURL(entry.link)
+        .setDescription(`<t:${timestamp}:F>\n${summary}`);
+    if (image)
+        embed = embed.setThumbnail(image)
+    return embed;
+}
+
+function formatSummary(snippet) {
+    if (snippet.length < 200)
+        return snippet;
+    const lines = snippet.split(/\r?\n/);
+    var message = '';
+    while (message.length < 120)
+        message += `${lines.shift()}\n`;
+    return message.trim();
 }
 
 function getImage(content) {
     const match = content.match(/!\[.*?\]\((\S+)\)/)
     if (match)
         return match[1];
-}
-
-function formatEntry(contentSnippet) {
-    if (contentSnippet.length < 200)
-        return contentSnippet;
-    const snippet = contentSnippet.split(/\r?\n/);
-    var message = '';
-    while (message.length < 80)
-        message += `${snippet.shift()}\n`;
-    return message.trim();
 }
 
 function process(bot, msg) {
