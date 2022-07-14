@@ -7,7 +7,7 @@ const Parser = require('rss-parser');
 
 function blog(author, interaction) {
     return new Parser().parseURL('https://lichess.org/blog.atom')
-        .then(feed => formatBlog(feed))
+        .then(feed => Array.from(feed.items.values(), formatEntry))
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
@@ -17,27 +17,23 @@ function blog(author, interaction) {
         });
 }
 
-function formatBlog(blog) {
-    const embeds = [];
-    for (const entry of blog.items.values()) {
-        const summary = formatEntry(entry);
-        const red = Math.min(Math.max(summary.length - 150, 0), 255);
-        var embed = new Discord.MessageEmbed()
-            .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(entry.author)})
-            .setTitle(entry.title)
-            .setURL(entry.link)
-            .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-            .setDescription(summary);
-        const image = getImage(html2md(entry.content));
-        if (image)
-            embed = embed.setImage(image)
-        embeds.push(embed);
-    }
-    return embeds;
+function formatEntry(entry) {
+    const summary = formatSnippet(entry);
+    const red = Math.min(Math.max(summary.length - 150, 0), 255);
+    var embed = new Discord.MessageEmbed()
+        .setColor(formatColor(red, 0, 255-red))
+        .setAuthor({name: entry.author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getLink(entry.author)})
+        .setTitle(entry.title)
+        .setURL(entry.link)
+        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setDescription(summary);
+    const image = getImage(html2md(entry.content));
+    if (image)
+        embed = embed.setImage(image)
+    return embed;
 }
 
-function formatEntry(entry) {
+function formatSnippet(entry) {
     if (entry.contentSnippet.length < 200)
         return entry.contentSnippet;
     const snippet = entry.contentSnippet.split(/\r?\n/);
