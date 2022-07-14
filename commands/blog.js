@@ -1,13 +1,13 @@
-const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
+const getUserLink = require('../lib/get-site-links');
 const html2md = require('html-to-md');
 const Parser = require('rss-parser');
 
 function blog(author, interaction) {
     return new Parser().parseURL('https://lishogi.org/blog.atom')
-        .then(feed => formatBlog(feed, interaction))
+        .then(feed => Array.from(feed.items.values(), formatEntry))
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
@@ -17,40 +17,30 @@ function blog(author, interaction) {
         });
 }
 
-function formatBlog(blog, interaction) {
-    const embeds = [];
-    for (const entry of blog.items.values()) {
-        const summary = formatEntry(entry);
-        const red = Math.min(Math.max(summary.length - 150, 0), 255);
-        var embed = new Discord.MessageEmbed()
-            .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(entry.author)})
-            .setTitle(entry.title)
-            .setURL(entry.link)
-            .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-            .setDescription(summary);
-        const image = getImage(html2md(entry.content));
-        if (image)
-            embed = embed.setImage(image)
-        embeds.push(embed);
-    }
-    return embeds;
+function formatEntry(entry) {
+    const timeago = new Date().getTime() - new Date(entry.isoDate).getTime();
+    const blue = Math.min(Math.max(Math.round(timeago / (1000 * 3600 * 24)), 0), 255);
+    var embed = new MessageEmbed()
+        .setColor(formatColor(255-blue, 0, blue))
+        .setAuthor({ name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getUserLink(entry.author) })
+        .setTitle(entry.title)
+        .setURL(entry.link)
+        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setDescription(formatSnippet(entry.contentSnippet));
+    const image = getImage(html2md(entry.content));
+    if (image)
+        embed = embed.setImage(image)
+    return embed;
 }
 
-function formatEntry(entry) {
-    if (entry.contentSnippet.length < 200)
-        return entry.contentSnippet;
-    const snippet = entry.contentSnippet.split(/\r?\n/);
+function formatSnippet(contentSnippet) {
+    if (contentSnippet.length < 200)
+        return contentSnippet;
+    const snippet = contentSnippet.split(/\r?\n/);
     var message = '';
     while (message.length < 80)
         message += `${snippet.shift()}\n`;
     return message.trim();
-}
-
-function getLink(author) {
-    const match = author.match(/@(\w+)/)
-    if (match)
-        return `https://lishogi.org/@/${match[1]}`;
 }
 
 function getImage(content) {
