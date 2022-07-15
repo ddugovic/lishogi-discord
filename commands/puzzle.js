@@ -23,7 +23,10 @@ function formatPuzzle(game, puzzle) {
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
         .setURL(`https://lichess.org/training/${puzzle.id}`)
-        .addField('Themes', puzzle.themes.map(formatTheme).join(', '))
+        .addFields([
+            { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
+            { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
+	])
         .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
 }
 
