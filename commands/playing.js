@@ -30,10 +30,10 @@ async function getName(author) {
 }
 
 function formatCurrentGame(game) {
-    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
+    const players = [game.players.white, game.players.black];
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
+        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
@@ -41,7 +41,7 @@ function formatCurrentGame(game) {
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif`);
     if (game.analysis)
-        embed = embed.addFields(formatAnalysis(game));
+        embed = embed.addFields(formatAnalysis(game.analysis, players.map(getPlayerName)));
     return embed;
 }
 
@@ -57,6 +57,13 @@ function formatPlayer(player) {
 
 function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function getPlayerName(player) {
+    if (player.user)
+        return player.user.name;
+    if (player.aiLevel)
+        return `Stockfish level ${player.aiLevel}`;
 }
 
 function formatGame(game) {
@@ -77,8 +84,8 @@ function formatClock(clock, daysPerTurn) {
     return daysPerTurn ? `${daysPerTurn} ${plural('day', daysPerTurn)}` : '∞';
 }
 
-function formatAnalysis(game) {
-    const nodePairs = chunk(game.analysis.map(getJudgmentName), 2);
+function formatAnalysis(analysis, playerNames) {
+    const nodePairs = chunk(analysis.map(getJudgmentName), 2);
     const white = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
     const black = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
     for (i = 0; i < nodePairs.length; i++) {
@@ -87,8 +94,8 @@ function formatAnalysis(game) {
         if (blackJudgment) black[blackJudgment]++;
     }
     return [
-        { name: 'White', value: formatJudgments(white), inline: true },
-        { name: 'Black', value: formatJudgments(black), inline: true }
+        { name: playerNames[0] ?? 'White', value: formatJudgments(white), inline: true },
+        { name: playerNames[1] ?? 'Black', value: formatJudgments(black), inline: true }
     ];
 }
 
