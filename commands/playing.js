@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const plural = require('plural');
@@ -35,7 +36,7 @@ function formatCurrentGame(game) {
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(`${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
@@ -68,20 +69,12 @@ function getPlayerName(player) {
 
 function formatGame(game) {
     const opening = game.moves ? ` ${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatOpening(opening, initialFen, moves) {
     const variation = moves.split(/ /).slice(0, opening ? opening.ply : 10);
     return opening ? `${opening.name}\n*${formatSanVariation(initialFen, variation)}*` : `*${numberVariation(variation)}*`;
-}
-
-function formatClock(clock, daysPerTurn) {
-    if (clock) {
-        const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-        return `${base}+${clock.increment}`;
-    }
-    return daysPerTurn ? `${daysPerTurn} ${plural('day', daysPerTurn)}` : '∞';
 }
 
 function formatAnalysis(analysis, playerNames) {
