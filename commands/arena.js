@@ -33,17 +33,20 @@ function mergeArenas(data) {
     return arenas;
 }
 
-function setArenas(arenas, mode) {
-    if (mode) {
-        const matches = arenas.filter(arena => filterArena(arena, mode));
-        if (matches.length)
-            return matches.sort(compareArenas).map(formatArena);
-    }
-    return arenas.sort(compareArenas).map(formatArena);
+async function setArenas(arenas, mode) {
+    if (mode)
+        arenas = arenas.filter(arena => filterArena(arena, mode));
+    return arenas.length == 1 ? [await setArena(arenas.sort(compareArenas)[0])] : arenas.map(formatArena);
 }
 
 function filterArena(arena, mode) {
     return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
+}
+
+function setArena(arena) {
+    const url = `https://lishogi.org/api/tournament/${arena.id}`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatArena(response.data));
 }
 
 function compareArenas(a, b) {
@@ -61,16 +64,15 @@ function formatArena(arena) {
         .setDescription(getDescription(arena));
     if (arena.featured)
 	embed = embed.setImage(`https://lishogi.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
-    if (arena.stats) {
+    if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addField('Berserks', `**${arena.stats.berserks}**`, true)
             .addField('Games', `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, true)
             .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
     }
-    if (arena.minRatedGames) {
+    if (arena.minRatedGames && !arena.pairingsClosed)
         embed = embed
             .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
-    }
     return embed;
 }
 
@@ -87,14 +89,16 @@ function formatSchedule(schedule) {
 }
 
 function getDescription(arena) {
-    const players = arena.nbPlayers == 1 ? '**1** player' : `**${arena.nbPlayers}** players`;
-    const play = arena.status == 30 ? 'competed in' : arena.status == 20 ? `${(arena.nbPlayers == 1 ? 'competes' : 'compete')} in` : 'await';
+    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
     const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
     const rated = arena.rated ? 'rated' : 'casual';
     const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
-        arena.status < 20 ? `Starts <t:${arena.startsAt}:R>` : '';
-        arena.status < 30 ? `Finishes <t:${arena.finishesAt}:R>` : '';
-    return `${players} ${play} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
+        arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
+        arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>` :
+        arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` :
+        arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>` :
+        arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>` : '';
+    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
