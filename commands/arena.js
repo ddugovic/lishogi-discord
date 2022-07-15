@@ -22,13 +22,14 @@ function mergeArenas(data) {
     const arenas = [];
     for (const status in data)
         arenas.push(...data[status]);
-    return arenas;
+    return arenas.sort((a,b) => a.startsAt - b.startsAt);
 }
 
 async function setArenas(arenas, mode) {
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
-    return arenas.length == 1 ? [await setArena(arenas.sort(compareArenas)[0])] : arenas.map(formatArena);
+    arenas = arenas.sort(compareArenas);
+    return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
 }
 
 function filterArena(arena, mode) {
