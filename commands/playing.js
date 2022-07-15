@@ -2,6 +2,7 @@ const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
+const plural = require('plural');
 const User = require('../models/User');
 
 async function playing(author, username) {
@@ -85,11 +86,14 @@ function formatAnalysis(game) {
         if (whiteJudgment) white[whiteJudgment]++;
         if (blackJudgment) black[blackJudgment]++;
     }
-    return [{ name: 'White', value: formatJudgments(white), inline: true }, { name: 'Black', value: formatJudgments(black), inline: true }];
+    return [
+        { name: 'White', value: formatJudgments(white), inline: true },
+        { name: 'Black', value: formatJudgments(black), inline: true }
+    ];
 }
 
 function formatJudgments(judgments) {
-    return [`Inaccuracy: **${judgments['Inaccuracy']}**`, `Mistake: **${judgments['Mistake']}**`, `Blunder: **${judgments['Blunder']}**`].join('\n');
+    return Object.entries(judgments).map(entry => `**${entry[1]}** ${plural(...entry)}`).join('\n');
 }
 
 function getJudgmentName(node) {
