@@ -29,7 +29,7 @@ async function getName(author) {
 }
 
 function formatCurrentGame(game) {
-    const players = [game.players.white.user, game.players.black.user].map(formatPlayer).join(' - ');
+    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
@@ -43,15 +43,17 @@ function formatCurrentGame(game) {
 }
 
 function getColor(players) {
-    const rating = (players.white.rating + players.black.rating) / 2;
+    const rating = ((players.white.rating ?? 1500) + (players.black.rating ?? 1500)) / 2;
     const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }
 
 function formatPlayer(player) {
-    if (player.title)
-        return `${player.title} ${player.name.split(' ')[0]}`;
-    return player.name;
+    return player.user ? formatUser(player.user) : player.aiLevel ? `Stockfish level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUser(user) {
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
 function formatGame(game) {
