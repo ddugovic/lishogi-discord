@@ -86,7 +86,7 @@ function formatSchedule(schedule) {
 }
 
 function getDescription(arena) {
-    const players = arena.nbPlayers == 1 ? '**1** player competes' : `**${arena.nbPlayers}** players compete`;
+    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
     const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
     const rated = arena.rated ? 'rated' : 'casual';
     const winner = arena.isFinished ? `${formatPlayer(arena.winner ?? arena.podium[0])} takes the prize home!` :
@@ -94,7 +94,7 @@ function getDescription(arena) {
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` :
         arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>` : '';
-    return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
+    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
