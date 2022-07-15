@@ -70,7 +70,7 @@ function formatArena(arena) {
             .addField('Games', `**${arena.stats.games}** (+**${arena.stats.whiteWins}** -**${arena.stats.blackWins}** =**${arena.stats.draws}**)`, true)
             .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
     }
-    if (arena.minRatedGames && !arena.isFinished)
+    if (arena.minRatedGames && !arena.pairingsClosed)
         embed = embed
             .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
     return embed;
