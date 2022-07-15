@@ -4,6 +4,7 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
+const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
@@ -289,7 +290,7 @@ function formatGame(game) {
     const status = formatStatus(game);
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
@@ -333,19 +334,6 @@ function formatHandicap(game, lang) {
     };
     const sfen = game.initialFen ?? 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1';
     return (handicaps[sfen] ?? ['その他', 'Other'])[lang == 'jp' ? 0 : 1];
-}
-
-function formatClock(clock, daysPerTurn) {
-    if (clock) {
-        const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-        return clock.byoyomi ? formatClockByoyomi(base, clock) : clock.increment ? `${base}+${clock.increment}` : base;
-    }
-    return `${daysPerTurn} ${plural('day', daysPerTurn)}`;
-}
-
-function formatClockByoyomi(base, clock) {
-    const periods = clock.periods > 1 ? ` (${clock.periods})` : '';
-    return `${base}|${clock.byoyomi}${periods}`;
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
