@@ -12,7 +12,7 @@ async function playing(author, username) {
     }
     const url = `https://lishogi.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatGame(response.data))
+        .then(response => formatCurrentGame(response.data, username))
         .catch(error => {
             console.log(`Error in playing(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -27,13 +27,13 @@ async function getName(author) {
         return user.lishogiName;
 }
 
-function formatGame(game) {
+function formatCurrentGame(game, username) {
     if (game.status == 'started')
         return `https://lishogi.org/${game.id}`;
     const players = [game.players.sente.user, game.players.gote.user].map(formatPlayer).join(' - ');
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/${game.id}` })
+        .setAuthor({ name: players, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lishogi.org/${game.id}`)
