@@ -26,7 +26,7 @@ const commands = {
         usage: "[game mode]",
         description: "Find an upcoming or recent arena",
         process: arena.process,
-        reply: arena.reply
+        interact: arena.interact
     },
     "blog": {
         usage: "",

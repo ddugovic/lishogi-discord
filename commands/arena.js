@@ -1,15 +1,17 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const User = require('../models/User');
 
-async function arena(author, mode) {
+async function arena(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author);
     const url = 'https://lichess.org/api/tournament';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => setArenas(response.data, mode))
+        .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -24,19 +26,13 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function setArenas(data, mode) {
-    const arenas = [];
+async function setArenas(data, mode) {
+    var arenas = [];
     for (const status in data)
         arenas.push(...data[status]);
-
-    if (mode) {
-        const matches = arenas.filter(arena => filterArena(arena, mode));
-        if (matches.length)
-            return setArena(matches.sort(compareArenas)[0]);
-    }
-    if (arenas.length)
-        return setArena(arenas.sort(compareArenas)[0]);
-    return 'No tournament found!';
+    if (mode)
+        arenas = arenas.filter(arena => filterArena(arena, mode));
+    return arenas.length == 1 ? [await setArena(arenas.sort(compareArenas)[0])] : arenas.map(formatArena);
 }
 
 function filterArena(arena, mode) {
@@ -44,6 +40,7 @@ function filterArena(arena, mode) {
 }
 
 function setArena(arena) {
+    return formatArena(arena);
     const url = `https://lichess.org/api/tournament/${arena.id}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatArena(response.data));
@@ -73,7 +70,7 @@ function formatArena(arena) {
         embed = embed
             .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
     }
-    return { embeds: [ embed ] };
+    return embed;
 }
 
 function formatGame(game) {
@@ -92,9 +89,11 @@ function getDescription(arena) {
     const players = arena.nbPlayers == 1 ? '**1** player competes' : `**${arena.nbPlayers}** players compete`;
     const clock = `${arena.clock.limit / 60}+${arena.clock.increment}`;
     const rated = arena.rated ? 'rated' : 'casual';
-    const winner = arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
+    const winner = arena.isFinished ? `${formatPlayer(arena.winner ?? arena.podium[0])} takes the prize home!` :
         arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>` :
-        arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` : '';
+        arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>` :
+        arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>` :
+        arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>` : '';
     return `${players} in the ${arena.fullName}. ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
@@ -106,8 +105,8 @@ function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'));
+async function interact(interaction) {
+    return arena(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
