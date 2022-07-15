@@ -14,7 +14,7 @@ async function playing(author, username) {
     }
     const url = `https://lichess.org/api/user/${username}/current-game`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatCurrentGame(response.data))
+        .then(response => formatCurrentGame(response.data, username))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in playing(${author.username}, ${username}): \
@@ -30,11 +30,11 @@ async function getName(author) {
         return user.lichessName;
 }
 
-function formatCurrentGame(game) {
+function formatCurrentGame(game, username) {
     const players = [game.players.white, game.players.black];
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
+        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
