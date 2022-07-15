@@ -6,6 +6,7 @@ async function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => formatPuzzle(response.data.game, response.data.puzzle))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in puzzle(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,16 +17,14 @@ async function puzzle(author) {
 
 function formatPuzzle(game, puzzle) {
     const players = game.players.map(formatPlayer).join(' - ');
-    const embed = new MessageEmbed()
+    return new MessageEmbed()
         .setColor(getColor(puzzle.rating))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
         .setURL(`https://lichess.org/training/${puzzle.id}`)
+        .addField('Themes', puzzle.themes.map(formatTheme).join(', '))
         .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
-    const data = new MessageEmbed()
-        .addField('Themes', puzzle.themes.map(theme => `[${title(theme)}](https://lichess.org/training/${theme})`).join(', '));
-    return { embeds: [ embed, data ] };
 }
 
 function getColor(rating) {
@@ -37,6 +36,10 @@ function formatPlayer(player) {
     if (player.title)
         return `${player.title} ${player.name.split(' ')[0]}`;
     return player.name;
+}
+
+function formatTheme(theme) {
+    return `[${title(theme)}](https://lichess.org/training/${theme})`;
 }
 
 function title(str) {
