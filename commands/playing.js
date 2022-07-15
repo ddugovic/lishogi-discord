@@ -10,7 +10,7 @@ async function playing(author, username) {
         if (!username)
             return 'You need to set your lichess username with setuser!';
     }
-    const url = `https://lichess.org/api/user/${username}/current-game?evals=false`;
+    const url = `https://lichess.org/api/user/${username}/current-game`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrentGame(response.data))
         .then(embed => { return { embeds: [ embed ] } })
@@ -32,13 +32,15 @@ function formatCurrentGame(game) {
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
+        .setAuthor({ name: players.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif`);
+    if (game.analysis)
+        embed = embed.addFields(formatAnalysis(game));
     return embed;
 }
 
@@ -72,6 +74,33 @@ function formatClock(clock, daysPerTurn) {
         return `${base}+${clock.increment}`;
     }
     return daysPerTurn ? `${daysPerTurn} ${plural('day', daysPerTurn)}` : '∞';
+}
+
+function formatAnalysis(game) {
+    const nodePairs = chunk(game.analysis.map(getJudgmentName), 2);
+    const white = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
+    const black = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
+    for (i = 0; i < nodePairs.length; i++) {
+        const [whiteJudgment, blackJudgment] = nodePairs[i];
+        if (whiteJudgment) white[whiteJudgment]++;
+        if (blackJudgment) black[blackJudgment]++;
+    }
+    return [{ name: 'White', value: formatJudgments(white), inline: true }, { name: 'Black', value: formatJudgments(black), inline: true }];
+}
+
+function formatJudgments(judgments) {
+    return [`Inaccuracy: **${judgments['Inaccuracy']}**`, `Mistake: **${judgments['Mistake']}**`, `Blunder: **${judgments['Blunder']}**`].join('\n');
+}
+
+function getJudgmentName(node) {
+    if (node.judgment)
+        return node.judgment.name;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 function title(str) {
