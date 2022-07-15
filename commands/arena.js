@@ -3,13 +3,10 @@ const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
-const User = require('../models/User');
 
-async function arena(author, mode, interaction) {
-    if (!mode)
-        mode = await getMode(author);
-    const url = 'https://lichess.org/api/tournament';
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+function arena(author, mode, interaction) {
+    const header = { headers: { Accept: 'application/json' } };
+    return axios.get('https://lichess.org/api/tournament', header)
         .then(response => setArenas(mergeArenas(response.data), mode))
         .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
@@ -18,12 +15,6 @@ async function arena(author, mode, interaction) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-async function getMode(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.favoriteMode;
 }
 
 function mergeArenas(data) {
