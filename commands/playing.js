@@ -1,5 +1,6 @@
 const axios = require('axios');
 const Discord = require('discord.js');
+const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const User = require('../models/User');
 
@@ -34,7 +35,7 @@ function formatGame(game) {
         .setColor(getColor(game.players))
         .setAuthor({ name: players, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/${game.id}` })
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setTitle(`${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lishogi.org/${game.id}`)
         .setImage(`https://lishogi1.org/game/export/gif/${game.id}.gif`);
     if (game.opening)
