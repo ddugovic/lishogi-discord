@@ -5,7 +5,7 @@ const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
-async function streamers(author, interaction) {
+function streamers(author, interaction) {
     return axios.get('https://lichess.org/streamer/live')
         .then(response => setStreamers(response.data))
         .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
@@ -84,8 +84,8 @@ function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return streamers(interaction.user, interaction);
+function interact(interaction) {
+    streamers(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
