@@ -4,6 +4,7 @@ const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
+const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
@@ -288,11 +289,12 @@ function setGames(embed, username) {
 }
 
 function formatGame(game) {
+    const clock = game.clock;
     const url = `https://lichess.org/${game.id}`;
     const status = formatStatus(game);
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
@@ -315,14 +317,6 @@ function formatOpening(opening, initialFen, moves) {
     const ply = opening ? opening.ply : 10;
     const variation = formatSanVariation(initialFen, moves.split(/ /).slice(0, ply));
     return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
-}
-
-function formatClock(clock, daysPerTurn) {
-    if (clock) {
-        const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-        return `${base}+${clock.increment}`;
-    }
-    return daysPerTurn ? `${daysPerTurn} ${plural('day', daysPerTurn)}` : '∞';
 }
 
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

@@ -32,11 +32,12 @@ async function getName(author) {
 
 function formatCurrentGame(game, username) {
     const players = [game.players.white, game.players.black];
+    const clock = game.clock;
     var embed = new Discord.MessageEmbed()
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
