@@ -1,14 +1,16 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
 const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 
-async function streamers(author) {
+function streamers(author, interaction) {
     return axios.get('https://lidraughts.org/streamer/live')
         .then(response => setStreamers(response.data))
+        .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -22,20 +24,17 @@ function setStreamers(streamers) {
         const url = 'https://lidraughts.org/api/users';
         const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const fields = response.data.map(formatStreamer);
-                const rating = Math.max(...fields.map(field => field.rating));
-                const embed = new Discord.MessageEmbed()
-                    .setColor(getColor(rating))
+            .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
+
+                return new MessageEmbed()
+                    .setColor(getColor(Math.max(...fields.map(field => field.rating))))
                     .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
                     .setTitle(`:satellite: Lidraughts Streamers`)
                     .setURL('https://lidraughts.org/streamer')
-                    .addFields(fields.sort((a,b) => b.score - a.score));
-                return { embeds: [ embed ] };
-        });
-    } else {
-        return 'No streamers are currently live.';
+                    .addFields(fields);
+            }));
     }
+    return streamers;
 }
 
 function getColor(rating) {
@@ -103,12 +102,18 @@ function formatBio(bio) {
     return bio.join(' ');
 }
 
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
+}
+
 function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return streamers(interaction.user);
+function interact(interaction) {
+    return streamers(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
