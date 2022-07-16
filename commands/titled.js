@@ -1,10 +1,12 @@
 const ChessWebAPI = require('chess-web-api');
 const { MessageEmbed } = require('discord.js');
 const formatPages = require('../lib/format-pages');
+const plural = require('plural');
+const shuffle = require('fisher-yates/inplace');
 
 function titled(author, title, interaction) {
     return new ChessWebAPI().getTitledPlayers(title)
-        .then(response => response.body.players.map(player => formatPlayer(player, title)))
+        .then(response => formatPlayers(title, response.body.players))
         .then(embeds => formatPages(embeds, interaction, 'No titled players found!'))
         .catch(error => {
             console.log(`Error in titled(${author.username}, ${title}): \
@@ -14,8 +16,26 @@ function titled(author, title, interaction) {
         });
 }
 
-function formatPlayer(player, title) {
-    return new MessageEmbed().setTitle(`${title} ${player}`).setURL(`https://www.chess.com/member/${player}`).setDescription('Profile data not available.');
+function formatTitle(title) {
+    if (title.startsWith('W'))
+        return "Women's " + formatTitle(title.slice(1));
+    return title == 'GM' ? 'Grandmaster' :
+        title == 'IM' ? 'International Master' :
+        title == 'FM' ? 'FIDE Master' :
+        title == 'NM' ? 'National Master' : 'Candidate Master';
+}
+
+function formatPlayers(title, players) {
+    title = formatTitle(title);
+    return chunk(shuffle(players), 15).map(fields => {
+        return new MessageEmbed()
+            .setTitle(plural(title, players.length))
+            .addFields(fields.map(formatPlayer));
+    });
+}
+
+function formatPlayer(player) {
+    return { name: player, value: `[Profile](https://www.chess.com/member/${player})`, inline: true };
 }
 
 function chunk(arr, size) {
