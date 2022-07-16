@@ -66,7 +66,7 @@ async function formatProfile(user, favoriteMode) {
     if (about)
         embed = embed.addField('About', about);
     if (user.count.rated || user.perfs.puzzle)
-        embed = embed.setImage(await getHistory(username).then(formatHistory));
+        embed = embed.setImage(await getHistory(username, user.perfs.storm).then(formatHistory));
     return setGames(embed, username);
 }
 
@@ -131,14 +131,17 @@ function formatAbout(embed, username, profile) {
     return result.join('\n');
 }
 
-function getHistory(username) {
+function getHistory(username, storm) {
     const url = `https://lichess.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
-            const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
-                return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => { return [ perfs, response.data ] } );
+            if (storm && storm.runs) {
+                const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
+                    return axios.get(url, { headers: { Accept: 'application/json' } })
+                        .then(response => { return [ perfs, response.data ] } );
+            }
+            return [ perfs ];
         });
 }
 
@@ -162,9 +165,11 @@ function formatHistory(history) {
 
 function filterHistory(perfs, storms, time) {
     const [data, history] = getSeries(perfs, time);
-    const series = getStormSeries(storms, time);
-    data.push(...series);
-    history.push({ label: 'Storm', data: series });
+    if (storms) {
+        const series = getStormSeries(storms, time);
+        data.push(...series);
+        history.push({ label: 'Storm', data: series });
+    }
     return [data, history];
 }
 
