@@ -6,7 +6,7 @@ const shuffle = require('fisher-yates/inplace');
 
 function titled(author, title, interaction) {
     return new ChessWebAPI().getTitledPlayers(title)
-        .then(response => formatPlayers(title, response.body.players))
+        .then(response => formatTitledPlayers(title, response.body.players))
         .then(embeds => formatPages(embeds, interaction, 'No titled players found!'))
         .catch(error => {
             console.log(`Error in titled(${author.username}, ${title}): \
@@ -14,6 +14,14 @@ function titled(author, title, interaction) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+function formatTitledPlayers(title, players) {
+    return chunk(shuffle(players), 15).map(fields => {
+        return new MessageEmbed()
+            .setTitle(plural(formatTitle(title), players.length))
+            .addFields(fields.map(player => formatPlayer(player, title)));
+    });
 }
 
 function formatTitle(title) {
@@ -25,17 +33,8 @@ function formatTitle(title) {
         title == 'NM' ? 'National Master' : 'Candidate Master';
 }
 
-function formatPlayers(title, players) {
-    title = formatTitle(title);
-    return chunk(shuffle(players), 15).map(fields => {
-        return new MessageEmbed()
-            .setTitle(plural(title, players.length))
-            .addFields(fields.map(formatPlayer));
-    });
-}
-
-function formatPlayer(player) {
-    return { name: player, value: `[Profile](https://www.chess.com/member/${player})`, inline: true };
+function formatPlayer(player, title) {
+    return { name: `${title} ${player}`, value: `[Profile](https://www.chess.com/member/${player})`, inline: true };
 }
 
 function chunk(arr, size) {
