@@ -59,7 +59,7 @@ async function formatProfile(user, favoriteMode) {
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    const perf = unranked(mode, rating) ? null : await getPerf(user.username, mode);
+    const perf = unranked(mode, rating) ? null : await getPerf(username, mode);
     embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
 
     const about = formatAbout(embed, username, user.profile);
