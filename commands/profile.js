@@ -1,5 +1,5 @@
 const ChessWebAPI = require('chess-web-api');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -39,7 +39,7 @@ function formatProfile(user, favoriteMode) {
     /*const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;*/
-    const embed = new Discord.MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(0xFFFFFF);
     return setName(embed, user, firstName)
         .then(embed => setStats(embed, user, favoriteMode))

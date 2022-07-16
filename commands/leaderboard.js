@@ -1,6 +1,5 @@
 const ChessWebAPI = require('chess-web-api');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
 const formatLinks = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');

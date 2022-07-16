@@ -62,7 +62,7 @@ const commands = {
         usage: "<title>",
         description: "Displays a titled player ID",
         process: titled.process,
-        reply: titled.reply
+        interact: titled.interact
     }
 };
 
