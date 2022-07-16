@@ -2,14 +2,9 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function gif(author, username) {
-    if (!username) {
-        const user = await User.findById(author.id).exec();
-        if (!user || !user.playstrategyName) {
-            return 'You need to set your playstrategy username with setuser!';
-        }
-        username = user.playstrategyName;
-    }
-    url = `https://playstrategy.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
+    if (!username)
+        username = await getName(author);
+    const url = `https://playstrategy.org/api/user/${username}/current-game?moves=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrent(response.data))
         .catch((err) => {
@@ -20,15 +15,21 @@ async function gif(author, username) {
         });
 }
 
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.playstrategyName;
+}
+
 function formatCurrent(data) {
-    return `https://playstrategy1.org/game/export/gif/${data.id}.gif`
+    return `https://assets.playstrategy.org/game/export/gif/${data.id}.gif`;
 }
 
 function process(bot, msg, username) {
     gif(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
+function reply(interaction) {
     return gif(interaction.user, interaction.options.getString('username'));
 }
 
