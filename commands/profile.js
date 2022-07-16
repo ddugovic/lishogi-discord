@@ -66,7 +66,7 @@ async function formatProfile(user, favoriteMode) {
     if (about)
         embed = embed.addField('About', about);
     if (user.count.rated || user.perfs.puzzle)
-        embed = await setHistory(embed, username);
+        embed = embed.setImage(await getHistory(username).then(formatHistory));
     return setGames(embed, username);
 }
 
@@ -131,19 +131,19 @@ function formatAbout(embed, username, profile) {
     return result.join('\n');
 }
 
-function setHistory(embed, username) {
+function getHistory(username) {
     const url = `https://lichess.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
             const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => formatHistory(perfs, response.data))
-                    .then(image => image ? embed.setImage(image) : embed);
+                    .then(response => { return [ perfs, response.data ] } );
         });
 }
 
-async function formatHistory(perfs, storms) {
+function formatHistory(history) {
+    const [perfs, storms] = history;
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
     for (const days of Array(91).keys()) {
@@ -155,7 +155,7 @@ async function formatHistory(perfs, storms) {
             if (url.length <= 2000)
                 return url;
             if (days == 90)
-                return await chart.getShortUrl();
+                return chart.getShortUrl();
         }
     }
 }
