@@ -1,9 +1,10 @@
 const axios = require('axios');
 const Discord = require('discord.js');
 const flags = require('emoji-flags');
-const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatUserLinks } = require('../lib/format-site-links');
+const formatColor = require('../lib/format-color');
+const { formatSocialLinks } = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
+const { formatSiteLinks } = require('../lib/format-site-links');
 
 async function streamers(author) {
     return axios.get('https://lishogi.org/streamer/live')
@@ -22,8 +23,9 @@ function setStreamers(streamers) {
         const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
+                const rating = Math.max(...fields.map(field => field.rating));
                 const embed = new Discord.MessageEmbed()
-                    .setColor(0xFFFFFF)
+                    .setColor(getColor(rating))
                     .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                     .setTitle(`:satellite: Lishogi Streamers`)
                     .setURL('https://lishogi.org/streamer')
@@ -38,8 +40,8 @@ function setStreamers(streamers) {
 function formatStreamer(streamer) {
     const name = formatName(streamer);
     const badges = streamer.patron ? '⛩️' : '';
-    const [score, profile] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score };
+    const [profile, rating, score] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
+    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score, 'rating': rating };
 }
 
 function formatName(streamer) {
@@ -82,11 +84,11 @@ function formatProfile(username, profile, playTime) {
     if (profile && profile.bio) {
         const bio = formatBio(profile.bio.split(/\s+/));
         if ((length = bio.length)) {
-            rating = getRating(profile) ?? 1000;
+            rating = getRating(profile) ?? profile.title ? 2000 : 1000;
             result.push(bio);
 	}
     }
-    return [((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total), result.join('\n')];
+    return [result.join('\n'), rating, ((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total)];
 }
 
 function formatBio(bio) {
