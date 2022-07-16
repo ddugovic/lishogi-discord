@@ -62,9 +62,9 @@ async function formatProfile(user, favoriteMode) {
     const perf = unranked(mode, rating) ? null : await getPerf(username, mode);
     embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
 
-    const about = formatAbout(embed, username, user.profile);
-    if (about)
-        embed = embed.addField('About', about);
+    const profile = user.profile;
+    if (profile && (profile.links || profile.bio))
+        embed = embed.addField('About', formatAbout(embed, username, profile));
     if (user.count.rated || user.perfs.puzzle)
         embed = embed.setImage(await getHistory(username, user.perfs.storm).then(formatHistory));
     return user.count.all ? setGames(embed, username) : embed;
@@ -116,11 +116,11 @@ function getPerf(username, mode) {
 }
 
 function formatAbout(embed, username, profile) {
-    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = formatSocialLinks(profile.links ?? profile.bio ?? '');
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
     const result = [links.join(' | ')];
-    if (profile && profile.bio) {
+    if (profile.bio) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
