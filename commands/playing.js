@@ -58,12 +58,13 @@ function formatPlayer(player) {
 }
 
 function formatUser(user) {
-    return user.title ? `**${user.title}** ${user.name}` : user.name;
+    const patron = user.patron ? ' 🦄' : '';
+    return user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
 }
 
 function getPlayerName(player) {
     if (player.user)
-        return player.user.name;
+        return player.user.patron ? `${player.user.name} 🦄` : player.user.name;
     if (player.aiLevel)
         return `Stockfish level ${player.aiLevel}`;
 }
