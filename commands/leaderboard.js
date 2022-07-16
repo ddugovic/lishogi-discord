@@ -46,7 +46,7 @@ function formatLeaders(leaders, mode) {
 
 function formatPlayers(player, mode) {
     const name = formatName(player);
-    const badges = player.patron ? '⛩️' : '';
+    const badges = player.patron ? '🦄' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
     return { name : `${name} ${badges}`, value: profile, inline: true, rating: player.perfs[mode].rating};
 }
