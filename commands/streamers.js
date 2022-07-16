@@ -1,12 +1,14 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
-async function streamers(author) {
+async function streamers(author, interaction) {
     return axios.get('https://lichess.org/streamer/live')
         .then(response => setStreamers(response.data))
+        .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -16,19 +18,16 @@ async function streamers(author) {
 }
 
 function setStreamers(streamers) {
-    if (streamers.length) {
-        const fields = streamers.map(formatStreamer);
+    streamers = streamers.map(formatStreamer).sort((a,b) => b.score - a.score);
+    return chunk(streamers, 6).map(fields => {
         const rating = Math.max(...fields.map(field => field.rating));
-        const embed = new Discord.MessageEmbed()
+        return new MessageEmbed()
             .setColor(getColor(rating))
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:satellite: Lichess Streamers`)
             .setURL('https://lichess.org/streamer')
-            .addFields(fields.sort((a,b) => b.score - a.score));
-        return { embeds: [ embed ] };
-    } else {
-        return 'No streamers are currently live.';
-    }
+            .addFields(fields);
+    });
 }
 
 function getColor(rating) {
@@ -75,12 +74,18 @@ function formatDescription(text) {
     return text.join(' ');
 }
 
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
+}
+
 function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return streamers(interaction.user);
+async function interact(interaction) {
+    return streamers(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
