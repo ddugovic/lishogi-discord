@@ -67,7 +67,7 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.addField('About', about);
     if (user.count.rated || user.perfs.puzzle)
         embed = embed.setImage(await getHistory(username, user.perfs.storm).then(formatHistory));
-    return setGames(embed, username);
+    return user.count.all ? setGames(embed, username) : embed;
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
