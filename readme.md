@@ -28,8 +28,6 @@
     Display top-rated players
 !playing [username]
     Share your (or a user's) current game
-!gif [username]
-    Share your (or a user's) current game as a GIF
 !arena [username]
     Find an upcoming or recent arena created by playstrategy (or a user)
 !blog

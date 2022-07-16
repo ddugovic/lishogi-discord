@@ -2,7 +2,6 @@
 const arena = require('./commands/arena');
 const blog = require('./commands/blog');
 const deleteUser = require('./commands/deleteUser');
-const gif = require('./commands/gif');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -45,12 +44,6 @@ const commands = {
         description: "Share your (or a user's) current game",
         process: playing.process,
         reply: playing.reply
-    },
-    "gif": {
-        usage: "[user]",
-        description: "Share your (or a user's) current game as a GIF",
-        process: gif.process,
-        reply: gif.reply
     },
     "privacy": {
         usage: "",
