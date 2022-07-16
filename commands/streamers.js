@@ -49,7 +49,7 @@ function formatStream(username, title, streamer, stream) {
     if (streamer.youTube)
         links.push(formatSocialLinks(streamer.youTube));
 
-    const result = [stream.status.replace(/lichess\.org/i,':horse:'), links.join(' | ')];
+    const result = [stream.status.replace(/lichess\.org/i, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
     var length = 0;
     var rating = 0;
     if (streamer.headline && streamer.description) {
