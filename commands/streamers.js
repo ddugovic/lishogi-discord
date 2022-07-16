@@ -1,12 +1,15 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
+const flags = require('emoji-flags');
 const { formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 
-async function streamers(author) {
+function streamers(author, interaction) {
     return axios.get('https://playstrategy.org/streamer/live')
         .then(response => setStreamers(response.data))
-        .catch((error) => {
+        .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
+        .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -14,28 +17,27 @@ async function streamers(author) {
         });
 }
 
-function setStreamers(data) {
-    if (data.length) {
-        const embed = new Discord.MessageEmbed()
-            .setColor(0xFFFFFF)
-            .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
-            .setTitle(`:satellite: PlayStrategy Streamers`)
-            .setURL('https://playstrategy.org/streamer')
-            .addFields(formatStreamers(data));
-        return { embeds: [ embed ] };
-    } else {
-        return 'No streamers are currently live.';
-    }
-}
+function setStreamers(streamers) {
+    if (streamers.length) {
+        const url = 'https://playstrategy.org/api/users';
+        const ids = streamers.map(streamer => streamer.id);
+        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+            .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
 
-function formatStreamers(data) {
-    var streamers = [];
-    for (streamer of data) {
-        const name = formatName(streamer);
-        const badges = data.patron ? '🍺' : '';
-        streamers.push({ name : `${name} ${badges}`, value: `[Profile](https://playstrategy.org/@/${streamer.name})`, inline: true })
+                return new MessageEmbed()
+                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
+                    .setTitle(`:satellite: PlayStrategy Streamers`)
+                    .setURL('https://playstrategy.org/streamer')
+                    .addFields(fields);
+            }));
     }
     return streamers;
+}
+
+function formatStreamer(streamer) {
+    const name = formatName(streamer);
+    const badges = data.patron ? '🍺' : '';
+    streamers.push({ name : `${name} ${badges}`, value: formatProfile(streamer), inline: true });
 }
 
 function formatName(streamer) {
@@ -43,8 +45,8 @@ function formatName(streamer) {
     if (streamer.title)
         name = `**${streamer.title}** ${name}`;
     const country = getCountry(streamer.profile);
-    if (country && countryFlags.countryCode(country))
-        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    if (country && flags.countryCode(country))
+        name = `${flags.countryCode(country).emoji} ${name}`;
     return name;
 }
 
@@ -86,12 +88,18 @@ function formatProfile(username, profile, playTime) {
     return [((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total), result.join('\n')];
 }
 
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
+}
+
 function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return streamers(interaction.user);
+function interact(interaction) {
+    return streamers(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
