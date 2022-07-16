@@ -44,7 +44,7 @@ const commands = {
         usage: "",
         description: "Displays live streamers",
         process: streamers.process,
-        reply: streamers.reply
+        interact: streamers.interact
     },
     "setgamemode": {
         usage: "[game mode]",
