@@ -2,14 +2,9 @@ const axios = require('axios');
 const User = require('../models/User');
 
 async function playing(author, username) {
-    if (!username) {
-        const user = await User.findById(author.id).exec();
-        if (!user || !user.playstrategyName) {
-            return 'You need to set your playstrategy username with setuser!';
-        }
-        username = user.playstrategyName;
-    }
-    url = `https://playstrategy.org/api/user/${username}/current-game?moves=false&tags=false&clocks=false&evals=false&opening=false`;
+    if (!username)
+        username = await getName(author);
+    const url = `https://playstrategy.org/api/user/${username}/current-game?moves=false`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatCurrent(response.data))
         .catch((err) => {
@@ -18,6 +13,12 @@ async function playing(author, username) {
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
         });
+}
+
+async function getName(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.playstrategyName;
 }
 
 function formatCurrent(data) {
