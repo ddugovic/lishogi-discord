@@ -2,7 +2,7 @@ const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
-const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
