@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
+const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -36,10 +37,18 @@ function getColor(rating) {
 }
 
 function formatStreamer(streamer) {
+    const lang = formatLang(streamer.stream.lang) ?? '';
     const name = streamer.title ? `**${streamer.title}** ${streamer.name}` : streamer.name;
-    const badges = streamer.patron ? '🦄' : '';
+    const badges = streamer.patron ? ' 🦄' : '';
     const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
-    return { name : `${name} ${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
+    return { name : `${lang}${name}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
+}
+
+function formatLang(lang) {
+    // ASSUME until language emojis exist (or API provides flags), language == country
+    const flag = lang ? flags.countryCode(lang.toUpperCase()) : null;
+    if (flag)
+        return `${flag.emoji} `;
 }
 
 function formatStream(username, title, streamer, stream) {
@@ -59,7 +68,7 @@ function formatStream(username, title, streamer, stream) {
             result.push(text);
 	}
     }
-    return [result.join('\n'), rating, length + rating];
+    return [`${result.join('\n')}`, rating, length + rating];
 }
 
 function formatDescription(text) {
