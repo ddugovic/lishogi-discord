@@ -59,10 +59,9 @@ async function formatProfile(user, favoriteMode) {
         .setURL(`https://lichess.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating))
-        embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-    else
-        embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
+    const perf = unranked(mode, rating) ? null : await getPerf(user.username, mode);
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
+
     const about = formatAbout(embed, username, user.profile);
     if (about)
         embed = embed.addField('About', about);
@@ -110,12 +109,10 @@ function getCountryAndName(profile) {
         return [profile.country, profile.firstName, profile.lastName];
 }
 
-function setStats(embed, username, count, playTime, mode, rating) {
+function getPerf(username, mode) {
     const url = `https://lichess.org/api/user/${username}/perf/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
-        });
+        .then(response => response.data);
 }
 
 function formatAbout(embed, username, profile) {
