@@ -99,21 +99,22 @@ const commands = [
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Select your favorite game (or puzzle) mode').addChoices(...ratings)),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.sendMessages),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition").addStringOption(option => option.setName('variant').setDescription('Select a chess variant').addChoices(...variants)),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
     new SlashCommandBuilder().setName('tv').setDescription("Share the featured game").addStringOption(option => option.setName('mode').setDescription('Select a channel').addChoices(...channels)),
     new SlashCommandBuilder().setName('video').setDescription("Search videos for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords')),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
-]
-    .map(command => command.toJSON());
+];
 
 const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v10');
-const rest = new REST({ version: '10' }).setToken(config.token);
+const { PermissionFlagsBits, Routes } = require('discord-api-types/v10');
 
-rest.put(Routes.applicationCommands(config.clientId), { body: commands })
+const rest = new REST({ version: '10' }).setToken(config.token);
+rest.put(Routes.applicationCommands(config.clientId), {
+        body: commands.map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.sendMessages).toJSON())
+    })
     .then(() => console.log(`Successfully registered ${commands.length} application slash commands for client ${config.clientId}.`))
     .catch(console.error);
 
