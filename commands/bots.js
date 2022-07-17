@@ -1,21 +1,22 @@
 const axios = require('axios');
-const countryFlags = require('emoji-flags');
 const Discord = require('discord.js');
+const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
-const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLink } = require('../lib/format-site-links');
 const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
-const parse = require('ndjson-parse');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-function bots(author, interaction) {
-    const mode = getMode(author) || 'blitz';
+async function bots(author, interaction) {
+    const mode = await getMode(author) || 'blitz';
     return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => filter(parse(response.data)).map(bot => formatBot(bot, mode)))
+        .then(response => filter(parseDocument(response.data)))
+        .then(bots => bots.map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
-            console.log(`Error in bots(${author.username}): \
+            console.log(`Error in bots(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -29,13 +30,13 @@ async function getMode(author) {
 }
 
 function filter(bots) {
-    return bots.filter(bot => !bot.tosViolation && source(bot)).sort((a, b) => a.seenAt - b.seenAt);
+    return bots.filter(bot => !bot.tosViolation && source(bot.profile)).sort((a, b) => a.seenAt - b.seenAt);
 }
 
-function source(bot) {
+function source(profile) {
     const git = /\bgit(?:hub|lab)?\b/;
-    if (bot.profile && bot.profile.links)
-        return bot.profile.links.match(git);
+    if (profile && profile.links)
+        return profile.links.match(git);
 }
 
 function formatBot(bot, mode) {
@@ -43,8 +44,8 @@ function formatBot(bot, mode) {
     const [country, firstName, lastName] = getCountryAndName(bot.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && countryFlags.countryCode(country))
-        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    if (country && flags.countryCode(country))
+        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '🦄' : '';
     const embed = new Discord.MessageEmbed()
@@ -99,7 +100,7 @@ function process(bot, msg, mode) {
 }
 
 function interact(interaction) {
-    return bots(interaction.user, interaction);
+    bots(interaction.user, interaction);
 }
 
 module.exports = { process, interact };
