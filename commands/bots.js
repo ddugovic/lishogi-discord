@@ -90,7 +90,7 @@ function setAbout(embed, username, profile, playTime) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    const match = text.match(/https:\/\/(?:i.)?imgur.com\/\w+(?:.\w+)?/);
     if (match)
         return match[0];
 }
