@@ -98,7 +98,7 @@ function process(bot, msg, mode) {
 }
 
 async function interact(interaction) {
-    return interaction.reply(tv(interaction.user, interaction.options.getString('mode')));
+    await interaction.reply(await tv(interaction.user, interaction.options.getString('mode')));
 }
 
 module.exports = {process, interact};

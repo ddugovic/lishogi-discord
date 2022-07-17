@@ -345,7 +345,7 @@ function process(bot, msg, username) {
 }
 
 async function interact(interaction) {
-    return interaction.reply(profile(interaction.user, interaction.options.getString('username')));
+    await interaction.reply(await profile(interaction.user, interaction.options.getString('username')));
 }
 
 module.exports = {process, interact};
