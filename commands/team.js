@@ -66,7 +66,7 @@ function formatAbout(about) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
+    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.(?:gifv?|jpe?g|png)/i);
     if (match)
         return match[0];
 }
