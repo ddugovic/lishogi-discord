@@ -38,7 +38,7 @@ function getColor(rating) {
 
 function formatStreamer(streamer) {
     const lang = formatLang(streamer.stream.lang) ?? '';
-    const name = streamer.title ? `**${streamer.title}** ${streamer.name}` : streamer.name;
+    const name = streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
     const badges = streamer.patron ? ' 🦄' : '';
     const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
     return { name : `${lang}${name}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
