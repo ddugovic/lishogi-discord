@@ -4,8 +4,7 @@ async function setUser(author, username) {
     const newValues = { lichessName: username, dateAdded: new Date() };
     if (await User.findByIdAndUpdate(author.id, newValues, { upsert: true, new: true }).exec()) {
         return `User updated! <@${author.id}> = ${username}`;
-    }
-    else {
+    } else {
         console.log(`Error in setUser(${author}, ${username})`);
         return 'An error occurred handling your request.';
     }

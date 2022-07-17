@@ -1,12 +1,12 @@
 const User = require('../models/User');
 
 async function setGameMode(author, mode) {
-    if (await User.findByIdAndUpdate(author.id, {favoriteMode: mode}, {new: true}).exec()) {
+    const newValues = { favoriteMode: mode };
+    if (await User.findByIdAndUpdate(author.id, newValues, { upsert: true, new: true }).exec()) {
         return `<@${author.id}> favorite mode ${mode ? 'updated' : 'cleared'}!`;
-    }
-    else {
+    } else {
         console.log(`Error in setGameMode(${author}, ${mode})`);
-        return 'You need to set your lichess username with setuser!';
+        return 'An error occurred handling your request.';
     }
 }
 
