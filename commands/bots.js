@@ -90,9 +90,12 @@ function setAbout(embed, username, profile, playTime) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/(?:i.)?imgur.com\/\w+(?:.\w+)?/);
-    if (match)
-        return match[0];
+    const match1 = text.match(/https:\/\/(?:i.)?imgur.com\/\w+.\w+/);
+    if (match1)
+        return match1[0];
+    const match2 = text.match(/https:\/\/(?:i.)?imgur.com\/\w+/);
+    if (match2)
+        return `${match2[0]}.png`;
 }
 
 function process(bot, msg, mode) {
