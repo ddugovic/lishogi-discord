@@ -6,7 +6,7 @@ async function setUser(author, username) {
         return `User updated! <@${author.id}> = ${username}`;
     }
     else {
-        console.log(`Error in setUser(${author.username}, ${username})`);
+        console.log(`Error in setUser(${author}, ${username})`);
         return 'An error occurred handling your request.';
     }
 }
