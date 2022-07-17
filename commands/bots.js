@@ -82,7 +82,7 @@ function setAbout(embed, username, profile, playTime) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
-        const bio = profile.bio.split(/\s+/).map(formatSiteLink).join(' ');
+        const bio = profile.bio.replaceAll(/https\:\/\/(?:i\.)?imgur\.com\/\w+(?:\.\w+)?/g, '').split(/\s+/).map(formatSiteLink).join(' ');
         if (bio)
             result.push(bio);
     }
