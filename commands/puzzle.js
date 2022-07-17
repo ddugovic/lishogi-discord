@@ -55,7 +55,7 @@ function process(bot, msg, mode) {
 }
 
 async function interact(interaction) {
-    await interaction.reply(puzzle(interaction.user));
+    await interaction.editReply(puzzle(interaction.user));
 }
 
 module.exports = {process, interact};

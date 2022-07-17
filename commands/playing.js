@@ -119,7 +119,7 @@ function process(bot, msg, username) {
 }
 
 async function interact(interaction) {
-    await interaction.reply(await playing(interaction.user, interaction.options.getString('username')));
+    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username')));
 }
 
 module.exports = {process, interact};
