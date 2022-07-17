@@ -23,7 +23,6 @@ function setStreamers(streamers) {
         const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
-
                 return new MessageEmbed()
                     .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
                     .setTitle(`:satellite: PlayStrategy Streamers`)
