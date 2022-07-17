@@ -1,13 +1,11 @@
 const User = require('../models/User');
 
 async function setUser(author, username) {
-    var authorId = author.id;
-    var newValues = { chessName: username, dateAdded: new Date() };
-    if (await User.findByIdAndUpdate(authorId, newValues, {upsert: true, new: true}).exec()) {
-        return `User updated! ${author.username} = ${username}`;
-    }
-    else {
-        console.log(`Error in setUser(${author.username}, ${username})`);
+    const newValues = { chessName: username, dateAdded: new Date() };
+    if (await User.findByIdAndUpdate(author.id, newValues, { upsert: true, new: true }).exec()) {
+        return `User updated! <@${author.id}> = ${username}`;
+    } else {
+        console.log(`Error in setUser(${author}, ${username})`);
         return 'An error occurred handling your request.';
     }
 }
