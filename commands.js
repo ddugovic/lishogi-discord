@@ -85,7 +85,7 @@ const commands = {
         usage: "",
         description: "Display live streamers",
         process: streamers.process,
-        reply: streamers.reply
+        interact: streamers.interact
     },
     "team": {
         usage: "<text>",
