@@ -58,11 +58,11 @@ function formatStream(username, title, streamer, stream) {
     if (streamer.youTube)
         links.push(formatSocialLinks(streamer.youTube));
 
-    const result = [stream.status.replace(/(?<!https?:\/\/)(?:www\.)?lichess\.org/i, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
+    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
     var length = 0;
     var rating = 0;
     if (streamer.headline && streamer.description) {
-        const text = `*${streamer.headline}*\n${formatDescription(streamer.description.split(/\s+/))}`;
+        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:')}*\n${formatDescription(streamer.description.split(/\s+/))}`;
         if ((length = text.length)) {
             rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
             result.push(text);
