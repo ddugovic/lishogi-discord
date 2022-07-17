@@ -19,4 +19,4 @@ async function reply(interaction) {
     return await setUser(interaction.user, interaction.options.getString('username'));
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };

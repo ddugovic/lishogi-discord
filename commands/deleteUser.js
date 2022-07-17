@@ -15,7 +15,7 @@ function process(bot, msg, suffix) {
 }
 
 async function reply(interaction) {
-    return deleteUser(interaction.user);
+    return await deleteUser(interaction.user);
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };

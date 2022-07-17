@@ -15,7 +15,7 @@ function process(bot, msg, mode) {
 }
 
 async function reply(interaction) {
-    return setGameMode(interaction.user, interaction.options.getString('mode'));
+    return await setGameMode(interaction.user, interaction.options.getString('mode'));
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };
