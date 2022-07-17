@@ -1,6 +1,5 @@
 const config = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { PermissionFlagsBits } = require('discord-api-types/v10');
 
 const arenas = [
     { name: 'Antichess', value: 'antichess' },
