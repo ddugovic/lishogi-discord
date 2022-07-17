@@ -1,9 +1,9 @@
 const User = require('../models/User');
 
 async function setUser(author, username) {
-    const newValues = {lichessName: username, dateAdded: new Date()};
-    if (await User.findByIdAndUpdate(author.id, newValues, {upsert: true, new: true}).exec()) {
-        return `User updated! ${author.username} = ${username}`;
+    const newValues = { lichessName: username, dateAdded: new Date() };
+    if (await User.findByIdAndUpdate(author.id, newValues, { upsert: true, new: true }).exec()) {
+        return `User updated! <@${author.id}> = ${username}`;
     }
     else {
         console.log(`Error in setUser(${author.username}, ${username})`);
