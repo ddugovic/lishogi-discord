@@ -118,8 +118,8 @@ function process(bot, msg, username) {
     playing(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return playing(interaction.user, interaction.options.getString('username'));
+async function interact(interaction) {
+    await interaction.reply(playing(interaction.user, interaction.options.getString('username')));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

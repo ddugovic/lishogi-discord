@@ -2,7 +2,7 @@ const axios = require('axios');
 const { MessageEmbed } = require('discord.js');
 const formatColor = require('../lib/format-color');
 
-async function puzzle(author) {
+function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => formatPuzzle(response.data.game, response.data.puzzle))
@@ -54,8 +54,8 @@ function process(bot, msg, mode) {
     puzzle(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return puzzle(interaction.user);
+async function interact(interaction) {
+    return interaction.reply(puzzle(interaction.user));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

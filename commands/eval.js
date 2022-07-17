@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatUciVariation } = require('../lib/format-variation');
 
-async function eval(author, fen) {
+function eval(author, fen) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
@@ -75,8 +75,8 @@ function process(bot, msg, fen) {
     eval(msg.author, fen).then(url => msg.channel.send(url))
 }
 
-async function reply(interaction) {
-    return eval(interaction.user, interaction.options.getString('fen') ?? '');
+async function interact(interaction) {
+    await interaction.reply(eval(interaction.user, interaction.options.getString('fen') ?? ''));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

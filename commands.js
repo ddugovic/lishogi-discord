@@ -62,7 +62,7 @@ const commands = {
         usage: "[fen]",
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
-        reply: eval.reply
+        interact: eval.interact
     },
     "leaderboard": {
         usage: "[game mode]",
@@ -86,7 +86,7 @@ const commands = {
         usage: "[user]",
         description: "Share your (or a user's) current game",
         process: playing.process,
-        reply: playing.reply
+        interact: playing.interact
     },
     "privacy": {
         usage: "",
@@ -98,13 +98,13 @@ const commands = {
         usage: "[username]",
         description: "Display your (or a user's) profile",
         process: profile.process,
-        reply: profile.reply
+        interact: profile.interact
     },
     "puzzle": {
         usage: "",
         description: "Display today's puzzle",
         process: puzzle.process,
-        reply: puzzle.reply
+        interact: puzzle.interact
     },
     "setgamemode": {
         usage: "[game mode]",
@@ -140,7 +140,7 @@ const commands = {
         usage: "[channel]",
         description: "Share the featured game",
         process: tv.process,
-        reply: tv.reply
+        interact: tv.interact
     },
     "video": {
         usage: "[text]",
