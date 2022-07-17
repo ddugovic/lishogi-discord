@@ -84,7 +84,7 @@ process.on('unhandledRejection', err => {
 client.login(config.token);
 
 client.on('interactionCreate', async interaction => {
-    if (interaction.author.bot || !interaction.isCommand()) return;
+    if (interaction.user.bot || !interaction.isCommand()) return;
 
     console.log(interaction.user.id, interaction.commandName);
     const command = commands[interaction.commandName];
