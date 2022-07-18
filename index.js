@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { Client, GatewayIntentBits, InteractionType, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -14,7 +14,6 @@ const client = new Client({
     allowedMentions: { parse: [] },
     disabledEvents: [ 'TYPING_START' ],
     intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ],
-    partials: [ Partials.Channel ],
     presence: { activities: [{ name: 'lichess.org' , type: 'WATCHING' }], status: 'online' }
 });
 
