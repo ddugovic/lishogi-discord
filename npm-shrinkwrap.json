@@ -181,6 +181,11 @@
       "resolved": "https://registry.npmjs.org/@tokenizer/token/-/token-0.3.0.tgz",
       "integrity": "sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A=="
     },
+    "node_modules/@tokenizer/token": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/@tokenizer/token/-/token-0.3.0.tgz",
+      "integrity": "sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A=="
+    },
     "node_modules/@tootallnate/once": {
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz",
@@ -3029,6 +3034,11 @@
       "version": "3.2.2",
       "resolved": "https://registry.npmjs.org/@sapphire/snowflake/-/snowflake-3.2.2.tgz",
       "integrity": "sha512-ula2O0kpSZtX9rKXNeQMrHwNd7E4jPDJYUXmEGTFdMRfyfMw+FPyh04oKMjAiDuOi64bYgVkOV3MjK+loImFhQ=="
+    },
+    "@tokenizer/token": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/@tokenizer/token/-/token-0.3.0.tgz",
+      "integrity": "sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A=="
     },
     "@tokenizer/token": {
       "version": "0.3.0",
