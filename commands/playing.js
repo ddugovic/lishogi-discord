@@ -17,8 +17,6 @@ async function playing(author, username) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in playing(${author.username}, ${username}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in playing(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -34,7 +32,7 @@ async function getName(author) {
 function formatCurrentGame(game, username) {
     const players = [game.players.p1, game.players.p2];
     const clock = game.clock;
-    var embed = new MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: `https://playstrategy.org/@/${username}/tv` })
         .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')

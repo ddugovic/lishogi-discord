@@ -1,6 +1,7 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
-const flags = require('emoji-flags');
+const countryFlags = require('emoji-flags');
+const { EmbedBuilder } = require('discord.js');
+const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
@@ -23,9 +24,10 @@ function setStreamers(streamers) {
         const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
-                return new MessageEmbed()
-                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
-                    .setTitle(`:satellite: PlayStrategy Streamers`)
+                return new EmbedBuilder()
+                    .setColor(getColor(Math.max(...fields.map(field => field.rating))))
+                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
+                    .setTitle(`:satellite: Lidraughts Streamers`)
                     .setURL('https://playstrategy.org/streamer')
                     .addFields(fields);
             }));

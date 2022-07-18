@@ -46,7 +46,7 @@ function formatProfile(user, favoriteMode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatPlayer(user.title, playerName, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');

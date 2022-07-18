@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const User = require('../models/User');
@@ -32,7 +32,7 @@ function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
     const compete = simul.isFinished ? 'competed' :
         simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'will compete';
-    var embed = new Discord.MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://playstrategy1.org/assets/logo/playstrategy-favicon-32-invert.png'})
         .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
@@ -44,7 +44,7 @@ function formatSimul(simul) {
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description) {
-            const about = new Discord.MessageEmbed()
+            const about = new EmbedBuilder()
                 .addField('Description', description);
             return { embeds: [ embed, about ] };
         }

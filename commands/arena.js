@@ -1,4 +1,9 @@
 const axios = require('axios');
+const { EmbedBuilder } = require('discord.js');
+const formatClock = require('../lib/format-clock');
+const formatColor = require('../lib/format-color');
+const formatPages = require('../lib/format-pages');
+const { formatTitledUserLink } = require('../lib/format-site-links');
 const User = require('../models/User');
 
 async function arena(author, mode) {
@@ -35,7 +40,26 @@ function setArena(data, mode) {
 }
 
 function formatArena(arena) {
-    return `https://playstrategy.org/tournament/${arena.id}`;
+    const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
+    var embed = new EmbedBuilder()
+        .setColor(formatColor(255-speed, 0, speed))
+        .setAuthor({name: arena.createdBy, iconURL: 'https://playstrategy.org/assets/images/playstrategy-32-white.png'})
+        .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
+        .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
+        .setURL(`https://playstrategy.org/tournament/${arena.id}`)
+        .setDescription(getDescription(arena));
+    if (arena.featured)
+	embed = embed.setImage(`https://playstrategy.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
+    if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
+        embed = embed
+            .addField('Berserks', `**${arena.stats.berserks}**`, true)
+            .addField('Games', `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, true)
+            .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
+    }
+    if (arena.minRatedGames && !arena.pairingsClosed)
+        embed = embed
+            .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
+    return embed;
 }
 
 
