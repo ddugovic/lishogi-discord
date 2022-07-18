@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const html2md = require('html-to-md');
@@ -25,7 +25,7 @@ function formatLog(document) {
 }
 
 function formatEntry(name, description) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(name)
         .setURL('https://lichess.org/changelog')
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')

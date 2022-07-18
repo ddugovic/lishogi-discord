@@ -33,7 +33,7 @@ async function getName(author) {
 function formatCurrentGame(game, username) {
     const players = [game.players.white, game.players.black];
     const clock = game.clock;
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')

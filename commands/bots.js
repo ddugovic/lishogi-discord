@@ -48,7 +48,7 @@ function formatBot(bot, mode) {
         nickname = `${flags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '🦄' : '';
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
         .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})

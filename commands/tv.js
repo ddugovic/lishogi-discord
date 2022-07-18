@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
@@ -39,7 +39,7 @@ function getChannel(data, mode) {
 
 function formatChannel(channel, name, tv) {
     const user = formatUser(tv.user);
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setColor(getColor(tv.rating))
         .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
         .setThumbnail(`https://lichess1.org/game/export/gif/thumbnail/${tv.gameId}.gif`)

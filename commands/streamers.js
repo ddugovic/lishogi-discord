@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -22,7 +22,7 @@ function setStreamers(streamers) {
     streamers = streamers.map(formatStreamer).sort((a,b) => b.score - a.score);
     return chunk(streamers, 6).map(fields => {
         const rating = Math.max(...fields.map(field => field.rating));
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setColor(getColor(rating))
             .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
             .setTitle(`:satellite: Lichess Streamers`)

@@ -22,7 +22,7 @@ function formatEntries(feed) {
         const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
         const summary = formatSummary(trimSummary(entry.contentSnippet));
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
-        var embed = new Discord.MessageEmbed()
+        var embed = new Discord.EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
             .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
             .setTitle(entry.title)

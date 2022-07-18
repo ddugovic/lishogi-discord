@@ -29,7 +29,7 @@ function formatVideo(video) {
     const [link, duration, name, author, target, tags] = video;
     const seconds = duration.split(':').reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
-    return new Discord.MessageEmbed()
+    return new Discord.EmbedBuilder()
         .setColor(formatColor(score, 0, 255-score))
         .setAuthor({name: author, iconURL: null})
         .setTitle(`${decode(name)} (${duration})`)

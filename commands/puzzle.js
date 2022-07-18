@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 
 function puzzle(author) {
@@ -17,7 +17,7 @@ function puzzle(author) {
 
 function formatPuzzle(game, puzzle) {
     const players = game.players.map(formatPlayer).join(' - ');
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setColor(getColor(puzzle.rating))
         .setAuthor({ name: players, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/${game.id}` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')

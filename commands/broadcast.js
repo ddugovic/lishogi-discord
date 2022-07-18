@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
@@ -25,7 +25,7 @@ function formatDocument(document) {
 
 function formatBroadcast(broadcast) {
     const red = Math.min(broadcast.rounds.length * 20, 255);
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setTitle(broadcast.tour.description)

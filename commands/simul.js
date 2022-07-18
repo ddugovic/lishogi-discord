@@ -42,7 +42,7 @@ function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '**1** player' : `**${simul.nbPairings}** players`;
     const play = simul.isFinished ? 'competed in' :
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')

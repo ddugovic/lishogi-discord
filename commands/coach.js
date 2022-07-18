@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
@@ -25,7 +25,7 @@ function formatCoaches(document) {
 }
 
 function formatCoach(image, name, description, details) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setColor(getColor(getRating(details) ?? 0))
         .setAuthor({name: 'Lichess Coach', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: 'https://lichess.org/coach/'})
         .setTitle(name)

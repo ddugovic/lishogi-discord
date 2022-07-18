@@ -1,6 +1,6 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -35,7 +35,7 @@ function formatLeaders(leaders, mode) {
     return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
         .then(response => {
             const players = response.data.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
-            return chunk(players, 6).map(fields => new MessageEmbed()
+            return chunk(players, 6).map(fields => new EmbedBuilder()
                 .setColor(getColor(fields[0].rating))
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
                 .setTitle(`:trophy: ${title(mode)} Leaderboard`)

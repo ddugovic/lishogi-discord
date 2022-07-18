@@ -32,14 +32,14 @@ function formatCloudEval(fen, eval) {
 
     const fenUri = fen.replace(/ /g,'_');
     const embeds = [
-        new Discord.MessageEmbed()
+        new Discord.EmbedBuilder()
             .setColor(formatColor(red, 0, 255 - red))
             .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(':cloud: Cloud Evaluation')
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
 	    .setImage(`https://lichess.org/export/gif/${fenUri}`),
-        new Discord.MessageEmbed()
+        new Discord.EmbedBuilder()
             .addField(stats, variations.join('\n'))
     ];
     const url = `https://explorer.lichess.ovh/masters?fen=${fenUri}&moves=0&topGames=3`;
@@ -49,7 +49,7 @@ function formatCloudEval(fen, eval) {
 
 function formatGames(embeds, fen, games) {
     if (games.length)
-        embeds.push(new Discord.MessageEmbed().addField('Master Games', games.map(game => formatGame(fen, game)).join('\n')));
+        embeds.push(new Discord.EmbedBuilder().addField('Master Games', games.map(game => formatGame(fen, game)).join('\n')));
     return { embeds: embeds };
 }
 
