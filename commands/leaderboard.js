@@ -1,6 +1,6 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
@@ -10,12 +10,11 @@ const User = require('../models/User');
 async function leaderboard(author, mode) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
-    const url = `https://lidraughts.org/player/top/10/${mode}`;
+    const url = `https://lidraughts.org/player/top/150/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
-        .then(response => setPlayers(response.data.users, mode))
+        .then(response => formatLeaders(response.data.users, mode))
+        .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
-            console.log(`Error in leaderboard(${author.username} ${mode}): \
-                ${error} ${error.stack}`);
             console.log(`Error in leaderboard(${author.username} ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -29,17 +28,17 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function setPlayers(users, mode) {
-    if (users.length) {
-        const url = 'https://lidraughts.org/api/users';
-        const ids = users.map(player => player.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const fields = response.data.map(formatPlayer);
-                const rating = Math.max(...fields.map(field => field.rating));
-                const embed = new Discord.MessageEmbed()
-                    .setColor(getColor(rating))
-                    .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
+function formatLeaders(leaders, mode) {
+    const ranks = rankLeaders(leaders);
+    const url = 'https://lidraughts.org/api/users';
+    const ids = leaders.map(leader => leader.id);
+    return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
+        .then(response => {
+            const players = rankPlayers(response.data, ranks).sort((a,b) => a.rank - b.rank);
+            return chunk(players.map(formatPlayer), 6).map((fields, index) =>
+                new EmbedBuilder()
+                    .setColor(getColor(index))
+                    .setThumbnail('https://lidraughts1.org/assets/logo/lidraughts-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lidraughts.org/player')
                     .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));

@@ -1,15 +1,18 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
+const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
+const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
+const { formatSiteLink } = require('../lib/format-site-links');
 const parse = require('ndjson-parse');
 
 async function bots(author) {
     return axios.get('https://lidraughts.org/api/bot/online?nb=15', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => setBots(filter(parse(response.data))))
-        .catch((error) => {
+        .then(response => filter(parse(response.data)).map(bot => formatBot(bot, mode)))
+        .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
+        .catch(error => {
             console.log(`Error in bots(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -21,72 +24,53 @@ function filter(bots) {
     return bots.filter(bot => !bot.tosViolation);
 }
 
-function setBots(data) {
-    if (data.length) {
-        const embed = new Discord.MessageEmbed()
-            .setColor(0xFFFFFF)
-            .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
-            .setTitle(`:robot: Lidraughts Bots`)
-            .setURL('https://lidraughts.org/player/bots')
-            .addFields(data.map(formatBot))
-        return { embeds: [ embed ] };
-    } else {
-        return 'No bots are currently online.';
-    }
-}
-
-function formatBot(bot) {
-    const name = formatName(bot);
-    const badges = bot.patron ? '⛃' : '';
-    return { name : `${name} ${badges}`, value: formatProfile(bot.username, bot.profile, bot.playTime), inline: true };
-}
-
-function formatName(bot) {
-    var name = bot.username;
-    const country = getCountry(bot.profile);
+function formatBot(bot, mode) {
+    const username = bot.username;
+    const [country, firstName, lastName] = getCountryAndName(bot.profile) ?? [];
+    var nickname = firstName ?? lastName ?? username;
+    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
-        name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    return name;
+        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+
+    const badges = bot.patron ? '⛃' : '';
+    const embed = new EmbedBuilder()
+        .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
+        .setThumbnail('https://lishogi1.org/assets/images/icons/bot.png')
+        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}`})
+        .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
+        .setURL(`https://lishogi.org/?user=${bot.username}#friend`);
+    return setAbout(embed, bot.username, bot.profile, bot.playTime);
 }
 
-function getCountry(profile) {
+function getCountryAndName(profile) {
     if (profile)
-        return profile.country;
+        return [profile.country, profile.firstName, profile.lastName];
 }
 
-function formatProfile(username, profile, playTime) {
+function getRating(perfs, mode) {
+    if (perfs && perfs[mode])
+        return perfs[mode].rating;
+}
+
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 4), 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
+function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
-
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (links.length)
+        result.push(links.join(' | '));
     if (profile && profile.bio) {
-        const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-        var bio = profile.bio.split(/\s+/);
-        for (let i = 0; i < bio.length; i++) {
-            if (bio[i].match(social)) {
-                bio = bio.slice(0, i);
-                break;
-            }
-            bio[i] = formatUserLinks(bio[i]);
-        }
-        if (bio.length)
-            result.push(bio.join(' '));
+        const image = getImage(profile.bio);
+        if (image)
+            embed = embed.setThumbnail(image);
+        const bio = profile.bio.split(/\s+/).map(formatSiteLink).join(' ');
+        if (bio)
+            result.push(bio);
     }
-    return result.join('\n');
-}
-
-function formatBio(bio) {
-    const social = /:\/\/|\bgithub\.com\b|\bgitlab\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio = bio.slice(0, i);
-            break;
-        }
-        bio[i] = formatUserLinks(bio[i]);
-    }
-    return bio.join(' ');
 }
 
 function process(bot, msg, mode) {

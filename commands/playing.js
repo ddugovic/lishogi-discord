@@ -17,8 +17,6 @@ async function playing(author, username) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in playing(${author.username}, ${username}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in playing(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -32,9 +30,9 @@ async function getName(author) {
 }
 
 function formatCurrentGame(game, username) {
-    const players = [game.players.white, game.players.black];
+    const players = [game.players.white.user, game.players.black.user].map(formatPlayer).join(' - ');
     const clock = game.clock;
-    var embed = new MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lidraughts.org/assets/images/lidraughts-32-white.png', url: `https://lidraughts.org/@/${username}/tv` })
         .setThumbnail('https://lidraughts.org/assets/favicon.64.png')

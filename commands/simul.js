@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
@@ -33,7 +33,7 @@ function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
     const compete = simul.isFinished ? 'competed' :
         simul.isRunning ? (simul.nbPairings == 1 ? 'competes' : 'compete') : 'will compete';
-    var embed = new Discord.MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lidraughts1.org/assets/logo/lidraughts-favicon-32-invert.png'})
         .setThumbnail('https://lidraughts1.org/assets/logo/lidraughts-favicon-64.png')
@@ -45,7 +45,7 @@ function formatSimul(simul) {
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description) {
-            const about = new Discord.MessageEmbed()
+            const about = new EmbedBuilder()
                 .addField('Description', description);
             return { embeds: [ embed, about ] };
         }

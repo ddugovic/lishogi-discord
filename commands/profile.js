@@ -47,7 +47,7 @@ function formatProfile(user, favoriteMode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatPlayer(user.title, playerName, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lidraughts.org/assets/images/lidraughts-32-white.png', url: user.playing ?? user.url})
         .setThumbnail('https://lidraughts.org/assets/favicon.64.png');

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -25,7 +25,7 @@ function setStreamers(streamers) {
         const ids = streamers.map(streamer => streamer.id);
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
-                return new MessageEmbed()
+                return new EmbedBuilder()
                     .setColor(getColor(Math.max(...fields.map(field => field.rating))))
                     .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
                     .setTitle(`:satellite: Lidraughts Streamers`)
