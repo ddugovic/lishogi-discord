@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
@@ -21,7 +21,7 @@ function formatEntry(entry) {
     const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    var embed = new MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)

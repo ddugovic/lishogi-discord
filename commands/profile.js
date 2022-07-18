@@ -51,7 +51,7 @@ async function formatProfile(user, favoriteMode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail(user.title == 'BOT' ? 'https://lishogi1.org/assets/images/icons/bot.png' : 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png');

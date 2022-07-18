@@ -1,6 +1,6 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -37,7 +37,7 @@ function formatLeaders(leaders, mode) {
         .then(response => {
             const players = rankPlayers(response.data, ranks).sort((a,b) => a.rank - b.rank);
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setColor(getColor(index))
                     .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)

@@ -31,7 +31,7 @@ function formatCurrentGame(game, username) {
     if (game.status == 'started')
         return `https://lishogi.org/${game.id}`;
     const players = [game.players.sente.user, game.players.gote.user].map(formatPlayer).join(' - ');
-    var embed = new Discord.MessageEmbed()
+    var embed = new Discord.EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: players, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')

@@ -24,7 +24,7 @@ function setStreamers(streamers) {
         return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
             .then(response => {
                 const rating = Math.max(...fields.map(field => field.rating));
-                const embed = new Discord.MessageEmbed()
+                const embed = new Discord.EmbedBuilder()
                     .setColor(getColor(rating))
                     .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
                     .setTitle(`:satellite: Lishogi Streamers`)

@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
@@ -48,7 +48,7 @@ function compareArenas(a, b) {
 
 function formatArena(arena) {
     const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
-    var embed = new MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(255-speed, 0, speed))
         .setAuthor({name: arena.createdBy, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')

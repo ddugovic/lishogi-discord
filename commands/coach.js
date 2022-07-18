@@ -22,7 +22,7 @@ function setCoaches(document) {
 }
 
 function formatCoach(image, name, description, details) {
-    return new Discord.MessageEmbed()
+    return new Discord.EmbedBuilder()
         .setAuthor({name: 'Lishogi Coach', iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: 'https://lishogi.org/coach/'})
         .setTitle(name)
         .setURL(getLink(details))
