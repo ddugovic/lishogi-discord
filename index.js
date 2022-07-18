@@ -13,7 +13,7 @@ mongoose.connect(config.mongourl, {
 const client = new Client({
     allowedMentions: { parse: [] },
     disabledEvents: [ 'TYPING_START' ],
-    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ],
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages ],
     presence: { activities: [{ name: 'lichess.org' , type: 'WATCHING' }], status: 'online' }
 });
 
