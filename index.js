@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const Discord = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -10,10 +10,11 @@ mongoose.connect(config.mongourl, {
 });
 
 // Initialize client
-const client = new Discord.Client({
+const client = new Client({
     allowedMentions: { parse: [] },
-    disabledEvents: ['TYPING_START'],
-    intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+    disabledEvents: [ 'TYPING_START' ],
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages ],
+    partials: [ Partials.Channel ],
     presence: { activities: [{ name: 'playstrategy.org' , type: 'WATCHING' }], status: 'online' }
 });
 
@@ -84,7 +85,7 @@ process.on('unhandledRejection', err => {
 client.login(config.token);
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+    if (interaction.type != InteractionType.ApplicationCommand) return;
 
     console.log(interaction.user.id, interaction.commandName);
     const cmdTxt = interaction.commandName;
