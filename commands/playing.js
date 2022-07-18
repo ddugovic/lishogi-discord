@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
@@ -33,7 +33,7 @@ async function getName(author) {
 function formatCurrentGame(game, username) {
     const players = [game.players.white, game.players.black];
     const clock = game.clock;
-    var embed = new Discord.EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')

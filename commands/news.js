@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const Parser = require('rss-parser');
@@ -22,14 +22,14 @@ function formatEntries(feed) {
         const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
         const summary = formatSummary(trimSummary(entry.contentSnippet));
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
-        var embed = new Discord.EmbedBuilder()
+        var embed = new EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
             .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
         if (entry.categories)
-            embed = embed.addField('Categories', entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', '));
+            embed = embed.addFields({ name: 'Categories', value: entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', ') });
         embeds.push(embed);
     }
     return embeds;

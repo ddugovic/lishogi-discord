@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -51,7 +51,7 @@ async function formatProfile(user, favoriteMode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
-    var embed = new Discord.EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail(user.title == 'BOT' ? 'https://lichess1.org/assets/images/icons/bot.png' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
@@ -65,7 +65,7 @@ async function formatProfile(user, favoriteMode) {
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
-        embed = embed.addField('About', formatAbout(embed, username, profile));
+        embed = embed.addFields({ name: 'About', value: formatAbout(embed, username, profile) });
     if (user.count.rated || user.perfs.puzzle)
         embed = embed.setImage(await getHistory(username, user.perfs.storm).then(formatHistory));
     return user.count.all ? setGames(embed, username) : embed;
@@ -285,7 +285,7 @@ function setGames(embed, username) {
     const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => { return embed.addField(`Recent ${plural('Game', games.length)}`, games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n')) });
+        .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
 }
 
 function formatGame(game) {

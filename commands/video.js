@@ -1,6 +1,6 @@
 const axios = require('axios');
 const decode = require('decode-html');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 
@@ -29,13 +29,13 @@ function formatVideo(video) {
     const [link, duration, name, author, target, tags] = video;
     const seconds = duration.split(':').reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
-    return new Discord.EmbedBuilder()
+    return new EmbedBuilder()
         .setColor(formatColor(score, 0, 255-score))
         .setAuthor({name: author, iconURL: null})
         .setTitle(`${decode(name)} (${duration})`)
         .setURL(`https://youtube.com${link}`)
         .setThumbnail(getImage(link))
-        .addField('Target', title(target), true);
+        .addFields({ name: 'Target', value: title(target), inline: true });
 }
 
 function getImage(link) {

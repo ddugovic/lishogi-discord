@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -48,7 +48,7 @@ function formatBot(bot, mode) {
         nickname = `${flags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '🦄' : '';
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lichess1.org/assets/images/icons/bot.png')
         .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}`})
@@ -86,7 +86,7 @@ function setAbout(embed, username, profile, playTime) {
         if (bio)
             result.push(bio);
     }
-    return embed.addField('About', result.join('\n'), true);
+    return embed.addFields({ name: 'About', value: result.join('\n'), inline: true });
 }
 
 function getImage(text) {

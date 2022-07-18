@@ -32,7 +32,7 @@ function formatBroadcast(broadcast) {
         .setURL(broadcast.tour.url)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(formatDescription(broadcast.tour.markup))
-        .addField('Rounds', broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n'));
+        .addFields({ name: 'Rounds', value: broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n') });
 }
 
 function formatDescription(text) {
