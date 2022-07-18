@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { Client, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, InteractionType, Partials } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
