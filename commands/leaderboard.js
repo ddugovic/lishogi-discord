@@ -2,11 +2,13 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatSocialLinks } = require('../lib/format-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-async function leaderboard(author, mode) {
+async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://playstrategy.org/player/top/150/${mode}`;
@@ -37,22 +39,35 @@ function formatLeaders(leaders, mode) {
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))
-                    .setThumbnail('https://playstrategy1.org/assets/logo/playstrategy-favicon-64.png')
+                    .setThumbnail('https://playstrategy.org/assets/favicon.64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://playstrategy.org/player')
-                    .addFields(response.data.map(formatPlayer).sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
-                return { embeds: [ embed ] };
-        });
-    } else {
-        return 'Leader not found!';
-    }
+                    .addFields(fields)
+                );
+            }
+        );
+}
+
+// Neither the leaderboard nor api/users return player ranks
+function rankLeaders(leaders) {
+    const ranks = {};
+    var i = 0;
+    for (leader of leaders)
+        ranks[leader.id] = ++i;
+    return ranks;
+}
+
+function rankPlayers(players, ranks) {
+    for (player of players)
+        player.rank = ranks[player.id];
+    return players;
 }
 
 function formatPlayer(player) {
     const name = formatName(player);
-    const badges = player.patron ? '🍺' : '';
+    const badges = player.patron ? ' ⛩️' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs};
+    return { name : `${name}${badges} #${player.rank}`, value: profile, inline: true };
 }
 
 function formatName(player) {
@@ -77,7 +92,12 @@ function getCountryAndRating(profile) {
         return [profile.country, profile.fideRating];
 }
 
-function formatProfile(username, profile, fideRating, playTime) {
+function getColor(index, length) {
+    const red = Math.min(Math.max(255 - index * 10, 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
+function formatProfile(username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://playstrategy.org/@/${username})`);
@@ -86,8 +106,8 @@ function formatProfile(username, profile, fideRating, playTime) {
     result.push(links.join(' | '));
     var rating = 0;
     if (profile && profile.bio) {
-        const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio.length)
+        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
+        if (bio)
             result.push(bio);
     }
     return result.join('\n');
@@ -101,11 +121,15 @@ function formatBio(bio) {
             bio = bio.slice(0, i);
             break;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://playstrategy.org/@/${match[1]})`);
-        }
+        bio[i] = formatSiteLinks(bio[i]);
     }
-    return bio.join(' ');
+    return bio;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 function title(str) {
@@ -118,8 +142,8 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return leaderboard(interaction.user, interaction.options.getString('mode'));
+function interact(interaction) {
+    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
