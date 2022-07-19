@@ -36,7 +36,7 @@ function formatCurrentGame(game, username) {
         .setColor(getColor(game.players))
         .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lidraughts.org/assets/images/lidraughts-32-white.png', url: `https://lidraughts.org/@/${username}/tv` })
         .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
-        .setTitle(`${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(clock, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lidraughts.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')

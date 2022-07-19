@@ -79,7 +79,7 @@ function formatGame(game) {
 
 function getDescription(arena) {
     const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
-    const clock = formatClock(arena.clock.limit, arena.clock.increment, arena.clock.byoyomi);
+    const clock = formatClock(arena.clock, arena.clock.byoyomi);
     const rated = arena.rated ? 'rated' : 'casual';
     const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
         arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :

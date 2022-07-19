@@ -137,21 +137,16 @@ function formatAbout(embed, username, profile) {
 function setHistory(embed, username) {
     const url = `https://lidraughts.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const perfs = response.data;
-            const url = `https://lidraughts.org/api/storm/dashboard/${username}?days=90`;
-                return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => formatHistory(perfs, response.data))
-                    .then(image => image ? embed.setImage(image) : embed);
-        });
+        .then(response => formatHistory(response.data))
+        .then(image => image ? embed.setImage(image) : embed);
 }
 
-async function formatHistory(perfs, storms) {
+async function formatHistory(perfs) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
     for (const days of Array(91).keys()) {
         const time = today - (24*60*60*1000 * (90 - days));
-        const [data, history] = filterHistory(perfs, storms, time);
+        const [data, history] = filterHistory(perfs, time);
         if (data.length) {
             const chart = chartHistory(data, history, now);
             const url = chart.getUrl();
@@ -163,24 +158,7 @@ async function formatHistory(perfs, storms) {
     }
 }
 
-function filterHistory(perfs, storms, time) {
-    const [data, history] = getSeries(perfs, time);
-    const series = getStormSeries(storms, time);
-    data.push(...series);
-    history.push({ label: 'Storm', data: series });
-    return [data, history];
-}
-
-function chartHistory(data, history, now) {
-    const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
-    return new QuickChart().setConfig({
-        type: 'line',
-        data: { labels: domain, datasets: history.filter(series => series.data.length) },
-        options: { scales: { xAxes: [{ type: 'time' }] } }
-    });
-}
-
-function getSeries(perfs, time) {
+function filterHistory(perfs, time) {
     const data = [];
     const history = [];
     for (perf of Object.values(perfs)) {
@@ -193,8 +171,13 @@ function getSeries(perfs, time) {
     return [data, history];
 }
 
-function getStormSeries(storms, time) {
-    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } }).filter(point => (point.t >= time));
+function chartHistory(data, history, now) {
+    const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
+    return new QuickChart().setConfig({
+        type: 'line',
+        data: { labels: domain, datasets: history.filter(series => series.data.length) },
+        options: { scales: { xAxes: [{ type: 'time' }] } }
+    });
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
@@ -290,7 +273,7 @@ function formatGame(game) {
     const status = formatStatus(game);
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `${formatClock(game.clock.initial, game.clock.increment, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
