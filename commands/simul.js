@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -40,7 +40,7 @@ function formatSimul(simul) {
     const players = simul.nbPairings == 1 ? '1 player' : `${simul.nbPairings} players`;
     const play = simul.isFinished ? 'competed in' :
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
-    var embed = new Discord.EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(getColor(simul.host.rating))
         .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${simul.host.name}`})
         .setThumbnail(getImage(simul.host) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
@@ -50,7 +50,7 @@ function formatSimul(simul) {
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
-            embed = embed.addField('About', description);
+            embed = embed.addFields({ name: 'About', value: description });
     }
     return embed;
 }

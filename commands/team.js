@@ -32,8 +32,10 @@ function formatTeam(team) {
         .setTitle(team.name)
         .setURL(`https://lishogi.org/team/${team.id}`)
         .setDescription(cleanDescription(description))
-        .addField('Members', `**${fn.format(team.nbMembers)}**`, true)
-        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '), true);
+        .addFields(
+            { name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true },
+            { name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true }
+	);
 }
 
 function cleanDescription(description) {

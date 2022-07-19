@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
@@ -31,7 +31,7 @@ function formatEntry(entry, link) {
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
     const summary = formatSummary(html2md(entry.contentSnippet));
     const image = getImage(html2md(entry.content));
-    var embed = new Discord.EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
         .setTitle(entry.title)

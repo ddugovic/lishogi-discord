@@ -1,6 +1,6 @@
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -47,7 +47,7 @@ function formatBot(bot, mode) {
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '🦄' : '';
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lishogi1.org/assets/images/icons/bot.png')
         .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}`})
@@ -85,7 +85,7 @@ function setAbout(embed, username, profile, playTime) {
         if (bio)
             result.push(bio);
     }
-    return embed.addField('About', result.join('\n'), true);
+    return embed.addFields({ name: 'About', value: result.join('\n'), inline: true });
 }
 
 function getImage(text) {

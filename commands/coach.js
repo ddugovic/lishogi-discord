@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const html2md = require('html-to-md');
 
 async function coach(author) {
@@ -22,7 +22,7 @@ function setCoaches(document) {
 }
 
 function formatCoach(image, name, description, details) {
-    return new Discord.EmbedBuilder()
+    return new EmbedBuilder()
         .setAuthor({name: 'Lishogi Coach', iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: 'https://lishogi.org/coach/'})
         .setTitle(name)
         .setURL(getLink(details))
