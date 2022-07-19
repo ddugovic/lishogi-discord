@@ -44,11 +44,8 @@ function formatSimul(simul) {
         embed = embed.setImage(`https://lidraughts1.org/game/export/gif/${simul.host.gameId}.gif`);
     if (simul.text) {
         const description = formatDescription(simul.text);
-        if (description) {
-            const about = new EmbedBuilder()
-                .addField('Description', description);
-            return { embeds: [ embed, about ] };
-        }
+        if (description)
+            embed = embed.addFields({ name: 'About', value: description });
     }
     return { embeds: [ embed ] };
 }

@@ -2,8 +2,9 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
 const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
+const fn = require('friendly-numbers');
 const plural = require('plural');
 
 function team(author, text, interaction) {
@@ -30,12 +31,18 @@ function formatTeam(team) {
         .setThumbnail(getImage(team.description) ?? 'https://lidraughts.org/assets/favicon.64.png')
         .setTitle(team.name)
         .setURL(`https://lidraughts.org/team/${team.id}`)
-        .setDescription(description.split(/\r?\n/).map(formatLink).join('\n'))
-        .addField(plural('Leader', team.leaders.length), team.leaders.map(formatLeader).join(', '));
+        .setDescription(cleanDescription(description))
+        .addFields(
+            { name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true },
+            { name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true }
+	);
 }
 
-function formatLeader(user) {
-    return `[@${user.name}](https://lidraughts.org/@/${user.name})`;
+function cleanDescription(description) {
+    const lines = description.split(/\r?\n/).map(formatSiteLinks);
+    while (lines.join('\n').length > 4000)
+        lines.pop();
+    return lines.join('\n');
 }
 
 function formatDescription(text) {
@@ -45,17 +52,8 @@ function formatDescription(text) {
         return formatDescription(match[1].trim());
     const links = formatSocialLinks(text);
     const result = links.length ? [links.join(' | ')] : [];
-    result.push(formatAbout(text.split(/\r?\n/)));
+    result.push(formatAbout(text.split(/\r?\n/)).join('\n'));
     return result.join('\n');
-}
-
-function formatLink(text) {
-    text = formatUserLink(text);
-    const pattern = /^([- \w]+)(?::\s+|\s+-\s+)(https?:\/\/[-\w\.\/]+)$/;
-    const match = text.match(pattern);
-    if (match)
-        return `[${match[1]}](${match[2]})`;
-    return text;
 }
 
 function formatAbout(about) {
@@ -64,17 +62,19 @@ function formatAbout(about) {
         if (about[i].match(social)) {
             about.splice(i, 1);
             i -= 1;
-            continue;
         }
-        bio[i] = formatUserLinks(bio[i]);
     }
-    return about.join('\n');
+    return about;
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.\w+/);
+    const match = text.match(/https:\/\/[-\.\w\/]+\/[-\w]+\.(?:gifv?|jpe?g|png)/i);
     if (match)
         return match[0];
+}
+
+function formatLeader(user) {
+    return `[@${user.name}](https://lidraughts.org/@/${user.name})`;
 }
 
 function process(bot, msg, text) {

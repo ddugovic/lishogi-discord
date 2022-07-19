@@ -52,13 +52,15 @@ function formatArena(arena) {
 	embed = embed.setImage(`https://lidraughts.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
-            .addField('Berserks', `**${arena.stats.berserks}**`, true)
-            .addField('Games', `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, true)
-            .addField('Moves', `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, true);
+            .addFields(
+                { name: 'Berserks', value: `**${arena.stats.berserks}**`, inline: true },
+                { name: 'Games', value: `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, inline: true },
+                { name: 'Moves', value: `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, inline: true }
+            )
     }
     if (arena.minRatedGames && !arena.pairingsClosed)
         embed = embed
-            .addField('Restrictions', `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
+            .addFields({ name: 'Restrictions', value: `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.` });
     return embed;
 }
 
