@@ -61,7 +61,7 @@ client.on('messageCreate', (msg) => {
         help.process(commands, msg.channel);
     } else if (cmdTxt == 'stop') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        stop(client, msg.user.id);
+        stop(client, msg.author.id);
     } else if (config.respondToInvalid) {
         msg.channel.send(`Invalid command!`);
     }
@@ -102,7 +102,8 @@ client.on('interactionCreate', async interaction => {
     } else if (cmdTxt == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
     } else if (cmdTxt == 'stop') {
-        stop(client, interaction.author.id);
+        await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
+        stop(client, interaction.user.id);
     } else if (config.respondToInvalid) {
         await interaction.reply({ content: 'Invalid command!', ephemeral: true });
     }
