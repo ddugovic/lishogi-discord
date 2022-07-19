@@ -82,7 +82,7 @@ function process(bot, msg, text) {
 }
 
 function interact(interaction) {
-    team(interaction.user, interaction.options.getString('text'));
+    team(interaction.user, interaction.options.getString('text'), interaction);
 }
 
 module.exports = {process, interact};
