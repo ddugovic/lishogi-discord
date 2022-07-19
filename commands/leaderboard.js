@@ -2,12 +2,13 @@ const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatSocialLinks } = require('../lib/format-links');
-const { formatUserLink, formatUserLinks } = require('../lib/format-site-links');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const formatPages = require('../lib/format-pages');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-async function leaderboard(author, mode) {
+async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://lidraughts.org/player/top/150/${mode}`;
@@ -38,45 +39,47 @@ function formatLeaders(leaders, mode) {
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))
-                    .setThumbnail('https://lidraughts1.org/assets/logo/lidraughts-favicon-64.png')
+                    .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lidraughts.org/player')
-                    .addFields(fields.sort((a,b) => b.perfs[mode].rating - a.perfs[mode].rating));
-                return { embeds: [ embed ] };
-        });
-    } else {
-        return 'Leader not found!';
-    }
+                    .addFields(fields)
+                );
+            }
+        );
 }
 
-function getColor(rating) {
-    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
-    return formatColor(red, 0, 255-red);
+// Neither the leaderboard nor api/users return player ranks
+function rankLeaders(leaders) {
+    const ranks = {};
+    var i = 0;
+    for (leader of leaders)
+        ranks[leader.id] = ++i;
+    return ranks;
+}
+
+function rankPlayers(players, ranks) {
+    for (player of players)
+        player.rank = ranks[player.id];
+    return players;
 }
 
 function formatPlayer(player) {
-    const fmjdRating = getRating(player.profile);
-    const [profile, rating] = formatProfile(player.username, player.profile, fmjdRating, player.playTime);
-    const name = formatName(player, rating);
-    const badges = player.patron ? '⛃' : '';
-    return { name : `${name} ${badges}`, value: profile, inline: true, perfs: player.perfs, 'rating': rating };
+    const name = formatName(player);
+    const badges = player.patron ? ' ⛩️' : '';
+    const profile = formatProfile(player.username, player.profile, player.playTime);
+    return { name : `${name}${badges} #${player.rank}`, value: profile, inline: true };
 }
 
-function formatName(player, rating) {
+function formatName(player) {
     var name = getLastName(player.profile) ?? player.username;
     if (player.title)
         name = `**${player.title}** ${name}`;
-    const country = getCountry(player.profile);
+    const [country, rating] = getCountryAndRating(player.profile) || [];
     if (country && countryFlags.countryCode(country))
         name = `${countryFlags.countryCode(country).emoji} ${name}`;
-    if (rating > 1000)
+    if (rating)
         name += ` (${rating})`;
     return name;
-}
-
-function getCountry(profile) {
-    if (profile)
-        return profile.country;
 }
 
 function getLastName(profile) {
@@ -84,12 +87,17 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getRating(profile) {
+function getCountryAndRating(profile) {
     if (profile)
-        return profile.fmjdRating;
+        return [profile.country, profile.fmjdRating];
 }
 
-function formatProfile(username, profile, fmjdRating, playTime) {
+function getColor(index, length) {
+    const red = Math.min(Math.max(255 - index * 10, 0), 255);
+    return formatColor(red, 0, 255-red);
+}
+
+function formatProfile(username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lidraughts.org/@/${username})`);
@@ -98,13 +106,11 @@ function formatProfile(username, profile, fmjdRating, playTime) {
     result.push(links.join(' | '));
     var rating = 0;
     if (profile && profile.bio) {
-        const bio = formatBio(profile.bio.split(/\s+/));
-        if (bio.length) {
-            rating = fmjdRating ?? 1000;
+        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
+        if (bio)
             result.push(bio);
-        }
     }
-    return [result.join('\n'), rating];
+    return result.join('\n');
 }
 
 function formatBio(bio) {
@@ -114,9 +120,15 @@ function formatBio(bio) {
             bio = bio.slice(0, i);
             break;
         }
-        bio[i] = formatUserLinks(bio[i]);
+        bio[i] = formatSiteLinks(bio[i]);
     }
-    return bio.join(' ');
+    return bio;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 function title(str) {
@@ -129,8 +141,8 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return leaderboard(interaction.user, interaction.options.getString('mode'));
+function interact(interaction) {
+    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
