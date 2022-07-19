@@ -34,9 +34,9 @@ function formatCurrentGame(game, username) {
     const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: `https://playstrategy.org/@/${username}/tv` })
+        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://playstrategy.org/assets/images/lidraughts-32-white.png', url: `https://lidraughts.org/@/${username}/tv` })
         .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
-        .setTitle(`${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(clock, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://playstrategy.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
