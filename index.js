@@ -101,7 +101,7 @@ client.on('interactionCreate', async interaction => {
         }
     } else if (interaction.commandName == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
-    } else if (cmdTxt == 'stop') {
+    } else if (interaction.commandName == 'stop') {
         await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
         stop(client, interaction.user.id);
     } else if (config.respondToInvalid) {
