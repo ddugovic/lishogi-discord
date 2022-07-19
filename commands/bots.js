@@ -71,6 +71,13 @@ function setAbout(embed, username, profile, playTime) {
         if (bio)
             result.push(bio);
     }
+    return embed.addFields({ name: 'About', value: result.join('\n'), inline: true });
+}
+
+function getImage(text) {
+    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
+    if (match)
+        return match[0];
 }
 
 function process(bot, msg, mode) {

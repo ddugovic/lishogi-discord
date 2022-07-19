@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const plural = require('plural');

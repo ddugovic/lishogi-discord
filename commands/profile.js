@@ -1,11 +1,15 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const QuickChart = require('quickchart-js');
-const { formatSocialLinks } = require('../lib/format-links');
+const formatClock = require('../lib/format-clock');
+const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
+const { numberVariation } = require('../lib/format-variation');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -19,8 +23,9 @@ async function profile(author, username) {
     const url = `https://playstrategy.org/api/user/${username}?trophies=true`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatProfile(response.data, favoriteMode))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}, ${favoriteMode}): \
+            console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -34,19 +39,19 @@ async function getName(author) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(user, favoriteMode) {
+async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
     const username = user.username;
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
-    var playerName = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
+    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
-    const [color, author] = formatPlayer(user.title, playerName, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+    const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
-    var embed = new Discord.EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://playstrategy.org/assets/logo/playstrategy-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
@@ -55,21 +60,19 @@ function formatProfile(user, favoriteMode) {
         .setURL(`https://playstrategy.org/?user=${username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating)) {
+    if (unranked(mode, rating))
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-        embed = setAbout(embed, username, user.profile, user.playTime);
-        return setTeams(embed, username)
-            .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-            .then(embed => { return { embeds: [ embed ] } });
-    }
-    return setStats(embed, user.username, user.count, user.playTime, mode, rating)
-        .then(embed => { return setAbout(embed, username, user.profile, user.playTime) })
-        .then(embed => { return setTeams(embed, username) })
-        .then(embed => { return user.count.rated || user.perfs.puzzle ? setHistory(embed, username) : embed })
-        .then(embed => { return { embeds: [ embed ] } });
+    else
+        embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
+    const about = formatAbout(embed, username, user.profile);
+    if (about)
+        embed = embed.addFields({ name: 'About', value: about });
+    if (user.count.rated || user.perfs.puzzle)
+        embed = await setHistory(embed, username);
+    return setGames(embed, username);
 }
 
-function formatPlayer(title, name, patron, trophies, online, playing, streaming) {
+function formatUser(title, name, patron, trophies, online, playing, streaming) {
     const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;
@@ -115,35 +118,20 @@ function setStats(embed, username, count, playTime, mode, rating) {
         });
 }
 
-function setAbout(embed, username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+function formatAbout(embed, username, profile) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://playstrategy.org/@/${username})`);
 
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const result = [links.join(' | ')];
     if (profile && profile.bio) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
-        const bio = formatBio(profile.bio.split(/\s+/));
+        const bio = formatBio(profile.bio.split(/\s+/)).join(' ');
         if (bio)
             result.push(bio);
     }
-    return embed.addField('About', result.join('\n'), true);
-}
-
-function setTeams(embed, username) {
-    const url = `https://playstrategy.org/api/team/of/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const teams = formatTeams(response.data);
-            return teams ? embed.addField('Teams', teams, true) : embed;
-        });
-}
-
-function formatTeams(teams) {
-    return teams.slice(0, 10).map(team => `[${team.name}](https://playstrategy.org/team/${team.id})`).join('\n');
+    return result.join('\n');
 }
 
 function setHistory(embed, username) {
@@ -151,34 +139,45 @@ function setHistory(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             const perfs = response.data;
-            const url = `https://playstrategy.org/api/storm/dashboard/${username}?days=360`;
+            const url = `https://playstrategy.org/api/storm/dashboard/${username}?days=90`;
                 return axios.get(url, { headers: { Accept: 'application/json' } })
                     .then(response => formatHistory(perfs, response.data))
-                    .then(image => embed.setImage(image));
+                    .then(image => image ? embed.setImage(image) : embed);
         });
 }
 
-function formatHistory(perfs, storms) {
+async function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
-    for (days of [...Array(360).keys()]) {
-        const time = today - (24*60*60*1000 * days);
-        const [data, history] = getSeries(perfs, time);
-        const series = getStormSeries(storms, time);
-        data.push(...series);
-        history.push({ label: 'Storm', data: series });
-
-        if (data.length >= (days == 359 ? 1 : 200)) {
-            const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
-            const chart = new QuickChart().setConfig({
-                type: 'line',
-                data: { labels: domain, datasets: history.filter(series => series.data.length) },
-                options: { scales: { xAxes: [{ type: 'time' }] } }
-            });
+    for (const days of Array(91).keys()) {
+        const time = today - (24*60*60*1000 * (90 - days));
+        const [data, history] = filterHistory(perfs, storms, time);
+        if (data.length) {
+            const chart = chartHistory(data, history, now);
             const url = chart.getUrl();
-            return url.length <= 2000 ? url : chart.getShortUrl();
+            if (url.length <= 2000)
+                return url;
+            if (days == 90)
+                return await chart.getShortUrl();
         }
     }
+}
+
+function filterHistory(perfs, storms, time) {
+    const [data, history] = getSeries(perfs, time);
+    const series = getStormSeries(storms, time);
+    data.push(...series);
+    history.push({ label: 'Storm', data: series });
+    return [data, history];
+}
+
+function chartHistory(data, history, now) {
+    const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
+    return new QuickChart().setConfig({
+        type: 'line',
+        data: { labels: domain, datasets: history.filter(series => series.data.length) },
+        options: { scales: { xAxes: [{ type: 'time' }] } }
+    });
 }
 
 function getSeries(perfs, time) {
@@ -206,13 +205,13 @@ function getMostPlayedMode(perfs, favoriteMode) {
         // exclude puzzle games, unless it is the only mode played by that user.
         if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1];
+            mostPlayedRating = modes[i][1];
         }
     }
     for (var i = 0; i < modes.length; i++) {
         if (modes[i][0].toLowerCase() == favoriteMode) {
             mostPlayedMode = modes[i][0];
-            mostPlayedGames = modes[i][1];
+            mostPlayedRating = modes[i][1];
         }
     }
     return [mostPlayedMode, mostPlayedRating];
@@ -220,10 +219,6 @@ function getMostPlayedMode(perfs, favoriteMode) {
 
 function formatProgress(progress) {
     return (progress > 0) ? ` ▲**${progress}**📈` : (progress < 0) ? ` ▼**${Math.abs(progress)}**📉` : '';
-}
-
-function formatRating(mode, rating) {
-    return `**${rating.rating}** ± **${2 * rating.rd}** over **${fn.format(rating.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), rating.games)}`;
 }
 
 function formatRating(mode, r) {
@@ -240,7 +235,7 @@ function formatStats(count, playTime, mode, rating, perf) {
         return [
             { name: 'Games', value: `**${fn.format(count.rated)}** rated, **${fn.format(count.all - count.rated)}** casual`, inline: true },
             { name: category, value: formatRating(mode, rating), inline: true },
-            { name: 'Time Played', value: formatSeconds(playTime ? playTime.total : 0), inline: true }
+            { name: 'Time Played', value: formatTimePlayed(playTime), inline: true }
        ];
     else
         return [
@@ -248,10 +243,13 @@ function formatStats(count, playTime, mode, rating, perf) {
        ];
 }
 
-function title(str) {
-    return str.split('_')
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join(' ');
+function formatTimePlayed(playTime) {
+    const result = [formatSeconds(playTime ? playTime.total : 0)];
+    if (playTime && playTime.total) {
+        const duration = formatSeconds(playTime.tv).split(', ')[0];
+        result.push(`:tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`)
+    }
+    return result.join('\n');
 }
 
 function formatPerf(perf) {
@@ -263,24 +261,58 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
+    const social = /https?:\/\/(?!lichess\.org|playstrategy\.org|playstrategy\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
             break;
         }
-        for (match of bio[i].matchAll(username)) {
-            bio[i] = bio[i].replace(match[0], `[${match[0]}](https://playstrategy.org/@/${match[1]})`);
-        }
+        bio[i] = formatSiteLinks(bio[i]);
     }
-    return bio.join(' ');
+    return bio;
 }
 
 function getImage(text) {
     const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
     if (match)
         return match[0];
+}
+
+function setGames(embed, username) {
+    const url = `https://playstrategy.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => parseDocument(response.data))
+        .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
+}
+
+function formatGame(game) {
+    const url = `https://playstrategy.org/${game.id}`;
+    const status = formatStatus(game);
+    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
+    const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
+    return `${formatClock(game.clock.initial, game.clock.increment, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+}
+
+function formatStatus(game) {
+    return [game.players.white.ratingDiff, game.players.black.ratingDiff].map(formatRatingDiff);
+}
+
+function formatRatingDiff(ratingDiff) {
+    return (ratingDiff > 0) ? ` ▲**${ratingDiff}**` : (ratingDiff < 0) ? ` ▼**${Math.abs(ratingDiff)}**` : '';
+}
+
+function formatPlayerName(player) {
+    return player.user ? formatUserName(player.user) : player.aiLevel ? `Engine level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUserName(user) {
+    return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function formatOpening(opening, initialFen, moves) {
+    const ply = opening ? opening.ply : 10;
+    const variation = numberVariation(moves.split(/ /).slice(0, ply));
+    return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
 }
 
 // For sorting through modes... playstrategy api does not put these in an array so we do it ourselves
@@ -298,12 +330,18 @@ function modesArray(list) {
     return array;
 }
 
+function title(str) {
+    return str.split('_')
+        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
+        .join(' ');
+}
+
 function process(bot, msg, username) {
     profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
 async function reply(interaction) {
-    return await profile(interaction.user, interaction.options.getString('username'));
+    return profile(interaction.user, interaction.options.getString('username'));
 }
 
 module.exports = {process, reply};

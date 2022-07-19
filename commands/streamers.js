@@ -1,9 +1,10 @@
 const axios = require('axios');
-const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
+const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
+const {  formatUserLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 
 function streamers(author, interaction) {
@@ -45,9 +46,10 @@ function formatName(streamer) {
     var name = getLastName(streamer.profile) ?? streamer.username;
     if (streamer.title)
         name = `**${streamer.title}** ${name}`;
-    const country = getCountry(streamer.profile);
     if (country && flags.countryCode(country))
         name = `${flags.countryCode(country).emoji} ${name}`;
+    if (rating)
+        name += ` (${rating})`;
     return name;
 }
 
