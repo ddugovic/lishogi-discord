@@ -1,6 +1,6 @@
-const config = require('./config.json');
 const { PermissionFlagsBits } = require('discord-api-types/v10');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+
 const channels = [
     { name: 'Top Rated', value: 'Top Rated' },
     { name: 'Blitz', value: 'Blitz' },
@@ -60,6 +60,7 @@ const commands = [
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.SendMessages).toJSON());
 
+const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const rest = new REST({ version: '10' }).setToken(config.token);
