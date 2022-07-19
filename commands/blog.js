@@ -21,17 +21,13 @@ function formatEntry(entry) {
     const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    var embed = new EmbedBuilder()
+    return new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: entry.author, iconURL: 'https://lidraughts.org/assets/images/favicon-32-black.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)
         .setURL(entry.link)
-        .setThumbnail('https://lidraughts.org/assets/favicon.64.png')
+        .setThumbnail(getImage(html2md(entry.content)) ?? 'https://lidraughts.org/assets/favicon.64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatSnippet(entry.contentSnippet)}`);
-    const image = getImage(html2md(entry.content));
-    if (image)
-        embed = embed.setImage(image)
-    return embed;
 }
 
 function formatSnippet(contentSnippet) {
