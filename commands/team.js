@@ -96,7 +96,11 @@ function process(bot, msg, text) {
 }
 
 function interact(interaction) {
+<<<<<<< HEAD
     team(interaction.user, interaction.options.getString('text'), interaction);
+=======
+    team(interaction.user, interaction.options.getString('text'));
+>>>>>>> 1d4ba4c (Code cleanup)
 }
 
 module.exports = {process, interact};
