@@ -102,6 +102,7 @@ client.on('interactionCreate', async interaction => {
     } else if (cmdTxt == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
     } else if (cmdTxt == 'stop') {
+        await interaction.reply({ content: `<@${interaction.author.id}>`, ephemeral: true });
         stop(client, interaction.author.id);
     } else if (config.respondToInvalid) {
         await interaction.reply({ content: 'Invalid command!', ephemeral: true });
