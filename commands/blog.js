@@ -26,7 +26,7 @@ function formatEntry(entry) {
         .setAuthor({ name: entry.author, iconURL: 'https://playstrategy.org/assets/images/favicon-32-black.png', url: getUserLink(entry.author) })
         .setTitle(entry.title)
         .setURL(entry.link)
-        .setThumbnail(getImage(html2md(entry.content)) ?? 'https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
+        .setThumbnail(getImage(html2md(entry.content)) ?? 'https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatSnippet(entry.contentSnippet)}`);
 }
 

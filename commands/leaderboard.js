@@ -39,7 +39,7 @@ function formatLeaders(leaders, mode) {
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))
-                    .setThumbnail('https://playstrategy.org/assets/favicon.64.png')
+                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://playstrategy.org/player')
                     .addFields(fields)
@@ -65,7 +65,7 @@ function rankPlayers(players, ranks) {
 
 function formatPlayer(player) {
     const name = formatName(player);
-    const badges = player.patron ? ' ⛩️' : '';
+    const badges = player.patron ? ' 🍺' : '';
     const profile = formatProfile(player.username, player.profile, player.playTime);
     return { name : `${name}${badges} #${player.rank}`, value: profile, inline: true };
 }

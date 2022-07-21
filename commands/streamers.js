@@ -27,7 +27,7 @@ function setStreamers(streamers) {
             .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
                 return new EmbedBuilder()
                     .setColor(getColor(Math.max(...fields.map(field => field.rating))))
-                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png');
+                    .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
                     .setTitle(`:satellite: Lidraughts Streamers`)
                     .setURL('https://playstrategy.org/streamer')
                     .addFields(fields);

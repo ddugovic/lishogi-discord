@@ -53,7 +53,7 @@ function formatArena(arena) {
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-speed, 0, speed))
         .setAuthor({name: arena.createdBy, iconURL: 'https://playstrategy.org/assets/images/playstrategy-32-white.png'})
-        .setThumbnail('https://playstrategy.org/assets/favicon.64.png')
+        .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setTitle(arena.fullName)
         .setURL(`https://playstrategy.org/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
