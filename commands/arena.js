@@ -12,8 +12,6 @@ function arena(author, mode, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;

@@ -271,13 +271,13 @@ function setGames(embed, username) {
 function formatGame(game) {
     const url = `https://playstrategy.org/${game.id}`;
     const status = formatStatus(game);
-    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
+    const players = [game.players.p1, game.players.p2].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
-    return [game.players.white.ratingDiff, game.players.black.ratingDiff].map(formatRatingDiff);
+    return [game.players.p1.ratingDiff, game.players.p2.ratingDiff].map(formatRatingDiff);
 }
 
 function formatRatingDiff(ratingDiff) {
