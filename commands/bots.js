@@ -46,7 +46,7 @@ function formatBot(bot, mode) {
     if (country && countryFlags.countryCode(country))
         nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
 
-    const badges = bot.patron ? '🦄' : '';
+    const badges = bot.patron ? '⛩️' : '';
     const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lishogi1.org/assets/images/icons/bot.png')
