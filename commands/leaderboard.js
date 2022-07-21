@@ -143,7 +143,7 @@ function process(bot, msg, mode) {
 }
 
 function interact(interaction) {
-    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
+    leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};
