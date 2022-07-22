@@ -25,8 +25,8 @@ function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return streamers(interaction.user);
+async function interact(interaction) {
+    interaction.editReply(await streamers(interaction.user));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

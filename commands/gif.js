@@ -41,8 +41,8 @@ function process(bot, msg, username) {
     gif(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return gif(interaction.user, interaction.options.getString('username'));
+async function interact(interaction) {
+    interaction.editReply(await gif(interaction.user, interaction.options.getString('username')));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

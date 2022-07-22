@@ -63,7 +63,7 @@ function process(bot, msg) {
 }
 
 function interact(interaction) {
-    return news(interaction.user, interaction);
+    news(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

@@ -19,7 +19,7 @@ const commands = {
         usage: "[user]",
         description: "Shares your (or a user's) recent game as a GIF",
         process: gif.process,
-        reply: gif.reply
+        interact: gif.interact
     },
     "news": {
         usage: "",
@@ -31,7 +31,7 @@ const commands = {
         usage: "[user]",
         description: "Shares your (or a user's) recent game",
         process: recent.process,
-        reply: recent.reply
+        interact: recent.interact
     },
     "privacy": {
         usage: "",
@@ -43,13 +43,13 @@ const commands = {
         usage: "[username]",
         description: "Displays your (or a user's) profile",
         process: profile.process,
-        reply: profile.reply
+        interact: profile.interact
     },
     "puzzle": {
         usage: "",
         description: "Displays today's puzzle",
         process: puzzle.process,
-        reply: puzzle.reply
+        interact: puzzle.interact
     },
     "setuser": {
         usage: "<woogles name>",

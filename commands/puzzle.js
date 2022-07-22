@@ -26,8 +26,8 @@ function process(bot, msg) {
     puzzle(msg.author).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return puzzle(interaction.user);
+async function interact(interaction) {
+    interaction.editReply(await puzzle(interaction.user));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

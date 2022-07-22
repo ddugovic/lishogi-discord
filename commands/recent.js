@@ -57,8 +57,8 @@ function process(bot, msg, username) {
     recent(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return recent(interaction.user, interaction.options.getString('username'));
+async function interact(interaction) {
+    interaction.editReply(await recent(interaction.user, interaction.options.getString('username')));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
