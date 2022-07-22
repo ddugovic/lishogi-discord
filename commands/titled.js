@@ -47,7 +47,7 @@ function process(bot, msg, title) {
     titled(msg.author, title.toUpperCase()).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
     interaction.editReply(await titled(interaction.user, interaction.options.getString('title'), interaction));
 }
 
