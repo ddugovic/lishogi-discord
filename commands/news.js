@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -31,7 +31,7 @@ function formatNews(news, interaction) {
 function formatEntry(entry) {
     const [description, imageURL] = formatBody(entry.body);
     const red = Math.min(Math.max(description.length - 150, 0), 255);
-    var embed = new MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setTitle(entry.title)
         .setURL(formatURI(entry.link) ?? entry.link)

@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -31,7 +31,7 @@ async function profile(author, username) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, username) {
-    var embed = new Discord.MessageEmbed()
+    var embed = new EmbedBuilder()
         .setColor(0x00FFFF)
         .setTitle(formatName(data, username))
         .setURL(`https://woogles.io/profile/${username}`)

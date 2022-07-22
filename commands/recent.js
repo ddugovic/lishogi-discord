@@ -34,7 +34,7 @@ async function recent(author, username) {
 
 function formatGames(data) {
     for (info of data.game_info) {
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setTitle(info.players.map(formatPlayer).join(' - '))
             .setURL(`https://woogles.io/game/${info.game_id}`)
             .setThumbnail('https://woogles.io/logo192.png')

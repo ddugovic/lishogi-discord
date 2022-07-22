@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const Discord = require('discord.js');
+const { Client, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -10,10 +10,10 @@ mongoose.connect(config.mongourl, {
 });
 
 // Initialize client
-const client = new Discord.Client({
+const client = new Client({
     allowedMentions: { parse: [] },
-    disabledEvents: ['TYPING_START'],
-    intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+    disabledEvents: [ 'TYPING_START' ],
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ],
     presence: { activities: [{ name: 'woogles.io' , type: 'WATCHING' }], status: 'online' }
 });
 
@@ -84,7 +84,7 @@ process.on('unhandledRejection', err => {
 client.login(config.token);
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+    if (interaction.type != InteractionType.ApplicationCommand) return;
 
     console.log(interaction.user.id, interaction.commandName);
     const cmdTxt = interaction.commandName;
@@ -101,6 +101,9 @@ client.on('interactionCreate', async interaction => {
         }
     } else if (cmdTxt == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
+    } else if (cmdTxt == 'stop') {
+        await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
+        stop(client, interaction.user.id);
     } else if (config.respondToInvalid) {
         await interaction.reply({ content: 'Invalid command!', ephemeral: true });
     }
