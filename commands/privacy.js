@@ -1,4 +1,6 @@
-const message = 'This bot only stores your Chess.com username and favorite game mode. Contact <@161060630726574080> if you need your data removed and cannot figure out how to use the deleteuser command.';
+const { ownerId } = require('../config.json');
+
+const message = `This bot only stores your Chess.com username and favorite game mode. Contact <@${ownerId}> if you need your data removed and cannot figure out how to use the deleteuser command.`;
 
 function process(bot, msg, username) {
     msg.channel.send(message);
