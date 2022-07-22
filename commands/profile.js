@@ -1,5 +1,5 @@
 const ChessWebAPI = require('chess-web-api');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -16,6 +16,7 @@ async function profile(author, username) {
     const favoriteMode = user ? user.favoriteMode : '';
     return new ChessWebAPI().getPlayer(username)
         .then(response => formatProfile(response.body, favoriteMode))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -39,14 +40,13 @@ function formatProfile(user, favoriteMode) {
     /*const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
         online ? 0x007F00 : 0x000000;*/
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor(0xFFFFFF);
     return setName(embed, user, firstName)
         .then(embed => setStats(embed, user, favoriteMode))
         .then(embed => { return user.is_streamer ? setStreamer(embed, user.twitch_url, firstName) : embed })
         .then(embed => setClubs(embed, user.username))
-        .then(embed => setDailyChess(embed, user.username))
-        .then(embed => { return { embeds: [ embed ] } });
+        .then(embed => setDailyChess(embed, user.username));
 }
 
 function getFirstName(user) {
@@ -128,7 +128,7 @@ function setClubs(embed, username) {
     return new ChessWebAPI().getPlayerClubs(username)
         .then(response => {
             const clubs = response.body.clubs;
-            return clubs.length ? embed.addField('Clubs', clubs.map(club => club.name).join('\n'), true) : embed;
+            return clubs.length ? embed.addFields({ name: 'Clubs', value: clubs.map(club => club.name).join('\n'), inline: true }) : embed;
         });
 }
 
@@ -136,7 +136,7 @@ function setDailyChess(embed, username) {
     return new ChessWebAPI().getPlayerCurrentDailyChess(username)
         .then(response => {
             const games = response.body.games;
-            return games.length ? embed.addField('Daily Chess', games.slice(0, 5).map(formatGame).join('\n\n'), true) : embed;
+            return games.length ? embed.addFields({ name: 'Daily Chess', value: games.slice(0, 5).map(formatGame).join('\n\n'), inline: true }) : embed;
         });
 }
 

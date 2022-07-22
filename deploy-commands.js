@@ -1,5 +1,11 @@
-const config = require('./config.json');
+const { PermissionFlagsBits } = require('discord-api-types/v10');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+
+const guildCommands = [
+    new SlashCommandBuilder().setName('stop').setDescription("Stop the bot (owner only)")
+]
+    .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
+
 const leaderboards = [
     { name: 'Battle', value: 'battle' },
     { name: 'Blitz', value: 'live_blitz' },
@@ -27,6 +33,7 @@ const titles = [
     { name: "Candidate Master", value: "CM" },
     { name: "Women's Candidate Master", value: "WCM" }
 ];
+
 const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your chess.com username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
@@ -39,11 +46,16 @@ const commands = [
     new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true).addChoices(...titles)),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
-    .map(command => command.toJSON());
+    .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.SendMessages).toJSON());
 
+const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const rest = new REST({ version: '10' }).setToken(config.token);
+
+rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: guildCommands })
+    .then(() => console.log(`Successfully registered ${guildCommands.length} application guild slash commands for client ${config.clientId}.`))
+    .catch(console.error);
 
 rest.put(Routes.applicationCommands(config.clientId), { body: commands })
     .then(() => console.log(`Successfully registered ${commands.length} application slash commands for client ${config.clientId}.`))
