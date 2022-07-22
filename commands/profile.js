@@ -14,8 +14,9 @@ async function profile(author, username) {
             return 'You need to set your chess.com username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
-    return new ChessWebAPI().getPlayer(username)
-        .then(response => formatProfile(response.body, favoriteMode))
+    const api = new ChessWebAPI();
+    return api.getPlayer(username)
+        .then(response => formatProfile(api, response.body, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): \
@@ -32,7 +33,7 @@ async function getName(author) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(user, favoriteMode) {
+function formatProfile(api, user, favoriteMode) {
     if (user.status == 'closed' || user.status == 'closed:fair_play_violations')
         return 'This account is closed.';
 
@@ -42,20 +43,20 @@ function formatProfile(user, favoriteMode) {
         online ? 0x007F00 : 0x000000;*/
     const embed = new EmbedBuilder()
         .setColor(0xFFFFFF);
-    return setName(embed, user, firstName)
-        .then(embed => setStats(embed, user, favoriteMode))
-        .then(embed => { return user.is_streamer ? setStreamer(embed, user.twitch_url, firstName) : embed })
-        .then(embed => setClubs(embed, user.username))
-        .then(embed => setDailyChess(embed, user.username));
+    return setName(api, embed, user, firstName)
+        .then(embed => setStats(api, embed, user, favoriteMode))
+        .then(embed => { return user.is_streamer ? setStreamer(api, embed, user.twitch_url, firstName) : embed })
+        .then(embed => setClubs(api, embed, user.username))
+        .then(embed => setDailyChess(api, embed, user.username));
 }
 
 function getFirstName(user) {
     return user.name ? user.name.split(' ')[0] : undefined;
 }
 
-function setName(embed, user, firstName) {
+function setName(api, embed, user, firstName) {
     const iso = user.country.split(/(?:\/)/).pop();
-    return new ChessWebAPI().getCountry(iso)
+    return api.getCountry(iso)
         .then(response => {
             return embed
                 .setAuthor({ name: formatName(user, response.body.name), iconURL: user.avatar, url: user.url })
@@ -90,12 +91,12 @@ function getFlagEmoji(code) {
         return countryFlags.countryCode(code).emoji;
 }
 
-function setStats(embed, user, favoriteMode) {
-    return new ChessWebAPI().getPlayerStats(user.username)
+function setStats(api, embed, user, favoriteMode) {
+    return api.getPlayerStats(user.username)
         .then(response => {
             const [games, mode, rating] = getMostRecentMode(response.body, favoriteMode);
             embed = embed.addFields(formatStats(embed, user.last_online, games, mode, rating));
-            return games ? setHistory(embed, user.username) : embed;
+            return games ? setHistory(api, embed, user.username) : embed;
         });
 }
 
@@ -114,8 +115,8 @@ function formatStats(embed, lastOnline, games, mode, rating) {
        ];
 }
 
-function setStreamer(embed, twitchUrl, firstName) {
-    return new ChessWebAPI().getStreamers()
+function setStreamer(api, embed, twitchUrl, firstName) {
+    return api.getStreamers()
         .then(response => {
             const streamer = response.body.streamers.filter(streamer => streamer.twitch_url == twitchUrl)[0];
             return embed.setThumbnail(streamer.avatar)
@@ -124,16 +125,16 @@ function setStreamer(embed, twitchUrl, firstName) {
         });
 }
 
-function setClubs(embed, username) {
-    return new ChessWebAPI().getPlayerClubs(username)
+function setClubs(api, embed, username) {
+    return api.getPlayerClubs(username)
         .then(response => {
             const clubs = response.body.clubs;
             return clubs.length ? embed.addFields({ name: 'Clubs', value: clubs.map(club => club.name).join('\n'), inline: true }) : embed;
         });
 }
 
-function setDailyChess(embed, username) {
-    return new ChessWebAPI().getPlayerCurrentDailyChess(username)
+function setDailyChess(api, embed, username) {
+    return api.getPlayerCurrentDailyChess(username)
         .then(response => {
             const games = response.body.games;
             return games.length ? embed.addFields({ name: 'Daily Chess', value: games.slice(0, 5).map(formatGame).join('\n\n'), inline: true }) : embed;
@@ -150,25 +151,25 @@ function formatClubs(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://chess.com/team/${team.id})`).join('\n');
 }
 
-function setHistory(embed, username) {
-    return new ChessWebAPI().getPlayerMonthlyArchives(username)
+function setHistory(api, embed, username) {
+    return api.getPlayerMonthlyArchives(username)
         .then(response => {
             const archives = response.body.archives;
             if (archives.length) {
-                return getGames(username, archives.slice(-2), [])
+                return getGames(api, username, archives.slice(-2), [])
                     .then(games => graphHistory(embed, games, username));
 	    }
 	    return embed;
         });
 }
 
-async function getGames(username, archives, games) {
+async function getGames(api, username, archives, games) {
     const archive = archives.shift();
     const [year, month] = archive.split(/(?:\/)/).slice(-2);
-    return new ChessWebAPI().getPlayerCompleteMonthlyArchives(username, year, month)
+    return api.getPlayerCompleteMonthlyArchives(username, year, month)
         .then(response => {
             games = games.concat(...response.body.games);
-            return archives.length ? getGames(username, archives, games) : games;
+            return archives.length ? getGames(api, username, archives, games) : games;
         });
 }
 
