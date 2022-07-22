@@ -48,7 +48,7 @@ function process(bot, msg, title) {
 }
 
 function interact(interaction) {
-    titled(interaction.user, interaction.options.getString('title'), interaction);
+    interaction.editReply(await titled(interaction.user, interaction.options.getString('title'), interaction));
 }
 
 module.exports = {process, interact};

@@ -13,7 +13,7 @@ async function leaderboard(author, mode) {
         }
         favoriteMode = user.favoriteMode;
     }
-    return await new ChessWebAPI().getLeaderboards()
+    return new ChessWebAPI().getLeaderboards()
         .then(response => formatLeaderboard(response.body, mode ?? favoriteMode ?? 'live_blitz'))
         .catch((err) => {
             console.log(`Error in leaderboard(${author.username}, ${mode}): \
@@ -97,8 +97,8 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    interaction.editReply(leaderboard(interaction.user, interaction.options.getString('mode')));
+async function interact(interaction) {
+    interaction.editReply(await leaderboard(interaction.user, interaction.options.getString('mode')));
 }
 
 module.exports = {process, interact};
