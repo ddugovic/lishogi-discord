@@ -37,6 +37,7 @@ const titles = [
 const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your chess.com username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display the leaderboard top player").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...leaderboards)),
+    new SlashCommandBuilder().setName('news').setDescription("Display recent news"),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter chess.com player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),

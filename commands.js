@@ -1,10 +1,11 @@
 // Include commands
 const deleteUser = require('./commands/deleteUser');
 const leaderboard = require('./commands/leaderboard');
-const setUser = require('./commands/setUser');
+const news = require('./commands/news');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
+const setUser = require('./commands/setUser');
 const streamers = require('./commands/streamers');
 const setGameMode = require('./commands/setGameMode');
 const titled = require('./commands/titled');
@@ -21,6 +22,12 @@ const commands = {
         description: "Displays the leaderboard top player",
         process: leaderboard.process,
         interact: leaderboard.interact
+    },
+    "news": {
+        usage: "",
+        description: "Display recent news",
+        process: news.process,
+        interact: news.interact
     },
     "privacy": {
         usage: "",

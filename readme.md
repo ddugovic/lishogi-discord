@@ -26,6 +26,8 @@
     Display your (or a user's) profile
 !leaderboard [game mode]
     Display the leaderboard top player
+!news
+    Display recent news
 !puzzle
     Display today's puzzle
 !titled <title>
