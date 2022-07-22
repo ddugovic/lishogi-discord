@@ -20,7 +20,7 @@ const commands = {
         usage: "[game mode]",
         description: "Displays the leaderboard top player",
         process: leaderboard.process,
-        reply: leaderboard.reply
+        interact: leaderboard.interact
     },
     "privacy": {
         usage: "",
@@ -32,13 +32,13 @@ const commands = {
         usage: "[username]",
         description: "Displays your (or a user's) profile",
         process: profile.process,
-        reply: profile.reply
+        interact: profile.interact
     },
     "puzzle": {
         usage: "",
         description: "Displays today's puzzle",
         process: puzzle.process,
-        reply: puzzle.reply
+        interact: puzzle.interact
     },
     "streamers": {
         usage: "",

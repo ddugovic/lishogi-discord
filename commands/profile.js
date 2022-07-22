@@ -14,7 +14,7 @@ async function profile(author, username) {
             return 'You need to set your chess.com username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
-    return new ChessWebAPI().getPlayer(username)
+    return await new ChessWebAPI().getPlayer(username)
         .then(response => formatProfile(response.body, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -293,8 +293,8 @@ function process(bot, msg, username) {
     profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return await profile(interaction.user, interaction.options.getString('username'));
+function interact(interaction) {
+    interaction.editReply(profile(interaction.user, interaction.options.getString('username'), interaction));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
