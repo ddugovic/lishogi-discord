@@ -1,5 +1,5 @@
 const ChessWebAPI = require('chess-web-api');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatPages = require('../lib/format-pages');
 
 function streamers(author, interaction) {
@@ -20,7 +20,7 @@ function getLiveStreamers(streamers) {
 }
 
 function formatStreamer(streamer) {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(streamer.username)
         .setThumbnail(streamer.avatar)
         .setURL(streamer.twitch_url)

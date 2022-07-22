@@ -1,5 +1,5 @@
 const ChessWebAPI = require('chess-web-api');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const formatPages = require('../lib/format-pages');
 const plural = require('plural');
 const shuffle = require('fisher-yates/inplace');
@@ -18,7 +18,7 @@ function titled(author, title, interaction) {
 
 function formatTitledPlayers(title, players) {
     return chunk(shuffle(players), 15).map(fields => {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setTitle(plural(formatTitle(title), players.length))
             .addFields(fields.map(player => formatPlayer(player, title)));
     });
