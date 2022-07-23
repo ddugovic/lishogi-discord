@@ -19,13 +19,16 @@ async function recent(username, interaction) {
         });
 }
 
-function formatGame(info) {
-    return new EmbedBuilder()
-        .setTitle(info.players.map(formatPlayer).join(' - '))
-        .setURL(`https://woogles.io/game/${info.game_id}`)
+function formatGame(game) {
+    var embed = new EmbedBuilder()
+        .setTitle(game.players.map(formatPlayer).join(' - '))
+        .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
-	.setImage(`https://woogles.io/gameimg/${info.game_id}-v2-a.gif`)
-        .setDescription(`<t:${Math.round(timestamp.fromDate(info.created_at))}>`);
+        .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
+	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
+    if (game.game_request)
+        embed = embed.addFields({ name: 'Rule', value: game.game_request.challenge_rule });
+    return embed;
 }
 
 function formatPlayer(player) {
