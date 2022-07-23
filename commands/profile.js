@@ -2,6 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const formatFlag = require('../lib/format-flag');
+const formatLexicon = require('../lib/format-lexicon');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -136,14 +137,6 @@ function formatRecord(wins, losses, draws, bingos) {
         result.push(`Bingos: ${fn.format(bingos)}`);
     }
     return `(${result.join(' ')})`
-}
-
-function formatLexicon(lexicon) {
-    return (
-        lexicon.startsWith('CSW') ? 'CSW' :
-        lexicon.startsWith('ECWL') ? 'CEL' :
-        lexicon.startsWith('NWL') ? 'NWL' :
-        lexicon);
 }
 
 function formatTitle(str) {
