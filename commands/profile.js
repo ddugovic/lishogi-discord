@@ -163,7 +163,8 @@ async function interact(interaction) {
     const username = interaction.options.getString('username') || await getUsername(interaction.user);
     if (!username)
         return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
-    interaction.deferReply().then(interaction.editReply(await profile(username)));
+    await interaction.deferReply();
+    interaction.editReply(await profile(username));
 }
 
 async function getUsername(author, username) {
