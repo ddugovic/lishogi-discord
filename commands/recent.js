@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
+const formatFlag = require('../lib/format-flag');
 const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
@@ -43,9 +44,15 @@ function formatGame(info) {
 }
 
 function formatPlayer(player) {
+    var name = player.nickname;
+    if (player.country_code) {
+        const flag = formatFlag(player.country_code);
+        if (flag)
+            name = `${flag} ${name}`;
+    }
     if (player.title)
-        return `${player.title} ${player.nickname}`;
-    return player.nickname;
+        name = `${player.title} ${name}`;
+    return name;
 }
 
 function process(bot, msg, username) {

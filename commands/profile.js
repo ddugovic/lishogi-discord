@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
+const formatFlag = require('../lib/format-flag');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -33,7 +33,7 @@ async function profile(author, username) {
 function formatProfile(data, username) {
     var embed = new EmbedBuilder()
         .setColor(0x00FFFF)
-        .setTitle(formatName(data, username))
+        .setTitle(formatPlayer(data))
         .setURL(`https://woogles.io/profile/${username}`)
         .setThumbnail(data.avatar_url)
         .setDescription(data.about);
@@ -46,7 +46,7 @@ function formatProfile(data, username) {
             bingos += record[3];
         }
         embed = embed
-            .setTitle(`${formatName(data, username)} Bingos: ${fn.format(bingos)}`)
+            .setTitle(`${formatPlayer(data)} Bingos: ${fn.format(bingos)}`)
             .addFields(formatStats(ratings, records));
     }
     return { embeds: [ embed ] };
@@ -56,22 +56,15 @@ function parseData(json) {
     return JSON.parse(json).Data;
 }
 
-function getFlagEmoji(code) {
-    if (countryFlags.countryCode(code))
-        return countryFlags.countryCode(code).emoji;
-}
-
-function formatName(data, username) {
-    var name = data.full_name || username;
-    if (data.country_code) {
-        const flag = getFlagEmoji(data.country_code);
+function formatPlayer(player) {
+    var name = player.full_name || player.nickname;
+    if (player.country_code) {
+        const flag = formatFlag(player.country_code);
         if (flag)
             name = `${flag} ${name}`;
     }
-    if (data.title)
-        name = `${data.title} ${name}`;
-    if (data.location)
-        name += ` (${data.location})`;
+    if (player.title)
+        name = `${player.title} ${name}`;
     return name;
 }
 
