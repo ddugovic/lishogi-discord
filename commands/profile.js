@@ -59,7 +59,7 @@ function parseData(json) {
 function formatPlayer(player) {
     var name = player.full_name || player.nickname;
     if (player.country_code) {
-        const flag = formatFlag(player.country_code);
+        const flag = formatFlag(player.country_code.toUpperCase());
         if (flag)
             name = `${flag} ${name}`;
     }
