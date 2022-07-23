@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatFlag = require('../lib/format-flag');
+const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
@@ -27,7 +28,10 @@ function formatGame(game) {
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     if (game.game_request)
-        embed = embed.addFields({ name: 'Rule', value: game.game_request.challenge_rule });
+        embed = embed.addFields([
+            { name: 'Lexicon', value: formatLexicon(game.game_request.lexicon), inline: true },
+            { name: 'Rule', value: game.game_request.challenge_rule, inline: true }
+        ]);
     return embed;
 }
 
