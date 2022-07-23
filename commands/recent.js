@@ -9,7 +9,7 @@ async function recent(author, username, interaction) {
     if (!username) {
         const user = await User.findById(author.id).exec();
         if (!user || !user.wooglesName)
-            return interaction ? await interaction.reply('You need to set your Woogles.io username with setuser!') : 'You need to set your Woogles.io username with setuser!';
+            return interaction ? await interaction.editReply('You need to set your Woogles.io username with setuser!') : 'You need to set your Woogles.io username with setuser!';
         username = user.wooglesName;
     }
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
