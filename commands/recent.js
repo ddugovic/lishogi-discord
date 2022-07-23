@@ -15,7 +15,7 @@ async function recent(author, username, interaction) {
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
     const request = {
         'username': username,
-        'numGames': 1,
+        'numGames': 10,
         'offset': 0
     };
     const context = {
