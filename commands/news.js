@@ -12,20 +12,13 @@ function news(author, interaction) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, {}, {headers: context})
-        .then(response => formatNews(response.data.announcements, interaction))
-        .catch((error) => {
+        .then(response => formatPages(response.data.announcements.map(formatEntry), interaction, 'No news found!'))
+        .catch(error => {
             console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function formatNews(news, interaction) {
-    const embeds = news.map(formatEntry);
-    if (interaction)
-        return formatPages(embeds, interaction);
-    return { 'embeds': embeds.slice(0, 1) };
 }
 
 function formatEntry(entry) {
