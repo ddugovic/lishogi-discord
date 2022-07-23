@@ -1,9 +1,10 @@
 const axios = require('axios');
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
+const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
-async function recent(author, username) {
+async function recent(author, username, interaction) {
     if (!username) {
         const user = await User.findById(author.id).exec();
         if (!user || !user.wooglesName) {
@@ -23,7 +24,7 @@ async function recent(author, username) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, request, {headers: context})
-        .then(response => formatGames(response.data))
+        .then(response => formatPages(response.data.game_info.map(formatGame), interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${author.username}, ${username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -32,19 +33,13 @@ async function recent(author, username) {
         });
 }
 
-function formatGames(data) {
-    for (info of data.game_info) {
-        const embed = new Discord.EmbedBuilder()
-            .setTitle(info.players.map(formatPlayer).join(' - '))
-            .setURL(`https://woogles.io/game/${info.game_id}`)
-            .setThumbnail('https://woogles.io/logo192.png')
-	    .setImage(`https://woogles.io/gameimg/${info.game_id}-v2-a.gif`)
-            .setDescription(`<t:${Math.round(timestamp.fromDate(info.created_at))}>`);
-        return { embeds: [ embed ] };
-
-        return `https://woogles.io/${info.game_id}`;
-    }
-    return 'No games found!';
+function formatGame(info) {
+    return new EmbedBuilder()
+        .setTitle(info.players.map(formatPlayer).join(' - '))
+        .setURL(`https://woogles.io/game/${info.game_id}`)
+        .setThumbnail('https://woogles.io/logo192.png')
+	.setImage(`https://woogles.io/gameimg/${info.game_id}-v2-a.gif`)
+        .setDescription(`<t:${Math.round(timestamp.fromDate(info.created_at))}>`);
 }
 
 function formatPlayer(player) {
@@ -57,8 +52,8 @@ function process(bot, msg, username) {
     recent(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    interaction.editReply(await recent(interaction.user, interaction.options.getString('username')));
+function interact(interaction) {
+    recent(interaction.user, interaction.options.getString('username'), interaction);
 }
 
-module.exports = {process, interact};
+module.exports = { process, interact };
