@@ -4,9 +4,8 @@ const User = require('../models/User');
 async function gif(author, username) {
     if (!username) {
         const user = await User.findById(author.id).exec();
-        if (!user || !user.wooglesName) {
-            return 'You need to set your woogles username with setuser!';
-        }
+        if (!user || !user.wooglesName)
+            return 'You need to set your Woogles.io username with setuser!';
         username = user.wooglesName;
     }
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;

@@ -8,9 +8,8 @@ const User = require('../models/User');
 async function profile(author, username) {
     const user = await User.findById(author.id).exec();
     if (!username) {
-        if (!user || !user.wooglesName) {
-            return 'You need to set your woogles username with setuser!';
-        }
+        if (!user || !user.wooglesName)
+            return 'You need to set your Woogles.io username with setuser!';
         username = user.wooglesName;
     }
     const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';

@@ -8,23 +8,14 @@ const User = require('../models/User');
 async function recent(author, username, interaction) {
     if (!username) {
         const user = await User.findById(author.id).exec();
-        if (!user || !user.wooglesName) {
-            return 'You need to set your woogles username with setuser!';
-        }
+        if (!user || !user.wooglesName)
+            return interaction ? await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true }) : 'You need to set your Woogles.io username with setuser!';
         username = user.wooglesName;
     }
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
-    const request = {
-        'username': username,
-        'numGames': 10,
-        'offset': 0
-    };
-    const context = {
-        'authority': 'woogles.io',
-        'accept': 'application/json',
-        'origin': 'https://woogles.io'
-    };
-    return axios.post(url, request, {headers: context})
+    const request = { username: username, numGames: 10, offset: 0 };
+    const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
+    return axios.post(url, request, { headers: headers })
         .then(response => formatPages(response.data.game_info.map(formatGame), interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${author.username}, ${username}): \
