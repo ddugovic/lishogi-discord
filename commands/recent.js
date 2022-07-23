@@ -7,11 +7,11 @@ const User = require('../models/User');
 
 async function recent(author, username, interaction) {
     if (!username) {
-        const user = await User.findById(author.id).exec();
-        if (!user || !user.wooglesName)
-            return interaction ? await interaction.editReply('You need to set your Woogles.io username with setuser!') : 'You need to set your Woogles.io username with setuser!';
-        username = user.wooglesName;
+        username = await getUsername(author); 
+        if (!username)
+            return 'You need to set your Woogles.io username with setuser!';
     }
+    console.log(username);
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
     const request = { username: username, numGames: 10, offset: 0 };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
@@ -23,6 +23,12 @@ async function recent(author, username, interaction) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
+}
+
+async function getUsername(author) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.wooglesName;
 }
 
 function formatGame(info) {
@@ -50,8 +56,11 @@ function process(bot, msg, username) {
     recent(msg.author, username).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    recent(interaction.user, interaction.options.getString('username'), interaction);
+async function interact(interaction) {
+    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    if (!username)
+        return await interaction.editReply('You need to set your Woogles.io username with setuser!');
+    recent(interaction.user, username, interaction);
 }
 
 module.exports = { process, interact };
