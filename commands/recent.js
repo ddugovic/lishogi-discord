@@ -5,30 +5,18 @@ const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
-async function recent(author, username, interaction) {
-    if (!username) {
-        username = await getUsername(author); 
-        if (!username)
-            return 'You need to set your Woogles.io username with setuser!';
-    }
-    console.log(username);
+async function recent(username, interaction) {
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
     const request = { username: username, numGames: 10, offset: 0 };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages(response.data.game_info.map(formatGame), interaction, 'No games found!'))
         .catch(error => {
-            console.log(`Error in recent(${author.username}, ${username}): \
+            console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-async function getUsername(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.wooglesName;
 }
 
 function formatGame(info) {
@@ -52,15 +40,24 @@ function formatPlayer(player) {
     return name;
 }
 
-function process(bot, msg, username) {
-    recent(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    username = username || await getUsername(msg.author);
+    if (!username)
+        return await msg.channel.send('You need to set your Woogles.io username with setuser!');
+    recent(username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     const username = interaction.options.getString('username') || await getUsername(interaction.user);
     if (!username)
-        return await interaction.editReply('You need to set your Woogles.io username with setuser!');
-    recent(interaction.user, username, interaction);
+        return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
+    interaction.deferReply().then(recent(username, interaction))
+}
+
+async function getUsername(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.wooglesName;
 }
 
 module.exports = { process, interact };

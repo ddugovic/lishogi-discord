@@ -4,7 +4,7 @@ const formatColor = require('../lib/format-color');
 const { formatLink } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
-function news(author, interaction) {
+function news(interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
     const context = {
         'authority': 'woogles.io',
@@ -14,7 +14,7 @@ function news(author, interaction) {
     return axios.post(url, {}, {headers: context})
         .then(response => formatPages(response.data.announcements.map(formatEntry), interaction, 'No news found!'))
         .catch(error => {
-            console.log(`Error in news(${author.username}): \
+            console.log(`Error in news(): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -52,11 +52,11 @@ function formatURI(link) {
 }
 
 function process(bot, msg) {
-    news(msg.author).then(message => msg.channel.send(message));
+    news().then(message => msg.channel.send(message));
 }
 
 function interact(interaction) {
-    news(interaction.user, interaction);
+    interaction.deferReply().then(news(interaction));
 }
 
 module.exports = {process, interact};

@@ -90,12 +90,10 @@ client.on('interactionCreate', async interaction => {
     const command = commands[interaction.commandName];
     if (command) {
         try {
-            if (command.interact) {
-                await interaction.deferReply();
-                command.interact(interaction);
-            } else {
+            if (command.interact)
+                await command.interact(interaction);
+            else
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
-            }
         } catch (e) {
             console.log(`Command failed:\n${e.stack}`);
         }

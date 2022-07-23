@@ -1,6 +1,5 @@
 // Include commands
 const deleteUser = require('./commands/deleteUser');
-const gif = require('./commands/gif');
 const news = require('./commands/news');
 const recent = require('./commands/recent');
 const privacy = require('./commands/privacy');
@@ -15,12 +14,6 @@ const commands = {
         process: deleteUser.process,
         reply: deleteUser.reply
     },
-    "gif": {
-        usage: "[user]",
-        description: "Shares your (or a user's) recent game as a GIF",
-        process: gif.process,
-        interact: gif.interact
-    },
     "news": {
         usage: "",
         description: "Displays the latest announcement",
@@ -29,7 +22,7 @@ const commands = {
     },
     "recent": {
         usage: "[user]",
-        description: "Shares your (or a user's) recent game",
+        description: "Shares your (or a user's) recent games",
         process: recent.process,
         interact: recent.interact
     },

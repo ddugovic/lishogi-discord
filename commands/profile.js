@@ -5,13 +5,7 @@ const formatFlag = require('../lib/format-flag');
 const plural = require('plural');
 const User = require('../models/User');
 
-async function profile(author, username) {
-    const user = await User.findById(author.id).exec();
-    if (!username) {
-        if (!user || !user.wooglesName)
-            return 'You need to set your Woogles.io username with setuser!';
-        username = user.wooglesName;
-    }
+async function profile(username) {
     const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
     const context = {
         'authority': 'woogles.io',
@@ -21,7 +15,7 @@ async function profile(author, username) {
     return axios.post(url, {'username': username.toLowerCase()}, {headers: context})
         .then(response => formatProfile(response.data, username))
         .catch(error => {
-            console.log(`Error in profile(${author.username}): \
+            console.log(`Error in profile(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -158,12 +152,24 @@ function formatTitle(str) {
         .join(' ');
  }
 
-function process(bot, msg, username) {
-    profile(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    username = username || await getUsername(msg.author);
+    if (!username)
+        return await msg.channel.send('You need to set your Woogles.io username with setuser!');
+    profile(username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    interaction.editReply(await profile(interaction.user, interaction.options.getString('username')));
+    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    if (!username)
+        return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
+    interaction.deferReply().then(interaction.editReply(await profile(username)));
+}
+
+async function getUsername(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.wooglesName;
 }
 
 module.exports = {process, interact};

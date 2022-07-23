@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function puzzle(author) {
+async function puzzle() {
     // Getting a puzzle ID fails for some reason, so return instead.
     return 'https://woogles.io/puzzle';
     const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
@@ -11,7 +11,7 @@ async function puzzle(author) {
     return axios.post(url, 'NWL20', {headers: context})
         .then(response => formatPuzzle(response.data))
         .catch((err) => {
-            console.log(`Error in puzzle(${author.username}): \
+            console.log(`Error in puzzle(): \
                 ${err.response.status} ${err.response.statusText}`);
             return `An error occurred handling your request: \
                 ${err.response.status} ${err.response.statusText}`;
@@ -23,11 +23,11 @@ function formatPuzzle(data) {
 }
 
 function process(bot, msg) {
-    puzzle(msg.author).then(message => msg.channel.send(message));
+    puzzle().then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    interaction.editReply(await puzzle(interaction.user));
+    interaction.deferReply().then(interaction.editReply(await puzzle()));
 }
 
 module.exports = {process, interact};

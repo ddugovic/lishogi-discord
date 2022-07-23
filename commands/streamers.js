@@ -1,13 +1,13 @@
 const axios = require('axios');
 
-async function streamers(author) {
+async function streamers() {
     return axios.get('https://api.woogles.io/pub/streamers')
         .then(response => formatStreamers(response.data))
-        .catch((err) => {
-            console.log(`Error in streamers(${author.username}): \
-                ${err.response.status} ${err.response.statusText}`);
+        .catch(error => {
+            console.log(`Error in streamers(): \
+                ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+                ${error.response.status} ${error.response.statusText}`;
         });
 }
 
@@ -22,11 +22,11 @@ function formatStreamers(data) {
 }
 
 function process(bot, msg, mode) {
-    streamers(msg.author, mode).then(message => msg.channel.send(message));
+    streamers(mode).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    interaction.editReply(await streamers(interaction.user));
+    interaction.deferReply().then(interaction.editReply(await streamers()));
 }
 
 module.exports = {process, interact};
