@@ -32,7 +32,7 @@ function formatGame(game) {
     const rules = game.game_request;
     if (rules)
         embed = embed
-            .setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds)} ${players}`)
+            .setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players}`)
             .addFields([
                 { name: 'Lexicon', value: formatLexicon(rules.lexicon), inline: true },
                 { name: 'Rule', value: rules.challenge_rule, inline: true }
