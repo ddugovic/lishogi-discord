@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
+const formatClock = require('../lib/format-clock');
 const formatFlag = require('../lib/format-flag');
 const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
@@ -8,7 +9,7 @@ const User = require('../models/User');
 
 async function recent(username, interaction) {
     const url = `https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames`;
-    const request = { username: username, numGames: 10, offset: 0 };
+    const request = { username: username, numGames: 1, offset: 0 };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages(response.data.game_info.map(formatGame), interaction, 'No games found!'))
@@ -21,17 +22,21 @@ async function recent(username, interaction) {
 }
 
 function formatGame(game) {
+    const players = game.players.map(formatPlayer).join(' - ');
     var embed = new EmbedBuilder()
-        .setTitle(game.players.map(formatPlayer).join(' - '))
+        .setTitle(players)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
-    if (game.game_request)
-        embed = embed.addFields([
-            { name: 'Lexicon', value: formatLexicon(game.game_request.lexicon), inline: true },
-            { name: 'Rule', value: game.game_request.challenge_rule, inline: true }
-        ]);
+    const rules = game.game_request;
+    if (rules)
+        embed = embed
+            .setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds)} ${players}`)
+            .addFields([
+                { name: 'Lexicon', value: formatLexicon(rules.lexicon), inline: true },
+                { name: 'Rule', value: rules.challenge_rule, inline: true }
+            ]);
     return embed;
 }
 
