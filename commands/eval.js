@@ -76,7 +76,7 @@ function process(bot, msg, fen) {
 }
 
 async function interact(interaction) {
-    await interaction.editReply(eval(interaction.user, interaction.options.getString('fen') ?? ''));
+    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? ''));
 }
 
 module.exports = {process, interact};
