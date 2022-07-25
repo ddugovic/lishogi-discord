@@ -160,7 +160,7 @@ async function getGames(api, username, archives, games) {
     const [year, month] = archive.split(/(?:\/)/).slice(-2);
     return api.getPlayerCompleteMonthlyArchives(username, year, month)
         .then(response => {
-            games = games.concat(...response.body.games);
+            games = games.concat(...response.body.games.filter(game => game.rated));
             return archives.length && games.length < 50 ? getGames(api, username, archives, games) : games;
         });
 }
