@@ -12,7 +12,7 @@ function news(interaction) {
         'origin': 'https://woogles.io'
     };
     return axios.post(url, {}, {headers: context})
-        .then(response => formatPages(response.data.announcements.map(formatEntry), interaction, 'No news found!'))
+        .then(response => formatPages('News', response.data.announcements.map(formatEntry), interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(): \
                 ${error.response.status} ${error.response.statusText}`);
