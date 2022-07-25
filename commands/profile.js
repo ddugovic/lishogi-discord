@@ -96,7 +96,11 @@ function setStats(api, embed, user, favoriteMode) {
         .then(response => {
             const [games, mode, rating] = getMostRecentMode(response.body, favoriteMode);
             embed = embed.addFields(formatStats(embed, user.last_online, games, mode, rating));
-            return games ? setHistory(api, embed, user.username) : embed;
+            if (games)
+                return api.getPlayerMonthlyArchives(user.username)
+                    .then(response => getGames(api, user.username, response.body.archives, []))
+                    .then(games => setHistory(embed, games, user.username)) ?? embed;
+            return embed;
         });
 }
 
@@ -151,31 +155,20 @@ function formatClubs(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://chess.com/team/${team.id})`).join('\n');
 }
 
-function setHistory(api, embed, username) {
-    return api.getPlayerMonthlyArchives(username)
-        .then(response => {
-            const archives = response.body.archives;
-            if (archives.length) {
-                return getGames(api, username, archives.slice(-2), [])
-                    .then(games => graphHistory(embed, games, username));
-	    }
-	    return embed;
-        });
-}
-
 async function getGames(api, username, archives, games) {
     const archive = archives.shift();
     const [year, month] = archive.split(/(?:\/)/).slice(-2);
     return api.getPlayerCompleteMonthlyArchives(username, year, month)
         .then(response => {
             games = games.concat(...response.body.games);
-            return archives.length ? getGames(api, username, archives, games) : games;
+            return archives.length && games.length < 50 ? getGames(api, username, archives, games) : games;
         });
 }
 
-async function graphHistory(embed, games, username) {
+async function setHistory(embed, games, username) {
     const promise = formatHistory(games, username);
-    return promise ? embed.setImage(await promise) : embed;
+    if (promise)
+        return embed.setImage(await promise);
 }
 
 function formatHistory(games, username) {
