@@ -11,7 +11,7 @@ async function profile(author, username) {
     if (!username) {
         username = await getName(author);
         if (!username)
-            return 'You need to set your chess.com username with setuser!';
+            return 'You need to set your Chess.com username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const api = new ChessWebAPI();

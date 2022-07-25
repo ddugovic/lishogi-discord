@@ -9,7 +9,7 @@ async function leaderboard(author, mode) {
     if (!mode) {
         const user = await User.findById(author.id).exec();
         if (!user || !user.chessName) {
-            return 'You need to set your chess.com username with setuser!';
+            return 'You need to set your Chess.com username with setuser!';
         }
         favoriteMode = user.favoriteMode;
     }
