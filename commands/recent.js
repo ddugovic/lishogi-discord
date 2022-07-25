@@ -23,20 +23,16 @@ async function recent(username, interaction) {
 
 function formatGame(game) {
     const players = game.players.map(formatPlayer).join(' - ');
-    var embed = new EmbedBuilder()
-        .setTitle(players)
+    const scores = game.scores.join(' - ');
+    const embed = new EmbedBuilder()
+        .setTitle(`${players} (${scores})`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const rules = game.game_request;
     if (rules)
-        embed = embed
-            .setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players}`)
-            .addFields([
-                { name: 'Lexicon', value: formatLexicon(rules.lexicon), inline: true },
-                { name: 'Rule', value: rules.challenge_rule, inline: true }
-            ]);
+        return embed.setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players} (${rules.challenge_rule}, ${scores})`);
     return embed;
 }
 
