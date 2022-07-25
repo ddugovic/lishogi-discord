@@ -218,24 +218,18 @@ function getRating(game, username) {
 }
 
 function getMostRecentMode(stats, favoriteMode) {
-    var modes = modesArray(stats);
-    var mostRecentMode = modes[0][0];
-    var mostRecentRating = modes[0][1];
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][1].last && modes[i][1].last.date > mostRecentRating.last.date) {
-            mostRecentMode = modes[i][0];
-            mostRecentRating = modes[i][1];
-        }
-    }
+    const entries = Object.entries(stats);
+    var [mostRecentMode, mostRecentRating] = entries[0];
     var games = 0;
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0].toLowerCase() == favoriteMode) {
-            mostRecentMode = modes[i][0];
-            mostRecentRating = modes[i][1];
-        }
-        if (modes[i][1].record)
-            games += modes[i][1].record.win + modes[i][1].record.loss + modes[i][1].record.draw;
+    for (const [mode, stat] of entries) {
+        if (stat.last && stat.last.date > mostRecentRating.last.date)
+            [mostRecentMode, mostRecentRating] = [mode, stat];
+        if (stat.record)
+            games += stat.record.win + stat.record.loss + stat.record.draw;
     }
+    for (const [mode, stat] of entries)
+        if (mode.toLowerCase() == favoriteMode)
+            [mostRecentMode, mostRecentRating] = [mode, stat];
     return [games, mostRecentMode, mostRecentRating];
 }
 
@@ -252,21 +246,6 @@ function title(str) {
     return str.split('_')
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
-}
-
-// For sorting through modes... chess.com api does not put these in an array so we do it ourselves
-function modesArray(list) {
-    var array = [];
-    // Count up number of keys...
-    var count = 0;
-    for (var key in list)
-        if (list.hasOwnProperty(key))
-            count++;
-    // Set up the array.
-    for (var i = 0; i < count; i++) {
-        array[i] = Object.entries(list)[i];
-    }
-    return array;
 }
 
 function groupBy(list, keyGetter) {
