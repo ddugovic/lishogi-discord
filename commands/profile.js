@@ -151,6 +151,10 @@ function formatGame(game) {
     return `${white}[${stripPlayer(game.white)} - ${stripPlayer(game.black)}](${game.url})${black}\n${status}`;
 }
 
+function stripPlayer(player) {
+    return player.replace('https://api.chess.com/pub/player/','');
+}
+
 function formatClubs(teams) {
     return teams.slice(0, 10).map(team => `[${team.name}](https://chess.com/team/${team.id})`).join('\n');
 }
@@ -211,10 +215,6 @@ function getDate(game) {
 
 function getRating(game, username) {
     return [game.white, game.black].filter(player => player.username.toLowerCase() == username.toLowerCase()).map(player => player.rating)[0];
-}
-
-function stripPlayer(player) {
-    return player.replace('https://api.chess.com/pub/player/','');
 }
 
 function getMostRecentMode(stats, favoriteMode) {
