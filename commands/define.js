@@ -4,9 +4,9 @@ const formatFlag = require('../lib/format-flag');
 const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
-async function define(words, interaction) {
+async function define(lexicon, words, interaction) {
     const url = `https://woogles.io/twirp/word_service.WordService/DefineWords`;
-    const request = { lexicon: 'CSW21', words: words.toUpperCase().split(/\W+/), definitions: true, anagrams: false };
+    const request = { lexicon: lexicon, words: words.toUpperCase().split(/\W+/), definitions: true };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Word', Object.entries(response.data.results).map(formatEntry), interaction, 'No words found!'))
@@ -39,13 +39,14 @@ function formatPlayer(player) {
     return name;
 }
 
-function process(bot, msg, words) {
-    define(words).then(message => msg.channel.send(message));
+function process(bot, msg, suffix) {
+    const [lexicon, words] = suffix.split(/\W+/, 2);
+    define(lexicon, words).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    define(words, interaction);
+    define(interaction.options.getString('lexicon'), interaction.options.getString('words'), interaction);
 }
 
 module.exports = { process, interact };
