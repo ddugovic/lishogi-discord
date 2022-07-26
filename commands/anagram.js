@@ -6,7 +6,7 @@ const formatPages = require('../lib/format-pages');
 
 async function anagram(lexicon, alphagrams, interaction) {
     const url = `https://woogles.io/twirp/word_service.WordService/DefineWords`;
-    const request = { lexicon: lexicon, words: alphagrams.split(/\W+/), definitions: true, anagrams: true };
+    const request = { lexicon: lexicon, words: alphagrams.split(/[\s,]+/), definitions: true, anagrams: true };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Alphagram', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
@@ -38,16 +38,21 @@ const lexica = {
 };
 
 async function process(bot, msg, suffix) {
-    const [lexicon, alphagrams] = suffix.toUpperCase().split(/\W+/, 2);
-    if (lexicon && lexica[lexicon] && alphagrams)
+    const [lexicon, alphagrams] = suffix.toUpperCase().split(/[^A-Z0-9?]+/i, 2);
+    if (alphagrams.includes('?'))
+        await msg.channel.send('Blank tiles are not supported');
+    else if (lexicon && lexica[lexicon] && alphagrams)
         await anagram(lexicon, alphagrams).then(message => msg.channel.send(message));
     else
         await msg.channel.send(lexica[lexicon] ? 'Words not specified!' : 'Lexicon not found!');
 }
 
 async function interact(interaction) {
+    const alphagrams = interaction.options.getString('alphagrams');
+    if (alphagrams.includes('?'))
+        return interaction.editReply('Blank tiles are not supported');
     await interaction.deferReply();
-    anagram(interaction.options.getString('lexicon'), interaction.options.getString('alphagrams').toUpperCase(), interaction);
+    anagram(interaction.options.getString('lexicon'), alphagrams.toUpperCase(), interaction);
 }
 
 module.exports = { process, interact };
