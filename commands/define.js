@@ -6,11 +6,13 @@ const formatPages = require('../lib/format-pages');
 
 async function define(lexicon, words, interaction) {
     const url = `https://woogles.io/twirp/word_service.WordService/DefineWords`;
-    const request = { lexicon: lexicon, words: words.toUpperCase().split(/\W+/), definitions: true };
+    const request = { lexicon: lexicon, words: words.split(/\W+/), definitions: true };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatPages('Word', Object.entries(response.data.results).map(formatEntry), interaction, 'No words found!'))
+        .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'No words found!'))
         .catch(error => {
+            console.log(`Error in define(${words}): \
+                ${error} ${error.stack}`);
             console.log(`Error in define(${words}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -18,12 +20,12 @@ async function define(lexicon, words, interaction) {
         });
 }
 
-function formatEntry(entry) {
-    const [word, definition] = entry;
+function formatEntry(lexicon, word, entry) {
     const embed = new EmbedBuilder()
-        .setTitle(definition.v ? word : `${word}*`)
+        .setAuthor({ name: lexicon })
+        .setTitle(entry.v ? word : `${word}*`)
         .setThumbnail('https://woogles.io/logo192.png')
-        .setDescription(definition.v ? definition.d : 'No definition found!');
+        .setDescription(entry.v ? entry.d : 'Definition not found!');
     return embed;
 }
 
@@ -41,12 +43,12 @@ function formatPlayer(player) {
 
 function process(bot, msg, suffix) {
     const [lexicon, words] = suffix.split(/\W+/, 2);
-    define(lexicon, words).then(message => msg.channel.send(message));
+    define(lexicon.toUpperCase(), words.toUpperCase()).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    define(interaction.options.getString('lexicon'), interaction.options.getString('words'), interaction);
+    define(interaction.options.getString('lexicon'), interaction.options.getString('words').toUpperCase(), interaction);
 }
 
 module.exports = { process, interact };
