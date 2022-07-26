@@ -9,7 +9,7 @@ async function anagram(lexicon, alphagrams, interaction) {
     const request = { lexicon: lexicon, words: alphagrams.split(/\W+/), definitions: true, anagrams: true };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Words not found!'))
+        .then(response => formatPages('Alphagram', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {
             console.log(`Error in anagram(${alphagrams}): \
                 ${error.response.status} ${error.response.statusText}`);
