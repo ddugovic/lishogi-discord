@@ -6,8 +6,18 @@ const guildCommands = [
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
+const lexica = [
+    { name: 'CSW 21 (World English)', value: 'CSW21' },
+    { name: 'NWL 20 (North American English)', value: 'NWL20' },
+    { name: 'CEL (Common English)', value: 'ECWL' },
+    { name: 'Deutsch (German)', value: 'RD28' },
+    { name: 'Français (French)', value: 'FRA20' },
+    { name: 'Norsk (Norwegian)', value: 'NSF21' },
+    { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL' },
+];
+
 const commands = [
-    new SlashCommandBuilder().setName('define').setDescription("Define words from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true)).addStringOption(option => option.setName('words').setDescription('Enter words to define').setRequired(true)),
+    new SlashCommandBuilder().setName('define').setDescription("Define words from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...lexica)).addStringOption(option => option.setName('words').setDescription('Enter words to define').setRequired(true)),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your woogles username from the bot's database"),
     new SlashCommandBuilder().setName('news').setDescription("Display the latest announcement"),
     new SlashCommandBuilder().setName('recent').setDescription("Share your (or a user's) recent games").addStringOption(option => option.setName('username').setDescription('Enter woogles player username')),
