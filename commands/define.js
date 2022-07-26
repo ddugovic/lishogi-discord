@@ -9,10 +9,8 @@ async function define(lexicon, words, interaction) {
     const request = { lexicon: lexicon, words: words.split(/\W+/), definitions: true };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'No words found!'))
+        .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Words not found!'))
         .catch(error => {
-            console.log(`Error in define(${words}): \
-                ${error} ${error.stack}`);
             console.log(`Error in define(${words}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -22,28 +20,29 @@ async function define(lexicon, words, interaction) {
 
 function formatEntry(lexicon, word, entry) {
     const embed = new EmbedBuilder()
-        .setAuthor({ name: lexicon })
+        .setAuthor({ name: lexica[lexicon] })
         .setTitle(entry.v ? word : `${word}*`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(entry.v ? entry.d : 'Definition not found!');
     return embed;
 }
 
-function formatPlayer(player) {
-    var name = player.nickname;
-    if (player.country_code) {
-        const flag = formatFlag(player.country_code.toUpperCase());
-        if (flag)
-            name = `${flag} ${name}`;
-    }
-    if (player.title)
-        name = `${player.title} ${name}`;
-    return name;
-}
+const lexica = {
+  CSW21: 'Collins Scrabble Words, published under license with Collins, an imprint of HarperCollins Publishers Limited',
+  NWL20: 'NASPA Word List, 2020 Edition (NWL20), © 2020 North American Word Game Players Association. All rights reserved.',
+  ECWL: 'Common English Lexicon, Copyright (c) 2021 Fj00. Used with permission.',
+  FRA20: 'Français (French)',
+  RD28: 'The “Scrabble®-Turnierliste” used as the German Lexicon is subject to copyright and related rights of Scrabble® Deutschland e.V. With the friendly assistance of Gero Illings SuperDic.',
+  NSF21: 'The NSF word list is provided by the language committee of the Norwegian Scrabble Player Association. Used with permission.',
+  NSWL20: 'NASPA School Word List 2020 Edition (NSWL20), © 2020 North American Word Game Players Association. All rights reserved.'
+};
 
-function process(bot, msg, suffix) {
-    const [lexicon, words] = suffix.split(/\W+/, 2);
-    define(lexicon.toUpperCase(), words.toUpperCase()).then(message => msg.channel.send(message));
+async function process(bot, msg, suffix) {
+    const [lexicon, words] = suffix.toUpperCase().split(/\W+/, 2);
+    if (lexicon && lexica[lexicon] && words)
+        await define(lexicon, words).then(message => msg.channel.send(message));
+    else
+        await msg.channel.send(lexica[lexicon] ? 'Words not specified!' : 'Lexicon not found!');
 }
 
 async function interact(interaction) {
