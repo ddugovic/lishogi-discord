@@ -1,4 +1,5 @@
 // Include commands
+const define = require('./commands/define');
 const deleteUser = require('./commands/deleteUser');
 const news = require('./commands/news');
 const recent = require('./commands/recent');
@@ -8,6 +9,12 @@ const puzzle = require('./commands/puzzle');
 const setUser = require('./commands/setUser');
 
 const commands = {
+    "define": {
+        usage: "<lexicon> <words>",
+        description: "Define words from lexicon",
+        process: define.process,
+        interact: define.interact
+    },
     "deleteuser": {
         usage: "",
         description: "Deletes your woogles username from the bot's database",
@@ -19,12 +26,6 @@ const commands = {
         description: "Displays the latest announcement",
         process: news.process,
         interact: news.interact
-    },
-    "recent": {
-        usage: "[user]",
-        description: "Shares your (or a user's) recent games",
-        process: recent.process,
-        interact: recent.interact
     },
     "privacy": {
         usage: "",
@@ -43,6 +44,12 @@ const commands = {
         description: "Displays today's puzzle",
         process: puzzle.process,
         interact: puzzle.interact
+    },
+    "recent": {
+        usage: "[user]",
+        description: "Shares your (or a user's) recent games",
+        process: recent.process,
+        interact: recent.interact
     },
     "setuser": {
         usage: "<woogles name>",

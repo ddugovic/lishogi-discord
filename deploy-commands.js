@@ -7,6 +7,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
+    new SlashCommandBuilder().setName('define').setDescription("Define words from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true)).addStringOption(option => option.setName('words').setDescription('Enter words to define').setRequired(true)),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your woogles username from the bot's database"),
     new SlashCommandBuilder().setName('news').setDescription("Display the latest announcement"),
     new SlashCommandBuilder().setName('recent').setDescription("Share your (or a user's) recent games").addStringOption(option => option.setName('username').setDescription('Enter woogles player username')),
