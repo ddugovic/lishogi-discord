@@ -1,4 +1,5 @@
 // Include commands
+const anagram = require('./commands/anagram');
 const define = require('./commands/define');
 const deleteUser = require('./commands/deleteUser');
 const news = require('./commands/news');
@@ -9,6 +10,12 @@ const puzzle = require('./commands/puzzle');
 const setUser = require('./commands/setUser');
 
 const commands = {
+    "anagram": {
+        usage: "<lexicon> <alphagrams>",
+        description: "Define anagrams of alphagrams from lexicon",
+        process: anagram.process,
+        interact: anagram.interact
+    },
     "define": {
         usage: "<lexicon> <words>",
         description: "Define words from lexicon",

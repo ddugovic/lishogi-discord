@@ -24,6 +24,8 @@
     Share your (or a user's) recent games
 !profile [username]
     Display your (or a user's) profile
+!anagram <lexicon> <alphagrams>
+    Define anagrams of alphagrams from lexicon
 !define <lexicon> <words>
     Define words from lexicon
 !news
