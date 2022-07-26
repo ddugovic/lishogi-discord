@@ -13,7 +13,7 @@ const lexica = [
     { name: 'Deutsch (German)', value: 'RD28' },
     { name: 'Français (French)', value: 'FRA20' },
     { name: 'Norsk (Norwegian)', value: 'NSF21' },
-    { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL' },
+    { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL20' }
 ];
 
 const commands = [
