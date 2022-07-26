@@ -24,7 +24,7 @@
         "mongoose": "^6.4.7",
         "ndjson-parse": "^1.0.4",
         "plural": "^1.1.0",
-        "quickchart-js": "^3.0.1",
+        "quickchart-js": "^3.0.2",
         "re2": "^1.17.7",
         "rss-parser": "^3.12.0",
         "url-regex-safe": "^3.0.0"
@@ -163,14 +163,6 @@
       "integrity": "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==",
       "engines": {
         "node": ">= 10"
-      }
-    },
-    "node_modules/@types/chart.js": {
-      "version": "2.9.37",
-      "resolved": "https://registry.npmjs.org/@types/chart.js/-/chart.js-2.9.37.tgz",
-      "integrity": "sha512-9bosRfHhkXxKYfrw94EmyDQcdjMaQPkU1fH2tDxu8DWXxf1mjzWQAV4laJF51ZbC2ycYwNDvIm1rGez8Bug0vg==",
-      "dependencies": {
-        "moment": "^2.10.2"
       }
     },
     "node_modules/@types/node": {
@@ -1684,14 +1676,6 @@
         "node": ">=10"
       }
     },
-    "node_modules/moment": {
-      "version": "2.29.4",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz",
-      "integrity": "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==",
-      "engines": {
-        "node": "*"
-      }
-    },
     "node_modules/mongodb": {
       "version": "4.7.0",
       "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-4.7.0.tgz",
@@ -2115,11 +2099,10 @@
       }
     },
     "node_modules/quickchart-js": {
-      "version": "3.0.1",
-      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.1.tgz",
-      "integrity": "sha512-QZe7pzsJDwNS+Q29yWjUSS4gvxNDPAdXwbyEqCel+jm04mNo8xAgTGtysMCXEPxCVZb/qqOX3e4Ux8Vd29sx2A==",
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.2.tgz",
+      "integrity": "sha512-F9MOW5Za5fCmLgMrmitarKWVMTB2mU/5ICpMMxCbbFnksf5Bq279KehJKDK5AsN5i4LqDNLXvVitIrA4syfhGg==",
       "dependencies": {
-        "@types/chart.js": "^2.9.34",
         "cross-fetch": "^3.1.5",
         "javascript-stringify": "^2.1.0"
       }
@@ -2892,14 +2875,6 @@
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz",
       "integrity": "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A=="
-    },
-    "@types/chart.js": {
-      "version": "2.9.37",
-      "resolved": "https://registry.npmjs.org/@types/chart.js/-/chart.js-2.9.37.tgz",
-      "integrity": "sha512-9bosRfHhkXxKYfrw94EmyDQcdjMaQPkU1fH2tDxu8DWXxf1mjzWQAV4laJF51ZbC2ycYwNDvIm1rGez8Bug0vg==",
-      "requires": {
-        "moment": "^2.10.2"
-      }
     },
     "@types/node": {
       "version": "17.0.17",
@@ -4038,11 +4013,6 @@
         }
       }
     },
-    "moment": {
-      "version": "2.29.4",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz",
-      "integrity": "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w=="
-    },
     "mongodb": {
       "version": "4.7.0",
       "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-4.7.0.tgz",
@@ -4335,11 +4305,10 @@
       "integrity": "sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A=="
     },
     "quickchart-js": {
-      "version": "3.0.1",
-      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.1.tgz",
-      "integrity": "sha512-QZe7pzsJDwNS+Q29yWjUSS4gvxNDPAdXwbyEqCel+jm04mNo8xAgTGtysMCXEPxCVZb/qqOX3e4Ux8Vd29sx2A==",
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.2.tgz",
+      "integrity": "sha512-F9MOW5Za5fCmLgMrmitarKWVMTB2mU/5ICpMMxCbbFnksf5Bq279KehJKDK5AsN5i4LqDNLXvVitIrA4syfhGg==",
       "requires": {
-        "@types/chart.js": "^2.9.34",
         "cross-fetch": "^3.1.5",
         "javascript-stringify": "^2.1.0"
       }
