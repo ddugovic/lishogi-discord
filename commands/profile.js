@@ -72,7 +72,9 @@ async function formatProfile(user, favoriteMode) {
             const stormHistory = await getStormHistory(username);
             history.push(stormHistory);
         }
-        embed = embed.setImage(formatHistory(history));
+        const image = await formatHistory(...history);
+        if (image)
+            embed = embed.setImage(image);
     }
     return user.count.all ? setGames(embed, username) : embed;
 }
@@ -150,22 +152,21 @@ function getStormHistory(username) {
             .then(response => response.data);
 }
 
-function formatHistory(history) {
-    const [perfs, storms] = history;
+function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
+    var chart;
     for (const days of Array(91).keys()) {
-        const time = today - (24*60*60*1000 * (90 - days));
-        const [data, history] = filterHistory(perfs, storms, time);
-        if (data.length) {
-            const chart = chartHistory(data, history, now);
-            const url = chart.getUrl();
-            if (url.length <= 2000)
-                return url;
-            if (days == 90)
-                return chart.getShortUrl();
-        }
+        const [data, history] = filterHistory(perfs, storms, today - (24*60*60*1000 * (90 - days)));
+        if (! data.length)
+            break;
+        chart = chartHistory(data, history, now);
+        const url = chart.getUrl();
+        if (url.length <= 2000)
+            return url;
     }
+    if (chart)
+        return chart.getShortUrl();
 }
 
 function filterHistory(perfs, storms, time) {
