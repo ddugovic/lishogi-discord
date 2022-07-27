@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const formatFlag = require('../lib/format-flag');
 const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
@@ -20,11 +19,17 @@ async function anagram(lexicon, alphagrams, interaction) {
 
 function formatEntry(lexicon, word, entry) {
     const embed = new EmbedBuilder()
-        .setAuthor({ name: lexica[lexicon] })
+        .setAuthor({ name: lexica[lexicon], iconURL: flags[lexicon] })
         .setTitle(entry.v ? word : `${word}*`)
         .setThumbnail('https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg')
         .setDescription(entry.v ? entry.d : 'Definition not found!');
     return embed;
+}
+
+const flags = {
+  FRA20: 'https://woogles-flags.s3.us-east-2.amazonaws.com/fr.png',
+  RD28: 'https://woogles-flags.s3.us-east-2.amazonaws.com/de.png',
+  NSF21: 'https://woogles-flags.s3.us-east-2.amazonaws.com/no.png'
 }
 
 const lexica = {
