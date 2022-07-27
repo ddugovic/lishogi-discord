@@ -6,13 +6,13 @@ const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink } = require('../lib/format-site-links');
-const parse = require('ndjson-parse');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 function bots(author, interaction) {
     const mode = getMode(author) || 'blitz';
     return axios.get('https://lishogi.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => filter(parse(response.data)).map(bot => formatBot(bot, mode)))
+        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): \
