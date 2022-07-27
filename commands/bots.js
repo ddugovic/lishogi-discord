@@ -6,11 +6,12 @@ const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink } = require('../lib/format-site-links');
-const parse = require('ndjson-parse');
+const parseDocument = require('../lib/parse-document');
 
-async function bots(author) {
-    return axios.get('https://playstrategy.org/api/bot/online?nb=15', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => filter(parse(response.data)).map(bot => formatBot(bot, mode)))
+function bots(author, interaction) {
+    const mode = getMode(author) || 'blitz';
+    return axios.get('https://playstrategy.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): \
@@ -84,8 +85,8 @@ function process(bot, msg, mode) {
     bots(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return bots(interaction.user);
+function reply(interaction) {
+    return bots(interaction.user, interaction);
 }
 
 module.exports = {process, reply};
