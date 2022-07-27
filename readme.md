@@ -27,9 +27,11 @@
 !anagram <lexicon> <alphagrams>
     Define anagrams of alphagrams from lexicon
 !chat
-    Displays lobby chat
+    Display lobby chat
 !define <lexicon> <words>
     Define words from lexicon
+!equity <lexicon> <rack>
+    Estimate rack equity
 !news
     Display the latest announcement
 !puzzle

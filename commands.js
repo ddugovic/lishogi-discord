@@ -3,6 +3,7 @@ const anagram = require('./commands/anagram');
 const chat = require('./commands/chat');
 const define = require('./commands/define');
 const deleteUser = require('./commands/deleteUser');
+const equity = require('./commands/equity');
 const news = require('./commands/news');
 const recent = require('./commands/recent');
 const privacy = require('./commands/privacy');
@@ -19,7 +20,7 @@ const commands = {
     },
     "chat": {
         usage: "",
-        description: "Displays lobby chat",
+        description: "Display lobby chat",
         interact: chat.interact
     },
     "define": {
@@ -30,13 +31,19 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Deletes your woogles username from the bot's database",
+        description: "Delete your woogles username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
     },
+    "equity": {
+        usage: "<lexicon> <rack>",
+        description: "Estimate rack equity",
+        process: equity.process,
+        interact: equity.interact
+    },
     "news": {
         usage: "",
-        description: "Displays the latest announcement",
+        description: "Display the latest announcement",
         process: news.process,
         interact: news.interact
     },
@@ -48,25 +55,25 @@ const commands = {
     },
     "profile": {
         usage: "[username]",
-        description: "Displays your (or a user's) profile",
+        description: "Display your (or a user's) profile",
         process: profile.process,
         interact: profile.interact
     },
     "puzzle": {
         usage: "",
-        description: "Displays today's puzzle",
+        description: "Display today's puzzle",
         process: puzzle.process,
         interact: puzzle.interact
     },
     "recent": {
         usage: "[user]",
-        description: "Shares your (or a user's) recent games",
+        description: "Share your (or a user's) recent games",
         process: recent.process,
         interact: recent.interact
     },
     "setuser": {
         usage: "<woogles name>",
-        description: "Sets your woogles username",
+        description: "Set your woogles username",
         process: setUser.process,
         reply: setUser.reply
     }
