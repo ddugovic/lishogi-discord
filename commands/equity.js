@@ -16,15 +16,26 @@ function equity(lexicon, rack, interaction) {
 }
 
 function formatEquity(equity) {
-    const letterInfo = Object.entries(equity['letter-info']).map(info => `${formatTile(info[0])} ${info[1]}`);
+    const letterInfo = chunk(Object.entries(equity['letter-info']), 9);
     return new EmbedBuilder()
         .setAuthor({ name: 'cross-tables.com', url: 'https://www.cross-tables.com/leaves.php' })
         .setTitle(equity.rack)
-        .setDescription(`**${equity['rack-value']}**\n${letterInfo.join('\n')}`);
+        .setDescription(`**${equity['rack-value']}**`)
+        .addFields(letterInfo.map(infos => { return { name: 'Tiles', value: infos.map(formatTileInfo).join('\n'), inline: true }; }));
+}
+
+function formatTileInfo(info) {
+    return `${formatTile(info[0])} ${info[1]}`;
 }
 
 function formatTile(tile) {
     return tile == 'blank' ? ':blue_square:' : `:regional_indicator_${tile.toLowerCase()}:`;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 const lexica = {
