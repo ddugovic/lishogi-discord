@@ -26,7 +26,8 @@ function formatMessage(message) {
 }
 
 async function interact(interaction) {
-    return await interaction.reply({ content: await chat(), ephemeral: true });
+    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply({ content: await chat(), ephemeral: true });
 }
 
 module.exports = { interact };
