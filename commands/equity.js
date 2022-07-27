@@ -6,7 +6,7 @@ function equity(lexicon, rack, interaction) {
     const url = `https://cross-tables.com/leaves_values.php?lexicon=${lexicon}&rack=${rack}`
     const context = { Accept: 'application/json', 'User-Agent': 'Woogles Statbot' };
     return axios.get(url, { headers: context })
-        .then(response => formatPages('Rack', response.data.error ? [] : [formatEquity(response.data)], interaction, response.data.error))
+        .then(response => formatPages('Rack', response.data.error ? [] : [formatEquity(lexicon, response.data)], interaction, response.data.error))
         .catch(error => {
             console.log(`Error in equity(): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -15,11 +15,11 @@ function equity(lexicon, rack, interaction) {
         });
 }
 
-function formatEquity(equity) {
+function formatEquity(lexicon, equity) {
     const letterInfo = chunk(Object.entries(equity['letter-info']), 9);
     return new EmbedBuilder()
         .setAuthor({ name: 'cross-tables.com', url: 'https://www.cross-tables.com/leaves.php' })
-        .setTitle(equity.rack)
+        .setTitle(`${equity.rack} (${lexicon})`)
         .setDescription(`**${equity['rack-value']}**`)
         .addFields(letterInfo.map(infos => { return { name: 'Tiles', value: infos.map(formatTileInfo).join('\n'), inline: true }; }));
 }
