@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatPages = require('../lib/format-pages');
+const lexica = ['CSW', 'TWL'];
 
 function equity(lexicon, rack, interaction) {
     const url = `https://cross-tables.com/leaves_values.php?lexicon=${lexicon}&rack=${rack}`
@@ -38,17 +39,12 @@ function chunk(arr, size) {
         .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
-const lexica = {
-  CSW: 1,
-  TWL: 0
-}
-
 async function process(bot, msg, suffix) {
     const [lexicon, rack] = suffix.toUpperCase().split(/[^A-Z?]+/i, 2);
-    if ((lexicon in lexica) && rack)
+    if (lexica.includes(lexicon) && rack)
         await equity(lexicon, rack).then(message => msg.channel.send(message));
     else
-        await msg.channel.send(lexica[lexicon] ? 'Rack not specified!' : 'Lexicon not found!');
+        await msg.channel.send(lexica.includes(lexicon) ? 'Rack not specified!' : 'Lexicon not found!');
 }
 
 async function interact(interaction) {

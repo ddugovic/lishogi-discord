@@ -17,8 +17,8 @@ const lexica = [
 ];
 
 const xtlexica = [
-    { name: 'CSW', value: '1' },
-    { name: 'TWL', value: '0' }
+    { name: 'CSW', value: 'CSW' },
+    { name: 'TWL', value: 'TWL' }
 ];
 
 const commands = [
