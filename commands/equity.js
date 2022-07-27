@@ -25,7 +25,7 @@ function formatEquity(equity) {
 }
 
 function formatTileInfo(info) {
-    return `${formatTile(info[0])} ${info[1]}`;
+    return info[1] == -9999 ? '' : `${formatTile(info[0])} ${info[1]}`;
 }
 
 function formatTile(tile) {
