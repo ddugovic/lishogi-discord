@@ -19,7 +19,7 @@ function equity(lexicon, rack, interaction) {
 function formatEquity(lexicon, equity) {
     const letterInfo = chunk(Object.entries(equity['letter-info']), 9);
     return new EmbedBuilder()
-        .setAuthor({ name: 'cross-tables.com', url: 'https://www.cross-tables.com/leaves.php' })
+        .setAuthor({ name: 'cross-tables.com', iconURL: 'https://cross-tables.com/i/logo-tile.png', url: 'https://www.cross-tables.com/leaves.php' })
         .setTitle(`${equity.rack} (${lexicon})`)
         .setDescription(`**${equity['rack-value']}**`)
         .addFields(letterInfo.map(infos => { return { name: 'Tiles', value: infos.map(formatTileInfo).join('\n'), inline: true }; }));
