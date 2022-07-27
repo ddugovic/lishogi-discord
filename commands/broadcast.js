@@ -4,12 +4,12 @@ const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const html2md = require('html-to-md');
-const parse = require('ndjson-parse');
+const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
     const url = 'https://lichess.org/api/broadcast';
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatDocument(response.data).map(formatBroadcast))
+        .then(response => parseDocument(response.data).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): \
@@ -17,10 +17,6 @@ function broadcast(author, interaction) {
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
         });
-}
-
-function formatDocument(document) {
-    return (typeof document == 'string') ? parse(document) : [document];
 }
 
 function formatBroadcast(broadcast) {
