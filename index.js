@@ -48,7 +48,7 @@ client.on('messageCreate', (msg) => {
         return;
     }
     let command = commands[cmdTxt];
-    if (command && suffix.indexOf('@') == -1) {
+    if (command && command.process && suffix.indexOf('@') == -1) {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
             command.process(client, msg, suffix);

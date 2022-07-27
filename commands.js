@@ -20,7 +20,6 @@ const commands = {
     "chat": {
         usage: "",
         description: "Displays lobby chat",
-        process: chat.process,
         interact: chat.interact
     },
     "define": {
