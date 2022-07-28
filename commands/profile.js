@@ -66,14 +66,14 @@ function setName(api, embed, user, firstName) {
         });
 }
 
-function formatName(user, name) {
+function formatName(user, fullname) {
     var name = user.name || user.username;
     if (user.title)
         name = `${user.title} ${name}`;
     if (user.location)
         name += ` (${user.location})`;
-    else if (name)
-        name += ` (${name})`;
+    else if (fullname)
+        name += ` (${fullname})`;
     return name;
 }
 
