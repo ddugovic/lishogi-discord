@@ -4,6 +4,7 @@ const blog = require('./commands/blog');
 const bots = require('./commands/bots');
 const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
+const community = require('./commands/community');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const leaderboard = require('./commands/leaderboard');
@@ -51,6 +52,12 @@ const commands = {
         description: "Find a coach",
         process: coach.process,
         interact: coach.interact
+    },
+    "community": {
+        usage: "",
+        description: "Display recent community blog entries",
+        process: community.process,
+        interact: community.interact
     },
     "deleteuser": {
         usage: "",
