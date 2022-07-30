@@ -1,10 +1,13 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
-const Parser = require('rss-parser');
+const { parseFeed, formatContent } = require('../lib/parse-feed');
+const html2md = require('html-to-md');
 
 function news(author, interaction) {
-    return new Parser().parseURL('http://www.thechessmind.net/blog/rss.xml')
+    const url = 'http://www.thechessmind.net/blog/rss.xml';
+    return axios.get(url, { headers: { Accept: 'application/rss+xml' } })
+        .then(response => parseFeed(response.data))
         .then(feed => formatEntries(feed))
         .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
@@ -17,13 +20,13 @@ function news(author, interaction) {
 
 function formatEntries(feed) {
     const embeds = [];
-    for (const entry of feed.items.values()) {
-        const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
-        const summary = formatSummary(trimSummary(entry.contentSnippet));
+    for (const entry of feed.channel.item.values()) {
+        const timestamp = Math.floor(new Date(entry.pubDate).getTime() / 1000);
+        const summary = formatContent(entry.description, 120).replace(/published here/, `published [here](https://thechessmind.substack.com/)`);
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry.creator, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
+            .setAuthor({name: entry['dc:creator'], iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', link: feed.link})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
@@ -32,20 +35,6 @@ function formatEntries(feed) {
         embeds.push(embed);
     }
     return embeds;
-}
-
-function trimSummary(snippet) {
-    if (snippet.length < 200)
-        return snippet;
-    const lines = snippet.split(/\r?\n/);
-    var message = '';
-    while (message.length < 120)
-        message += `${lines.shift()}\n`;
-    return message.trim();
-}
-
-function formatSummary(snippet) {
-    return trimSummary(snippet).replace(/published here/, `published [here](https://thechessmind.substack.com/)`);
 }
 
 function link(str) {
