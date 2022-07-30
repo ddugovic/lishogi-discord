@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
-const html2md = require('html-to-md');
 
 function news(author, interaction) {
     const url = 'http://www.thechessmind.net/blog/rss.xml';
