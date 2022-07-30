@@ -3,8 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
-const { parseFeed, formatContent, getImageURL } = require('../lib/parse-feed');
-const html2md = require('html-to-md');
+const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
 
 function community(author, interaction) {
     const url = 'https://lichess.org/blog/community.atom';
@@ -24,18 +23,18 @@ function formatEntry(entry) {
     const timestamp = Math.floor(new Date(entry.published).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((timestamp - now) / (3600 * 24)), 0), 255);
-    const authorName = entry.author.name;
-    const content = entry.content['_'];
+    const authorName = getAuthorName(entry);
+    const content = getContent(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: authorName, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(authorName) })
         .setTitle(entry.title)
-        .setURL(entry.link['$'].href)
+        .setURL(getURL(entry))
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
     const image = getImageURL(entry);
     if (image)
-        embed = embed.setImage(image)
+        embed = embed.setImage(image);
     return embed;
 }
 
