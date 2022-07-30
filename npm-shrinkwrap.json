@@ -701,11 +701,6 @@
         "url": "https://github.com/sponsors/sindresorhus"
       }
     },
-    "node_modules/decode-html": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/decode-html/-/decode-html-2.0.0.tgz",
-      "integrity": "sha512-lVJ+EBozhAXA2nSQG+xAgcD0P5K3uejnIIvM09uoQfS8AALkQ+HhHcEUvKovXi0EIpIZWjm0y8X7ULjaJpgY9w=="
-    },
     "node_modules/deepmerge": {
       "version": "4.2.2",
       "resolved": "https://registry.npmjs.org/deepmerge/-/deepmerge-4.2.2.tgz",
@@ -3412,11 +3407,6 @@
       "version": "4.0.0",
       "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-4.0.0.tgz",
       "integrity": "sha512-9iE1PgSik9HeIIw2JO94IidnE3eBoQrFJ3w7sFuzSX4DpmZ3v5sZpUiV5Swcf6mQEF+Y0ru8Neo+p+nyh2J+hQ=="
-    },
-    "decode-html": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/decode-html/-/decode-html-2.0.0.tgz",
-      "integrity": "sha512-lVJ+EBozhAXA2nSQG+xAgcD0P5K3uejnIIvM09uoQfS8AALkQ+HhHcEUvKovXi0EIpIZWjm0y8X7ULjaJpgY9w=="
     },
     "deepmerge": {
       "version": "4.2.2",
