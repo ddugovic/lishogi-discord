@@ -37,7 +37,7 @@ function formatEntry(entry, link) {
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
         .setTitle(entry.title)
-        .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 120)}`);
+        .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 200)}`);
     const url = getURL(entry);
     if (url)
         embed = embed.setURL(url);
