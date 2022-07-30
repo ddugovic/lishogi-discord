@@ -3,10 +3,12 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
-const Parser = require('rss-parser');
+const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require('../lib/parse-feed');
 
 function news(author, interaction) {
-    return new Parser().parseURL('http://shogihub.com/updates.atom')
+    const url = 'http://shogihub.com/updates.atom';
+    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => parseFeed(response.data))
         .then(feed => formatNews(feed))
         .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
@@ -19,37 +21,30 @@ function news(author, interaction) {
 
 function formatNews(feed) {
     const embeds = [];
-    for (const entry of feed.items.values())
+    for (const entry of feed.entry.values())
         if (entry.title.startsWith('NEWS'))
             embeds.push(formatEntry(entry, feed.link));
     return embeds;
 }
 
 function formatEntry(entry, link) {
-    const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
+    const timestamp = Math.floor(new Date(entry.published).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    const summary = formatSummary(html2md(entry.contentSnippet));
-    const image = getImage(html2md(entry.content));
+    const authorName = getAuthorName(entry);
+    const content = getContent(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: entry.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
+        .setAuthor({name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
         .setTitle(entry.title)
-        .setURL(entry.link)
-        .setDescription(`<t:${timestamp}:F>\n${summary}`);
-    if (image)
-        embed = embed.setThumbnail(image)
+        .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 120)}`);
+    const url = getURL(entry);
+    if (url)
+        embed = embed.setURL(url);
+//    const image = getImage(html2md(content));
+//    if (image)
+//        embed = embed.setThumbnail(image);
     return embed;
-}
-
-function formatSummary(snippet) {
-    if (snippet.length < 200)
-        return snippet;
-    const lines = snippet.split(/\r?\n/);
-    var message = '';
-    while (message.length < 120)
-        message += `${lines.shift()}\n`;
-    return message.trim();
 }
 
 function getImage(content) {
