@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
-const { parseFeed, formatContent, getImage } = require('../lib/parse-feed');
+const { parseFeed, formatContent, getImageURL } = require('../lib/parse-feed');
 const html2md = require('html-to-md');
 
 function community(author, interaction) {
@@ -33,7 +33,7 @@ function formatEntry(entry) {
         .setURL(entry.link['$'].href)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
-    const image = getImage(html2md(content));
+    const image = getImageURL(entry);
     if (image)
         embed = embed.setImage(image)
     return embed;
