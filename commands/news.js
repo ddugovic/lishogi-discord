@@ -41,9 +41,9 @@ function formatEntry(entry, link) {
     const url = getURL(entry);
     if (url)
         embed = embed.setURL(url);
-    const image = getImageURL(entry);
+    const image = getImage(html2md(content));
     if (image)
-        embed = embed.setImage(image);
+        embed = embed.setThumbnail(image);
     return embed;
 }
 
