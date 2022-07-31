@@ -2,6 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const { formatChallengeRule, formatCategory, formatClock } = require('../lib/format-rules');
 const formatFlag = require('../lib/format-flag');
+const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
@@ -33,13 +34,14 @@ function formatGame(game) {
     if (request)
         return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
-            .addFields(formatRules(request.rules, request.challenge_rule));
+            .addFields(formatRules(request));
     return embed;
 }
 
-function formatRules(rules, challengeRule) {
+function formatRules(request) {
     return [
-        { name: 'Challenge', value: challengeRule, inline: true }
+        { name: 'Challenge', value: request.challenge_rule, inline: true },
+        { name: 'Lexicon', value: formatLexicon(request.lexicon), inline: true }
     ];
 }
 
