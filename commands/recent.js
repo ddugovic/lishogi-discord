@@ -32,7 +32,7 @@ function formatGame(game) {
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
+        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${request.challenge_rule} ${scores})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(formatRules(request));
     return embed;
@@ -40,7 +40,6 @@ function formatGame(game) {
 
 function formatRules(request) {
     return [
-        { name: 'Challenge', value: request.challenge_rule, inline: true },
         { name: 'Lexicon', value: formatLexicon(request.lexicon), inline: true }
     ];
 }
