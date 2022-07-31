@@ -6,12 +6,8 @@ const formatPages = require('../lib/format-pages');
 
 function news(interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
-    const context = {
-        'authority': 'woogles.io',
-        'accept': 'application/json',
-        'origin': 'https://woogles.io'
-    };
-    return axios.post(url, {}, {headers: context})
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
+    return axios.post(url, {}, { headers: headers })
         .then(response => formatPages('News', response.data.announcements.map(formatEntry), interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(): \

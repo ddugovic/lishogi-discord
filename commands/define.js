@@ -5,8 +5,8 @@ const formatPages = require('../lib/format-pages');
 
 async function define(lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
-    const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Words not found!'))
         .catch(error => {

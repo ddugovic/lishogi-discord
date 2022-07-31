@@ -8,12 +8,9 @@ const User = require('../models/User');
 
 async function profile(username) {
     const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
-    const context = {
-        'authority': 'woogles.io',
-        'accept': 'application/json',
-        'origin': 'https://woogles.io'
-    };
-    return axios.post(url, {'username': username.toLowerCase()}, {headers: context})
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
+    const request = { username: username.toLowerCase() };
+    return axios.post(url, request, { headers: headers })
         .then(response => formatProfile(response.data, username))
         .catch(error => {
             console.log(`Error in profile(${username}): \

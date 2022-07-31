@@ -5,8 +5,8 @@ const formatPages = require('../lib/format-pages');
 
 async function anagram(lexicon, alphagrams, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { lexicon: lexicon, words: alphagrams.split(/[\s,]+/), definitions: true, anagrams: true };
-    const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Alphagram', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {

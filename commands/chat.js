@@ -2,12 +2,9 @@ const axios = require('axios');
 
 function chat() {
     const url = 'https://woogles.io/twirp/user_service.SocializeService/GetChatsForChannel';
-    const context = {
-        'authority': 'woogles.io',
-        'accept': 'application/json',
-        'origin': 'https://woogles.io'
-    };
-    return axios.post(url, { channel: 'chat.lobby' }, { headers: context })
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
+    const request = { channel: 'chat.lobby' };
+    return axios.post(url, request, { headers: headers })
         .then(response => formatChat(response.data.messages))
         .catch(error => {
             console.log(`Error in chat(): \
