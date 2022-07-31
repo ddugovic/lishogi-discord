@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
 async function anagram(lexicon, alphagrams, interaction) {

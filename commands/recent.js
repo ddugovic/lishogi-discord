@@ -2,7 +2,6 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const { formatChallengeRule, formatClock, formatLayout } = require('../lib/format-rules');
 const formatFlag = require('../lib/format-flag');
-const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
