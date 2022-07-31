@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
+const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
 async function anagram(lexicon, alphagrams, interaction) {
@@ -18,7 +19,7 @@ async function anagram(lexicon, alphagrams, interaction) {
 
 function formatEntry(lexicon, word, entry) {
     const embed = new EmbedBuilder()
-        .setAuthor({ name: lexica[lexicon], iconURL: flags[lexicon] })
+        .setAuthor({ name: formatLexicon(lexicon), iconURL: flags[lexicon] })
         .setTitle(entry.v ? word : `${word}*`)
         .setThumbnail('https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg')
         .setDescription(entry.v ? entry.d : 'Definition not found!');
@@ -31,24 +32,14 @@ const flags = {
   NSF21: 'https://woogles-flags.s3.us-east-2.amazonaws.com/no.png'
 }
 
-const lexica = {
-  CSW21: 'Collins Scrabble Words, published under license with Collins, an imprint of HarperCollins Publishers Limited',
-  NWL20: 'NASPA Word List, 2020 Edition (NWL20), © 2020 North American Word Game Players Association. All rights reserved.',
-  ECWL: 'Common English Lexicon, Copyright (c) 2021 Fj00. Used with permission.',
-  FRA20: 'Français (French)',
-  RD28: 'The “Scrabble®-Turnierliste” used as the German Lexicon is subject to copyright and related rights of Scrabble® Deutschland e.V. With the friendly assistance of Gero Illings SuperDic.',
-  NSF21: 'The NSF word list is provided by the language committee of the Norwegian Scrabble Player Association. Used with permission.',
-  NSWL20: 'NASPA School Word List 2020 Edition (NSWL20), © 2020 North American Word Game Players Association. All rights reserved.'
-};
-
 async function process(bot, msg, suffix) {
     const [lexicon, alphagrams] = suffix.toUpperCase().split(/[^A-Z0-9?]+/i, 2);
     if (alphagrams.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
-    else if (lexicon && lexica[lexicon] && alphagrams)
+    else if (lexicon && formatLexicon(lexicon) && alphagrams)
         await anagram(lexicon, alphagrams).then(message => msg.channel.send(message));
     else
-        await msg.channel.send(lexica[lexicon] ? 'Words not specified!' : 'Lexicon not found!');
+        await msg.channel.send(formatLexicon(lexicon) ? 'Words not specified!' : 'Lexicon not found!');
 }
 
 async function interact(interaction) {
