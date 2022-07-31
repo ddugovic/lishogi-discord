@@ -9,11 +9,13 @@ const User = require('../models/User');
 
 function recent(username, interaction) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames';
-    const request = { username: username, numGames: 10, offset: 0 };
+    const request = { username: username, numGames: 1, offset: 0 };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Game', response.data.game_info.map(formatGame), interaction, 'No games found!'))
         .catch(error => {
+            console.log(`Error in recent(${username}): \
+                ${error} ${error.stack}`);
             console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -22,6 +24,7 @@ function recent(username, interaction) {
 }
 
 function formatGame(game) {
+console.log(game);
     const players = game.players.map(formatPlayer).join(' - ');
     const scores = game.scores.join(' - ');
     const embed = new EmbedBuilder()
@@ -30,10 +33,18 @@ function formatGame(game) {
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
-    const rules = game.game_request;
-    if (rules)
-        return embed.setTitle(`${formatSpeed(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players} (${formatChallengeRule(rules.challenge_rule)}, ${scores})`);
+    const request = game.game_request;
+    if (request)
+        return embed.setTitle(`${formatSpeed(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
+            .addFields(formatRules(request.rules, request.challenge_rule));
     return embed;
+}
+
+function formatRules(rules, challengeRule) {
+    return [
+        { name: 'Layout', value: rules.board_layout_name, inline: true },
+        { name: 'Challenge', value: challengeRule, inline: true }
+    ];
 }
 
 function formatPlayer(player) {
