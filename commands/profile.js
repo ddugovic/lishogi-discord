@@ -25,9 +25,10 @@ async function profile(username) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, username) {
+    const player = formatPlayer(data, username);
     var embed = new EmbedBuilder()
         .setColor(0x00FFFF)
-        .setTitle(formatPlayer(data))
+        .setTitle(player)
         .setURL(`https://woogles.io/profile/${username}`)
         .setThumbnail(data.avatar_url)
         .setDescription(data.about);
@@ -40,7 +41,7 @@ function formatProfile(data, username) {
             bingos += record[3];
         }
         embed = embed
-            .setTitle(`${formatPlayer(data)} Bingos: ${fn.format(bingos)}`)
+            .setTitle(`${player} Bingos: ${fn.format(bingos)}`)
             .addFields(formatStats(ratings, records));
     }
     return { embeds: [ embed ] };
@@ -50,8 +51,8 @@ function parseData(json) {
     return JSON.parse(json).Data;
 }
 
-function formatPlayer(player) {
-    var name = player.full_name || player.nickname;
+function formatPlayer(player, username) {
+    var name = player.first_name || player.last_name || player.full_name || username;
     if (player.country_code) {
         const flag = formatFlag(player.country_code.toUpperCase());
         if (flag)
