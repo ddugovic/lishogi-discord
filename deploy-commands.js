@@ -26,7 +26,7 @@ const commands = [
     new SlashCommandBuilder().setName('chat').setDescription("Display lobby chat"),
     new SlashCommandBuilder().setName('define').setDescription("Define words from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...lexica)).addStringOption(option => option.setName('words').setDescription('Enter words to define').setRequired(true)),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your woogles username from the bot's database"),
-    new SlashCommandBuilder().setName('equity').setDescription("Estimate rack equity").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...xtlexica)).addStringOption(option => option.setName('rack').setDescription('Enter rack').setRequired(true)),
+    //new SlashCommandBuilder().setName('equity').setDescription("Estimate rack equity").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...xtlexica)).addStringOption(option => option.setName('rack').setDescription('Enter rack').setRequired(true)),
     new SlashCommandBuilder().setName('news').setDescription("Display the latest announcement"),
     new SlashCommandBuilder().setName('recent').setDescription("Share your (or a user's) recent games").addStringOption(option => option.setName('username').setDescription('Enter woogles player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
