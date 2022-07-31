@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const { formatChallengeRule, formatClock, formatLayout } = require('../lib/format-rules');
+const { formatChallengeRule, formatCategory, formatClock } = require('../lib/format-rules');
 const formatFlag = require('../lib/format-flag');
 const formatPages = require('../lib/format-pages');
 const timestamp = require('unix-timestamp');
@@ -31,7 +31,7 @@ function formatGame(game) {
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        return embed.setTitle(`${formatLayout(request.rules.board_layout_name)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
+        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(formatRules(request.rules, request.challenge_rule));
     return embed;
