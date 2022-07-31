@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const { formatChallengeRule, formatClock } = require('../lib/format-rules');
+const { formatChallengeRule, formatClock, formatSpeed } = require('../lib/format-rules');
 const formatFlag = require('../lib/format-flag');
 const formatLexicon = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
@@ -32,7 +32,7 @@ function formatGame(game) {
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const rules = game.game_request;
     if (rules)
-        return embed.setTitle(`${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players} (${formatChallengeRule(rules.challenge_rule)}, ${scores})`);
+        return embed.setTitle(`${formatSpeed(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${formatClock(rules.initial_time_seconds, rules.increment_seconds, rules.max_overtime_minutes)} ${players} (${formatChallengeRule(rules.challenge_rule)}, ${scores})`);
     return embed;
 }
 
