@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
+const formatColor = require('../lib/format-color');
 const { formatChallengeRule, formatCategory, formatClock } = require('../lib/format-rules');
 const formatFlag = require('../lib/format-flag');
 const { formatLexicon } = require('../lib/format-lexicon');
@@ -24,7 +25,9 @@ function recent(username, interaction) {
 function formatGame(game) {
     const players = game.players.map(formatPlayer).join(' - ');
     const scores = game.scores.join(' - ');
+    const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
     const embed = new EmbedBuilder()
+        .setColor(formatColor(255-blue, 0, blue))
         .setTitle(`${players} (${scores})`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
