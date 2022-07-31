@@ -9,13 +9,11 @@ const User = require('../models/User');
 
 function recent(username, interaction) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames';
-    const request = { username: username, numGames: 1, offset: 0 };
+    const request = { username: username, numGames: 10, offset: 0 };
     const headers = { authority: 'woogles.io', accept: 'application/json', origin: 'https://woogles.io' };
     return axios.post(url, request, { headers: headers })
         .then(response => formatPages('Game', response.data.game_info.map(formatGame), interaction, 'No games found!'))
         .catch(error => {
-            console.log(`Error in recent(${username}): \
-                ${error} ${error.stack}`);
             console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
