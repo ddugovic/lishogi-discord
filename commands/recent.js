@@ -22,7 +22,6 @@ function recent(username, interaction) {
 }
 
 function formatGame(game) {
-console.log(game);
     const players = game.players.map(formatPlayer).join(' - ');
     const scores = game.scores.join(' - ');
     const embed = new EmbedBuilder()
@@ -34,6 +33,7 @@ console.log(game);
     const request = game.game_request;
     if (request)
         return embed.setTitle(`${formatSpeed(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${scores})`)
+            .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(formatRules(request.rules, request.challenge_rule));
     return embed;
 }
