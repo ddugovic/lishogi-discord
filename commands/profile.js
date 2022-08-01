@@ -67,8 +67,16 @@ async function formatProfile(user, favoriteMode) {
     const about = formatAbout(embed, username, user.profile);
     if (about)
         embed = embed.addFields({ name: 'About', value: about });
-    if (user.count.rated || user.perfs.puzzle)
-        embed = await setHistory(embed, username);
+    if (user.count.rated || user.perfs.puzzle) {
+        const history = [ await getHistory(username) ];
+        if (user.perfs.storm && user.perfs.storm.runs) {
+            const stormHistory = await getStormHistory(username);
+            history.push(stormHistory);
+        }
+        const image = await formatHistory(...history);
+        if (image)
+            embed = embed.setImage(image);
+    }
     return setGames(embed, username);
 }
 
@@ -134,16 +142,16 @@ function formatAbout(embed, username, profile) {
     return result.join('\n');
 }
 
-function setHistory(embed, username) {
+function getHistory(username) {
     const url = `https://lishogi.org/api/user/${username}/rating-history`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const perfs = response.data;
-            const url = `https://lishogi.org/api/storm/dashboard/${username}?days=90`;
-                return axios.get(url, { headers: { Accept: 'application/json' } })
-                    .then(response => formatHistory(perfs, response.data))
-                    .then(image => image ? embed.setImage(image) : embed);
-        });
+        .then(response => response.data);
+}
+
+function getStormHistory(username) {
+    const url = `https://lishogi.org/api/storm/dashboard/${username}?days=90`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.data);
 }
 
 function formatHistory(perfs, storms) {
@@ -165,9 +173,11 @@ function formatHistory(perfs, storms) {
 
 function filterHistory(perfs, storms, time) {
     const [data, history] = getSeries(perfs, time);
-    const series = getStormSeries(storms, time);
-    data.push(...series);
-    history.push({ label: 'Storm', data: series });
+    if (storms) {
+        const series = getStormSeries(storms, time);
+        data.push(...series);
+        history.push({ label: 'Storm', data: series });
+    }
     return [data, history];
 }
 
