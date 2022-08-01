@@ -77,7 +77,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return setGames(embed, user.username);
+    return user.count.all ? setGames(embed, user.username) : embed;
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
