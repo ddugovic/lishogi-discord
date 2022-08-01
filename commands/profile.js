@@ -45,23 +45,23 @@ async function formatProfile(user, favoriteMode) {
         return 'This account is closed.';
 
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
-    var nickname = formatNickname(firstName, lastName) ?? user.username;
     const name = formatName(firstName, lastName) ?? user.username;
-    if (country) {
-        const countryName = formatCountry(country);
-        if (countryName)
-            nickname = `${countryName} ${nickname}`;
-    }
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
         .setThumbnail(user.title == 'BOT' ? 'https://lichess1.org/assets/images/icons/bot.png' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
-    if (user.online)
+    if (user.online) {
+        var nickname = formatNickname(firstName, lastName) ?? user.username;
+        if (country) {
+            const countryName = formatCountry(country);
+            if (countryName)
+                nickname = `${countryName} ${nickname}`;
+        }
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lichess.org/?user=${user.username}#friend`);
-
+            .setURL(`https://lichess.org/?user=${user.username}#friend`);
+    }
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : await getPerf(user.username, mode);
     embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
