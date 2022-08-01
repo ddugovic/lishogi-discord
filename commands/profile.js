@@ -148,8 +148,8 @@ function getHistory(username) {
 
 function getStormHistory(username) {
     const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
-        return axios.get(url, { headers: { Accept: 'application/json' } })
-            .then(response => response.data);
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.data);
 }
 
 function formatHistory(perfs, storms) {
