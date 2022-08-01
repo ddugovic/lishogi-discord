@@ -1,10 +1,11 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const countryFlags = require('emoji-flags');
+const flags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSanVariation } = require('../lib/format-variation');
@@ -43,12 +44,11 @@ async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
-    const username = user.username;
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
-    var nickname = firstName ?? lastName ?? username;
-    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && countryFlags.countryCode(country))
-        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    var nickname = formatNickname(firstName, lastName) ?? user.username;
+    const name = formatName(firstName, lastName) ?? user.username;
+    if (country && flags.countryCode(country))
+        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new EmbedBuilder()
@@ -57,26 +57,26 @@ async function formatProfile(user, favoriteMode) {
         .setThumbnail(user.title == 'BOT' ? 'https://lichess1.org/assets/images/icons/bot.png' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
     if (user.online)
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lichess.org/?user=${username}#friend`);
+        .setURL(`https://lichess.org/?user=${user.username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    const perf = unranked(mode, rating) ? null : await getPerf(username, mode);
+    const perf = unranked(mode, rating) ? null : await getPerf(user.username, mode);
     embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
-        embed = embed.addFields({ name: 'About', value: formatAbout(embed, username, profile) });
+        embed = embed.addFields({ name: 'About', value: formatAbout(embed, user.username, profile) });
     if (user.count.rated || user.perfs.puzzle) {
-        const history = [ await getHistory(username) ];
+        const history = [ await getHistory(user.username) ];
         if (user.perfs.storm && user.perfs.storm.runs) {
-            const stormHistory = await getStormHistory(username);
+            const stormHistory = await getStormHistory(user.username);
             history.push(stormHistory);
         }
         const image = await formatHistory(...history);
         if (image)
             embed = embed.setImage(image);
     }
-    return user.count.all ? setGames(embed, username) : embed;
+    return user.count.all ? setGames(embed, user.username) : embed;
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
