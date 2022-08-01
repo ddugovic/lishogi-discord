@@ -7,8 +7,8 @@ const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
-const graphPerfHistory = require('../lib/graph-perf-history');
 const { numberVariation } = require('../lib/format-variation');
+const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
@@ -149,18 +149,18 @@ function setHistory(embed, username) {
 async function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
+    var chart;
     for (const days of Array(91).keys()) {
-        const time = today - (24*60*60*1000 * (90 - days));
-        const [data, history] = filterHistory(perfs, storms, time);
-        if (data.length) {
-            const chart = graphPerfHistory(data, history, now);
-            const url = chart.getUrl();
-            if (url.length <= 2000)
-                return url;
-            if (days == 90)
-                return await chart.getShortUrl();
-        }
+        const [data, history] = filterHistory(perfs, storms, today - (24*60*60*1000 * (90 - days)));
+        if (! data.length)
+            break;
+        chart = graphPerfHistory(data, history, now);
+        const url = chart.getUrl();
+        if (url.length <= 2000)
+            return url;
     }
+    if (chart)
+        return chart.getShortUrl();
 }
 
 function filterHistory(perfs, storms, time) {
