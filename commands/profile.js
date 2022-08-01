@@ -1,9 +1,9 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const flags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
+const formatCountry = require('../lib/format-country');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
@@ -47,8 +47,11 @@ async function formatProfile(user, favoriteMode) {
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     var nickname = formatNickname(firstName, lastName) ?? user.username;
     const name = formatName(firstName, lastName) ?? user.username;
-    if (country && flags.countryCode(country))
-        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
+    if (country) {
+        const countryName = formatCountry(country);
+        if (countryName)
+            nickname = `${countryName} ${nickname}`;
+    }
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new EmbedBuilder()
