@@ -1,10 +1,11 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
-const countryFlags = require('emoji-flags');
+const flags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
+const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { numberVariation } = require('../lib/format-variation');
@@ -43,12 +44,11 @@ async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
-    const username = user.username;
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
-    var nickname = firstName ?? lastName ?? username;
-    const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && countryFlags.countryCode(country))
-        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    var nickname = formatNickname(firstName, lastName) ?? user.username;
+    const name = formatName(firstName, lastName) ?? user.username;
+    if (country && flags.countryCode(country))
+        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
     var embed = new EmbedBuilder()
@@ -57,27 +57,27 @@ async function formatProfile(user, favoriteMode) {
         .setThumbnail(user.title == 'BOT' ? 'https://lishogi1.org/assets/images/icons/bot.png' : 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png');
     if (user.online)
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lishogi.org/?user=${username}#friend`);
+        .setURL(`https://lishogi.org/?user=${user.username}#friend`);
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     if (unranked(mode, rating))
         embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
     else
         embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
-    const about = formatAbout(embed, username, user.profile);
+    const about = formatAbout(embed, user.username, user.profile);
     if (about)
         embed = embed.addFields({ name: 'About', value: about });
     if (user.count.rated || user.perfs.puzzle) {
-        const history = [ await getHistory(username) ];
+        const history = [ await getHistory(user.username) ];
         if (user.perfs.storm && user.perfs.storm.runs) {
-            const stormHistory = await getStormHistory(username);
+            const stormHistory = await getStormHistory(user.username);
             history.push(stormHistory);
         }
         const image = await formatHistory(...history);
         if (image)
             embed = embed.setImage(image);
     }
-    return setGames(embed, username);
+    return setGames(embed, user.username);
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
