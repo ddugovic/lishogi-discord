@@ -3,12 +3,12 @@ const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
 const plural = require('plural');
-const QuickChart = require('quickchart-js');
 const formatClock = require('../lib/format-clock');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSanVariation } = require('../lib/format-variation');
+const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
@@ -160,7 +160,7 @@ function formatHistory(perfs, storms) {
         const [data, history] = filterHistory(perfs, storms, today - (24*60*60*1000 * (90 - days)));
         if (! data.length)
             break;
-        chart = chartHistory(data, history, now);
+        chart = graphPerfHistory(data, history, now);
         const url = chart.getUrl();
         if (url.length <= 2000)
             return url;
@@ -177,15 +177,6 @@ function filterHistory(perfs, storms, time) {
         history.push({ label: 'Storm', data: series });
     }
     return [data, history];
-}
-
-function chartHistory(data, history, now) {
-    const domain = [Math.min(...data.map(point => point.t)), now.getTime()];
-    return new QuickChart().setConfig({
-        type: 'line',
-        data: { labels: domain, datasets: history.filter(series => series.data.length) },
-        options: { scales: { xAxes: [{ type: 'time' }] } }
-    });
 }
 
 function getSeries(perfs, time) {
