@@ -146,7 +146,7 @@ function setHistory(embed, username) {
         });
 }
 
-async function formatHistory(perfs, storms) {
+function formatHistory(perfs, storms) {
     const now = new Date();
     const today = now.setUTCHours(0, 0, 0, 0);
     var chart;
@@ -352,7 +352,7 @@ function process(bot, msg, username) {
     profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
+function reply(interaction) {
     return profile(interaction.user, interaction.options.getString('username'));
 }
 
