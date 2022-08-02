@@ -47,20 +47,23 @@ function formatHistory(playerNames, history) {
 }
 
 async function formatGame(game) {
+    game.players[0].score = game.scores[0];
+    game.players[1].score = game.scores[1];
+    game.players = game.players.sort((a,b) => b.first - a.first);
+    game.scores = game.players.map(player => player.score);
+
     const playerNames = game.players.sort((a,b) => b.first - a.first).map(formatPlayer);
-    const players = playerNames.join(' - ');
-    const scores = game.scores.join(' - ');
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
     const embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setTitle(`${players} (${scores})`)
+        .setTitle(`${playerNames.join(' - ')} (${game.scores.join(' - ')})`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${formatChallengeRule(request.challenge_rule)} ${scores})`)
+        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(await getHistory(playerNames, game.game_id))
             .addFields(formatRules(request));
