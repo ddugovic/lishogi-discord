@@ -13,7 +13,8 @@ function recent(username, interaction) {
     const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { username: username, numGames: 10, offset: 0 };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatPages('Game', response.data.game_info.map(formatGame), interaction, 'No games found!'))
+        .then(response => Promise.all(response.data.game_info.map(formatGame)))
+        .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -22,11 +23,26 @@ function recent(username, interaction) {
         });
 }
 
+function setHistory(embed, gameId) {
+    const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetGameHistory';
+    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
+    const request = { gameId: gameId };
+    return axios.post(url, request, { headers: headers })
+        .then(response => {
+            const bingos = formatEvents(response.data.history.events);
+            return bingos.length ? embed.addFields({ name: 'Bingos', value: bingos.join('\n') }) : embed;
+        });
+}
+
+function formatEvents(events) {
+    return events.filter(event => event.is_bingo).map(event => `${event.position} ${event.words_formed[0]} **${event.score}**`);
+}
+
 function formatGame(game) {
     const players = game.players.map(formatPlayer).join(' - ');
     const scores = game.scores.join(' - ');
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
-    const embed = new EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setTitle(`${players} (${scores})`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
@@ -35,10 +51,10 @@ function formatGame(game) {
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${formatChallengeRule(request.challenge_rule)} ${scores})`)
+        embed = embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${formatChallengeRule(request.challenge_rule)} ${scores})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(formatRules(request));
-    return embed;
+    return setHistory(embed, game.game_id);
 }
 
 function formatRules(request) {
