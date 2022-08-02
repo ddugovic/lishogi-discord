@@ -23,26 +23,35 @@ function recent(username, interaction) {
         });
 }
 
-function setHistory(embed, gameId) {
+function getHistory(playerNames, gameId) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetGameHistory';
     const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { gameId: gameId };
     return axios.post(url, request, { headers: headers })
-        .then(response => {
-            const bingos = formatEvents(response.data.history.events);
-            return bingos.length ? embed.addFields({ name: 'Bingos', value: bingos.join('\n') }) : embed;
-        });
+        .then(response => formatEvents(playerNames, response.data.history.events));
 }
 
-function formatEvents(events) {
-    return events.filter(event => event.is_bingo).map(event => `${event.position} ${event.words_formed[0]} **${event.score}**`);
+function formatEvents(playerNames, events) {
+    const first = [];
+    const second = [];
+    for (const [play1, play2] of chunk(events, 2)) {
+        if (play1 && play1.is_bingo && !play1.lost_score)
+            first.push(`${play1.position} ${play1.words_formed[0]} **${play1.score}**`);
+        if (play2 && play2.is_bingo && !play2.lost_score)
+            second.push(`${play2.position} ${play2.words_formed[0]} **${play2.score}**`);
+    }
+    return [
+        { name: playerNames[0], value: first.length ? first.join('\n') : '*None*', inline: true },
+        { name: playerNames[1], value: second.length ? second.join('\n') : '*None*', inline: true }
+    ];
 }
 
-function formatGame(game) {
-    const players = game.players.map(formatPlayer).join(' - ');
+async function formatGame(game) {
+    const playerNames = game.players.map(formatPlayer);
+    const players = playerNames.join(' - ');
     const scores = game.scores.join(' - ');
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
-    var embed = new EmbedBuilder()
+    const embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setTitle(`${players} (${scores})`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
@@ -51,15 +60,16 @@ function formatGame(game) {
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        embed = embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${formatChallengeRule(request.challenge_rule)} ${scores})`)
+        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${players} (${formatChallengeRule(request.challenge_rule)} ${scores})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
+            .addFields(await getHistory(playerNames, game.game_id))
             .addFields(formatRules(request));
-    return setHistory(embed, game.game_id);
+    return embed;
 }
 
 function formatRules(request) {
     return [
-        { name: 'Lexicon', value: formatLexicon(request.lexicon), inline: true }
+        { name: 'Lexicon', value: formatLexicon(request.lexicon) }
     ];
 }
 
@@ -73,6 +83,12 @@ function formatPlayer(player) {
     if (player.title)
         name = `${player.title} ${name}`;
     return name;
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 async function process(bot, msg, username) {

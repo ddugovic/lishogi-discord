@@ -141,7 +141,7 @@ function formatTitle(str) {
     return str.split('_')
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
- }
+}
 
 async function process(bot, msg, username) {
     username = username || await getUsername(msg.author);
