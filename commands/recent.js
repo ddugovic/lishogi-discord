@@ -28,13 +28,13 @@ function getHistory(playerNames, gameId) {
     const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { gameId: gameId };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatEvents(playerNames, response.data.history.events));
+        .then(response => formatHistory(playerNames, response.data.history));
 }
 
-function formatEvents(playerNames, events) {
+function formatHistory(playerNames, history) {
     const first = [];
     const second = [];
-    for (const [play1, play2] of chunk(events, 2)) {
+    for (const [play1, play2] of chunk(history.events, 2)) {
         if (play1 && play1.is_bingo && !play1.lost_score)
             first.push(`${play1.position} ${play1.words_formed[0]} **${play1.score}**`);
         if (play2 && play2.is_bingo && !play2.lost_score)
@@ -47,7 +47,7 @@ function formatEvents(playerNames, events) {
 }
 
 async function formatGame(game) {
-    const playerNames = game.players.map(formatPlayer);
+    const playerNames = game.players.sort((a,b) => b.first - a.first).map(formatPlayer);
     const players = playerNames.join(' - ');
     const scores = game.scores.join(' - ');
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
