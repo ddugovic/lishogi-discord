@@ -32,18 +32,20 @@ function getHistory(playerNames, gameId) {
 }
 
 function formatHistory(playerNames, history) {
-    const first = [];
-    const second = [];
-    for (const [play1, play2] of chunk(history.events, 2)) {
-        if (play1 && play1.is_bingo && !play1.lost_score)
-            first.push(`${play1.position} ${play1.words_formed[0]} **${play1.score}**`);
-        if (play2 && play2.is_bingo && !play2.lost_score)
-            second.push(`${play2.position} ${play2.words_formed[0]} **${play2.score}**`);
-    }
+    const first = history.events.filter(event => filterEvent(event, playerNames[0])).map(formatEvent).join('\n');
+    const second = history.events.filter(event => filterEvent(event, playerNames[1])).map(formatEvent).join('\n');
     return [
-        { name: playerNames[0], value: first.length ? first.join('\n') : '*None*', inline: true },
-        { name: playerNames[1], value: second.length ? second.join('\n') : '*None*', inline: true }
+        { name: playerNames[0], value: first || '*None*', inline: true },
+        { name: playerNames[1], value: second || '*None*', inline: true }
     ];
+}
+
+function filterEvent(event, nickname) {
+    return event.nickname == nickname && event.is_bingo && !event.lost_score;
+}
+
+function formatEvent(event) {
+    return `${event.position} ${event.words_formed[0]} **${event.score}**`;
 }
 
 async function formatGame(game) {
@@ -86,12 +88,6 @@ function formatPlayer(player) {
     if (player.title)
         name = `${player.title} ${name}`;
     return name;
-}
-
-function chunk(arr, size) {
-    return new Array(Math.ceil(arr.length / size))
-        .fill('')
-        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 async function process(bot, msg, username) {
