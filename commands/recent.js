@@ -41,11 +41,11 @@ function formatHistory(playerNames, history) {
 }
 
 function filterEvent(event, nickname) {
-    return event.nickname == nickname && event.is_bingo && !event.lost_score;
+    return event.nickname == nickname && event.is_bingo;
 }
 
 function formatEvent(event) {
-    return `${event.position} ${event.words_formed[0]} **${event.score}**`;
+    return `${event.position} ${event.words_formed[0]}${event.lost_score ? '*' : ''} **${event.score}**`;
 }
 
 async function formatGame(game) {
