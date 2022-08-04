@@ -23,20 +23,28 @@ function recent(username, interaction) {
         });
 }
 
-function getHistory(playerNames, gameId) {
+function getHistory(playerNicknames, gameId) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetGameHistory';
     const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { gameId: gameId };
     return axios.post(url, request, { headers: headers })
-        .then(response => formatHistory(playerNames, response.data.history));
+        .then(response => formatHistory(playerNicknames, response.data.history));
 }
 
-function formatHistory(playerNames, history) {
-    const first = history.events.filter(event => filterEvent(event, playerNames[0])).map(formatEvent).join('\n');
-    const second = history.events.filter(event => filterEvent(event, playerNames[1])).map(formatEvent).join('\n');
+function formatHistory(playerNicknames, history) {
+    const plays = [];
+    var last;
+    for (const event of history.events) {
+        if (event.type == 'TILE_PLACEMENT_MOVE')
+            plays.push((last = event));
+        else if (event.type == 'PHONY_TILES_RETURNED')
+            last.invalid = true;
+    }
+    const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatPlay).join('\n');
+    const second = plays.filter(event => filterEvent(event, playerNicknames[1])).map(formatPlay).join('\n');
     return [
-        { name: playerNames[0], value: first || '*None*', inline: true },
-        { name: playerNames[1], value: second || '*None*', inline: true }
+        { name: playerNicknames[0], value: first || '*None*', inline: true },
+        { name: playerNicknames[1], value: second || '*None*', inline: true }
     ];
 }
 
@@ -44,8 +52,8 @@ function filterEvent(event, nickname) {
     return event.nickname == nickname && event.is_bingo;
 }
 
-function formatEvent(event) {
-    return `${event.position} ${event.words_formed[0]}${event.lost_score ? '*' : ''} **${event.score}**`;
+function formatPlay(event) {
+    return `${event.position} ${event.words_formed[0]}${event.invalid ? '*' : ''} **${event.score}**`;
 }
 
 async function formatGame(game) {
@@ -54,7 +62,8 @@ async function formatGame(game) {
     game.players = game.players.sort((a,b) => b.first - a.first);
     game.scores = game.players.map(player => player.score);
 
-    const playerNames = game.players.sort((a,b) => b.first - a.first).map(formatPlayer);
+    const playerNames = game.players.map(formatPlayer);
+    const playerNicknames = game.players.map(player => player.nickname);
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
     const embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
@@ -67,7 +76,7 @@ async function formatGame(game) {
     if (request)
         return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
-            .addFields(await getHistory(playerNames, game.game_id))
+            .addFields(await getHistory(playerNicknames, game.game_id))
             .addFields(formatRules(request));
     return embed;
 }
