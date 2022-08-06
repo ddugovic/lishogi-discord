@@ -17,8 +17,6 @@ function recent(username, interaction) {
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${username}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
