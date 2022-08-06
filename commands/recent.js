@@ -35,13 +35,13 @@ function formatHistory(playerNicknames, history) {
     const plays = [];
     var last;
     for (const event of history.events) {
-        if (event.type == 'TILE_PLACEMENT_MOVE')
+        if (event.type == 'CHALLENGE' || event.type == 'CHALLENGE_BONUS' || event.type == 'TILE_PLACEMENT_MOVE' || event.type == 'TIME_PENALTY' || event.type == 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS')
             plays.push((last = event));
         else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
     }
-    const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatPlay).join('\n');
-    const second = plays.filter(event => filterEvent(event, playerNicknames[1])).map(formatPlay).join('\n');
+    const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatEvent).join('\n');
+    const second = plays.filter(event => filterEvent(event, playerNicknames[1])).map(formatEvent).join('\n');
     return [
         { name: playerNicknames[0], value: first || '*None*', inline: true },
         { name: playerNicknames[1], value: second || '*None*', inline: true }
@@ -52,9 +52,15 @@ function filterEvent(event, nickname) {
     return event.nickname == nickname && event.is_bingo;
 }
 
-function formatPlay(event) {
-    const bingo = formatWord(event.words_formed[0], event.played_tiles);
-    return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
+function formatEvent(event) {
+    if (event.type == 'TILE_PLACEMENT_MOVE') {
+        const bingo = formatWord(event.words_formed[0], event.played_tiles);
+        return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
+    }
+    if (event.type == 'CHALLENGE' || event.type == 'CHALLENGE_BONUS' || 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS')
+        return `Challenge **${event.score + event.lost_score}**`;
+    if (event.type == 'TIME_PENALTY')
+        return `Time Penalty **${event.lost_score}**`;
 }
 
 function formatWord(word, tiles) {
