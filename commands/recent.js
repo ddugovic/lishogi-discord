@@ -55,14 +55,14 @@ function filterEvent(event, nickname) {
 }
 
 function formatEvent(event) {
-    if (event.type == 'EXCHANGE')
-        return `EXCH ${event.rack} **-${event.exchanged}**`;
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
         return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
     }
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `Challenge **${event.score + event.lost_score}**`;
+    if (event.type == 'EXCHANGE')
+        return `${event.rack} **-${event.exchanged}**`;
     if (event.type == 'TIME_PENALTY')
         return `Overtime **${-event.lost_score}**`;
 }
