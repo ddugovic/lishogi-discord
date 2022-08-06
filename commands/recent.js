@@ -53,20 +53,20 @@ function formatHistory(playerNicknames, history) {
 function formatEvent(event) {
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
-        return `\`${event.position}\` ${bingo}${event.invalid ? '*' : ''} **${event.score}** ${event.cumulative}`;
+        return `\`${event.position}\` ${bingo}${event.invalid ? '*' : ''} **${event.score}** *${event.cumulative}*`;
     }
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
-        return `:crossed_swords: **${event.score + event.lost_score}** ${event.cumulative}`;
+        return `:crossed_swords: **${event.score + event.lost_score}** *${event.cumulative}*`;
     if (event.type == 'EXCHANGE')
-        return `-${event.exchanged}${formatLeave(event.rack, event.exchanged)} ${event.cumulative}`;
+        return `-${event.exchanged}${formatLeave(event.rack, event.exchanged)} *${event.cumulative}*`;
     if (event.type == 'PASS')
-        return `\`–\` **${event.rack}** ${event.cumulative}`;
+        return `\`–\` **${event.rack}** *${event.cumulative}*`;
     if (event.type == 'TIME_PENALTY')
-        return `:hourglass: **${-event.lost_score}** ${event.cumulative}`;
+        return `:hourglass: **${-event.lost_score}** *${event.cumulative}*`;
     if (event.type == 'END_RACK_PENALTY')
-        return `\`–\` ${event.rack} **${-event.end_rack_points}** ${event.cumulative}`;
+        return `\`–\` ${event.rack} **${-event.end_rack_points}** *${event.cumulative}*`;
     if (event.type == 'END_RACK_PTS')
-        return `\`–\` ${event.rack} **${event.end_rack_points}** ${event.cumulative}`;
+        return `\`–\` ${event.rack} **${event.end_rack_points}** *${event.cumulative}*`;
 }
 
 function formatLeave(rack, tiles) {
