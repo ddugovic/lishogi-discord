@@ -33,16 +33,19 @@ function getHistory(playerNicknames, gameId) {
 
 function formatHistory(playerNicknames, history) {
     const plays = [];
-    var played = 0;
+    var blanks = 0, tiles = 0;
     var last;
     for (const event of history.events) {
-        event.played = played;
+        event.blanks = blanks;
+        event.tiles = tiles;
         if (event.type == 'TILE_PLACEMENT_MOVE') {
-            played += event.played_tiles.replace('.', '').length;
+            blanks += (event.played_tiles.match(/[a-z]/g)||[]).length;
+            tiles += event.played_tiles.length;
             plays.push((last = event));
         }
         else if (event.type == 'PHONY_TILES_RETURNED') {
-            played -= event.played_tiles.replace('.', '').length;
+            blanks -= (event.played_tiles.match(/[a-z]/g)||[]).length;
+            tiles -= event.played_tiles.length;
             last.invalid = true;
         }
         else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
@@ -61,16 +64,17 @@ function filterEvent(event, nickname) {
 }
 
 function formatEvent(event) {
+    const count = `${event.tiles - event.blanks} (${event.blanks}?)`;
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
-        return `${event.played} ${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
+        return `${count} ${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
     }
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
-        return `${event.played} Challenge **${event.score + event.lost_score}**`;
+        return `${count} Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'EXCHANGE')
-        return `${event.played} ${event.rack} **-${event.exchanged}**`;
+        return `${count} ${event.rack} **-${event.exchanged}**`;
     if (event.type == 'TIME_PENALTY')
-        return `${event.played} Overtime **${-event.lost_score}**`;
+        return `${count} Overtime **${-event.lost_score}**`;
 }
 
 function formatWord(word, tiles) {
