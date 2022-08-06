@@ -53,7 +53,13 @@ function filterEvent(event, nickname) {
 }
 
 function formatPlay(event) {
-    return `${event.position} ${event.words_formed[0]}${event.invalid ? '*' : ''} **${event.score}**`;
+    const bingo = formatWord(event.words_formed[0], event.played_tiles);
+    return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
+}
+
+function formatWord(word, tiles) {
+    // Spells the word using lower-case blank tiles
+    return [...tiles].map((tile, i) => tile == '.' ? word[i] : tile).join('');
 }
 
 async function formatGame(game) {
