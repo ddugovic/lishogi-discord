@@ -39,7 +39,7 @@ function formatHistory(playerNicknames, history) {
             plays.push((last = event));
         if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        if (['TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+        if (['CHALLENGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
     const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatEvent).join('\n');
@@ -59,7 +59,7 @@ function formatEvent(event) {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
         return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
     }
-    if (event.type == 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS')
+    if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'TIME_PENALTY')
         return `Overtime **${-event.lost_score}**`;
