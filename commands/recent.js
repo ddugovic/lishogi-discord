@@ -33,12 +33,18 @@ function getHistory(playerNicknames, gameId) {
 
 function formatHistory(playerNicknames, history) {
     const plays = [];
+    var played = 0;
     var last;
     for (const event of history.events) {
-        if (event.type == 'TILE_PLACEMENT_MOVE')
+        event.played = played;
+        if (event.type == 'TILE_PLACEMENT_MOVE') {
+            played += event.played_tiles.replace('.', '').length;
             plays.push((last = event));
-        else if (event.type == 'PHONY_TILES_RETURNED')
+        }
+        else if (event.type == 'PHONY_TILES_RETURNED') {
+            played -= event.played_tiles.replace('.', '').length;
             last.invalid = true;
+        }
         else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
@@ -62,7 +68,7 @@ function formatEvent(event) {
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'EXCHANGE')
-        return `${event.rack} **-${event.exchanged}**`;
+        return `${event.played} ${event.rack} **-${event.exchanged}**`;
     if (event.type == 'TIME_PENALTY')
         return `Overtime **${-event.lost_score}**`;
 }
