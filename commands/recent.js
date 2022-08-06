@@ -59,14 +59,14 @@ function formatEvent(event) {
         return `Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'EXCHANGE')
         return `-${event.exchanged} ${formatLeave(event.rack, event.exchanged)}`;
+    if (event.type == 'PASS')
+        return `– **${event.rack}**`;
     if (event.type == 'TIME_PENALTY')
         return `Overtime **${-event.lost_score}**`;
     if (event.type == 'END_RACK_PENALTY')
-        return `Rack ${event.rack} **${event.end_rack_points}**`;
+        return `Rack ${event.rack} **${-event.end_rack_points}**`;
     if (event.type == 'END_RACK_PTS')
         return `Rack ${event.rack} **${event.end_rack_points}**`;
-    if (event.type == 'PASS')
-        return `Pass **0**`;
 }
 
 function formatLeave(rack, tiles) {
