@@ -17,6 +17,8 @@ function recent(username, interaction) {
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${username}): \
+                ${error} ${error.stack}`);
+            console.log(`Error in recent(${username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -72,9 +74,15 @@ function formatEvent(event) {
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `${count} Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'EXCHANGE')
-        return `${count} ${event.rack} **-${event.exchanged}**`;
+        return `${count} -${event.exchanged} ${formatLeave(event.rack, event.exchanged)}`;
     if (event.type == 'TIME_PENALTY')
         return `${count} Overtime **${-event.lost_score}**`;
+}
+
+function formatLeave(rack, tiles) {
+    var leave = rack;
+    [...tiles].forEach((tile, i) => leave = leave.replace(tile, ''));
+    return leave ? `**${leave}**` : '';
 }
 
 function formatWord(word, tiles) {
