@@ -39,7 +39,7 @@ function formatHistory(playerNicknames, history) {
             plays.push((last = event));
         else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        else if (['CHALLENGE', 'END_RACK_PENALTY', 'END_RACK_PTS', 'EXCHANGE', 'PASS', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+        else if (['CHALLENGE', 'CHALLENGE_BONUS', 'END_RACK_PENALTY', 'END_RACK_PTS', 'EXCHANGE', 'PASS', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
     const first = plays.filter(event => event.nickname == playerNicknames[0]).map(formatEvent).join('\n');
@@ -55,7 +55,7 @@ function formatEvent(event) {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
         return `\`${event.position}\` ${bingo}${event.invalid ? '*' : ''} **${event.score}** *${event.cumulative}*`;
     }
-    if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+    if (['CHALLENGE', 'CHALLENGE_BONUS', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `:crossed_swords: **${event.score + event.lost_score}** *${event.cumulative}*`;
     if (event.type == 'EXCHANGE')
         return `-${event.exchanged}${formatLeave(event.rack, event.exchanged)} *${event.cumulative}*`;
