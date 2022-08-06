@@ -37,9 +37,9 @@ function formatHistory(playerNicknames, history) {
     for (const event of history.events) {
         if (event.type == 'TILE_PLACEMENT_MOVE')
             plays.push((last = event));
-        if (event.type == 'PHONY_TILES_RETURNED')
+        else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        if (['CHALLENGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+        else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
     const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatEvent).join('\n');
@@ -55,6 +55,8 @@ function filterEvent(event, nickname) {
 }
 
 function formatEvent(event) {
+    if (event.type == 'EXCHANGE')
+        return `EXCH ${event.rack} **-${event.exchanged}**`;
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
         return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
