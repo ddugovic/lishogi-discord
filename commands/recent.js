@@ -51,7 +51,7 @@ function formatHistory(playerNicknames, history) {
 }
 
 function filterEvent(event, nickname) {
-    return event.nickname == nickname && (event.type == 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS' || event.is_bingo);
+    return event.nickname == nickname && (event.type != 'TILE_PLACEMENT_MOVE' || event.is_bingo);
 }
 
 function formatEvent(event) {
