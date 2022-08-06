@@ -39,7 +39,7 @@ function formatHistory(playerNicknames, history) {
             plays.push((last = event));
         else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+        else if (['CHALLENGE', 'END_RACK_PENALTY', 'END_RACK_PTS', 'EXCHANGE', 'PASS', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
     const first = plays.filter(event => event.nickname == playerNicknames[0]).map(formatEvent).join('\n');
@@ -61,6 +61,12 @@ function formatEvent(event) {
         return `-${event.exchanged} ${formatLeave(event.rack, event.exchanged)}`;
     if (event.type == 'TIME_PENALTY')
         return `Overtime **${-event.lost_score}**`;
+    if (event.type == 'END_RACK_PENALTY')
+        return `Rack ${event.rack} **${event.end_rack_points}**`;
+    if (event.type == 'END_RACK_PTS')
+        return `Rack ${event.rack} **${event.end_rack_points}**`;
+    if (event.type == 'PASS')
+        return `Pass **0**`;
 }
 
 function formatLeave(rack, tiles) {
