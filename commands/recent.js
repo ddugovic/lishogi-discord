@@ -33,18 +33,12 @@ function getHistory(playerNicknames, gameId) {
 
 function formatHistory(playerNicknames, history) {
     const plays = [];
-    var blanks = 0;
     var last;
     for (const event of history.events) {
-        event.blanks = blanks;
-        if (event.type == 'TILE_PLACEMENT_MOVE') {
-            blanks += (event.played_tiles.match(/[a-z]/g)||[]).length;
+        if (event.type == 'TILE_PLACEMENT_MOVE')
             plays.push((last = event));
-        }
-        else if (event.type == 'PHONY_TILES_RETURNED') {
-            blanks -= (event.played_tiles.match(/[a-z]/g)||[]).length;
+        else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        }
         else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
