@@ -58,7 +58,7 @@ function formatEvent(event) {
         return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
     }
     if (event.type == 'CHALLENGE' || event.type == 'CHALLENGE_BONUS' || 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS')
-        return `Challenge **${event.score + event.lost_score}**`;
+        return `Challenge **${event.score - event.lost_score}**`;
     if (event.type == 'TIME_PENALTY')
         return `Time Penalty **${event.lost_score}**`;
 }
