@@ -33,48 +33,40 @@ function getHistory(playerNicknames, gameId) {
 
 function formatHistory(playerNicknames, history) {
     const plays = [];
-    var blanks = 0, tiles = 0;
+    var blanks = 0;
     var last;
     for (const event of history.events) {
         event.blanks = blanks;
-        event.tiles = tiles;
         if (event.type == 'TILE_PLACEMENT_MOVE') {
             blanks += (event.played_tiles.match(/[a-z]/g)||[]).length;
-            tiles += event.played_tiles.length;
             plays.push((last = event));
         }
         else if (event.type == 'PHONY_TILES_RETURNED') {
             blanks -= (event.played_tiles.match(/[a-z]/g)||[]).length;
-            tiles -= event.played_tiles.length;
             last.invalid = true;
         }
         else if (['CHALLENGE', 'EXCHANGE', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
             plays.push(event);
     }
-    const first = plays.filter(event => filterEvent(event, playerNicknames[0])).map(formatEvent).join('\n');
-    const second = plays.filter(event => filterEvent(event, playerNicknames[1])).map(formatEvent).join('\n');
+    const first = plays.filter(event => event.nickname == playerNicknames[0]).map(formatEvent).join('\n');
+    const second = plays.filter(event => event.nickname == playerNicknames[1]).map(formatEvent).join('\n');
     return [
         { name: playerNicknames[0], value: first || '*None*', inline: true },
         { name: playerNicknames[1], value: second || '*None*', inline: true }
     ];
 }
 
-function filterEvent(event, nickname) {
-    return event.nickname == nickname && (event.type != 'TILE_PLACEMENT_MOVE' || event.is_bingo);
-}
-
 function formatEvent(event) {
-    const count = `${event.tiles} (${event.blanks}?)`;
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
-        return `${count} ${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
+        return `${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
     }
     if (['CHALLENGE', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
-        return `${count} Challenge **${event.score + event.lost_score}**`;
+        return `Challenge **${event.score + event.lost_score}**`;
     if (event.type == 'EXCHANGE')
-        return `${count} -${event.exchanged} ${formatLeave(event.rack, event.exchanged)}`;
+        return `-${event.exchanged} ${formatLeave(event.rack, event.exchanged)}`;
     if (event.type == 'TIME_PENALTY')
-        return `${count} Overtime **${-event.lost_score}**`;
+        return `Overtime **${-event.lost_score}**`;
 }
 
 function formatLeave(rack, tiles) {
