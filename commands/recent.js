@@ -64,7 +64,7 @@ function filterEvent(event, nickname) {
 }
 
 function formatEvent(event) {
-    const count = `${event.tiles - event.blanks} (${event.blanks}?)`;
+    const count = `${event.tiles} (${event.blanks}?)`;
     if (event.type == 'TILE_PLACEMENT_MOVE') {
         const bingo = formatWord(event.words_formed[0], event.played_tiles);
         return `${count} ${event.position} ${bingo}${event.invalid ? '*' : ''} **${event.score}**`;
