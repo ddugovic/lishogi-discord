@@ -39,7 +39,7 @@ function formatHistory(playerNicknames, history) {
             plays.push((last = event));
         else if (event.type == 'PHONY_TILES_RETURNED')
             last.invalid = true;
-        else if (['CHALLENGE', 'CHALLENGE_BONUS', 'END_RACK_PENALTY', 'END_RACK_PTS', 'EXCHANGE', 'PASS', 'TIME_PENALTY', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
+        else
             plays.push(event);
     }
     const first = plays.filter(event => event.nickname == playerNicknames[0]).map(formatEvent).join('\n');
