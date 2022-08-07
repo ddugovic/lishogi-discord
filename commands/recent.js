@@ -58,15 +58,15 @@ function formatEvent(event) {
     if (['CHALLENGE', 'CHALLENGE_BONUS', 'UNSUCCESSFUL_CHALLENGE_TURN_LOSS'].includes(event.type))
         return `:crossed_swords: **${event.score + event.lost_score}** *${event.cumulative}*`;
     if (event.type == 'EXCHANGE')
-        return `-${event.exchanged}${formatLeave(event.rack, event.exchanged)}`;
+        return `\`-\` ${event.exchanged}${formatLeave(event.rack, event.exchanged)}`;
     if (event.type == 'PASS')
-        return `\`–\` **${event.rack}**`;
+        return `\`-\` **${event.rack}**`;
     if (event.type == 'TIME_PENALTY')
         return `:hourglass: **${-event.lost_score}** *${event.cumulative}*`;
     if (event.type == 'END_RACK_PENALTY')
-        return `\`–\` ${event.rack} **${-event.end_rack_points}** *${event.cumulative}*`;
+        return `\`-\` ${event.rack} **${-event.end_rack_points}** *${event.cumulative}*`;
     if (event.type == 'END_RACK_PTS')
-        return `\`–\` ${event.rack} **${event.end_rack_points}** *${event.cumulative}*`;
+        return `\`+\` ${event.rack} **${event.end_rack_points}** *${event.cumulative}*`;
 }
 
 function formatLeave(rack, tiles) {
