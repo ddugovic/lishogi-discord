@@ -26,7 +26,7 @@
     "emoji-flags": "^1.3.0",
     "friendly-numbers": "^1.0.1",
     "mocha": "^10.0.0",
-    "mongoose": "^6.5.1",
+    "mongoose": "^6.5.2",
     "plural": "^1.1.0",
     "re2": "^1.17.7",
     "unix-timestamp": "^1.0.2",
