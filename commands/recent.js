@@ -2,9 +2,9 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatChallengeRule, formatCategory, formatClock } = require('../lib/format-rules');
-const formatFlag = require('../lib/format-flag');
 const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
+const formatPlayer = require('../lib/format-player');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
@@ -106,18 +106,6 @@ async function formatGame(game) {
             .addFields(await getHistory(playerNicknames, game.game_id))
             .addFields([{ name: 'Lexicon', value: formatLexicon(request.lexicon) }]);
     return embed;
-}
-
-function formatPlayer(player) {
-    var name = player.nickname;
-    if (player.country_code) {
-        const flag = formatFlag(player.country_code.toUpperCase());
-        if (flag)
-            name = `${flag} ${name}`;
-    }
-    if (player.title)
-        name = `${player.title} ${name}`;
-    return name;
 }
 
 async function process(bot, msg, username) {

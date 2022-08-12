@@ -1,8 +1,8 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
-const formatFlag = require('../lib/format-flag');
 const { getLexiconCategory } = require('../lib/format-lexicon');
+const formatPlayer = require('../lib/format-player');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -46,18 +46,6 @@ function formatProfile(data, username) {
 
 function parseData(json) {
     return JSON.parse(json).Data;
-}
-
-function formatPlayer(player, username) {
-    var name = player.first_name || player.last_name || player.full_name || username;
-    if (player.country_code) {
-        const flag = formatFlag(player.country_code.toUpperCase());
-        if (flag)
-            name = `${flag} ${name}`;
-    }
-    if (player.title)
-        name = `${player.title} ${name}`;
-    return name;
 }
 
 function parseStats(ratings, stats) {
