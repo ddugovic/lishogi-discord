@@ -3,7 +3,6 @@ const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const { getLexiconCategory } = require('../lib/format-lexicon');
 const formatPlayer = require('../lib/format-player');
-const plural = require('plural');
 const User = require('../models/User');
 
 async function profile(username) {
