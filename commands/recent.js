@@ -13,7 +13,7 @@ function recent(username, interaction) {
     const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
     const request = { username: username, numGames: 10, offset: 0 };
     return axios.post(url, request, { headers: headers })
-        .then(response => Promise.all(response.data.game_info.map(formatGame)))
+        .then(response => Promise.all(response.data.game_info.map(scoreGame).map(formatGame)))
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${username}): \
@@ -80,12 +80,15 @@ function formatWord(word, tiles) {
     return [...tiles].map((tile, i) => tile == '.' ? word[i] : tile).join('');
 }
 
-async function formatGame(game) {
+function scoreGame(game) {
     game.players[0].score = game.scores[0];
     game.players[1].score = game.scores[1];
     game.players = game.players.sort((a,b) => b.first - a.first);
     game.scores = game.players.map(player => player.score);
+    return game;
+}
 
+async function formatGame(game) {
     const playerNames = game.players.map(formatPlayer);
     const playerNicknames = game.players.map(player => player.nickname);
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
@@ -101,14 +104,8 @@ async function formatGame(game) {
         return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')})`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(await getHistory(playerNicknames, game.game_id))
-            .addFields(formatRules(request));
+            .addFields([{ name: 'Lexicon', value: formatLexicon(request.lexicon) }]);
     return embed;
-}
-
-function formatRules(request) {
-    return [
-        { name: 'Lexicon', value: formatLexicon(request.lexicon) }
-    ];
 }
 
 function formatPlayer(player) {
