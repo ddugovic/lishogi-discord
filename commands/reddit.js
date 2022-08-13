@@ -25,7 +25,7 @@ function formatEntry(entry) {
     const red = Math.min(Math.floor(entry.upvotes / 5), 255);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setTitle(entry.title)
+        .setTitle(entry.title.substr(0, 256))
         .setURL(entry.postLink)
         .addFields([
             { name: 'Upvotes', value: `**${fn.format(entry.upvotes)}**`, inline: true },
