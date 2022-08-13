@@ -38,7 +38,6 @@ function process(bot, msg) {
 }
 
 function interact(interaction) {
-    interaction.deferReply();
     return reddit(interaction.user, interaction);
 }
 
