@@ -14,8 +14,6 @@ function reddit(author, interaction) {
         .then(embeds => formatPages('Image', embeds, interaction, 'No safe for work images found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in reddit(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -40,6 +38,7 @@ function process(bot, msg) {
 }
 
 function interact(interaction) {
+    await interaction.deferReply();
     return reddit(interaction.user, interaction);
 }
 
