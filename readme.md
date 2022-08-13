@@ -36,6 +36,8 @@
     Display the latest announcement
 !puzzle
     Display today's puzzle
+!reddit
+    Fetch reddit image
 !privacy
     View privacy policy
 !stop

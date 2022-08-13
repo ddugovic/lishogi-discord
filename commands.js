@@ -9,6 +9,7 @@ const recent = require('./commands/recent');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
+const reddit = require('./commands/reddit');
 const setUser = require('./commands/setUser');
 
 const commands = {
@@ -70,6 +71,12 @@ const commands = {
         description: "Share your (or a user's) recent games",
         process: recent.process,
         interact: recent.interact
+    },
+    "reddit": {
+        usage: "",
+        description: "Fetch reddit image",
+        process: reddit.process,
+        interact: reddit.interact
     },
     "setuser": {
         usage: "<woogles name>",
