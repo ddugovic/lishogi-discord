@@ -65,10 +65,19 @@ function formatArena(arena) {
                 { name: 'Moves', value: `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, inline: true }
             );
     }
-    if (arena.minRatedGames && !arena.pairingsClosed)
-        embed = embed
-            .addFields({ name: 'Restrictions', value: `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.` });
+    if (!arena.pairingsClosed) {
+        const restriction = formatRestriction(arena);
+        if (restriction)
+            embed = embed.addFields({ name: 'Restrictions', value: restriction });
+    }
     return embed;
+}
+
+function formatRestriction(arena) {
+    if (arena.onlyTitled)
+        return 'National or FIDE title required';
+    if (arena.minRatedGames)
+        return `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`;
 }
 
 function formatGame(game) {
