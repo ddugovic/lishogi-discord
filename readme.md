@@ -49,7 +49,7 @@
 !puzzle
     Display today's puzzle
 !reddit
-    Fetch reddit image
+    Fetch r/chess image
 !simul [variant]
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers

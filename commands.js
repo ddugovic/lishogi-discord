@@ -116,7 +116,7 @@ const commands = {
     },
     "reddit": {
         usage: "",
-        description: "Fetch reddit image",
+        description: "Fetch r/chess image",
         process: reddit.process,
         interact: reddit.interact
     },
