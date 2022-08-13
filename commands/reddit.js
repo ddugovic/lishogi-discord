@@ -6,8 +6,9 @@ const RedditImageFetcher = require('reddit-image-fetcher');
 
 function reddit(author, interaction) {
     return RedditImageFetcher.fetch({
+        total: 10,
         type: 'custom',
-        subreddit: ['chess'],
+        subreddit: ['chess', 'lichess'],
         allowNSFW: false
     })
         .then(result => result.map(formatEntry))
