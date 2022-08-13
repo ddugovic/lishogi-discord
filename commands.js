@@ -6,6 +6,7 @@ const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
+const fesa = require('./commands/fesa');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
 const setUser = require('./commands/setUser');
@@ -63,6 +64,12 @@ const commands = {
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         reply: eval.reply
+    },
+    "fesa": {
+        usage: "",
+        description: "Display FESA news",
+        process: fesa.process,
+        interact: fesa.interact
     },
     "leaderboard": {
         usage: "[game mode]",

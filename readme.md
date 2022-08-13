@@ -38,6 +38,8 @@
     Display an incoming, ongoing, or finished official broadcast
 !coach
     Find a coach
+!fesa
+    Display FESA news
 !news
     Display recent news
 !puzzle
