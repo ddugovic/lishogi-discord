@@ -30,6 +30,8 @@
     Display recent news
 !puzzle
     Display today's puzzle
+!reddit
+    Fetch reddit image
 !titled <title>
     Display a titled player URL
 !privacy
