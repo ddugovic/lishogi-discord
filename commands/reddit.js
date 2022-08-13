@@ -7,7 +7,7 @@ const RedditImageFetcher = require('reddit-image-fetcher');
 function reddit(author, interaction) {
     return RedditImageFetcher.fetch({
         type: 'custom',
-        subreddit: ['omgwords'],
+        subreddit: ['omgwords', 'Woogles'],
         allowNSFW: false
     })
         .then(result => result.map(formatEntry))
