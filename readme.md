@@ -48,6 +48,8 @@
     Display recent news
 !puzzle
     Display today's puzzle
+!reddit
+    Fetch reddit image
 !simul [variant]
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
