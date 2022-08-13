@@ -47,9 +47,9 @@ function compareArenas(a, b) {
 }
 
 function formatArena(arena) {
-    const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
+    const red = Math.min(arena.nbPlayers, 255);
     var embed = new EmbedBuilder()
-        .setColor(formatColor(255-speed, 0, speed))
+        .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: arena.createdBy, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
