@@ -37,7 +37,7 @@ function process(bot, msg) {
     reddit(msg.author).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
     await interaction.deferReply();
     return reddit(interaction.user, interaction);
 }
