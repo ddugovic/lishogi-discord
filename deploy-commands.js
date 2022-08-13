@@ -32,7 +32,7 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter woogles player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
-    new SlashCommandBuilder().setName('reddit').setDescription("Fetch reddit image"),
+    new SlashCommandBuilder().setName('reddit').setDescription("Fetch r/omgwords image"),
     new SlashCommandBuilder().setName('setuser').setDescription("Set your woogles username").addStringOption(option => option.setName('username').setDescription('Enter your woogles username').setRequired(true)),
     new SlashCommandBuilder().setName('help').setDescription("List available commands")
 ]

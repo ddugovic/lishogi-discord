@@ -37,7 +37,7 @@
 !puzzle
     Display today's puzzle
 !reddit
-    Fetch reddit image
+    Fetch r/omgwords image
 !privacy
     View privacy policy
 !stop
