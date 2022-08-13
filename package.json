@@ -35,6 +35,7 @@
     "plural": "^1.1.0",
     "quickchart-js": "^3.0.2",
     "re2": "^1.17.7",
+    "reddit-image-fetcher": "^2.0.11",
     "sanitize-html": "^2.7.1",
     "shogiops": "^0.9.0",
     "url-regex-safe": "^3.0.0",
