@@ -31,7 +31,7 @@
 !puzzle
     Display today's puzzle
 !reddit
-    Fetch reddit image
+    Fetch r/chess image
 !titled <title>
     Display a titled player URL
 !privacy
