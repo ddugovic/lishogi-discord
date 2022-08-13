@@ -21,13 +21,14 @@ function news(author, interaction) {
 
 function formatNews(feed) {
     const embeds = [];
+    const authorURL = feed.link[0]['$'].href;
     for (const entry of feed.entry.values())
         if (entry.title.startsWith('NEWS'))
-            embeds.push(formatEntry(entry, feed.link));
+            embeds.push(formatEntry(entry, authorURL));
     return embeds;
 }
 
-function formatEntry(entry, link) {
+function formatEntry(entry, authorURL) {
     const timestamp = Math.floor(new Date(entry.published).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
@@ -35,7 +36,7 @@ function formatEntry(entry, link) {
     const content = getContent(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: link})
+        .setAuthor({name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: authorURL})
         .setTitle(entry.title)
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 200)}`);
     const url = getURL(entry);

@@ -24,7 +24,7 @@ function formatEntry(entry, channel) {
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
     return new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: channel.title, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', link: channel.link})
+        .setAuthor({name: channel.title, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: channel.link})
         .setTitle(entry.title)
         .setURL(entry.link)
         .setDescription(`<t:${timestamp}:F>\n${formatContent(entry.description, 200)}`);
