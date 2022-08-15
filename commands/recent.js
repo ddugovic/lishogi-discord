@@ -94,14 +94,14 @@ async function formatGame(game) {
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
     const embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setTitle(`${playerNames.join(' - ')} (${game.scores.join(' - ')})`)
+        .setTitle(`${playerNames.join(' - ')} (${game.scores.join(' - ')}) #${game.game_id}`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
 	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
     const request = game.game_request;
     if (request)
-        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')})`)
+        return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')}) #${game.game_id}`)
             .setThumbnail(request.player_vs_bot ? 'https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg' : 'https://woogles.io/logo192.png')
             .addFields(await getHistory(playerNicknames, game.game_id))
             .addFields([{ name: 'Lexicon', value: formatLexicon(request.lexicon) }]);
