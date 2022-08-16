@@ -105,7 +105,7 @@ const commands = {
         usage: "",
         description: "Display today's puzzle",
         process: puzzle.process,
-        reply: puzzle.reply
+        interact: puzzle.interact
     },
     "reddit": {
         usage: "",
