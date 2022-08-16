@@ -3,13 +3,14 @@ const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const formatSeconds = require('../lib/format-seconds');
+const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
-async function streamers(author) {
+function streamers(author, interaction) {
     return axios.get('https://lishogi.org/streamer/live')
         .then(response => setStreamers(response.data))
-        .catch((error) => {
+        .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
+        .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
@@ -18,97 +19,82 @@ async function streamers(author) {
 }
 
 function setStreamers(streamers) {
-    if (streamers.length) {
-        const url = 'https://lishogi.org/api/users';
-        const ids = streamers.map(streamer => streamer.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => {
-                const rating = Math.max(...fields.map(field => field.rating));
-                const embed = new EmbedBuilder()
-                    .setColor(getColor(rating))
-                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-                    .setTitle(`:satellite: Lishogi Streamers`)
-                    .setURL('https://lishogi.org/streamer')
-                    .addFields(response.data.map(formatStreamer).sort((a,b) => b.score - a.score));
-                return { embeds: [ embed ] };
-        });
-    } else {
-        return 'No streamers are currently live.';
-    }
+    streamers = streamers.map(formatStreamer).sort((a,b) => b.score - a.score);
+    return chunk(streamers, 6).map(fields => {
+        const rating = Math.max(...fields.map(field => field.rating));
+        return new EmbedBuilder()
+            .setColor(getColor(rating))
+            .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+            .setTitle(`:satellite: Lishogi Streamers`)
+            .setURL('https://lishogi.org/streamer')
+            .addFields(fields);
+    });
+}
+
+function getColor(rating) {
+    const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
+    return formatColor(red, 0, 255-red);
 }
 
 function formatStreamer(streamer) {
-    const name = formatName(streamer);
+    const lang = formatLang(streamer.stream.lang) ?? '';
+    const name = streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
     const badges = streamer.patron ? '⛩️' : '';
-    const [profile, rating, score] = formatProfile(streamer.username, streamer.profile, streamer.playTime);
-    return { name : `${name} ${badges}`, value: profile, inline: true, 'score': score, 'rating': rating };
+    const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
+    return { name : `${lang}${name}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
 }
 
-function formatName(streamer) {
-    var name = getLastName(streamer.profile) ?? streamer.username;
-    if (streamer.title)
-        name = `**${streamer.title}** ${name}`;
-    const country = getCountry(streamer.profile);
-    if (country && flags.countryCode(country))
-        name = `${flags.countryCode(country).emoji} ${name}`;
-    const rating = getRating(streamer.profile);
-    if (rating)
-        name += ` (${rating})`;
-    return name;
+function formatLang(lang) {
+    // ASSUME until language emojis exist (or API provides flags), language == country
+    const flag = lang ? flags.countryCode(lang.toUpperCase()) : null;
+    if (flag)
+        return `${flag.emoji} `;
 }
 
-function getCountry(profile) {
-    if (profile)
-        return profile.country;
-}
+function formatStream(username, title, streamer, stream) {
+    const links = [`:satellite: [Stream](https://lishogi.org/streamer/${username})`];
+    if (streamer.twitch)
+        links.push(formatSocialLinks(streamer.twitch));
+    if (streamer.youTube)
+        links.push(formatSocialLinks(streamer.youTube));
 
-function getLastName(profile) {
-    if (profile)
-        return profile.lastName;
-}
-
-function getRating(profile) {
-    if (profile)
-        return profile.fesaRating;
-}
-
-function formatProfile(username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
-    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
-
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
-    result.push(links.join(' | '));
+    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lishogi\.org/gi, ':globe_with_meridians:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
     var length = 0;
     var rating = 0;
-    if (profile && profile.bio) {
-        const bio = formatBio(profile.bio.split(/\s+/));
-        if ((length = bio.length)) {
-            rating = getRating(profile) ?? profile.title ? 2000 : 1000;
-            result.push(bio);
+    if (streamer.headline && streamer.description) {
+        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lishogi\.org/gi, ':globe_with_meridians:')}*\n${formatDescription(streamer.description.split(/\s+/))}`;
+        if ((length = text.length)) {
+            rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
+            result.push(text);
 	}
     }
-    return [result.join('\n'), rating, ((length + rating) * 1000000 + playTime.tv * 1000 + playTime.total)];
+    return [`${result.join('\n')}`, rating, length + rating];
 }
 
-function formatBio(bio) {
+function formatDescription(text) {
     const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
-            bio = bio.slice(0, i);
+    for (let i = 0; i < text.length; i++) {
+        if (text[i].match(social)) {
+            text = text.slice(0, i);
             break;
         }
-        bio[i] = formatUserLinks(bio[i]);
+        text[i] = formatSiteLinks(text[i]);
     }
-    return bio.join(' ');
+    return text.join(' ');
+}
+
+function chunk(arr, size) {
+    return new Array(Math.ceil(arr.length / size))
+        .fill('')
+        .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
 function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return streamers(interaction.user);
+function interact(interaction) {
+    streamers(interaction.user, interaction);
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
