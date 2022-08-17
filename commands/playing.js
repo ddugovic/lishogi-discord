@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const { numberVariation } = require('../lib/format-variation');
+const { formatVariation } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -30,7 +30,7 @@ async function getName(author) {
         return user.lishogiName;
 }
 
-function formatCurrentGame(game, username) {
+async function formatCurrentGame(game, username) {
     const players = [game.players.sente, game.players.gote];
     const clock = game.clock;
     var embed = new EmbedBuilder()
@@ -39,7 +39,7 @@ function formatCurrentGame(game, username) {
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lishogi.org/${game.id}`)
-        .setDescription(formatGame(game));
+        .setDescription(await formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lishogi1.org/game/export/gif/${game.id}.gif`);
     if (game.analysis)
@@ -69,14 +69,14 @@ function getPlayerName(player) {
         return `AI level ${player.aiLevel}`;
 }
 
-function formatGame(game) {
-    const opening = game.moves ? ` ${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
+async function formatGame(game) {
+    const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
-function formatOpening(opening, initialFen, moves) {
-    const variation = moves.split(/ /).slice(0, opening ? opening.ply : 10);
-    return opening ? `${opening.name}\n*${numberVariation(variation)}*` : `*${numberVariation(variation)}*`;
+async function formatOpening(opening, initialFen, moves) {
+    const variation = await formatVariation(initialFen, moves.split(/ /).slice(0, opening ? opening.ply : 10));
+    return opening ? `${opening.name}\n*${variation}*` : `*${variation}*`;
 }
 
 function formatAnalysis(analysis, playerNames) {
