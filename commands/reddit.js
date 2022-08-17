@@ -12,7 +12,7 @@ function reddit(author, interaction) {
         subreddit: ['chess'],
         allowNSFW: false
     })
-        .then(result => result.map(formatEntry))
+        .then(response => response.map(formatPost))
         .then(embeds => formatPages(embeds, interaction, 'No safe for work images found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
@@ -22,17 +22,17 @@ function reddit(author, interaction) {
         });
 }
 
-function formatEntry(entry) {
-    const red = Math.min(Math.floor(entry.upvotes / 5), 255);
+function formatPost(post) {
+    const red = Math.min(Math.floor(post.upvotes / 5), 255);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setTitle(entry.title.substr(0, 256))
-        .setURL(entry.postLink)
+        .setTitle(post.title.substr(0, 256))
+        .setURL(post.postLink)
         .addFields([
-            { name: 'Upvotes', value: `**${fn.format(entry.upvotes)}**`, inline: true },
-            { name: 'Ratio', value: `${entry.upvoteRatio}`, inline: true }
+            { name: 'Upvotes', value: `**${fn.format(post.upvotes)}**`, inline: true },
+            { name: 'Ratio', value: `${post.upvoteRatio}`, inline: true }
         ])
-        .setImage(entry.image);
+        .setImage(post.image);
 }
 
 function process(bot, msg) {
