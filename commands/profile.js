@@ -8,7 +8,7 @@ const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
-const { numberVariation } = require('../lib/format-variation');
+const { formatVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
@@ -282,18 +282,23 @@ function getImage(text) {
         return match[0];
 }
 
-function setGames(embed, username) {
+async function setGames(embed, username) {
     const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
+        .then(games => formatGames(games))
+        .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
-function formatGame(game) {
+async function formatGames(games) {
+    return Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
+}
+
+async function formatGame(game) {
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
-    const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
+    const opening = game.moves ? `\n${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
@@ -313,9 +318,9 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function formatOpening(opening, initialFen, moves) {
+async function formatOpening(opening, initialFen, moves) {
     const ply = opening ? opening.ply : 10;
-    const variation = numberVariation(moves.split(/ /).slice(0, ply));
+    const variation = await formatVariation(initialFen, moves.split(/ /).slice(0, ply));
     return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
 }
 
