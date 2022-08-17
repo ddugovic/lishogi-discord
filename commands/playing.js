@@ -2,6 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const formatHandicap = require('../lib/format-handicap');
 const { formatVariation } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
@@ -70,12 +71,13 @@ function getPlayerName(player) {
 }
 
 async function formatGame(game) {
-    const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    const handicap = formatHandicap(game.initialSfen);
+    const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialSfen, game.moves)}` : '';
+    return `(${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
-async function formatOpening(opening, initialFen, moves) {
-    const variation = await formatVariation(initialFen, moves.split(/ /).slice(0, opening ? opening.ply : 10));
+async function formatOpening(opening, initialSfen, moves) {
+    const variation = await formatVariation(initialSfen, moves.split(/ /).slice(0, opening ? opening.ply : 10));
     return opening ? `${opening.name}\n*${variation}*` : `*${variation}*`;
 }
 
