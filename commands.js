@@ -87,7 +87,7 @@ const commands = {
         usage: "[user]",
         description: "Share your (or a user's) current game",
         process: playing.process,
-        reply: playing.reply
+        interact: playing.interact
     },
     "privacy": {
         usage: "",
