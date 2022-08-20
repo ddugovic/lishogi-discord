@@ -13,7 +13,13 @@ function bots(author, interaction) {
     const mode = getMode(author);
     return axios.get('https://lishogi.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
         .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode || 'blitz')))
-        .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'));
+        .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
+        .catch(error => {
+            console.log(`Error in bots(${author.username}, ${mode}): \
+                ${error.response.status} ${error.response.statusText}`);
+            return `An error occurred handling your request: \
+                ${error.response.status} ${error.response.statusText}`;
+        });
 }
 
 async function getMode(author) {
@@ -91,7 +97,7 @@ function process(bot, msg, mode) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    await bots(interaction.user, interaction);
+    return bots(interaction.user, interaction);
 }
 
 module.exports = { process, interact };
