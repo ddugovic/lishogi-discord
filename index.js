@@ -91,7 +91,6 @@ client.on('interactionCreate', async interaction => {
     if (command) {
         try {
             if (command.interact) {
-                await interaction.deferReply();
                 const error = await command.interact(interaction);
                 if (error)
                     await interaction.editReply({ content: error });
