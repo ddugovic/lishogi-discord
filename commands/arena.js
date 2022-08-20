@@ -8,7 +8,7 @@ const { formatTitledUserLink } = require('../lib/format-site-links');
 function arena(author, mode, interaction) {
     const header = { headers: { Accept: 'application/json' } };
     return axios.get('https://lishogi.org/api/tournament', header)
-        .then(response => setArenas(mergeArenas(response.data), mode))
+        .then(response => setArenas(response.data, mode))
         .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
@@ -18,17 +18,12 @@ function arena(author, mode, interaction) {
         });
 }
 
-function mergeArenas(data) {
-    const arenas = [];
+async function setArenas(data, mode) {
+    var arenas = [];
     for (const status in data)
         arenas.push(...data[status]);
-    return arenas.sort((a,b) => a.startsAt - b.startsAt);
-}
-
-async function setArenas(arenas, mode) {
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
-    arenas = arenas.sort(compareArenas);
     return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
 }
 
@@ -40,10 +35,6 @@ function setArena(arena) {
     const url = `https://lishogi.org/api/tournament/${arena.id}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatArena(response.data));
-}
-
-function compareArenas(a, b) {
-    return b.nbPlayers / (b.status || 10) - (a.nbPlayers / (a.status || 10));
 }
 
 function formatArena(arena) {
