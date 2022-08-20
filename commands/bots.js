@@ -1,5 +1,5 @@
 const axios = require('axios');
-const countryFlags = require('emoji-flags');
+const flags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
@@ -15,7 +15,7 @@ function bots(author, interaction) {
         .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
-            console.log(`Error in bots(${author.username}): \
+            console.log(`Error in bots(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -32,19 +32,13 @@ function filter(bots) {
     return bots.filter(bot => !bot.tosViolation);
 }
 
-function source(bot) {
-    const git = /\bgit(?:hub|lab)?\b/;
-    if (bot.profile && bot.profile.links)
-        return bot.profile.links.match(git);
-}
-
 function formatBot(bot, mode) {
     const username = bot.username;
     const [country, firstName, lastName] = getCountryAndName(bot.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && countryFlags.countryCode(country))
-        nickname = `${countryFlags.countryCode(country).emoji} ${nickname}`;
+    if (country && flags.countryCode(country))
+        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
 
     const badges = bot.patron ? '⛩️' : '';
     const embed = new EmbedBuilder()
@@ -81,7 +75,7 @@ function setAbout(embed, username, profile, playTime) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
-        const bio = profile.bio.split(/\s+/).map(formatSiteLink).join(' ');
+        const bio = profile.bio.replaceAll(/https\:\/\/(?:i\.)?imgur\.com\/\w+(?:\.\w+)?/g, '').split(/\s+/).map(formatSiteLink).join(' ');
         if (bio)
             result.push(bio);
     }
@@ -89,9 +83,12 @@ function setAbout(embed, username, profile, playTime) {
 }
 
 function getImage(text) {
-    const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
-    if (match)
-        return match[0];
+    const match1 = text.match(/https:\/\/(?:i.)?imgur.com\/\w+\.\w+/);
+    if (match1)
+        return match1[0];
+    const match2 = text.match(/https:\/\/(?:i.)?imgur.com\/\w+/);
+    if (match2)
+        return `${match2[0]}.png`;
 }
 
 function process(bot, msg, mode) {
