@@ -58,8 +58,9 @@ function process(bot, msg) {
     news(msg.author).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return news(interaction.user, interaction);
+async function interact(interaction) {
+    await interaction.deferReply();
+    news(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

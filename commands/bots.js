@@ -10,9 +10,9 @@ const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 function bots(author, interaction) {
-    const mode = getMode(author) || 'blitz';
+    const mode = getMode(author);
     return axios.get('https://lishogi.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode)))
+        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode || 'blitz')))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}, ${mode}): \
@@ -95,7 +95,8 @@ function process(bot, msg, mode) {
     bots(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
+    await interaction.deferReply();
     return bots(interaction.user, interaction);
 }
 

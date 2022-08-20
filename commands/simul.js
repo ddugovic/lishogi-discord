@@ -98,8 +98,9 @@ function process(bot, msg, favoriteMode) {
     simul(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return simul(interaction.user, interaction.options.getString('variant'), interaction);
+async function interact(interaction) {
+    await interaction.deferReply();
+    simul(interaction.user, interaction.options.getString('variant'), interaction);
 }
 
 module.exports = {process, interact};

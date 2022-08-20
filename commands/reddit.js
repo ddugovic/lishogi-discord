@@ -39,8 +39,9 @@ function process(bot, msg) {
     reddit(msg.author).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return reddit(interaction.user, interaction);
+async function interact(interaction) {
+    await interaction.deferReply();
+    reddit(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

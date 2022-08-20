@@ -51,7 +51,7 @@ const commands = {
         usage: "",
         description: "Find a coach",
         process: coach.process,
-        reply: coach.reply
+        interact: coach.interact
     },
     "deleteuser": {
         usage: "",
@@ -63,7 +63,7 @@ const commands = {
         usage: "<fen>",
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
-        reply: eval.reply
+        interact: eval.interact
     },
     "fesa": {
         usage: "",
@@ -99,7 +99,7 @@ const commands = {
         usage: "[username]",
         description: "Display your (or a user's) profile",
         process: profile.process,
-        reply: profile.reply
+        interact: profile.interact
     },
     "puzzle": {
         usage: "",
@@ -147,7 +147,7 @@ const commands = {
         usage: "[game mode]",
         description: "Share the featured game",
         process: tv.process,
-        reply: tv.reply
+        interact: tv.interact
     },
     "video": {
         usage: "[text]",

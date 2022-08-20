@@ -81,8 +81,9 @@ function process(bot, msg, text) {
     team(msg.author, text).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return team(interaction.user, interaction.options.getString('text'), interaction);
+async function interact(interaction) {
+    await interaction.deferReply();
+    team(interaction.user, interaction.options.getString('text'), interaction);
 }
 
 module.exports = {process, interact};

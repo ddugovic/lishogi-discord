@@ -350,8 +350,18 @@ function process(bot, msg, username) {
     profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
-function reply(interaction) {
-    return profile(interaction.user, interaction.options.getString('username'));
+async function interact(interaction) {
+    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    if (!username)
+        return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
+    await interaction.deferReply();
+    await interaction.editReply(await profile(interaction.user, username));
 }
 
-module.exports = {process, reply};
+async function getUsername(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.lishogiName;
+}
+
+module.exports = {process, interact};

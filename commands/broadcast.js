@@ -48,7 +48,8 @@ function process(bot, msg) {
     broadcast(msg.author).then(url => msg.channel.send(url))
 }
 
-function interact(interaction) {
+async function interact(interaction) {
+    await interaction.deferReply();
     broadcast(interaction.user, interaction);
 }
 

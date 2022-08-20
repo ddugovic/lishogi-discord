@@ -29,8 +29,9 @@ function process(bot, msg, mode) {
     tv(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return tv(interaction.user, interaction.options.getString('mode'));
+async function interact(interaction) {
+    await interaction.deferReply();
+    await interaction.editReply(await tv(interaction.user, interaction.options.getString('mode')));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

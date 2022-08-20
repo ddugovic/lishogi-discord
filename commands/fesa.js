@@ -35,6 +35,7 @@ function process(bot, msg) {
 }
 
 function interact(interaction) {
+    await interaction.deferReply();
     return fesa(interaction.user, interaction);
 }
 

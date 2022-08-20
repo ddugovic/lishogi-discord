@@ -32,8 +32,9 @@ function process(bot, msg, sfen) {
     eval(msg.author, sfen).then(url => msg.channel.send(url))
 }
 
-async function reply(interaction) {
-    return eval(interaction.user, interaction.options.getString('sfen'));
+async function interact(interaction) {
+    await interaction.deferReply();
+    await interaction.editReply(await eval(interaction.user, interaction.options.getString('sfen')));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

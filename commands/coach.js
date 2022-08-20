@@ -40,8 +40,9 @@ function process(bot, msg) {
     coach(msg.author).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return coach(interaction.user);
+async function interact(interaction) {
+    await interaction.deferReply();
+    await interaction.editReply(await coach(interaction.user));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};

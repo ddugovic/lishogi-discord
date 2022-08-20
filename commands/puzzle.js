@@ -54,6 +54,7 @@ function process(bot, msg, mode) {
 }
 
 async function interact(interaction) {
+    await interaction.deferReply();
     await interaction.editReply(await puzzle(interaction.user));
 }
 

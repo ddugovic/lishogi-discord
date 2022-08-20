@@ -121,7 +121,17 @@ function process(bot, msg, username) {
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username')));
+    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    if (!username)
+        return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
+    await interaction.deferReply();
+    await interaction.editReply(await playing(interaction.user, username));
+}
+
+async function getUsername(author, username) {
+    const user = await User.findById(author.id).exec();
+    if (user)
+        return user.lishogiName;
 }
 
 module.exports = {process, interact};

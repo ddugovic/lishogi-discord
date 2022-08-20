@@ -42,7 +42,8 @@ function process(bot, msg) {
     blog(msg.author).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
+    await interaction.deferReply();
     return blog(interaction.user, interaction);
 }
 
