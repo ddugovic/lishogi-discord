@@ -92,7 +92,7 @@ client.on('interactionCreate', async interaction => {
         try {
             if (command.interact) {
                 await interaction.deferReply();
-                const error = command.interact(interaction);
+                const error = await command.interact(interaction);
                 if (error)
                     await interaction.editReply({ content: error });
             } else {
