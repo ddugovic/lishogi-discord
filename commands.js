@@ -26,7 +26,7 @@ const video = require('./commands/video');
 const commands = {
     "arena": {
         usage: "[game mode]",
-        description: "Find an upcoming or recent arena",
+        description: "Find a created, started, or finished arena",
         process: arena.process,
         interact: arena.interact
     },
