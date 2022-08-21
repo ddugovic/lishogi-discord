@@ -41,7 +41,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)).addStringOption(option => option.setName('status').setDescription('Enter an arena status').addChoices(...statuses)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...modes)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast"),
@@ -49,7 +49,7 @@ const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lishogi username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('sfen').setDescription('SFEN (Shogi Forsyth-Edwards Notation)')),
     new SlashCommandBuilder().setName('fesa').setDescription("Display FESA news"),
-    new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game").addStringOption(option => option.setName('username').setDescription('Enter lishogi player username')),
     new SlashCommandBuilder().setName('news').setDescription("Display recent news"),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
@@ -61,7 +61,7 @@ const commands = [
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
-    new SlashCommandBuilder().setName('tv').setDescription("Share the featured game").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...channels)),
+    new SlashCommandBuilder().setName('tv').setDescription("Share the featured game").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...channels)),
     new SlashCommandBuilder().setName('video').setDescription("Search videos for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords')),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
