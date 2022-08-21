@@ -82,6 +82,11 @@ const variants = [
     { name: 'Three-check', value: 'threeCheck' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
+const statuses = [
+    { name: 'Created', value: 'created' },
+    { name: 'Started', value: 'started' },
+    { name: 'Finished', value: 'finished' }
+];
 
 const guildCommands = [
     new SlashCommandBuilder().setName('stop').setDescription("Stop the bot (owner only)")
@@ -89,7 +94,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...arenas)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...modes)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots with source code"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
