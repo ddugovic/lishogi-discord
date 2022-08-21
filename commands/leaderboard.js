@@ -98,7 +98,7 @@ function getColor(index, length) {
 }
 
 function formatProfile(username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(/, /, 2)[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
@@ -132,7 +132,7 @@ function chunk(arr, size) {
 }
 
 function title(str) {
-    return str.split('_')
+    return str.split(/_/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
 }

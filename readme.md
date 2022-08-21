@@ -28,8 +28,8 @@
     Display top-rated players
 !playing [username]
     Share your (or a user's) current game
-!arena [username]
-    Find an upcoming or recent arena created by lishogi (or a user)
+!arena [game mode] [status]
+    Find a created, started, or finished arena
 !blog
     Display recent blog entries
 !bots

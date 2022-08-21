@@ -66,7 +66,7 @@ function getColor(rating) {
 }
 
 function setAbout(embed, username, profile, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
+    const duration = formatSeconds(playTime ? playTime.tv : 0).split(/, /, 2)[0];
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     if (links.length)

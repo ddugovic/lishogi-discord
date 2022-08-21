@@ -5,11 +5,11 @@ const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 
-function arena(author, mode, interaction) {
+function arena(author, mode, status, interaction) {
     const header = { headers: { Accept: 'application/json' } };
     return axios.get('https://lishogi.org/api/tournament', header)
-        .then(response => setArenas(response.data, mode))
-        .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
+        .then(response => setArenas(response.data, mode, status))
+        .then(embeds => formatPages(embeds, interaction, status ? `No ${status} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -18,10 +18,11 @@ function arena(author, mode, interaction) {
         });
 }
 
-async function setArenas(data, mode) {
+async function setArenas(data, mode, status) {
     var arenas = [];
-    for (const status in data)
-        arenas.push(...data[status]);
+    for (const [key, value] of Object.entries(data))
+        if (!status || key == status)
+            arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
     return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
@@ -91,13 +92,13 @@ function formatPlayer(player) {
     return formatTitledUserLink(player.title, player.name);
 }
 
-function process(bot, msg, favoriteMode) {
-    arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
+function process(bot, msg, suffix) {
+    arena(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    arena(interaction.user, interaction.options.getString('mode'), interaction);
+    arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
 }
 
 module.exports = {process, interact};

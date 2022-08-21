@@ -29,6 +29,11 @@ const ratings = [
     { name: 'Rapid', value: 'rapid' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
+const statuses = [
+    { name: 'Created', value: 'created' },
+    { name: 'Started', value: 'started' },
+    { name: 'Finished', value: 'finished' }
+];
 
 const guildCommands = [
     new SlashCommandBuilder().setName('stop').setDescription("Stop the bot (owner only)")
@@ -36,7 +41,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)).addStringOption(option => option.setName('status').setDescription('Enter an arena status').addChoices(...statuses)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast"),

@@ -251,7 +251,7 @@ function formatStats(count, playTime, mode, rating, perf) {
 function formatTimePlayed(playTime) {
     const result = [formatSeconds(playTime ? playTime.total : 0)];
     if (playTime && playTime.total) {
-        const duration = formatSeconds(playTime.tv).split(', ')[0];
+        const duration = formatSeconds(playTime.tv).split(/, /, 2)[0];
         result.push(`:tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`)
     }
     return result.join('\n');
@@ -341,7 +341,7 @@ function modesArray(list) {
 }
 
 function title(str) {
-    return str.split('_')
+    return str.split(/_/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
 }

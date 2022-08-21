@@ -30,7 +30,7 @@ function getVideos(document) {
 }
 
 function formatVideo(link, duration, name, author, target, tags) {
-    const seconds = duration.split(':').reduce((acc,time) => (60 * acc) + +time);
+    const seconds = duration.split(/:/).reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
     return new EmbedBuilder()
         .setColor(formatColor(score, 0, 255-score))
@@ -51,7 +51,7 @@ function shuffle(array) {
 }
 
 function title(str) {
-    return str.split(' ')
+    return str.split(/ /)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
 }
