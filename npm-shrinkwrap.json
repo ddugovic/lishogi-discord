@@ -14,7 +14,7 @@
         "axios": "^0.27.2",
         "chessops": "^0.8.1",
         "convert-seconds": "^1.0.1",
-        "customizable-discordjs-pagination": "^2.0.0",
+        "customizable-discordjs-pagination": "^2.0.1",
         "decode-html": "^2.0.0",
         "discord-api-types": "^0.37.3",
         "discord-lister": "^1.4.0",
@@ -691,9 +691,9 @@
       }
     },
     "node_modules/customizable-discordjs-pagination": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/customizable-discordjs-pagination/-/customizable-discordjs-pagination-2.0.0.tgz",
-      "integrity": "sha512-YZEye7ennxWjiOX73swBv3X8sME79doyMec3QAc1WZRmukJvdcKAHfVJDLHk19OfRQc0QWQ2tOxqmHd4r0VE8Q=="
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/customizable-discordjs-pagination/-/customizable-discordjs-pagination-2.0.1.tgz",
+      "integrity": "sha512-bciUL4eN2n4AsUkWgY0RD6ib5lh12B6SZ/Ph+0z0yCyB7xvEd1y4yTZAFsnqAiBMW9PtSkXgI+XqOOfNri5oRA=="
     },
     "node_modules/debug": {
       "version": "4.3.4",
@@ -3469,9 +3469,9 @@
       }
     },
     "customizable-discordjs-pagination": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/customizable-discordjs-pagination/-/customizable-discordjs-pagination-2.0.0.tgz",
-      "integrity": "sha512-YZEye7ennxWjiOX73swBv3X8sME79doyMec3QAc1WZRmukJvdcKAHfVJDLHk19OfRQc0QWQ2tOxqmHd4r0VE8Q=="
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/customizable-discordjs-pagination/-/customizable-discordjs-pagination-2.0.1.tgz",
+      "integrity": "sha512-bciUL4eN2n4AsUkWgY0RD6ib5lh12B6SZ/Ph+0z0yCyB7xvEd1y4yTZAFsnqAiBMW9PtSkXgI+XqOOfNri5oRA=="
     },
     "debug": {
       "version": "4.3.4",
