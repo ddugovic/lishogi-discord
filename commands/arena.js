@@ -26,7 +26,6 @@ async function setArenas(data, mode, status) {
             arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
-    arenas = arenas.sort(compareArenas);
     return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
 }
 
@@ -38,10 +37,6 @@ function setArena(arena) {
     const url = `https://lichess.org/api/tournament/${arena.id}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatArena(response.data));
-}
-
-function compareArenas(a, b) {
-    return b.nbPlayers / (b.status || 10) - (a.nbPlayers / (a.status || 10));
 }
 
 function formatArena(arena) {
@@ -92,6 +87,7 @@ function formatSchedule(schedule) {
 
 function getDescription(arena) {
     const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
+    const clock = formatClock(arena.clock.limit, arena.clock.increment);
     const rated = arena.rated ? 'rated' : 'casual';
     const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
         arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
@@ -99,7 +95,7 @@ function getDescription(arena) {
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>.` :
         arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>.` : '';
-    return `${players} ${formatClock(arena.clock.limit, arena.clock.increment)} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
+    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
 }
 
 function formatPlayer(player) {
