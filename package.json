@@ -17,7 +17,7 @@
   "author": "Tim Beck",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/rest": "^1.0.1",
+    "@discordjs/rest": "^1.1.0",
     "axios": "^0.27.2",
     "chess-web-api": "^1.1.2",
     "chessops": "^0.8.1",
