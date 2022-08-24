@@ -55,7 +55,6 @@ function process(bot, msg) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
     jerome(interaction.user, interaction);
 }
 
