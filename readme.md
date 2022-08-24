@@ -24,6 +24,8 @@
     Set your favorite game (or puzzle) mode
 !profile [username]
     Display your (or a user's) profile
+!jerome
+    Display Jerome Gambit news
 !leaderboard [game mode]
     Display the leaderboard top player
 !news

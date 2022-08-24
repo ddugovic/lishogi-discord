@@ -1,5 +1,6 @@
 // Include commands
 const deleteUser = require('./commands/deleteUser');
+const jerome = require('./commands/jerome');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
 const privacy = require('./commands/privacy');
@@ -17,6 +18,12 @@ const commands = {
         description: "Deletes your chess.com username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "jerome": {
+        usage: "",
+        description: "Display Jerome Gambit news",
+        process: jerome.process,
+        interact: jerome.interact
     },
     "leaderboard": {
         usage: "[game mode]",
