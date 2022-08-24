@@ -7,6 +7,7 @@ const coach = require('./commands/coach');
 const community = require('./commands/community');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
+const jerome = require('./commands/jerome');
 const leaderboard = require('./commands/leaderboard');
 const log = require('./commands/log');
 const news = require('./commands/news');
@@ -71,6 +72,12 @@ const commands = {
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         interact: eval.interact
+    },
+    "jerome": {
+        usage: "",
+        description: "Display Jerome Gambit news",
+        process: jerome.process,
+        interact: jerome.interact
     },
     "leaderboard": {
         usage: "[game mode]",
