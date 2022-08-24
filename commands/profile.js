@@ -56,9 +56,9 @@ async function formatProfile(user, favoriteMode) {
     if (user.online) {
         var nickname = formatNickname(firstName, lastName) ?? user.username;
         if (country) {
-            const countryName = formatCountry(country);
-            if (countryName)
-                nickname = `${countryName} ${nickname}`;
+            const countryFlag = formatCountry(country);
+            if (countryFlag)
+                nickname = `${countryFlag} ${nickname}`;
         }
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lishogi.org/?user=${user.username}#friend`);

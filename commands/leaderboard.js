@@ -1,7 +1,7 @@
 const axios = require('axios');
-const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatCountry = require('../lib/format-country');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
@@ -75,8 +75,11 @@ function formatName(player) {
     if (player.title)
         name = `**${player.title}** ${name}`;
     const [country, rating] = getCountryAndRating(player.profile) || [];
-    if (country && countryFlags.countryCode(country))
-        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    if (country) {
+        const countryFlag = formatCountry(country);
+        if (countryFlag)
+            name = `${countryFlag} ${name}`;
+    }
     if (rating)
         name += ` (${rating})`;
     return name;
