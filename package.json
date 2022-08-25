@@ -30,7 +30,7 @@
     "fisher-yates": "^1.0.3",
     "friendly-numbers": "^1.0.1",
     "mocha": "^10.0.0",
-    "mongoose": "^6.5.2",
+    "mongoose": "^6.5.3",
     "plural": "^1.1.0",
     "quickchart-js": "^3.0.2",
     "re2": "^1.17.7",
