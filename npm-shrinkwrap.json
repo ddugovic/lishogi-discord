@@ -23,7 +23,7 @@
         "friendly-numbers": "^1.0.1",
         "mongoose": "^6.5.3",
         "plural": "^1.1.0",
-        "quickchart-js": "^3.0.2",
+        "quickchart-js": "^3.1.0",
         "re2": "^1.17.7",
         "reddit-image-fetcher": "^2.0.11",
         "sanitize-html": "^2.7.1",
@@ -2402,9 +2402,9 @@
       }
     },
     "node_modules/quickchart-js": {
-      "version": "3.0.2",
-      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.2.tgz",
-      "integrity": "sha512-F9MOW5Za5fCmLgMrmitarKWVMTB2mU/5ICpMMxCbbFnksf5Bq279KehJKDK5AsN5i4LqDNLXvVitIrA4syfhGg==",
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.1.0.tgz",
+      "integrity": "sha512-oJgrS8lFYIyKDDLJ81mwIsxax405RKYxKOKRy++WECHFV9JD1UK+le4PLPRLJZjDuioKXx6YOgOL3sgPiOmD0Q==",
       "dependencies": {
         "cross-fetch": "^3.1.5",
         "javascript-stringify": "^2.1.0"
@@ -4935,9 +4935,9 @@
       }
     },
     "quickchart-js": {
-      "version": "3.0.2",
-      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.0.2.tgz",
-      "integrity": "sha512-F9MOW5Za5fCmLgMrmitarKWVMTB2mU/5ICpMMxCbbFnksf5Bq279KehJKDK5AsN5i4LqDNLXvVitIrA4syfhGg==",
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/quickchart-js/-/quickchart-js-3.1.0.tgz",
+      "integrity": "sha512-oJgrS8lFYIyKDDLJ81mwIsxax405RKYxKOKRy++WECHFV9JD1UK+le4PLPRLJZjDuioKXx6YOgOL3sgPiOmD0Q==",
       "requires": {
         "cross-fetch": "^3.1.5",
         "javascript-stringify": "^2.1.0"
