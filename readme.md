@@ -34,6 +34,8 @@
     Display recent blog entries
 !puzzle
     Display today's puzzle
+!reddit
+    Fetch r/checkers image
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
