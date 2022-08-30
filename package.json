@@ -4,7 +4,7 @@
   "description": "A Discord bot to interact with the Lidraughts API",
   "main": "index.js",
   "scripts": {
-    "prestart": "if git pull origin lidraughts | grep 'package'; then npm install; fi",
+    "prestart": "if git pull origin lidraughts | grep 'package'; then npm install && npm cache clean --force; fi",
     "start": "node index.js",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
