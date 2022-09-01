@@ -8,7 +8,7 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = 'https://lichess.org/tv/channels';
+    const url = 'https://lichess.org/api/tv/channels';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => {
             if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
