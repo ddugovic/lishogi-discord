@@ -8,13 +8,12 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = 'https://lichess.org/api/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
-                const embed = formatChannel(...channel);
-                return setGames(embed, channel[0]);
-            }
+    const url = `https://lichess.org/api/tv/${mode ?? 'best'}?nb=3&opening=true`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => parseDocument(response.data))
+        .then(games => {
+            const embed = formatChannel(mode ?? 'best', title(mode ?? 'Top Rated'), games[0]);
+            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
@@ -31,28 +30,14 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function getChannel(data, mode) {
-    for (const [channel, tv] of Object.entries(data))
-        if (camel(channel).toLowerCase() == camel(mode).toLowerCase())
-            return [channel == 'Top Rated' ? 'best' : camel(channel), channel, tv];
-}
-
-function formatChannel(channel, name, tv) {
-    const user = formatUser(tv.user);
+function formatChannel(channel, name, game) {
+    const players = [game.players.white, game.players.black];
     return new EmbedBuilder()
-        .setColor(getColor(tv.rating))
-        .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${tv.user.name}`})
-        .setThumbnail(`https://lichess1.org/game/export/gif/thumbnail/${tv.gameId}.gif`)
-        .setTitle(`${name} :tv: ${user} (${tv.rating})`)
+        .setColor(getColor(game.players))
+        .setThumbnail(`https://lichess1.org/game/export/gif/thumbnail/${game.id}.gif`)
+        .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
         .setURL(`https://lichess.org/tv/${channel}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lichess!`);
-}
-
-function setGames(embed, channel) {
-    const url = `https://lichess.org/api/tv/${channel}?nb=3&opening=true`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => parseDocument(response.data))
-        .then(games => embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') }));
 }
 
 function formatGame(game) {
@@ -68,7 +53,8 @@ function formatOpening(opening, moves) {
     return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
-function getColor(rating) {
+function getColor(players) {
+    const rating = ((players.white.rating ?? 1500) + (players.black.rating ?? 1500)) / 2;
     const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }
@@ -86,11 +72,13 @@ function formatClock(clock) {
     return `${base}+${clock.increment}`;
 }
 
-function camel(str) {
-    str = str.split(/\W/)
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join('');
-    return str.charAt(0).toLowerCase() + str.slice(1);
+function title(str) {
+    if (str == 'kingOfTheHill')
+        return 'King of the Hill';
+    if (str == 'racingKings')
+        return 'Racing Kings';
+    str = str.replace(/([a-z])([A-Z])/g, '$1-$2');
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function process(bot, msg, mode) {
