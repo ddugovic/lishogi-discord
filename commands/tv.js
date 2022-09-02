@@ -25,7 +25,7 @@ async function tv(author, mode) {
 
 async function getMode(author) {
     const user = await User.findById(author.id).exec();
-    if (user)
+    if (user && user.favoriteMode != 'puzzle')
         return user.favoriteMode;
 }
 
