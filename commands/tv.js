@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatVariant = require('../lib/format-variant');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
@@ -12,7 +13,7 @@ async function tv(author, mode) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
         .then(games => {
-            const embed = formatChannel(mode ?? 'best', title(mode ?? 'Top Rated'), games[0]);
+            const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
             return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
@@ -70,15 +71,6 @@ function formatUser(user) {
 function formatClock(clock) {
     const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
     return `${base}+${clock.increment}`;
-}
-
-function title(str) {
-    if (str == 'kingOfTheHill')
-        return 'King of the Hill';
-    if (str == 'racingKings')
-        return 'Racing Kings';
-    str = str.replace(/([a-z])([A-Z])/g, '$1-$2');
-    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function process(bot, msg, mode) {

@@ -4,6 +4,7 @@ const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-links');
+const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
 
 function arena(author, mode, status, interaction) {
@@ -74,11 +75,11 @@ function formatRestrictions(arena) {
     if (arena.onlyTitled)
         restrictions.push('National or FIDE title required');
     if (arena.hasMinRating)
-        restrictions.push(`${title(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
+        restrictions.push(`${formatVariant(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
     if (arena.hasMaxRating)
-        restrictions.push(`${title(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
+        restrictions.push(`${formatVariant(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
     if (arena.minRatedGames)
-        restrictions.push(`**${arena.minRatedGames.nb}** rated ${title(arena.minRatedGames.perf).toLowerCase()} games are required.`);
+        restrictions.push(`**${arena.minRatedGames.nb}** rated ${formatVariant(arena.minRatedGames.perf).toLowerCase()} games are required.`);
     return restrictions;
 }
 
@@ -105,15 +106,6 @@ function getDescription(arena) {
 
 function formatPlayer(player) {
     return formatTitledUserLink(player.title, player.name);
-}
-
-function title(str) {
-    if (str == 'kingOfTheHill')
-        return 'King of the Hill';
-    if (str == 'racingKings')
-        return 'Racing Kings';
-    str = str.replace(/([a-z])([A-Z])/g, '$1-$2');
-    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function process(bot, msg, suffix) {
