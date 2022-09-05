@@ -52,7 +52,7 @@ function formatSimul(simul) {
     if (simul.text) {
         const description = formatDescription(simul.text);
         if (description)
-            embed = embed.addFields({ name: 'About', value: description });
+            embed = embed.addFields({ name: 'About', value: description.substring(0, 1000) });
     }
     return embed;
 }
