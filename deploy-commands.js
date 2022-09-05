@@ -1,6 +1,15 @@
 const { PermissionFlagsBits } = require('discord-api-types/v10');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
+const arenas = [
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Minishogi', value: 'minishogi' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Thematic', value: 'thematic' },
+    { name: 'UltraBullet', value: 'ultraBullet' }
+];
 const channels = [
     { name: 'Top Rated', value: 'Top Rated' },
     { name: 'Blitz', value: 'Blitz' },
@@ -16,6 +25,7 @@ const modes = [
     { name: 'Bullet', value: 'bullet' },
     { name: 'Classical', value: 'classical' },
     { name: 'Minishogi', value: 'minishogi' },
+    { name: 'Puzzle', value: 'puzzle' },
     { name: 'Rapid', value: 'rapid' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
@@ -41,7 +51,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...modes)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...arenas)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast"),

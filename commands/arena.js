@@ -13,8 +13,6 @@ function arena(author, mode, status, interaction) {
         .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -32,7 +30,7 @@ async function setArenas(data, mode, status) {
 }
 
 function filterArena(arena, mode) {
-    return mode == 'thematic' ? arena.position : arena.perf.key.toLowerCase() == mode;
+    return mode == 'thematic' ? arena.position : arena.perf.key == mode;
 }
 
 function setArena(arena) {
