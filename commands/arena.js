@@ -69,6 +69,10 @@ function formatArena(arena) {
 function formatRestriction(arena) {
     if (arena.onlyTitled)
         return 'National or FIDE title required';
+    if (arena.hasMaxRating)
+        return `${title(arena.maxRating.perf)} rating cannot exceed **${arena.maxRating.rating}**.`;
+    if (arena.hasMinRating)
+        return `${title(arena.minRating.perf)} rating must be at least **${arena.minRating.rating}**.`;
     if (arena.minRatedGames)
         return `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`;
 }
@@ -100,6 +104,15 @@ function getDescription(arena) {
 
 function formatPlayer(player) {
     return formatTitledUserLink(player.title, player.name);
+}
+
+function title(str) {
+    if (str == 'kingOfTheHill')
+        return 'King of the Hill';
+    if (str == 'racingKings')
+        return 'Racing Kings';
+    str = str.replace(/([a-z])([A-Z])/g, '$1-$2');
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function process(bot, msg, suffix) {
