@@ -96,13 +96,13 @@ function getDescription(arena) {
     const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
     const clock = formatClock(arena.clock.limit, arena.clock.increment, arena.clock.byoyomi);
     const rated = arena.rated ? 'rated' : 'casual';
-    const winner = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
+    const status = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
         arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
         arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>.` :
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>.` :
         arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>.` : '';
-    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes. ${winner}`;
+    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${status}`;
 }
 
 function formatPlayer(player) {
