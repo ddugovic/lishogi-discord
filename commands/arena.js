@@ -102,7 +102,7 @@ function getDescription(arena) {
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>.` :
         arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>.` : '';
-    return `${players} ${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${status}`;
+    return `${players}\n${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${status}`;
 }
 
 function formatPlayer(player) {
