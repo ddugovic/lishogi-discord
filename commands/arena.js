@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
-const { formatTitledUserLink } = require('../lib/format-site-links');
+const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
 function arena(author, mode, status, interaction) {
@@ -50,7 +50,9 @@ function formatArena(arena) {
         .setURL(`https://lichess.org/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
     if (arena.featured)
-	embed = embed.setImage(`https://lichess.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
+	embed = embed.setImage(formatPositionURL(arena.featured.fen, arena.featured.lastMove));
+    else if (arena.position)
+	embed = embed.setImage(formatPositionURL(arena.position.fen));
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(
@@ -78,10 +80,6 @@ function formatRestrictions(arena) {
     if (arena.minRatedGames)
         restrictions.push(`**${arena.minRatedGames.nb}** rated ${title(arena.minRatedGames.perf).toLowerCase()} games are required.`);
     return restrictions;
-}
-
-function formatGame(game) {
-    return game.fen.replace(/ /g,'_');
 }
 
 function formatSchedule(schedule) {

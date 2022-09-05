@@ -2,6 +2,7 @@ const axios = require('axios');
 const { INITIAL_FEN, makeFen, parseFen } = require('chessops/fen');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 
 function eval(author, fen) {
@@ -30,7 +31,7 @@ function formatCloudEval(fen, eval) {
         variations.push(formatVariation(fen, eval.pvs[pv]));
     const red = Math.min(mnodes, 255);
 
-    const fenUri = fen.replace(/ /g,'_');
+    const fenUri = fen.replace(/ /g,'+');
     const embeds = [
         new EmbedBuilder()
             .setColor(formatColor(red, 0, 255 - red))
@@ -38,7 +39,7 @@ function formatCloudEval(fen, eval) {
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(':cloud: Cloud Evaluation')
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
-	    .setImage(`https://lichess.org/export/gif/${fenUri}`),
+	    .setImage(formatPositionURL(fen)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
