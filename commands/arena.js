@@ -4,6 +4,7 @@ const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
+const plural = require('plural');
 
 function arena(author, mode, status, interaction) {
     const suffix = [status, mode].join(' ').trim();
@@ -61,7 +62,7 @@ function formatArena(arena) {
     if (!arena.pairingsClosed) {
         const restrictions = formatRestrictions(arena);
         if (restrictions.length)
-            embed = embed.addFields({ name: 'Restrictions', value: restrictions.join('\n') });
+            embed = embed.addFields({ name: plural('Restriction', restrictions.length), value: restrictions.join('\n') });
     }
     return embed;
 }
