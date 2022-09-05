@@ -50,10 +50,9 @@ function formatArena(arena) {
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lichess.org/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
-    if (arena.featured)
-	embed = embed.setImage(formatPositionURL(arena.featured.fen, arena.featured.lastMove));
-    else if (arena.position)
-	embed = embed.setImage(formatPositionURL(arena.position.fen));
+    const position = arena.featured ?? arena.position
+    if (position)
+	embed = embed.setImage(formatPositionURL(position.fen, position.lastMove));
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(
