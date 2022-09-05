@@ -13,6 +13,8 @@ function arena(author, mode, status, interaction) {
         .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
+                ${error} ${error.stack}`);
+            console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -59,22 +61,24 @@ function formatArena(arena) {
             )
     }
     if (!arena.pairingsClosed) {
-        const restriction = formatRestriction(arena);
-        if (restriction)
-            embed = embed.addFields({ name: 'Restrictions', value: restriction });
+        const restrictions = formatRestrictions(arena);
+        if (restrictions.length)
+            embed = embed.addFields({ name: 'Restrictions', value: restrictions.join('\n') });
     }
     return embed;
 }
 
-function formatRestriction(arena) {
+function formatRestrictions(arena) {
+    const restrictions = [];
     if (arena.onlyTitled)
-        return 'National or FESA title required';
-    if (arena.hasMaxRating)
-        return `${title(arena.maxRating.perf)} rating cannot exceed **${arena.maxRating.rating}**.`;
+        restrictions.push('National or FESA title required');
     if (arena.hasMinRating)
-        return `${title(arena.minRating.perf)} rating must be at least **${arena.minRating.rating}**.`;
+        restrictions.push(`${title(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
+    if (arena.hasMaxRating)
+        restrictions.push(`${title(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
     if (arena.minRatedGames)
-        return `**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`;
+        restrictions.push(`**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
+    return restrictions;
 }
 
 function formatGame(game) {
@@ -107,10 +111,6 @@ function formatPlayer(player) {
 }
 
 function title(str) {
-    if (str == 'kingOfTheHill')
-        return 'King of the Hill';
-    if (str == 'racingKings')
-        return 'Racing Kings';
     str = str.replace(/([a-z])([A-Z])/g, '$1-$2');
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
