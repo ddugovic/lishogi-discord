@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const decode = require('decode-html');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const fn = require('friendly-numbers');
@@ -26,7 +27,7 @@ function formatPost(post) {
     const red = Math.min(Math.floor(post.upvotes / 5), 255);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setTitle(post.title.substr(0, 256))
+        .setTitle(decode(post.title).substr(0, 256))
         .setURL(post.postLink)
         .addFields([
             { name: 'Upvotes', value: `**${fn.format(post.upvotes)}**`, inline: true },
