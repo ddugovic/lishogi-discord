@@ -77,7 +77,7 @@ function formatRestrictions(arena) {
     if (arena.hasMaxRating)
         restrictions.push(`${title(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
     if (arena.minRatedGames)
-        restrictions.push(`**${arena.minRatedGames.nb}** rated ${arena.minRatedGames.perf} games are required.`);
+        restrictions.push(`**${arena.minRatedGames.nb}** rated ${title(arena.minRatedGames.perf).toLowerCase()} games are required.`);
     return restrictions;
 }
 
