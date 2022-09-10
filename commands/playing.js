@@ -67,8 +67,12 @@ function setCrosstable(players) {
 }
 
 function formatRecord(players, users) {
-    players.white.record = users[players.white.user.name.toLowerCase().split(/ /, 2)[0]];
-    players.black.record = users[players.black.user.name.toLowerCase().split(/ /, 2)[0]];
+    const whiteRecord = users[players.white.user.name.split(/ /, 2)[0]];
+    const blackRecord = users[players.black.user.name.split(/ /, 2)[0]];
+    if (whiteRecord + blackRecord) {
+        players.white.record = whiteRecord;
+        players.black.record = blackRecord;
+    }
     return players;
 }
 
