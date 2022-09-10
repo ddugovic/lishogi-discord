@@ -68,8 +68,12 @@ function setCrosstable(players) {
 }
 
 function formatRecord(players, users) {
-    players.sente.record = users[players.sente.user.name.split(/ /, 2)[0]];
-    players.gote.record = users[players.gote.user.name.split(/ /, 2)[0]];
+    const senteRecord = users[players.sente.user.name.split(/ /, 2)[0]];
+    const goteRecord = users[players.gote.user.name.split(/ /, 2)[0]];
+    if (senteRecord + goteRecord) {
+        players.sente.record = senteRecord;
+        players.gote.record = goteRecord;
+    }
     return players;
 }
 
