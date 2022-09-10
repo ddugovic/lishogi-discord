@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
-const { parseFeed, formatContent } = require('../lib/parse-feed');
+const { parseFeed, formatContent, getCategories } = require('../lib/parse-feed');
 
 function news(author, interaction) {
     const url = 'http://www.thechessmind.net/blog/rss.xml';
@@ -30,8 +30,9 @@ function formatEntries(channel) {
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
-        if (entry.categories)
-            embed = embed.addFields({ name: 'Categories', value: entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', ') });
+        const categories = getCategories(entry);
+        if (categories)
+            embed = embed.addFields({ name: 'Categories', value: categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', ') });
         embeds.push(embed);
     }
     return embeds;
