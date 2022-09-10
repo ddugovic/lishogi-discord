@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
-const { parseFeed, formatContent, getAuthorName, getContent, getThumbnailURL, getURL } = require('../lib/parse-feed');
+const { parseFeed, formatContent, getAuthorName, getContent, getThumbnailURL, getTopics, getURL } = require('../lib/parse-feed');
 
 function community(author, interaction) {
     const url = 'https://lichess.org/blog/community.atom';
@@ -32,6 +32,9 @@ function formatEntry(entry) {
         .setURL(getURL(entry))
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
+    const topics = getTopics(entry);
+    if (topics)
+        embed = embed.addFields({ name: 'Topics', value: topics.map(topic => `[${topic.label}](${topic.scheme})`).join(', ') });
     const image = getThumbnailURL(entry);
     if (image)
         embed = embed.setImage(image);
