@@ -30,20 +30,21 @@ async function getName(author) {
         return user.lichessName;
 }
 
-function formatCurrentGame(game, username) {
-    const players = [game.players.white, game.players.black];
+async function formatCurrentGame(game, username) {
     const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
+        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif`);
-    if (game.analysis)
-        embed = embed.addFields(formatAnalysis(game.analysis, players.map(getPlayerName)));
+    if (game.analysis) {
+        const playerNames = [game.players.white, game.players.black].map(getPlayerName);
+        embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
+    }
     return embed;
 }
 
@@ -53,13 +54,32 @@ function getColor(players) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatPlayer(player) {
-    return player.user ? formatUser(player.user) : player.aiLevel ? `Stockfish level ${player.aiLevel}` : 'Anonymous';
+async function formatAuthorName(players) {
+    if ([players.white, players.black].every(player => player.user))
+        players = await setCrosstable(players);
+    return [players.white, players.black].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
 }
 
-function formatUser(user) {
+function setCrosstable(players) {
+    const url = `https://lichess.org/api/crosstable/${players.white.user.name}/${players.black.user.name}`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatRecord(players, response.data.users));
+}
+
+function formatRecord(players, users) {
+    players.white.record = users[players.white.user.name.toLowerCase().split(/ /, 2)[0]];
+    players.black.record = users[players.black.user.name.toLowerCase().split(/ /, 2)[0]];
+    return players;
+}
+
+function formatPlayer(player) {
+    return player.user ? formatUser(player.user, player.record) : player.aiLevel ? `Stockfish level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUser(user, record) {
     const patron = user.patron ? ' 🦄' : '';
-    return user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
+    const name = user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
+    return record != undefined ? `${name} (${record})` : name;
 }
 
 function getPlayerName(player) {
