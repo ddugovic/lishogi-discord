@@ -46,7 +46,7 @@ const statuses = [
 ];
 
 const guildCommands = [
-    new SlashCommandBuilder().setName('stop').setDescription("Stop the bot (owner only)")
+    new SlashCommandBuilder().setName('stop').setDescription("Stop Lishogi Statbot (owner only)")
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
