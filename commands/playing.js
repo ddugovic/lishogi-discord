@@ -32,19 +32,20 @@ async function getName(author) {
 }
 
 async function formatCurrentGame(game, username) {
-    const players = [game.players.sente, game.players.gote];
     const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: players.map(formatPlayer).join(' - ').replace(/\*\*/g, ''), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
+        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lishogi.org/${game.id}`)
         .setDescription(await formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lishogi1.org/game/export/gif/${game.id}.gif`);
-    if (game.analysis)
-        embed = embed.addFields(formatAnalysis(game.analysis, players.map(getPlayerName)));
+    if (game.analysis) {
+        const playerNames = [game.players.sente, game.players.gote].map(getPlayerName);
+        embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
+    }
     return embed;
 }
 
@@ -54,18 +55,37 @@ function getColor(players) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatPlayer(player) {
-    return player.user ? formatUser(player.user) : player.aiLevel ? `AI level ${player.aiLevel}` : 'Anonymous';
+async function formatAuthorName(players) {
+    if ([players.sente, players.gote].every(player => player.user))
+        players = await setCrosstable(players);
+    return [players.sente, players.gote].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
 }
 
-function formatUser(user) {
-    const patron = user.patron ? ' 🦄' : '';
-    return user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
+function setCrosstable(players) {
+    const url = `https://lishogi.org/api/crosstable/${players.sente.user.name}/${players.gote.user.name}`;
+    return axios.get(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatRecord(players, response.data.users));
+}
+
+function formatRecord(players, users) {
+    players.sente.record = users[players.sente.user.name.split(/ /, 2)[0]];
+    players.gote.record = users[players.gote.user.name.split(/ /, 2)[0]];
+    return players;
+}
+
+function formatPlayer(player) {
+    return player.user ? formatUser(player.user, player.record) : player.aiLevel ? `AI level ${player.aiLevel}` : 'Anonymous';
+}
+
+function formatUser(user, record) {
+    const patron = user.patron ? '⛩️' : '';
+    const name = user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
+    return record != undefined ? `${name} (${record})` : name;
 }
 
 function getPlayerName(player) {
     if (player.user)
-        return player.user.patron ? `${player.user.name} 🦄` : player.user.name;
+        return player.user.patron ? `${player.user.name} ⛩️` : player.user.name;
     if (player.aiLevel)
         return `AI level ${player.aiLevel}`;
 }
