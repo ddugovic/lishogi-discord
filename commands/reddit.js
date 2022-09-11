@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const { decode } = require('html-entities');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
+const formatTable = require('../lib/format-table');
 const fn = require('friendly-numbers');
 const redditFetch = require('reddit-fetch');
 
@@ -46,8 +47,14 @@ function formatPost(post) {
 }
 
 function formatDescription(post) {
-    const description = (decode(post.selftext) ?? post.url).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
-    return description.substr(0, 4096);
+    // Formats at most one table per post (so far)
+    var text = (decode(post.selftext) ?? post.url).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
+    //const pattern = /(?<=^|\n)((?:\[?\*\*[^\*\|]+\*\*(?:\]\(https?:\/\/[-\w\.\/]+\))?(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
+    const pattern = /(?<=^|\n)((?:\*\*[^\*\|]+\*\*(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
+    const match = text.match(pattern);
+    if (match)
+        text = text.replace(match[0], formatTable(match[1].trim().replace(/\*\*/g, ''), match[2].trim()))
+    return text.substr(0, 4096);
 }
 
 function formatAuthorName(post) {
