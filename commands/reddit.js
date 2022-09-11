@@ -55,7 +55,7 @@ function formatAuthorName(post) {
     var medals = '';
     if (post.gildings) {
         for (var i = 0; i < (post.gildings.gid_1 ?? 0); i++)
-            medals += ' 🥇';
+            medals += post.gilded ? ' 🥇' : ' 🥈';
         for (var i = 0; i < (post.gildings.gid_2 ?? 0); i++)
             medals += ' 🥈';
     }
