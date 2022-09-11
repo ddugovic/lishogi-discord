@@ -28,7 +28,7 @@ function formatPost(post) {
     const red = Math.min(Math.floor(post.ups / 5), 255);
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: formatAuthorName(post), url: `https://reddit.com/u/${post.author}`})
+        .setAuthor({name: formatAuthorName(post), iconURL: 'https://styles.redditmedia.com/t5_2rkeb/styles/communityIcon_u4nhn2sg02141.png?width=256&s=aa67bca23c4a5c3610e4cf3cf0e5e698849d219f', url: `https://reddit.com/u/${post.author}`})
         .setTitle(decode(post.title).substr(0, 256))
         .setURL(`https://reddit.com${post.permalink}`)
         .addFields([
@@ -36,17 +36,21 @@ function formatPost(post) {
             { name: 'Upvotes', value: `**${fn.format(post.ups)}**`, inline: true },
             { name: 'Ratio', value: `${post.upvote_ratio}`, inline: true }
         ]);
-    if (post.selftext)
-        embed = embed.setDescription(decode(post.selftext))
+    if (post.selftext ?? post.url)
+        embed = embed.setDescription(decode(post.selftext) ?? post.url)
     if (post.domain == 'i.redd.it')
         embed = embed.setImage(post.url);
-    else if (post.domain == 'youtube.com')
+    else if (post.media && post.media.oembed && post.media.oembed.thumbnail_url)
         embed = embed.setImage(post.media.oembed.thumbnail_url);
     return embed;
 }
 
 function formatAuthorName(post) {
-    return post.author_flair_text ? `u/${post.author} (${post.author_flair_text})` : `u/${post.author}`;
+    const name = post.link_flair_type == 'text' && post.author_flair_text ? `${post.author} (${post.author_flair_text})` : post.author;
+    var medals = '';
+    for (var i = 0; i < post.gilded; i++)
+        medals += ' :medal:';
+    return `${name}${medals}`
 }
 
 function process(bot, msg) {
