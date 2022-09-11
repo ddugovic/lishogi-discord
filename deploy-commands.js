@@ -65,7 +65,7 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lishogi player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
-    new SlashCommandBuilder().setName('reddit').setDescription("Fetch r/shogi post"),
+    new SlashCommandBuilder().setName('reddit').setDescription("Fetch hot r/shogi posts"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...ratings)),
     new SlashCommandBuilder().setName('setuser').setDescription("Set your lishogi username").addStringOption(option => option.setName('username').setDescription('Enter your lishogi username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),

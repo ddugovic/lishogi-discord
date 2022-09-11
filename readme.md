@@ -45,7 +45,7 @@
 !puzzle
     Display today's puzzle
 !reddit
-    Fetch r/shogi post
+    Fetch hot r/shogi posts
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers

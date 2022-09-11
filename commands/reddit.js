@@ -14,7 +14,7 @@ function reddit(author, interaction) {
         allowCrossPost: true,
         allowVideo: false
     })
-        .then(response => [response].map(formatPost))
+        .then(response => Object.values(response).map(post => formatPost(post.data)))
         .then(embeds => formatPages(embeds, interaction, 'No posts found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
