@@ -3,18 +3,19 @@ const decode = require('decode-html');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const fn = require('friendly-numbers');
-const RedditImageFetcher = require('reddit-image-fetcher');
+const redditFetch = require('reddit-fetch');
 
 function reddit(author, interaction) {
-    return RedditImageFetcher.fetch({
-        searchLimit: 100,
-        total: 10,
-        type: 'custom',
-        subreddit: ['shogi'],
-        allowNSFW: false
+    return redditFetch({
+        subreddit: 'shogi',
+        sort: 'hot',
+        allowNSFW: false,
+        allowModPost: true,
+        allowCrossPost: true,
+        allowVideo: false
     })
-        .then(response => response.map(formatPost))
-        .then(embeds => formatPages(embeds, interaction, 'No safe for work images found!'))
+        .then(response => [response].map(formatPost))
+        .then(embeds => formatPages(embeds, interaction, 'No posts found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -24,16 +25,28 @@ function reddit(author, interaction) {
 }
 
 function formatPost(post) {
-    const red = Math.min(Math.floor(post.upvotes / 5), 255);
-    return new EmbedBuilder()
+    const red = Math.min(Math.floor(post.ups / 5), 255);
+    var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
+        .setAuthor({name: formatAuthorName(post), url: `https://reddit.com/u/${post.author}`})
         .setTitle(decode(post.title).substr(0, 256))
-        .setURL(post.postLink)
+        .setURL(`https://reddit.com${post.permalink}`)
         .addFields([
-            { name: 'Upvotes', value: `**${fn.format(post.upvotes)}**`, inline: true },
-            { name: 'Ratio', value: `${post.upvoteRatio}`, inline: true }
-        ])
-        .setImage(post.image);
+            { name: 'Comments', value: `**${fn.format(post.num_comments)}**`, inline: true },
+            { name: 'Upvotes', value: `**${fn.format(post.ups)}**`, inline: true },
+            { name: 'Ratio', value: `${post.upvote_ratio}`, inline: true }
+        ]);
+    if (post.selftext)
+        embed = embed.setDescription(decode(post.selftext))
+    if (post.domain == 'i.redd.it')
+        embed = embed.setImage(post.url);
+    else if (post.domain == 'youtube.com')
+        embed = embed.setImage(post.media.oembed.thumbnail_url);
+    return embed;
+}
+
+function formatAuthorName(post) {
+    return post.author_flair_text ? `u/${post.author} (${post.author_flair_text})` : `u/${post.author}`;
 }
 
 function process(bot, msg) {

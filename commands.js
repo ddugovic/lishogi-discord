@@ -109,7 +109,7 @@ const commands = {
     },
     "reddit": {
         usage: "",
-        description: "Fetch r/shogi image",
+        description: "Fetch r/shogi post",
         process: reddit.process,
         interact: reddit.interact
     },
