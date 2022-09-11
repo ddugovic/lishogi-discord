@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^1.1.0",
+    "@hugop/discord-table": "^1.0.1",
     "axios": "^0.27.2",
     "chess-web-api": "^1.1.2",
     "chessops": "^0.8.1",
@@ -33,7 +34,7 @@
     "plural": "^1.1.0",
     "quickchart-js": "^3.1.0",
     "re2": "^1.17.7",
-    "reddit-image-fetcher": "^2.0.11",
+    "reddit-fetch": "^1.5.1",
     "sanitize-html": "^2.7.1",
     "url-regex-safe": "^3.0.0",
     "xml2js": "^0.4.23"

@@ -57,7 +57,7 @@ const commands = {
     },
     "reddit": {
         usage: "",
-        description: "Fetch r/chess image",
+        description: "Fetch hot r/chess posts",
         process: reddit.process,
         interact: reddit.interact
     },

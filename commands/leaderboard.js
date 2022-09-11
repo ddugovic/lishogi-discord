@@ -1,6 +1,6 @@
 const ChessWebAPI = require('chess-web-api');
 const countryFlags = require('emoji-flags');
-const formatLinks = require('../lib/format-links');
+const { formatSocialLinks } = require('../lib/format-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -58,7 +58,7 @@ function getCountryAndRating(profile) {
 
 function formatProfile(username, profile, fideRating, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(', ')[0];
-    const links = profile ? formatLinks(profile.links ?? profile.bio ?? '') : [];
+    const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://chess.com/@/${username})`);
 
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
