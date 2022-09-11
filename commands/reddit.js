@@ -53,8 +53,12 @@ function formatDescription(post) {
 function formatAuthorName(post) {
     const name = post.link_flair_type == 'text' && post.author_flair_text ? `${post.author} (${post.author_flair_text})` : post.author;
     var medals = '';
-    for (var i = 0; i < post.gilded; i++)
-        medals += ' 🥇';
+    if (post.gildings) {
+        for (var i = 0; i < (post.gildings.gid_1 ?? 0); i++)
+            medals += ' 🥇';
+        for (var i = 0; i < (post.gildings.gid_2 ?? 0); i++)
+            medals += ' 🥈';
+    }
     return `${name}${medals}`
 }
 
