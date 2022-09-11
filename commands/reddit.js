@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const decode = require('decode-html');
+const { decode } = require('html-entities');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const fn = require('friendly-numbers');
@@ -37,12 +37,17 @@ function formatPost(post) {
             { name: 'Ratio', value: `${post.upvote_ratio}`, inline: true }
         ]);
     if (post.selftext ?? post.url)
-        embed = embed.setDescription(decode(post.selftext) ?? post.url)
+        embed = embed.setDescription(formatDescription(post))
     if (post.domain == 'i.redd.it')
         embed = embed.setImage(post.url);
     else if (post.media && post.media.oembed && post.media.oembed.thumbnail_url)
         embed = embed.setImage(post.media.oembed.thumbnail_url);
     return embed;
+}
+
+function formatDescription(post) {
+    const description = (decode(post.selftext) ?? post.url).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
+    return description.substr(0, 4096);
 }
 
 function formatAuthorName(post) {
