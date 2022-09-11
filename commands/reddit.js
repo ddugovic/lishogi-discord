@@ -54,7 +54,7 @@ function formatAuthorName(post) {
     const name = post.link_flair_type == 'text' && post.author_flair_text ? `${post.author} (${post.author_flair_text})` : post.author;
     var medals = '';
     for (var i = 0; i < post.gilded; i++)
-        medals += ' :medal:';
+        medals += ' 🥇';
     return `${name}${medals}`
 }
 
