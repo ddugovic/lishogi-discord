@@ -1,5 +1,5 @@
 const axios = require('axios');
-const decode = require('decode-html');
+const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
