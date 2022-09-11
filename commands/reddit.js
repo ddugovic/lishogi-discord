@@ -47,12 +47,12 @@ function formatPost(post) {
 }
 
 function formatDescription(post) {
-    // Formats at most one table per post (so far)
+    // Formats simple tables
     var text = (decode(post.selftext) ?? post.url).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
     //const pattern = /(?<=^|\n)((?:\[?\*\*[^\*\|]+\*\*(?:\]\(https?:\/\/[-\w\.\/]+\))?(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
     const pattern = /(?<=^|\n)((?:[^\|\n]+(?:$| \| ))+)\r?\n(?::?-+(?: \| |:\|:)?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/m;
-    const match = text.match(pattern);
-    if (match)
+    let match;
+    while ((match = text.match(pattern)))
         text = text.replace(match[0], formatTable(match[1].trim().replace(/\*\*/g, ''), match[2].trim()))
     return text.substr(0, 4096);
 }
