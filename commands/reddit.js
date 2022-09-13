@@ -38,7 +38,7 @@ function formatPost(post) {
             { name: 'Upvotes', value: `**${fn.format(post.ups)}**`, inline: true },
             { name: 'Ratio', value: `${post.upvote_ratio}`, inline: true }
         ]);
-    if (post.selftext ?? post.url_overridden_by_dest ?? post.url)
+    if (post.selftext || (post.url_overridden_by_dest ?? post.url))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
     if (post.domain == 'i.redd.it')
         embed = embed.setImage(post.url_overridden_by_dest ?? post.url);
@@ -51,7 +51,7 @@ function formatPost(post) {
 
 function formatDescription(selftext, url_overridden_by_dest, url) {
     // Formats simple tables
-    var text = (decode(selftext) ?? url_overridden_by_dest ?? url).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
+    var text = (decode(selftext) || (url_overridden_by_dest ?? url)).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
     //const pattern = /(?<=^|\n)((?:\[?\*\*[^\*\|]+\*\*(?:\]\(https?:\/\/[-\w\.\/]+\))?(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
     const pattern = /(?<=^|\n)((?:[^\|\n]+(?:$| \| ))+)\r?\n(?::?-+(?: \| |:\|:)?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/m;
     let match;
