@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const { decode } = require('html-entities');
 const formatColor = require('../lib/format-color');
-const { checkLink } = require('../lib/format-links');
+const { checkLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const fn = require('friendly-numbers');
@@ -51,13 +50,23 @@ function formatPost(post) {
 
 function formatDescription(selftext, url_overridden_by_dest, url) {
     // Formats simple tables
-    var text = (decode(selftext) || (url_overridden_by_dest ?? url)).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n').replace(/(?<=https?:\/\/)www\./g, '');
+    var text = selftext ? decode(selftext).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n') : formatURL(url_overridden_by_dest ?? url);
+    text = text.replace(/(?<=https?:\/\/)www\./g, '');
     //const pattern = /(?<=^|\n)((?:\[?\*\*[^\*\|]+\*\*(?:\]\(https?:\/\/[-\w\.\/]+\))?(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
     const pattern = /(?<=^|\n)((?:[^\|\n]+(?:$| \| ))+)\r?\n(?::?-+(?: \| |:\|:)?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/m;
     let match;
     while ((match = text.match(pattern)))
         text = text.replace(match[0], formatTable(match[1].trim().replace(/\*\*/g, ''), match[2].trim()))
     return text.substr(0, 4096);
+}
+
+function decode(text) {
+    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+function formatURL(url) {
+    const links = formatSocialLinks(url);
+    return links.length ? links[0] : url;
 }
 
 function formatAuthorName(post) {
