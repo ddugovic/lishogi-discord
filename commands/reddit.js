@@ -17,7 +17,7 @@ function reddit(author, interaction) {
         allowVideo: false
     })
         .then(response => Object.values(response).map(post => formatPost(post.data)))
-        .then(embeds => formatPages(embeds.slice(3), interaction, 'No posts found!'))
+        .then(embeds => formatPages(embeds, interaction, 'No posts found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
