@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { decode } = require('html-entities');
 const formatColor = require('../lib/format-color');
+const { checkLink } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const fn = require('friendly-numbers');
@@ -16,7 +17,7 @@ function reddit(author, interaction) {
         allowVideo: false
     })
         .then(response => Object.values(response).map(post => formatPost(post.data)))
-        .then(embeds => formatPages(embeds, interaction, 'No posts found!'))
+        .then(embeds => formatPages(embeds.slice(3), interaction, 'No posts found!'))
         .catch(error => {
             console.log(`Error in reddit(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
@@ -43,6 +44,8 @@ function formatPost(post) {
         embed = embed.setImage(post.url);
     else if (post.media && post.media.oembed && post.media.oembed.thumbnail_url)
         embed = embed.setImage(post.media.oembed.thumbnail_url);
+    else if (post.thumbnail && checkLink(post.thumbnail))
+        embed = embed.setThumbnail(post.thumbnail);
     return embed;
 }
 
