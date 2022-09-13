@@ -38,7 +38,7 @@ function formatPost(post) {
             { name: 'Upvotes', value: `**${fn.format(post.ups)}**`, inline: true },
             { name: 'Ratio', value: `${post.upvote_ratio}`, inline: true }
         ]);
-    if (post.selftext || (post.domain != 'i.redd.it' && (post.url_overridden_by_dest ?? post.url)))
+    if (post.selftext || (!post.domain.match(/\.redd\.it$/) && (post.url_overridden_by_dest ?? post.url)))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
     if (post.domain == 'i.redd.it')
         embed = embed.setImage(post.url_overridden_by_dest ?? post.url);
