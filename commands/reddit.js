@@ -39,7 +39,7 @@ function formatPost(post) {
         ]);
     if (post.selftext || (!post.domain.match(/\.redd\.it$/) && (post.url_overridden_by_dest ?? post.url)))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
-    if (post.domain == 'i.redd.it')
+    if (post.domain == 'i.imgur.com' || post.domain == 'i.redd.it')
         embed = embed.setImage(post.url_overridden_by_dest ?? post.url);
     else if (post.media && post.media.oembed && post.media.oembed.thumbnail_url)
         embed = embed.setImage(post.media.oembed.thumbnail_url);
