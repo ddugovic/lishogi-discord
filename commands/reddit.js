@@ -44,6 +44,8 @@ function formatPost(post) {
         embed = embed.setImage(post.media.oembed.thumbnail_url);
     else if (post.thumbnail && checkLink(post.thumbnail))
         embed = embed.setThumbnail(post.thumbnail);
+    else if (post.gallery_data)
+        embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption}` || '- <no caption>').join('\n')));
     if (post.selftext || !image)
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
     return embed;
