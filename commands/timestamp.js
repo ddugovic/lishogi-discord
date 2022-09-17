@@ -1,0 +1,14 @@
+function timestamp(year, month, day, hour, minute, second, offset) {
+    const millis = Date.UTC(year, month-1, day, (hour ?? 0)-(offset ?? 0), minute ?? 0, second ?? 0);
+    return `<t:${millis / 1000}>`;
+}
+
+function process(bot, msg, suffix) {
+    msg.channel.send(timestamp(...suffix.split(' ')));
+}
+
+function reply(interaction) {
+    return timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('second'), interaction.options.getInteger('offset'));
+}
+
+module.exports = { process, reply };

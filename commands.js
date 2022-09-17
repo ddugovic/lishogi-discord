@@ -19,6 +19,7 @@ const setGameMode = require('./commands/setGameMode');
 const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
 const team = require('./commands/team');
+const timestamp = require('./commands/timestamp');
 const tv = require('./commands/tv');
 const video = require('./commands/video');
 
@@ -142,6 +143,12 @@ const commands = {
         description: "Search teams for a keyword",
         process: team.process,
         interact: team.interact
+    },
+    "timestamp": {
+        usage: "<year> <month> <day> <hour> [minute] [second]",
+        description: "Print discord magic timestamp",
+        process: timestamp.process,
+        reply: timestamp.reply
     },
     "tv": {
         usage: "[game mode]",
