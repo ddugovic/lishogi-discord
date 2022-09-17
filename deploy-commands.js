@@ -2,7 +2,7 @@ const { PermissionFlagsBits } = require('discord-api-types/v10');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const guildCommands = [
-    new SlashCommandBuilder().setName('stop').setDescription("Stop the bot (owner only)")
+    new SlashCommandBuilder().setName('stop').setDescription("Stop Woogles Statbot (owner only)")
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
