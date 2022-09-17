@@ -46,9 +46,25 @@ function formatPost(post) {
         embed = embed.setThumbnail(post.thumbnail);
     else if (post.gallery_data)
         embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption}` || '- <no caption>').join('\n')));
-    if (post.selftext || !image)
+    if (post.selftext || !(image || (post.thumbnail && post.domain == 'v.redd.it')))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
     return embed;
+}
+
+function formatAuthorName(post) {
+    const name = post.link_flair_type == 'text' && post.author_flair_text ? `${post.author} (${post.author_flair_text})` : post.author;
+    var medals = '';
+    if (post.gildings) {
+        for (var i = 0; i < (post.gildings.gid_1 ?? 0); i++)
+            medals += post.gilded ? ' 🥇' : ' 🥈';
+        for (var i = 0; i < (post.gildings.gid_2 ?? 0); i++)
+            medals += ' 🥈';
+    }
+    return `${name}${medals}`
+}
+
+function decode(text) {
+    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
 
 function formatDescription(selftext, url_overridden_by_dest, url) {
@@ -63,25 +79,9 @@ function formatDescription(selftext, url_overridden_by_dest, url) {
     return text.substr(0, 4096);
 }
 
-function decode(text) {
-    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
-
 function formatURL(url) {
     const links = formatSocialLinks(url);
     return links.length ? links[0] : url;
-}
-
-function formatAuthorName(post) {
-    const name = post.link_flair_type == 'text' && post.author_flair_text ? `${post.author} (${post.author_flair_text})` : post.author;
-    var medals = '';
-    if (post.gildings) {
-        for (var i = 0; i < (post.gildings.gid_1 ?? 0); i++)
-            medals += post.gilded ? ' 🥇' : ' 🥈';
-        for (var i = 0; i < (post.gildings.gid_2 ?? 0); i++)
-            medals += ' 🥈';
-    }
-    return `${name}${medals}`
 }
 
 function process(bot, msg) {
