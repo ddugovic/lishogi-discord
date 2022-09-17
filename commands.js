@@ -11,6 +11,7 @@ const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const reddit = require('./commands/reddit');
 const setUser = require('./commands/setUser');
+const timestamp = require('./commands/timestamp');
 
 const commands = {
     "anagram": {
@@ -83,6 +84,12 @@ const commands = {
         description: "Set your woogles username",
         process: setUser.process,
         reply: setUser.reply
+    },
+    "timestamp": {
+        usage: "<year> <month> <day> <hour> [minute] [second]",
+        description: "Print discord magic timestamp",
+        process: timestamp.process,
+        interact: timestamp.interact
     }
 };
 
