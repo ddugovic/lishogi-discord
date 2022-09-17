@@ -7,8 +7,9 @@ function process(bot, msg, suffix) {
     msg.channel.send(timestamp(...suffix.split(' ')));
 }
 
-function reply(interaction) {
+async function interact(interaction) {
+    await interaction.deferReply();
     return timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('second'), interaction.options.getInteger('offset'));
 }
 
-module.exports = { process, reply };
+module.exports = { process, interact };

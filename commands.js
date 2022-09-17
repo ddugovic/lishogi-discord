@@ -148,7 +148,7 @@ const commands = {
         usage: "<year> <month> <day> <hour> [minute] [second]",
         description: "Print discord magic timestamp",
         process: timestamp.process,
-        reply: timestamp.reply
+        interact: timestamp.interact
     },
     "tv": {
         usage: "[game mode]",
