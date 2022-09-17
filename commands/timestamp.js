@@ -1,5 +1,5 @@
 function timestamp(year, month, day, hour, minute, second, offset) {
-    const millis = Date.UTC(year, month-1, day, (hour ?? 0)-(offset ?? 0), minute ?? 0, second ?? 0);
+    const millis = Date.UTC(year, month-1, day, hour-(offset ?? 0), minute ?? 0, second ?? 0);
     return `<t:${millis / 1000}>`;
 }
 
