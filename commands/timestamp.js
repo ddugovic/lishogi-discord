@@ -8,7 +8,7 @@ function process(bot, msg, suffix) {
 }
 
 async function interact(interaction) {
-    await interaction.reply(timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('second'), interaction.options.getInteger('offset')));
+    await interaction.editReply(timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('second'), interaction.options.getInteger('offset')));
 }
 
 module.exports = { process, interact };
