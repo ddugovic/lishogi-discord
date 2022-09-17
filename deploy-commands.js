@@ -21,6 +21,7 @@ const leaderboards = [
     { name: 'Tactics', value: 'tactics' },
     { name: 'Three-Check', value: 'live_threecheck' }
 ];
+const ratings = leaderboards;
 const titles = [
     { name: "Grandmaster", value: "GM" },
     { name: "Women's Grandmaster", value: "WGM" },
@@ -33,6 +34,7 @@ const titles = [
     { name: "Candidate Master", value: "CM" },
     { name: "Women's Candidate Master", value: "WCM" }
 ];
+const variants = ratings;
 
 const commands = [
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your chess.com username from the bot's database"),
@@ -44,11 +46,9 @@ const commands = [
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
     new SlashCommandBuilder().setName('reddit').setDescription("Fetch hot r/chess posts"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Select your favorite game (or puzzle) mode').addChoices(...ratings)),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your lichess username").addStringOption(option => option.setName('username').setDescription('Enter your lichess username').setRequired(true)),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition").addStringOption(option => option.setName('variant').setDescription('Select a chess variant').addChoices(...variants)),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
-    new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode')),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username').setRequired(true)),
     new SlashCommandBuilder().setName('titled').setDescription("Display a title player ID").addStringOption(option => option.setName('title').setDescription('Chess title').setRequired(true).addChoices(...titles)),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
