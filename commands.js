@@ -15,6 +15,7 @@ const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
 const reddit = require('./commands/reddit');
+const schedule = require('./commands/schedule');
 const setGameMode = require('./commands/setGameMode');
 const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
@@ -114,6 +115,12 @@ const commands = {
         process: reddit.process,
         interact: reddit.interact
     },
+    "schedule": {
+        usage: "<sente> <gote> <year> <month> <day> <hour> [minute]",
+        description: "Schedule tournament game",
+        process: schedule.process,
+        interact: schedule.interact
+    },
     "setgamemode": {
         usage: "[game mode]",
         description: "Set your favorite game (or puzzle) mode",
@@ -145,7 +152,7 @@ const commands = {
         interact: team.interact
     },
     "timestamp": {
-        usage: "<year> <month> <day> <hour> [minute] [second]",
+        usage: "<year> <month> <day> <hour> [minute]",
         description: "Print discord magic timestamp",
         process: timestamp.process,
         interact: timestamp.interact
