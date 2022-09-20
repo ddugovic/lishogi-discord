@@ -9,7 +9,7 @@ function process(bot, msg, suffix) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    return timestamp(interaction.options.getUser('sente'), interaction.options.getMember('gote'), interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('offset'));
+    return timestamp(interaction.options.getUser('sente'), interaction.options.getUser('gote'), interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('offset'));
 }
 
 module.exports = { process, interact };
