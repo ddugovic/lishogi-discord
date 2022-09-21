@@ -199,7 +199,12 @@ function getSeries(perfs, time) {
 }
 
 function getStormSeries(storms, time) {
-    return storms.days.map(point => { return { t: new Date(point['_id']).getTime(), y: point.highest } }).filter(point => (point.t >= time));
+    return storms.days.map(point => { return { t: getTimestamp(point['_id']), y: point.highest } }).filter(point => (point.t >= time));
+}
+
+function getTimestamp(date) {
+    const [year, month, day] = date.split('/', 3);
+    return Date.UTC(year, month-1, day);
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
