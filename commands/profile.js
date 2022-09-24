@@ -289,7 +289,8 @@ function setGames(embed, username) {
     const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
+        .then(games => games.filter(game => game.status != 'aborted').map(formatGame))
+        .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
 function formatGame(game) {
