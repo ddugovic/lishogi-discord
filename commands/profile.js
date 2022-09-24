@@ -81,7 +81,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return user.count.all ? setGames(embed, user.username) : embed;
+    return user.count.all ? await setGames(embed, user.username) : embed;
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
@@ -288,16 +288,12 @@ function getImage(text) {
         return match[0];
 }
 
-async function setGames(embed, username) {
+function setGames(embed, username) {
     const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => parseDocument(response.data))
-        .then(games => formatGames(games))
+        .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(formatGame)))
         .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
-}
-
-async function formatGames(games) {
-    return Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
 }
 
 async function formatGame(game) {
