@@ -54,7 +54,7 @@
     Display live streamers
 !team
     Search teams for a keyword
-!timestamp <year> <month> <day> [hour] [minute] [offset]
+!timestamp <year> <month> <day> <hour> <minute> [offset]
     Print discord magic timestamp
 !tv [game mode]
     Share the featured game
