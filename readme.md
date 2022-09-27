@@ -46,7 +46,7 @@
     Display today's puzzle
 !reddit
     Fetch hot r/shogi posts
-!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset]
+!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]
     Schedule event (tournament) game
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
@@ -54,7 +54,7 @@
     Display live streamers
 !team
     Search teams for a keyword
-!timestamp <year> <month> <day> <hour> <minute> [offset]
+!timestamp <year> <month> <day> <hour> <minute> [offset] [offset minutes]
     Print discord magic timestamp
 !tv [game mode]
     Share the featured game

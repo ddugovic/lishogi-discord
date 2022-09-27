@@ -116,7 +116,7 @@ const commands = {
         interact: reddit.interact
     },
     "schedule": {
-        usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset]",
+        usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]",
         description: "Schedule event (tournament) game",
         process: schedule.process,
         interact: schedule.interact
@@ -152,7 +152,7 @@ const commands = {
         interact: team.interact
     },
     "timestamp": {
-        usage: "<year> <month> <day> <hour> <minute> [offset]",
+        usage: "<year> <month> <day> <hour> <minute> [offset] [offset minutes]",
         description: "Print discord magic timestamp",
         process: timestamp.process,
         interact: timestamp.interact
