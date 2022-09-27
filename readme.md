@@ -46,8 +46,8 @@
     Display today's puzzle
 !reddit
     Fetch hot r/shogi posts
-!schedule <sente> <gote> <year> <month> <day> <hour> <minute> [offset]
-    Schedule tournament game
+!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset]
+    Schedule event (tournament) game
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers

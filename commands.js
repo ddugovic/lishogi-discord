@@ -116,8 +116,8 @@ const commands = {
         interact: reddit.interact
     },
     "schedule": {
-        usage: "<sente> <gote> <year> <month> <day> <hour> [minute]",
-        description: "Schedule tournament game",
+        usage: "<event> <sente> <gote> <year> <month> <day> <hour> [minute]",
+        description: "Schedule event (tournament) game",
         process: schedule.process,
         interact: schedule.interact
     },
