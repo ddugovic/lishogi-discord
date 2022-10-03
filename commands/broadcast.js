@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const html2md = require('html-to-md');
 const parseDocument = require('../lib/parse-document');
@@ -10,7 +10,7 @@ function broadcast(author, interaction) {
     const url = 'https://lishogi.org/api/broadcast';
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => parseDocument(response.data).map(formatBroadcast))
-        .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
+        .then(embeds => formatPages('Broadcast', embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);

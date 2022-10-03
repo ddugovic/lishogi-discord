@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
@@ -11,7 +11,7 @@ function arena(author, mode, status, interaction) {
     const header = { headers: { Accept: 'application/json' } };
     return axios.get('https://lishogi.org/api/tournament', header)
         .then(response => setArenas(response.data, mode, status))
-        .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
+        .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);

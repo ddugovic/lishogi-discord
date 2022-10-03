@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
@@ -14,7 +14,7 @@ async function leaderboard(author, mode, interaction) {
     const url = `https://lishogi.org/player/top/150/${mode}`;
     return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => formatLeaders(response.data.users, mode))
-        .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
+        .then(embeds => formatChunks(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username} ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);

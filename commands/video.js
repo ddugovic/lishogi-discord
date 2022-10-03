@@ -2,13 +2,13 @@ const axios = require('axios');
 const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
     text = text ? text.replace(/\s+/, '') : '';
     return axios.get(`https://lishogi.org/video?q=${text}`)
         .then(response => setVideos(response.data, interaction))
-        .then(embeds => formatPages(embeds, interaction, 'No videos found.'))
+        .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);

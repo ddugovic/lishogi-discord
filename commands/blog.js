@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
 const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
 
@@ -10,7 +10,7 @@ function blog(author, interaction) {
     return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => parseFeed(response.data))
         .then(feed => feed.entry.map(formatEntry))
-        .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
+        .then(embeds => formatPages('Entry', embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);

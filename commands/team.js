@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -14,7 +14,7 @@ function team(author, text, interaction) {
     const url = `https://lishogi.org/api/team/search?text=${text}`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => response.data.currentPageResults.map(formatTeam))
-        .then(embeds => formatPages(embeds, interaction, 'No team found.'))
+        .then(embeds => formatPages('Team', embeds, interaction, 'No team found.'))
         .catch(error => {
             console.log(`Error in team(${author.text}, ${text}): \
                 ${error.response.status} ${error.response.statusText}`);

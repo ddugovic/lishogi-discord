@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function simul(author, mode, interaction) {
@@ -10,7 +10,7 @@ function simul(author, mode, interaction) {
     const message = mode ? `No ${mode} event found!` : `No event found!`;
     return axios.get(url, { headers: { Accept: 'application/json' } })
         .then(response => formatSimuls(response.data, mode))
-        .then(embeds => formatPages(embeds, interaction, message))
+        .then(embeds => formatPages('Simul', embeds, interaction, message))
         .catch(error => {
             console.log(`Error in simul(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);

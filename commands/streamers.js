@@ -3,13 +3,13 @@ const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
     return axios.get('https://lishogi.org/streamer/live')
         .then(response => setStreamers(response.data))
-        .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
+        .then(embeds => formatChunks(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);

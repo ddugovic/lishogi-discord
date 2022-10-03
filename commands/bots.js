@@ -3,7 +3,7 @@ const flags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink } = require('../lib/format-site-links');
 const parseDocument = require('../lib/parse-document');
@@ -13,7 +13,7 @@ function bots(author, interaction) {
     const mode = getMode(author);
     return axios.get('https://lishogi.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
         .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode || 'blitz')))
-        .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
+        .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}, ${mode}): \
                 ${error.response.status} ${error.response.statusText}`);
