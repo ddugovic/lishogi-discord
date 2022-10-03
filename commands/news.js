@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatPages } = require('../lib/format-pages');
+const { formatChunks } = require('../lib/format-pages');
 const html2md = require('html-to-md');
 const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require('../lib/parse-feed');
 
@@ -10,7 +10,7 @@ function news(author, interaction) {
     return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => parseFeed(response.data))
         .then(feed => formatNews(feed))
-        .then(embeds => formatPages('News', embeds, interaction, 'No news found!'))
+        .then(embeds => formatChunks(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
