@@ -22,8 +22,8 @@ async function profile(author, username) {
             return 'You need to set your lishogi username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
-    const url = `https://lishogi.org/api/user/${username}?trophies=true`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    const url = `https://lishogi.org/api/user/${username}`;
+    return axios.get(url, { headers: { Accept: 'application/json', params: { trophies: 'true' } } })
         .then(response => formatProfile(response.data, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
@@ -153,8 +153,8 @@ function getHistory(username) {
 }
 
 function getStormHistory(username) {
-    const url = `https://lishogi.org/api/storm/dashboard/${username}?days=90`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    const url = `https://lishogi.org/api/storm/dashboard/${username}`;
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
         .then(response => response.data);
 }
 
@@ -289,8 +289,8 @@ function getImage(text) {
 }
 
 function setGames(embed, username) {
-    const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+    const url = `https://lishogi.org/api/games/user/${username}`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: 'true', ongoing: 'true' } })
         .then(response => parseDocument(response.data))
         .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(formatGame)))
         .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));

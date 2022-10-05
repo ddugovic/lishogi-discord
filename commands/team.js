@@ -11,8 +11,8 @@ function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
-    const url = `https://lishogi.org/api/team/search?text=${text}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    const url = `https://lishogi.org/api/team/search`;
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { text: text } })
         .then(response => response.data.currentPageResults.map(formatTeam))
         .then(embeds => formatPages('Team', embeds, interaction, 'No team found.'))
         .catch(error => {
