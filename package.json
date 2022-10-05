@@ -19,7 +19,7 @@
   "dependencies": {
     "@discordjs/rest": "^1.2.0",
     "@hugop/discord-table": "^1.0.1",
-    "axios": "^0.27.2",
+    "axios": "^1.0.0",
     "convert-seconds": "^1.0.1",
     "customizable-discordjs-pagination": "^2.0.1",
     "discord-api-types": "^0.37.5",
