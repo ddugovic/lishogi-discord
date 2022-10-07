@@ -5,8 +5,8 @@ const formatColor = require('../lib/format-color');
 const { formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
-    text = text ? text.replace(/\s+/, '') : '';
-    return axios.get(`https://lishogi.org/video?q=${text}`)
+    const url = 'https://lishogi.org/video'
+    return axios.get(url, { params: { q: text } })
         .then(response => setVideos(response.data, interaction))
         .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
         .catch(error => {
