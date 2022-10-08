@@ -11,7 +11,8 @@ const User = require('../models/User');
 
 function bots(author, interaction) {
     const mode = getMode(author);
-    return axios.get('https://lishogi.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
+    const url = 'https://lishogi.org/api/bot/online';
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
         .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode || 'blitz')))
         .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
