@@ -11,7 +11,8 @@ const User = require('../models/User');
 
 async function bots(author, interaction) {
     const mode = await getMode(author) || 'blitz';
-    return axios.get('https://lichess.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
+    const url = 'https://lichess.org/api/bot/online';
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
         .then(response => filter(parseDocument(response.data)))
         .then(bots => bots.map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
