@@ -5,8 +5,8 @@ const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 
 function video(author, text, interaction) {
-    text = text ? text.replace(/\s+/, '') : '';
-    return axios.get(`https://lichess.org/video?q=${text}`)
+    const url = 'https://lichess.org/video'
+    return axios.get(url, { params: { q: text } })
         .then(response => getVideos(response.data).map(formatVideo))
         .then(embeds => formatPages(shuffle(embeds), interaction, 'No video found.'))
         .catch(error => {

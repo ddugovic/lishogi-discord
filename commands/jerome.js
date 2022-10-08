@@ -5,8 +5,8 @@ const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent, getAuthorName, getContent, getSummary, getTitle, getThumbnailURL, getURL } = require('../lib/parse-feed');
 
 function jerome(author, interaction) {
-    const url = 'https://jeromegambit.blogspot.com/feeds/posts/default?max-results=100';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
+    const url = 'https://jeromegambit.blogspot.com/feeds/posts/default';
+    return axios.get(url, { headers: { Accept: 'application/atom+xml' }, params: { 'max-results': 100 } })
         .then(response => parseFeed(response.data))
         .then(feed => formatFeed(feed))
         .then(embeds => formatPages(embeds, interaction, 'No jerome found!'))

@@ -9,8 +9,8 @@ function eval(author, fen) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
-        return axios.get(url, { headers: { Accept: 'application/json' } })
+        const url = 'https://lichess.org/api/cloud-eval';
+        return axios.get(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => formatCloudEval(fen, response.data))
             .catch(error => {
                 console.log(`Error in eval(${author.username}): \
@@ -43,8 +43,8 @@ function formatCloudEval(fen, eval) {
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-    const url = `https://explorer.lichess.ovh/masters?fen=${fenUri}&moves=0&topGames=3`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    const url = 'https://explorer.lichess.ovh/masters';
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { fen: fen, moves: 0, topGames: 3 } })
         .then(response => formatGames(embeds, fen, response.data.topGames));
 }
 

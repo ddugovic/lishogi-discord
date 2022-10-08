@@ -9,8 +9,8 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = `https://lichess.org/api/tv/${mode ?? 'best'}?nb=3&opening=true`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
+    const url = `https://lichess.org/api/tv/${mode ?? 'best'}`;
+    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
         .then(response => parseDocument(response.data))
         .then(games => {
             const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);

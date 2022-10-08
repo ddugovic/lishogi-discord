@@ -10,9 +10,8 @@ const plural = require('plural');
 function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
-    text = text.replace(/\s+/, '');
-    const url = `https://lichess.org/api/team/search?text=${text}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
+    const url = 'https://lichess.org/api/team/search';
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { text: text } })
         .then(response => response.data.currentPageResults.map(formatTeam))
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
