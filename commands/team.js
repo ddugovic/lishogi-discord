@@ -26,16 +26,16 @@ function team(author, text, interaction) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const description = formatDescription(team.description);
-    return new EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(count, 0, 255-count))
         .setThumbnail(getImage(team.description) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lishogi.org/team/${team.id}`)
         .setDescription(cleanDescription(description))
-        .addFields(
-            { name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true },
-            { name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true }
-	);
+        .addFields({ name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true });
+    if (team.leaders.length)
+        embed = embed.addFields({ name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true });
+    return embed;
 }
 
 function cleanDescription(description) {
