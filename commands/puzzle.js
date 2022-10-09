@@ -4,11 +4,11 @@ async function puzzle() {
     // Getting a puzzle ID fails for some reason, so return instead.
     return 'https://woogles.io/puzzle';
     const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
-    const context = {
+    const headers = {
         'authority': 'woogles.io',
         'origin': 'https://woogles.io'
     };
-    return axios.post(url, 'NWL20', {headers: context})
+    return axios.post(url, 'NWL20', { headers: headers })
         .then(response => formatPuzzle(response.data))
         .catch((err) => {
             console.log(`Error in puzzle(): \

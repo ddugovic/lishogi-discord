@@ -5,8 +5,8 @@ const lexica = ['CSW', 'TWL'];
 
 function equity(lexicon, rack, interaction) {
     const url = `https://cross-tables.com/leaves_values.php?lexicon=${lexicon}&rack=${rack}`
-    const context = { Accept: 'application/json', 'User-Agent': 'Woogles Statbot' };
-    return axios.get(url, { headers: context })
+    const headers = { Accept: 'application/json', 'User-Agent': 'Woogles Statbot' };
+    return axios.get(url, { headers: headers })
         .then(response => formatPages('Rack', response.data.error ? [] : [formatEquity(lexicon, response.data)], interaction, response.data.error))
         .catch(error => {
             console.log(`Error in equity(): \
