@@ -11,6 +11,7 @@ const formatSeconds = require('../lib/format-seconds');
 const { formatSanVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
+const { parseFeed, formatContent, getContent, getURL } = require('../lib/parse-feed');
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -69,6 +70,9 @@ async function formatProfile(user, favoriteMode) {
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: 'About', value: formatAbout(embed, user.username, profile) });
+    const blog = await getBlog(user.username);
+    if (blog.entry)
+        embed = embed.addFields({ name: `:pencil: Blog (${blog.entry.length} entries)`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.rated || user.perfs.puzzle) {
         const history = [ await getHistory(user.username) ];
         if (user.perfs.storm && user.perfs.storm.runs) {
@@ -141,6 +145,19 @@ function formatAbout(embed, username, profile) {
             result.push(bio);
     }
     return result.join('\n');
+}
+
+function getBlog(username) {
+    const url = `https://lichess.org/@/${username}/blog.atom`;
+    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => parseFeed(response.data));
+}
+
+function formatEntry(entry) {
+    const published = Math.floor(new Date(entry.published).getTime() / 1000);
+    const url = getURL(entry);
+    const content = getContent(entry);
+    return `<t:${published}:R> [${entry.title}](${url}) *${formatContent(content, 80)}*`;
 }
 
 function getHistory(username) {
