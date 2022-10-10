@@ -2,7 +2,7 @@ const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatMarkup } = require('../lib/format-html');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
