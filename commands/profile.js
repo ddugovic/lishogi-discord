@@ -69,10 +69,10 @@ async function formatProfile(user, favoriteMode) {
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
-        embed = embed.addFields({ name: 'About', value: formatAbout(embed, user.username, profile) });
+        embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
     const blog = await getBlog(user.username);
     if (blog.entry)
-        embed = embed.addFields({ name: `:pencil: Blog (${blog.entry.length} entries)`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
+        embed = embed.addFields({ name: `:pencil: Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.rated || user.perfs.puzzle) {
         const history = [ await getHistory(user.username) ];
         if (user.perfs.storm && user.perfs.storm.runs) {
@@ -307,7 +307,7 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
         .then(response => parseDocument(response.data))
         .then(games => games.filter(game => game.status != 'aborted').map(formatGame))
-        .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(fields => embed.addFields({ name: `:chess_pawn: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
 function formatGame(game) {
