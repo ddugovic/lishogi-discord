@@ -33,7 +33,7 @@ const commands = {
         usage: "",
         description: "Find an upcoming or recent broadcast created by lidraughts",
         process: broadcast.process,
-        interact: broadcast.interact
+        reply: broadcast.reply
     },
     "deleteuser": {
         usage: "",
