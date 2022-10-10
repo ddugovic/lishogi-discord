@@ -74,11 +74,10 @@ async function formatProfile(user, favoriteMode) {
     if (blog.entry)
         embed = embed.addFields({ name: `:pencil: Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.rated || user.perfs.puzzle) {
-        const history = [ await getHistory(user.username) ];
-        if (user.perfs.storm && user.perfs.storm.runs) {
-            const stormHistory = await getStormHistory(user.username);
-            history.push(stormHistory);
-        }
+        const requests = [ getHistory(user.username) ];
+        if (user.perfs.storm && user.perfs.storm.runs)
+            requests.push(getStormHistory(user.username));
+        const history = await Promise.all(requests);
         const image = await formatHistory(...history);
         if (image)
             embed = embed.setImage(image);
