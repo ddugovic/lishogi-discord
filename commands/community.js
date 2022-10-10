@@ -5,8 +5,8 @@ const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
 const { parseFeed, formatContent, getAuthorName, getContent, getThumbnailURL, getTopics, getURL } = require('../lib/parse-feed');
 
-function community(author, interaction) {
-    const url = 'https://lichess.org/blog/community.atom';
+function community(author, username, interaction) {
+    const url = username ? `https://lichess.org/@/${username}/blog.atom` : 'https://lichess.org/blog/community.atom';
     return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => parseFeed(response.data))
         .then(feed => feed.entry.map(formatEntry))
@@ -41,12 +41,12 @@ function formatEntry(entry) {
     return embed;
 }
 
-function process(bot, msg) {
-    community(msg.author).then(message => msg.channel.send(message));
+function process(bot, msg, username) {
+    community(msg.author, username).then(message => msg.channel.send(message));
 }
 
 function interact(interaction) {
-    return community(interaction.user, interaction);
+    return community(interaction.user, interaction.options.getString('username'), interaction);
 }
 
 module.exports = {process, interact};

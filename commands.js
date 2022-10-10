@@ -57,8 +57,8 @@ const commands = {
         interact: coach.interact
     },
     "community": {
-        usage: "",
-        description: "Display recent community blog entries",
+        usage: "[username]",
+        description: "Display recent community (or user) blog entries",
         process: community.process,
         interact: community.interact
     },

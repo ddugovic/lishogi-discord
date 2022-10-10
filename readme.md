@@ -40,8 +40,8 @@
     Display an incoming, ongoing, or finished official broadcast
 !coach
     Find a coach
-!community
-    Display recent community blog entries
+!community [username]
+    Display recent community (or user) blog entries
 !eval [fen]
     Get the cached evaluation of a position, if available
 !log
