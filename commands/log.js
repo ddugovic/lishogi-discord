@@ -1,6 +1,6 @@
 const axios = require('axios');
 const formatPages = require('../lib/format-pages');
-const formatLog = require('../lib/format-html');
+const { formatLog } = require('../lib/format-html');
 
 function log(author, interaction) {
     return axios.get(`https://lishogi.org/changelog`)
