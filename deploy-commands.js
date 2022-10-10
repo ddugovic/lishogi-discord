@@ -54,7 +54,7 @@ const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...arenas)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots"),
-    new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast"),
+    new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lishogi"),
     new SlashCommandBuilder().setName('coach').setDescription("Find a coach"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lishogi username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('sfen').setDescription('SFEN (Shogi Forsyth-Edwards Notation)')),

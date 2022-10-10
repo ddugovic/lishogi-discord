@@ -45,7 +45,7 @@ const commands = {
     },
     "broadcast": {
         usage: "",
-        description: "Display an incoming, ongoing, or finished official broadcast",
+        description: "Find an upcoming or recent broadcast created by lishogi",
         process: broadcast.process,
         interact: broadcast.interact
     },

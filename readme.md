@@ -35,7 +35,7 @@
 !bots
     Display online bots
 !broadcast
-    Display an incoming, ongoing, or finished official broadcast
+    Find an upcoming or recent broadcast created by lishogi
 !coach
     Find a coach
 !fesa
