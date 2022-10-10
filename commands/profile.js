@@ -80,7 +80,7 @@ async function formatProfile(user, favoriteMode) {
 
     const blog = responses[1];
     if (blog.entry)
-        embed = embed.addFields({ name: `:pencil: Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
+        embed = embed.addFields({ name: `:pencil: Recent Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n\n') });
     if (user.count.rated || user.perfs.puzzle) {
         const image = await formatHistory(...responses.slice(2));
         if (image)
