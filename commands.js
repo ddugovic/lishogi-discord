@@ -1,6 +1,7 @@
 // Include commands
 const arena = require('./commands/arena');
 const blog = require('./commands/blog');
+const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
@@ -27,6 +28,12 @@ const commands = {
         description: "Display recent blog entries",
         process: blog.process,
         interact: blog.interact
+    },
+    "broadcast": {
+        usage: "",
+        description: "Find an upcoming or recent broadcast created by lidraughts",
+        process: broadcast.process,
+        interact: broadcast.interact
     },
     "deleteuser": {
         usage: "",

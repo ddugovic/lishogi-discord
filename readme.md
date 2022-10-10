@@ -32,6 +32,8 @@
     Find an upcoming or recent arena created by lidraughts (or a user)
 !blog
     Display recent blog entries
+!broadcast
+    Find an upcoming or recent broadcast created by lidraughts
 !puzzle
     Display today's puzzle
 !reddit

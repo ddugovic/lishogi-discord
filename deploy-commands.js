@@ -55,6 +55,7 @@ const guildCommands = [
 const commands = [
     new SlashCommandBuilder().setName('arena').setDescription("Find an upcoming or recent arena").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
+    new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lidraughts"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lidraughts username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
     new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
