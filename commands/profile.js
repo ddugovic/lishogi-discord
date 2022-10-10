@@ -64,24 +64,25 @@ async function formatProfile(user, favoriteMode) {
             .setURL(`https://lichess.org/?user=${user.username}#friend`);
     }
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    const perf = unranked(mode, rating) ? null : await getPerf(user.username, mode);
-    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, perf));
-
-    const profile = user.profile;
-    if (profile && (profile.links || profile.bio))
-        embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
-    const requests = [ getBlog(user.username) ];
+    const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
+    const requests = [ perf, getBlog(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
             requests.push(getStormHistory(user.username));
     }
     const responses = await Promise.all(requests);
-    const blog = responses[0];
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[0]));
+
+    const profile = user.profile;
+    if (profile && (profile.links || profile.bio))
+        embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
+
+    const blog = responses[1];
     if (blog.entry)
         embed = embed.addFields({ name: `:pencil: Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(1));
+        const image = await formatHistory(...responses.slice(2));
         if (image)
             embed = embed.setImage(image);
     }
