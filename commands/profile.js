@@ -70,7 +70,7 @@ async function formatProfile(user, favoriteMode) {
         embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
     const about = formatAbout(embed, user.username, user.profile);
     if (about)
-        embed = embed.addFields({ name: 'About', value: about });
+        embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: about });
     if (user.count.rated || user.perfs.puzzle) {
         const history = [ await getHistory(user.username) ];
         if (user.perfs.storm && user.perfs.storm.runs) {
@@ -105,7 +105,7 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
     var status = streaming ? '  📡 Streaming' : '';
     if (playing)
-        status += playing.includes('sente') ? '  ♙ Playing' : '  ♟️ Playing';
+        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
@@ -293,7 +293,7 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: 'true', ongoing: 'true' } })
         .then(response => parseDocument(response.data))
         .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(formatGame)))
-        .then(fields => embed.addFields({ name: `Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(fields => embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
 async function formatGame(game) {
