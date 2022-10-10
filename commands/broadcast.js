@@ -1,9 +1,8 @@
 const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatMarkup } = require('../lib/format-html');
 const formatPages = require('../lib/format-pages');
-const formatTable = require('../lib/format-table');
-const html2md = require('html-to-md');
 const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
@@ -27,17 +26,8 @@ function formatBroadcast(broadcast) {
         .setTitle(broadcast.tour.description)
         .setURL(broadcast.tour.url)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setDescription(formatDescription(broadcast.tour.markup))
+        .setDescription(formatMarkup(broadcast.tour.markup))
         .addFields({ name: 'Rounds', value: broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n') });
-}
-
-function formatDescription(text) {
-    text = html2md(text)
-    const pattern = /(?<=^|\n)(\|(?:[^\|]+\|)+)\r?\n\|(?:-+\|)+((?:\r?\n\|(?:[^\|]+\|)+)+)/;
-    const match = text.match(pattern);
-    if (match)
-        text = text.replace(match[0], formatTable(match[1], match[2].trim()))
-    return text;
 }
 
 function formatRound(round) {
