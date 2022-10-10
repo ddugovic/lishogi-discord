@@ -307,7 +307,7 @@ function setGames(embed, username) {
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
         .then(response => parseDocument(response.data))
         .then(games => games.filter(game => game.status != 'aborted').map(formatGame))
-        .then(fields => embed.addFields({ name: `:chess_pawn: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(fields => embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
 function formatGame(game) {
