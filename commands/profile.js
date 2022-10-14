@@ -291,16 +291,18 @@ function setGames(embed, username) {
     const url = `https://lishogi.org/api/games/user/${username}`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: 'true', ongoing: 'true' } })
         .then(response => parseDocument(response.data))
-        .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(formatGame)))
-        .then(fields => embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(game => formatGame(game, username))))
+        .then(fields => embed.addFields({ name: `:calendar_spiral: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
 }
 
-async function formatGame(game) {
+async function formatGame(game, username) {
+    const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
+    const outcome = winner && winner.name == username ? ':white_circle:' : game.winner ? ':black_circle:' : ':hourglass:';
+    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
-    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${await formatOpening(game.opening, game.initialSfen, game.moves)}` : '';
-    return `${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${outcome} ${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
