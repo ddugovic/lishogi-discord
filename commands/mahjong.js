@@ -22,7 +22,7 @@ function formatPost(post) {
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: formatAuthorName(post), iconURL: 'https://b.thumbs.redditmedia.com/OS99xM7YSQ_za8Iy.png', url: `https://reddit.com/u/${post.author}`})
-        .setTitle(decodeText(post.title).substr(0, 256))
+        .setTitle(decodeText(post.title).substr(0, 100))
         .setURL(`https://reddit.com${post.permalink}`)
         .addFields([
             { name: 'Comments', value: `**${fn.format(post.num_comments)}**`, inline: true },
@@ -39,7 +39,7 @@ function formatPost(post) {
     else if (post.gallery_data)
         embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption}` || '- <no caption>').join('\n')));
     if (post.selftext || !(image || (post.thumbnail && post.domain == 'v.redd.it')))
-        embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
+        embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url));
     return embed;
 }
 
