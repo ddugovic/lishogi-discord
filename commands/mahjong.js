@@ -5,12 +5,12 @@ const { formatPages } = require('../lib/format-pages');
 const fn = require('friendly-numbers');
 const { decodeText, fetchRedditPosts, formatAuthorName, formatDescription, formatURL } = require('../lib/search-reddit');
 
-function reddit(author, interaction) {
-    return fetchRedditPosts('shogi')
+function mahjong(author, interaction) {
+    return fetchRedditPosts('mahjong')
         .then(response => Object.values(response).map(post => formatPost(post.data)))
         .then(embeds => formatPages('Post', embeds, interaction, 'No posts found!'))
         .catch(error => {
-            console.log(`Error in reddit(${author.username}): \
+            console.log(`Error in mahjong(${author.username}): \
                 ${error.response.status} ${error.response.statusText}`);
             return `An error occurred handling your request: \
                 ${error.response.status} ${error.response.statusText}`;
@@ -21,7 +21,7 @@ function formatPost(post) {
     const red = Math.min(Math.floor(post.ups / 5), 255);
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: formatAuthorName(post), iconURL: 'https://styles.redditmedia.com/t5_2rkeb/styles/communityIcon_u4nhn2sg02141.png?width=256&s=aa67bca23c4a5c3610e4cf3cf0e5e698849d219f', url: `https://reddit.com/u/${post.author}`})
+        .setAuthor({name: formatAuthorName(post), iconURL: 'https://b.thumbs.redditmedia.com/OS99xM7YSQ_za8Iy.png', url: `https://reddit.com/u/${post.author}`})
         .setTitle(decodeText(post.title).substr(0, 256))
         .setURL(`https://reddit.com${post.permalink}`)
         .addFields([
@@ -44,12 +44,12 @@ function formatPost(post) {
 }
 
 function process(bot, msg) {
-    reddit(msg.author).then(message => msg.channel.send(message));
+    mahjong(msg.author).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    reddit(interaction.user, interaction);
+    mahjong(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

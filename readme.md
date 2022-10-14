@@ -40,6 +40,8 @@
     Find a coach
 !fesa
     Display FESA news
+!mahjong
+    Fetch hot r/mahjong posts
 !news
     Display recent news
 !puzzle

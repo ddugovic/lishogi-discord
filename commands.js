@@ -8,6 +8,7 @@ const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const fesa = require('./commands/fesa');
 const leaderboard = require('./commands/leaderboard');
+const mahjong = require('./commands/mahjong');
 const news = require('./commands/news');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
@@ -78,6 +79,12 @@ const commands = {
         description: "Display top-rated players",
         process: leaderboard.process,
         interact: leaderboard.interact
+    },
+    "mahjong": {
+        usage: "",
+        description: "Fetch hot r/mahjong posts",
+        process: mahjong.process,
+        interact: mahjong.interact
     },
     "news": {
         usage: "",
