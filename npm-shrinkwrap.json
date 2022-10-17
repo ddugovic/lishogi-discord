@@ -19,7 +19,7 @@
         "discord.js": "^14.6.0",
         "emoji-flags": "^1.3.0",
         "friendly-numbers": "^1.0.1",
-        "html-to-md": "^0.6.0",
+        "html-to-md": "^0.8.0",
         "mongoose": "^6.6.0",
         "ndjson-parse": "^1.0.4",
         "plural": "^1.1.0",
@@ -1172,9 +1172,9 @@
       }
     },
     "node_modules/html-to-md": {
-      "version": "0.6.0",
-      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.6.0.tgz",
-      "integrity": "sha512-wcTvKm/hOcNUPqrlwIdjFLk16pRKZ27r+lTSw2NpZxcwQj9tDrcGJtJPerTQIUhICfhdpWtK48dqP9+dY/b4mA=="
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.8.0.tgz",
+      "integrity": "sha512-GP/qwjGld8XavMmPiZrHiBS/aP6gx5BVot68U0sB28l13KOYVAPbDUGOkj0QKDBRCVgdG9TOrvaCu4mVLSW31Q=="
     },
     "node_modules/htmlparser2": {
       "version": "6.1.0",
@@ -3834,9 +3834,9 @@
       "dev": true
     },
     "html-to-md": {
-      "version": "0.6.0",
-      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.6.0.tgz",
-      "integrity": "sha512-wcTvKm/hOcNUPqrlwIdjFLk16pRKZ27r+lTSw2NpZxcwQj9tDrcGJtJPerTQIUhICfhdpWtK48dqP9+dY/b4mA=="
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/html-to-md/-/html-to-md-0.8.0.tgz",
+      "integrity": "sha512-GP/qwjGld8XavMmPiZrHiBS/aP6gx5BVot68U0sB28l13KOYVAPbDUGOkj0QKDBRCVgdG9TOrvaCu4mVLSW31Q=="
     },
     "htmlparser2": {
       "version": "6.1.0",

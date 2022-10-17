@@ -27,7 +27,7 @@
     "discord.js": "^14.6.0",
     "emoji-flags": "^1.3.0",
     "friendly-numbers": "^1.0.1",
-    "html-to-md": "^0.6.0",
+    "html-to-md": "^0.8.0",
     "mongoose": "^6.6.0",
     "ndjson-parse": "^1.0.4",
     "plural": "^1.1.0",
