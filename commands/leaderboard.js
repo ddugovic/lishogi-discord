@@ -114,8 +114,7 @@ function formatProfile(username, profile, playTime) {
 }
 
 function formatBio(bio) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
+    const social = /:\/\/|\b(?:discord\.gg|github\.com|instagram\.com|twitch\.tv|twitter\.com|youtube\.com|youtu\.be)\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
