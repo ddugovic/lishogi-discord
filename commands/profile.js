@@ -160,7 +160,7 @@ function formatClubs(teams) {
 }
 
 async function getGames(api, username, archives, games) {
-    const archive = archives.shift();
+    const archive = archives.pop();
     const [year, month] = archive.split(/(?:\/)/).slice(-2);
     return api.getPlayerCompleteMonthlyArchives(username, year, month)
         .then(response => {
@@ -206,7 +206,8 @@ function getSeries(document, username) {
 }
 
 function getCategory(game) {
-    return game.rules == 'chess' ? game.time_class : game.rules;
+    return game.rules == 'chess' ? game.time_class :
+           game.rules == 'kingofthehill' ? 'King of the Hill' : game.rules;
 }
 
 function getDate(game) {
