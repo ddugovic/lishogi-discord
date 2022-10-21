@@ -45,15 +45,27 @@ async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
+    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
+    const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
+    const requests = [ getStatus(user.username), perf, getBlog(user.username) ];
+    if (user.count.rated || user.perfs.puzzle) {
+        requests.push(getHistory(user.username));
+        if (user.perfs.storm && user.perfs.storm.runs)
+            requests.push(getStormHistory(user.username));
+    }
+    const responses = await Promise.all(requests);
+    const status = responses[0][0];
+
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
-    const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
+    const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], status.online, status.playing, status.streaming);
+    const url = status.playing ? `https://lichess.org/${status.playingId}` : user.url;
 
     var embed = new EmbedBuilder()
         .setColor(color)
-        .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
+        .setAuthor({name: author, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: url})
         .setThumbnail(user.title == 'BOT' ? 'https://lichess1.org/assets/images/icons/bot.png' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
-    if (user.online) {
+    if (status.online) {
         var nickname = formatNickname(firstName, lastName) ?? user.username;
         if (country) {
             const countryName = formatCountry(country);
@@ -63,26 +75,17 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lichess.org/?user=${user.username}#friend`);
     }
-    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ perf, getBlog(user.username) ];
-    if (user.count.rated || user.perfs.puzzle) {
-        requests.push(getHistory(user.username));
-        if (user.perfs.storm && user.perfs.storm.runs)
-            requests.push(getStormHistory(user.username));
-    }
-    const responses = await Promise.all(requests);
-    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[0]));
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[1]));
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
 
-    const blog = responses[1];
+    const blog = responses[2];
     if (blog.entry)
         embed = embed.addFields({ name: `:pencil: Recent Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n\n') });
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(2));
+        const image = await formatHistory(...responses.slice(3));
         if (image)
             embed = embed.setImage(image);
     }
@@ -110,7 +113,7 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
     var status = streaming ? '  📡 Streaming' : '';
     if (playing)
-        status += playing.includes('white') ? '  ♙ Playing' : '  ♟️ Playing';
+        status += '  ♙ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
@@ -126,6 +129,12 @@ function unranked(mode, rating) {
 function getCountryAndName(profile) {
     if (profile)
         return [profile.country, profile.firstName, profile.lastName];
+}
+
+function getStatus(username) {
+    const url = `https://lichess.org/api/users/status`;
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
+        .then(response => response.data);
 }
 
 function getPerf(username, mode) {
