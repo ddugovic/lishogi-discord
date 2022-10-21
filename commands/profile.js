@@ -47,7 +47,7 @@ async function formatProfile(user, favoriteMode) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getStatus(user.username), perf, getBlog(user.username) ];
+    const requests = [ getUserStatus(user.username), perf, getBlog(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -92,6 +92,12 @@ async function formatProfile(user, favoriteMode) {
     return user.count.all ? setGames(embed, user.username) : embed;
 }
 
+function getUserStatus(username) {
+    const url = `https://lichess.org/api/users/status`;
+    return axios.get(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
+        .then(response => response.data);
+}
+
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
     const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
         playing ? 0x00FF00 :
@@ -129,12 +135,6 @@ function unranked(mode, rating) {
 function getCountryAndName(profile) {
     if (profile)
         return [profile.country, profile.firstName, profile.lastName];
-}
-
-function getStatus(username) {
-    const url = `https://lichess.org/api/users/status`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
-        .then(response => response.data);
 }
 
 function getPerf(username, mode) {
