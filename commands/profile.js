@@ -239,20 +239,15 @@ function getTimestamp(date) {
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
-    var modes = modesArray(perfs);
-    var mostPlayedMode = modes[0][0];
-    var mostPlayedRating = modes[0][1];
-    for (var i = 0; i < modes.length; i++) {
+    var mostPlayedMode;
+    var mostPlayedRating;
+    for (const [mode, perf] of Object.entries(perfs)) {
+        if (mode.toLowerCase() == favoriteMode)
+            return [mode, perf];
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
-            mostPlayedMode = modes[i][0];
-            mostPlayedRating = modes[i][1];
-        }
-    }
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0].toLowerCase() == favoriteMode) {
-            mostPlayedMode = modes[i][0];
-            mostPlayedRating = modes[i][1];
+        if (mode != 'puzzle' && (mostPlayedRating == undefined || perf.games > mostPlayedRating.games)) {
+            mostPlayedMode = mode;
+            mostPlayedRating = perf;
         }
     }
     return [mostPlayedMode, mostPlayedRating];
@@ -354,21 +349,6 @@ function formatOpening(opening, initialFen, moves) {
     const ply = opening ? opening.ply : 10;
     const variation = formatSanVariation(initialFen, moves.split(/ /).slice(0, ply));
     return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
-}
-
-// For sorting through modes... lichess api does not put these in an array so we do it ourselves
-function modesArray(list) {
-    var array = [];
-    // Count up number of keys...
-    var count = 0;
-    for (var key in list)
-        if (list.hasOwnProperty(key))
-            count++;
-    // Set up the array.
-    for (var i = 0; i < count; i++) {
-        array[i] = Object.entries(list)[i];
-    }
-    return array;
 }
 
 function title(str) {
