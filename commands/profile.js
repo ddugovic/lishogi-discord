@@ -47,7 +47,7 @@ async function formatProfile(user, favoriteMode) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getBlog(user.username) ];
+    const requests = [ getUserStatus(user.username), perf, getBlog(user.username), getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -84,12 +84,17 @@ async function formatProfile(user, favoriteMode) {
     const blog = responses[2];
     if (blog.entry)
         embed = embed.addFields({ name: `:pencil: Recent Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n\n') });
+    if (user.count.all) {
+        const games = responses[3];
+        const fields = games.filter(game => game.status != 'aborted').map(formatGame);
+        embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') });
+    }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(3));
+        const image = await formatHistory(...responses.slice(4));
         if (image)
             embed = embed.setImage(image);
     }
-    return user.count.all ? setGames(embed, user.username) : embed;
+    return embed;
 }
 
 function getUserStatus(username) {
@@ -314,12 +319,10 @@ function getImage(text) {
         return match[0];
 }
 
-function setGames(embed, username) {
+function getGames(username) {
     const url = `https://lichess.org/api/games/user/${username}`;
     return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
-        .then(response => parseDocument(response.data))
-        .then(games => games.filter(game => game.status != 'aborted').map(formatGame))
-        .then(fields => embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(response => parseDocument(response.data));
 }
 
 function formatGame(game) {
