@@ -42,8 +42,8 @@ function formatHistory(playerNicknames, history) {
         else
             plays.push(event);
     }
-    const first = plays.filter(event => event.nickname == playerNicknames[0]).map(formatEvent).join('\n');
-    const second = plays.filter(event => event.nickname == playerNicknames[1]).map(formatEvent).join('\n');
+    const first = plays.filter(event => event.player_index == 0).map(formatEvent).join('\n');
+    const second = plays.filter(event => event.player_index == 1).map(formatEvent).join('\n');
     return [
         { name: playerNicknames[0], value: first || '*None*', inline: true },
         { name: playerNicknames[1], value: second || '*None*', inline: true }
