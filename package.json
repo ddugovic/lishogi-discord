@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prestart": "if git pull origin lichess | grep 'package'; then npm install && npm cache clean --force; fi",
-    "start": "node index.js",
+    "start": "node index.js --experimental-fetch",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
   },

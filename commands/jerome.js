@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
@@ -6,15 +5,15 @@ const { parseFeed, formatContent, getAuthorName, getContent, getSummary, getTitl
 
 function jerome(author, interaction) {
     const url = 'https://jeromegambit.blogspot.com/feeds/posts/default';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' }, params: { 'max-results': 100 } })
-        .then(response => parseFeed(response.data))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/atom+xml' }, params: { 'max-results': 100 } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => formatFeed(feed))
         .then(embeds => formatPages(embeds, interaction, 'No jerome found!'))
         .catch(error => {
-            console.log(`Error in jerome(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in jerome(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

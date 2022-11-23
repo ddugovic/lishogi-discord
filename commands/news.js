@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
@@ -6,15 +5,16 @@ const { parseFeed, formatContent, getCategories } = require('../lib/parse-feed')
 
 function news(author, interaction) {
     const url = 'http://www.thechessmind.net/blog/rss.xml';
-    return axios.get(url, { headers: { Accept: 'application/rss+xml' } })
-        .then(response => parseFeed(response.data))
+    //const url = 'https://thechessmind.substack.com/feed';
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/rss+xml' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => formatEntries(feed.channel))
         .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
-            console.log(`Error in news(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in news(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
