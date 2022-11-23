@@ -19,7 +19,7 @@
   "dependencies": {
     "@discordjs/rest": "^1.3.0",
     "@hugop/discord-table": "^1.0.1",
-    "axios": "^0.27.2",
+    "axios": "^1.2.0",
     "chess-web-api": "^1.1.2",
     "chessops": "^0.8.1",
     "convert-seconds": "^1.0.1",
