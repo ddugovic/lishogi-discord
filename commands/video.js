@@ -1,19 +1,19 @@
-const axios = require('axios');
 const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
+const { escape } = require('querystring')
 
 function video(author, text, interaction) {
-    const url = 'https://lichess.org/video'
-    return axios.get(url, { params: { q: text } })
-        .then(response => getVideos(response.data).map(formatVideo))
+    const url = `https://lichess.org/video?q=${escape(text)}`
+    let status, statusText;
+    return fetch(url, { params: { q: text } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => getVideos(text).map(formatVideo))
         .then(embeds => formatPages(shuffle(embeds), interaction, 'No video found.'))
         .catch(error => {
-            console.log(`Error in video(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in video(${author.username}, ${text}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

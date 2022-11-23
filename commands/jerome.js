@@ -4,7 +4,7 @@ const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent, getAuthorName, getContent, getSummary, getTitle, getThumbnailURL, getURL } = require('../lib/parse-feed');
 
 function jerome(author, interaction) {
-    const url = 'https://jeromegambit.blogspot.com/feeds/posts/default';
+    const url = 'https://jeromegambit.blogspot.com/feeds/posts/default?max-results=100';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' }, params: { 'max-results': 100 } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })

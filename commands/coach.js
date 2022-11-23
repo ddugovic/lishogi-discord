@@ -1,18 +1,17 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
 
 function coach(author, interaction) {
-    return axios.get('https://lichess.org/coach/en-US/all/login')
-        .then(response => formatCoaches(response.data))
+    let status, statusText;
+    return fetch('https://lichess.org/coach/en-US/all/login')
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => formatCoaches(text))
         .then(embeds => formatPages(embeds, interaction, 'No coach found!'))
         .catch(error => {
-            console.log(`Error in coach(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in coach(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
