@@ -12,14 +12,14 @@ async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://lichess.org/player/top/150/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
-        .then(response => formatLeaders(response.data.users, mode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/vnd.lichess.v3+json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatLeaders(json.users, mode))
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
-            console.log(`Error in leaderboard(${author.username} ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in leaderboard(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

@@ -1,17 +1,15 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 
 function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => formatPuzzle(response.data.game, response.data.puzzle))
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatPuzzle(json.game, json.puzzle))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in puzzle(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in puzzle(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

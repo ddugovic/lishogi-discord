@@ -1,24 +1,24 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
+const { escape } = require('querystring')
 const plural = require('plural');
 
 function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
-    const url = 'https://lichess.org/api/team/search';
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { text: text } })
-        .then(response => response.data.currentPageResults.map(formatTeam))
+    const url = `https://lichess.org/api/team/search?text=${escape(text)}`;
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { text: text } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => json.currentPageResults.map(formatTeam))
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
-            console.log(`Error in team(${author.text}, ${text}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in team(${author.username}, ${text}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

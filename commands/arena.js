@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
@@ -7,24 +6,24 @@ const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-
 const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
 
-function arena(author, mode, status, interaction) {
-    const suffix = [status, mode].join(' ').trim();
+function arena(author, mode, progress, interaction) {
+    const suffix = [progress, mode].join(' ').trim();
     const header = { headers: { Accept: 'application/json' } };
-    return axios.get('https://lichess.org/api/tournament', header)
-        .then(response => setArenas(response.data, mode, status))
+    let status, statusText;
+    return fetch('https://lichess.org/api/tournament', header)
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setArenas(json, mode, progress))
         .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-async function setArenas(data, mode, status) {
+async function setArenas(data, mode, progress) {
     var arenas = [];
     for (const [key, value] of Object.entries(data))
-        if (!status || key == status)
+        if (!progress || key == progress)
             arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
@@ -37,8 +36,9 @@ function filterArena(arena, mode) {
 
 function setArena(arena) {
     const url = `https://lichess.org/api/tournament/${arena.id}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatArena(response.data));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => formatArena(json));
 }
 
 function formatArena(arena) {
@@ -94,13 +94,13 @@ function getDescription(arena) {
     const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
     const clock = formatClock(arena.clock.limit, arena.clock.increment);
     const rated = arena.rated ? 'rated' : 'casual';
-    const status = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
+    const progress = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
         arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
         arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>.` :
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>.` :
-        arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
+        arena.startsAt && arena.progress < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>.` : '';
-    return `${players}\n${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${status}`;
+    return `${players}\n${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${progress}`;
 }
 
 function formatPlayer(player) {

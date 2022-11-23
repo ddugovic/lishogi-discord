@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
@@ -13,14 +12,14 @@ async function playing(author, username) {
             return 'You need to set your lichess username with setuser!';
     }
     const url = `https://lichess.org/api/user/${username}/current-game`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatCurrentGame(response.data, username))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+	.then(json => formatCurrentGame(json, username))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in playing(${author.username}, ${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in playing(${author.username}, ${username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -62,8 +61,9 @@ async function formatAuthorName(players) {
 
 function setCrosstable(players) {
     const url = `https://lichess.org/api/crosstable/${players.white.user.name}/${players.black.user.name}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatRecord(players, response.data.users));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => formatRecord(players, json.users));
 }
 
 function formatRecord(players, users) {

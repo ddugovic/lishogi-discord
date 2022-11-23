@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatVariant = require('../lib/format-variant');
@@ -9,19 +8,19 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = `https://lichess.org/api/tv/${mode ?? 'best'}`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
-        .then(response => parseDocument(response.data))
+    const url = `https://lichess.org/api/tv/${mode ?? 'best'}?nb=3&opening=true`;
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+	.then(text => parseDocument(text))
         .then(games => {
             const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
             return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
-            console.log(`Error in tv(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatMarkup } = require('../lib/format-html');
@@ -7,14 +6,14 @@ const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
     const url = 'https://lichess.org/api/broadcast';
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => parseDocument(response.data).map(formatBroadcast))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseDocument(text).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
-            console.log(`Error in broadcast(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in broadcast(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

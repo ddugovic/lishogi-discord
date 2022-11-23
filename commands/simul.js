@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
@@ -8,14 +7,14 @@ const { formatSiteLinks } = require('../lib/format-site-links');
 function simul(author, mode, interaction) {
     const url = 'https://lichess.org/api/simul';
     const message = mode ? `No ${mode} event found!` : `No event found!`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatSimuls(response.data, mode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatSimuls(json, mode))
         .then(embeds => formatPages(embeds, interaction, message))
         .catch(error => {
-            console.log(`Error in simul(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in simul(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
