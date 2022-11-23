@@ -1,4 +1,3 @@
-const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
@@ -32,9 +31,11 @@ async function getMode(author) {
 function formatLeaders(leaders, mode) {
     const url = 'https://lichess.org/api/users';
     const ids = leaders.map(leader => leader.id);
-    return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const players = response.data.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
+    let status, statusText;
+    return fetch(url, { method: 'post', body: ids.join(','), headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => {
+            const players = json.map(player => formatPlayers(player, mode)).sort((a,b) => b.rating - a.rating);
             return chunk(players, 6).map(fields => new EmbedBuilder()
                 .setColor(getColor(fields[0].rating))
                 .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
