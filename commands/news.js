@@ -26,7 +26,7 @@ function formatEntries(channel) {
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry['dc:creator'], url: channel.link})
+            .setAuthor({name: entry['dc:creator'], iconURL: channel.image.url, url: channel.link})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
