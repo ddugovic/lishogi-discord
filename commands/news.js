@@ -1,11 +1,10 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
-const { parseFeed, formatContent, getCategories } = require('../lib/parse-feed');
+const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function news(author, interaction) {
-    const url = 'http://www.thechessmind.net/blog/rss.xml';
-    //const url = 'https://thechessmind.substack.com/feed';
+    const url = 'https://thechessmind.substack.com/feed';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/rss+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
@@ -22,7 +21,7 @@ function formatEntries(channel) {
     const embeds = [];
     for (const entry of channel.item.values()) {
         const timestamp = Math.floor(new Date(entry.pubDate).getTime() / 1000);
-        const summary = formatContent(entry.description, 120).replace(/published here/, `published [here](https://thechessmind.substack.com/)`);
+        const summary = formatContent(entry.description, 120);
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
@@ -30,9 +29,6 @@ function formatEntries(channel) {
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
-        const categories = getCategories(entry);
-        if (categories)
-            embed = embed.addFields({ name: 'Categories', value: categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', ') });
         embeds.push(embed);
     }
     return embeds;
