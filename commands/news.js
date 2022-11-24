@@ -5,7 +5,7 @@ const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function news(author, interaction) {
-    const url = 'http://www.thechessmind.net/blog/rss.xml';
+    const url = 'https://thechessmind.substack.com/feed';
     return axios.get(url, { headers: { Accept: 'application/rss+xml' } })
         .then(response => parseFeed(response.data))
         .then(feed => formatEntries(feed.channel))
@@ -22,16 +22,14 @@ function formatEntries(channel) {
     const embeds = [];
     for (const entry of channel.item.values()) {
         const timestamp = Math.floor(new Date(entry.pubDate).getTime() / 1000);
-        const summary = formatContent(entry.description, 120).replace(/published here/, `published [here](https://thechessmind.substack.com/)`);
+        const summary = formatContent(entry.description, 120);
         const red = Math.min(Math.max(summary.length - 150, 0), 255);
         var embed = new EmbedBuilder()
             .setColor(formatColor(red, 0, 255-red))
-            .setAuthor({name: entry['dc:creator'], iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: channel.link})
+            .setAuthor({name: entry['dc:creator'], url: channel.link})
             .setTitle(entry.title)
             .setURL(entry.link)
             .setDescription(`<t:${timestamp}:F>\n${summary}`);
-        if (entry.categories)
-            embed = embed.addFields({ name: 'Categories', value: entry.categories.map(category => `[${category}](http://www.thechessmind.net/blog/tag/${link(category)})`).join(', ') });
         embeds.push(embed);
     }
     return embeds;
