@@ -40,6 +40,7 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "chokidar": "^3.5.3",
     "mocha": "^10.1.0",
     "nodemon": "^2.0.19"
   }
