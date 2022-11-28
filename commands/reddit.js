@@ -20,7 +20,7 @@ function formatPost(post) {
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: formatAuthorName(post), iconURL: 'https://styles.redditmedia.com/t5_2rkeb/styles/communityIcon_u4nhn2sg02141.png?width=256&s=aa67bca23c4a5c3610e4cf3cf0e5e698849d219f', url: `https://reddit.com/u/${post.author}`})
-        .setTitle(decodeText(post.title).substr(0, 256))
+        .setTitle(decodeText(post.title).substr(0, 100))
         .setURL(`https://reddit.com${post.permalink}`)
         .addFields([
             { name: 'Comments', value: `**${fn.format(post.num_comments)}**`, inline: true },
