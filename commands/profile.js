@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -22,15 +21,14 @@ async function profile(author, username) {
             return 'You need to set your lichess username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
-    const url = `https://lichess.org/api/user/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
-        .then(response => formatProfile(response.data, favoriteMode))
+    const url = `https://lichess.org/api/user/${username}?trophies=true`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatProfile(json, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -98,9 +96,9 @@ async function formatProfile(user, favoriteMode) {
 }
 
 function getUserStatus(username) {
-    const url = `https://lichess.org/api/users/status`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
-        .then(response => response.data);
+    const url = `https://lichess.org/api/users/status?ids=${username}&withGameIds=true`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
+        .then(response => response.json());
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
@@ -144,8 +142,8 @@ function getCountryAndName(profile) {
 
 function getPerf(username, mode) {
     const url = `https://lichess.org/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.data);
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json());
 }
 
 function formatAbout(embed, username, profile) {
@@ -166,8 +164,9 @@ function formatAbout(embed, username, profile) {
 
 function getBlog(username) {
     const url = `https://lichess.org/@/${username}/blog.atom`;
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data));
+    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => response.text())
+        .then(text => parseFeed(text));
 }
 
 function formatEntry(entry) {
@@ -179,14 +178,14 @@ function formatEntry(entry) {
 
 function getHistory(username) {
     const url = `https://lichess.org/api/user/${username}/rating-history`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.data);
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json());
 }
 
 function getStormHistory(username) {
-    const url = `https://lichess.org/api/storm/dashboard/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
-        .then(response => response.data);
+    const url = `https://lichess.org/api/storm/dashboard/${username}?days=90`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
+        .then(response => response.json());
 }
 
 function formatHistory(perfs, storms) {
@@ -315,9 +314,10 @@ function getImage(text) {
 }
 
 function getGames(username) {
-    const url = `https://lichess.org/api/games/user/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
-        .then(response => parseDocument(response.data));
+    const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
+        .then(response => response.text())
+        .then(text => parseDocument(text));
 }
 
 function formatGame(game) {
