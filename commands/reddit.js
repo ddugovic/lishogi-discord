@@ -43,7 +43,7 @@ function formatPost(post) {
     else if (post.thumbnail && checkLink(post.thumbnail))
         embed = embed.setThumbnail(post.thumbnail);
     else if (post.gallery_data)
-        embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption}` || '- <no caption>').join('\n')));
+        embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption ?? '<no caption>'}`).join('\n')));
     if (post.selftext || !(image || (post.thumbnail && post.domain == 'v.redd.it')))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url))
     return embed;
