@@ -10,10 +10,8 @@ function reddit(author, interaction) {
         .then(response => Object.values(response).map(post => formatPost(post.data)))
         .then(embeds => formatPages('Post', embeds, interaction, 'No posts found!'))
         .catch(error => {
-            console.log(`Error in reddit(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in reddit(${author.username}): ${error}`);
+            return `An error occurred handling your request`;
         });
 }
 

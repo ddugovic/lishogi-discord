@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
@@ -8,9 +7,9 @@ const plural = require('plural');
 
 function arena(author, mode, status, interaction) {
     const suffix = [status, mode].join(' ').trim();
-    const header = { headers: { Accept: 'application/json' } };
-    return axios.get('https://lishogi.org/api/tournament', header)
-        .then(response => setArenas(response.data, mode, status))
+    return fetch('https://lishogi.org/api/tournament', { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setArenas(json, mode, status))
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}): \
@@ -36,8 +35,9 @@ function filterArena(arena, mode) {
 
 function setArena(arena) {
     const url = `https://lishogi.org/api/tournament/${arena.id}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatArena(response.data));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(response => formatArena(json));
 }
 
 function formatArena(arena) {

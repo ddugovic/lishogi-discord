@@ -1,16 +1,14 @@
-const axios = require('axios');
 const sfen = import('shogiops/sfen.js');
 
 async function eval(author, fen) {
     if (fen && sfen.parseSfen(fen).isOk) {
-        const url = `https://lishogi.org/api/cloud-eval`;
-        return axios.get(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: fen, multiPv: 3 } })
-            .then(response => formatCloudEval(fen, response.data))
+        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+        return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: fen, multiPv: 3 } })
+            .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+            .then(json => formatCloudEval(fen, json))
             .catch((err) => {
-                console.log(`Error in eval(${author.username}): \
-                    ${err.response.status} ${err.response.statusText}`);
-                return `An error occurred handling your request: \
-                    ${err.response.status} ${err.response.statusText}`;
+                console.log(`Error in eval(${author.username}, ${fen}): ${error}`);
+                return `An error occurred handling your request: ${status} ${statusText}`;
         });
     } else {
         return fen ? 'Invalid SFEN!' : 'Missing SFEN!'

@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
@@ -8,18 +7,17 @@ async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
     const url = 'https://lishogi.org/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            if ((channel = getChannel(response.data, mode || 'Top Rated'))) {
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => {
+            if ((channel = getChannel(json, mode || 'Top Rated'))) {
                 return formatChannel(...channel);
             }
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
-            console.log(`Error in tv(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -122,9 +121,10 @@ function getCountryAndName(profile) {
 
 function setStats(embed, username, count, playTime, mode, rating) {
     const url = `https://lishogi.org/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => {
+            return embed.addFields(formatStats(count, playTime, mode, rating, json));
         });
 }
 
@@ -146,14 +146,14 @@ function formatAbout(embed, username, profile) {
 
 function getHistory(username) {
     const url = `https://lishogi.org/api/user/${username}/rating-history`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.data);
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json());
 }
 
 function getStormHistory(username) {
-    const url = `https://lishogi.org/api/storm/dashboard/${username}`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
-        .then(response => response.data);
+    const url = `https://lishogi.org/api/storm/dashboard/${username}?days=90`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
+        .then(response => response.json());
 }
 
 function formatHistory(perfs, storms) {

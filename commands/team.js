@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -11,15 +10,14 @@ function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
-    const url = `https://lishogi.org/api/team/search`;
-    return axios.get(url, { headers: { Accept: 'application/json' }, params: { text: text } })
-        .then(response => response.data.currentPageResults.map(formatTeam))
+    const url = `https://lishogi.org/api/team/search?text=${text}`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { text: text } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => json.currentPageResults.map(formatTeam))
         .then(embeds => formatPages('Team', embeds, interaction, 'No team found.'))
         .catch(error => {
-            console.log(`Error in team(${author.text}, ${text}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in team(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

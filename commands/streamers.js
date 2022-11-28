@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
@@ -7,14 +6,13 @@ const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
-    return axios.get('https://lishogi.org/streamer/live')
-        .then(response => setStreamers(response.data))
+    return fetch('https://lishogi.org/streamer/live', { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setStreamers(json))
         .then(embeds => formatChunks(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
-            console.log(`Error in streamers(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in streamers(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

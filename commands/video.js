@@ -1,19 +1,18 @@
-const axios = require('axios');
 const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { escape } = require('querystring')
 const { formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
-    const url = 'https://lishogi.org/video'
-    return axios.get(url, { params: { q: text } })
-        .then(response => setVideos(response.data, interaction))
+    const url = `https://lishogi.org/video?q=${escape(text)}`;
+    return fetch(url, { params: { q: text } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => setVideos(text, interaction))
         .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
         .catch(error => {
-            console.log(`Error in video(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in video(${author.username}, ${text}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
