@@ -3,7 +3,7 @@ const formatColor = require('../lib/format-color');
 
 function puzzle(author) {
     const url = 'https://lichess.org/api/puzzle/daily';
-    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPuzzle(json.game, json.puzzle))
         .then(embed => { return { embeds: [ embed ] } })
