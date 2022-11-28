@@ -1,4 +1,3 @@
-const axios = require('axios');
 const flags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
@@ -11,15 +10,14 @@ const User = require('../models/User');
 
 function bots(author, interaction) {
     const mode = getMode(author);
-    const url = 'https://lishogi.org/api/bot/online';
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
-        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode || 'blitz')))
+    const url = 'https://lishogi.org/api/bot/online?nb=50';
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => filter(parseDocument(json)).map(bot => formatBot(bot, mode || 'blitz')))
         .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
-            console.log(`Error in bots(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in bots(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
