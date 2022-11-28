@@ -12,8 +12,8 @@ function bots(author, interaction) {
     const mode = getMode(author);
     const url = 'https://lishogi.org/api/bot/online?nb=50';
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => filter(parseDocument(json)).map(bot => formatBot(bot, mode || 'blitz')))
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => filter(parseDocument(text)).map(bot => formatBot(bot, mode || 'blitz')))
         .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): ${error}`);
