@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatChunks } = require('../lib/format-pages');
@@ -7,15 +6,14 @@ const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require(
 
 function news(author, interaction) {
     const url = 'http://shogihub.com/updates.atom';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data))
+    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => formatNews(feed))
         .then(embeds => formatChunks(embeds, interaction, 'No news found!'))
         .catch(error => {
-            console.log(`Error in news(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in news(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

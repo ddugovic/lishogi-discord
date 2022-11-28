@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatPages } = require('../lib/format-pages');
@@ -7,15 +6,14 @@ const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL
 
 function blog(author, interaction) {
     const url = 'https://lishogi.org/blog.atom';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data))
+    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => feed.entry.map(formatEntry))
         .then(embeds => formatPages('Entry', embeds, interaction, 'No entries found!'))
         .catch(error => {
-            console.log(`Error in blog(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in blog(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

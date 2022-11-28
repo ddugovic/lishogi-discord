@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatPages } = require('../lib/format-pages');
@@ -6,15 +5,14 @@ const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function fesa(author, interaction) {
     const url = 'http://fesashogi.eu/fesa.rss';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data))
+    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => feed.channel.item.map(entry => formatEntry(entry, feed.channel)))
         .then(embeds => formatPages('Article', embeds, interaction, 'No news found!'))
         .catch(error => {
-            console.log(`Error in fesa(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in fesa(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
