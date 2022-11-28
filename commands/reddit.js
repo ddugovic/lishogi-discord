@@ -3,7 +3,7 @@ const formatColor = require('../lib/format-color');
 const { checkLink } = require('../lib/format-links');
 const { formatPages } = require('../lib/format-pages');
 const fn = require('friendly-numbers');
-const { decodeText, fetchRedditPosts, formatAuthorName, formatDescription, formatURL } = require('../lib/search-reddit');
+const { decodeText, fetchRedditPosts, formatAuthorName, formatDescription, formatGalleryItem, formatURL } = require('../lib/search-reddit');
 
 function reddit(author, interaction) {
     return fetchRedditPosts('shogi')
@@ -35,7 +35,7 @@ function formatPost(post) {
     else if (post.thumbnail && checkLink(post.thumbnail))
         embed = embed.setThumbnail(post.thumbnail);
     else if (post.gallery_data)
-        embed = embed.setDescription((image = post.gallery_data.items.map(item => `- ${item.caption ?? '<no caption>'}`).join('\n')));
+        embed = embed.setDescription((image = post.gallery_data.items.map(formatGalleryItem).join('\n')));
     if (post.selftext || !(image || (post.thumbnail && post.domain == 'v.redd.it')))
         embed = embed.setDescription(formatDescription(post.selftext, post.url_overridden_by_dest, post.url));
     return embed;
