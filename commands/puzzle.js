@@ -4,7 +4,7 @@ const urlRegexSafe = require('url-regex-safe');
 
 function puzzle(author) {
     const url = 'https://lishogi.org/api/puzzle/daily';
-    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPuzzle(json.game, json.puzzle))
         .then(embed => { return { embeds: [ embed ] } })
