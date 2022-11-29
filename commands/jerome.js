@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
@@ -6,15 +5,15 @@ const { parseFeed, formatContent, getAuthorName, getContent, getSummary, getTitl
 
 function jerome(author, interaction) {
     const url = 'https://jeromegambit.blogspot.com/feeds/posts/default?max-results=100';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/atom+xml' }, params: { 'max-results': 100 } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => formatFeed(feed))
         .then(embeds => formatPages(embeds, interaction, 'No jerome found!'))
         .catch(error => {
-            console.log(`Error in jerome(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in jerome(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -34,7 +33,7 @@ function formatEntry(entry, authorURL) {
     const summary = getSummary(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: authorName, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: authorURL})
+        .setAuthor({name: authorName, iconURL: 'https://4.bp.blogspot.com/-83OMP-ryCNc/YDwRRkljBsI/AAAAAAAAuNE/3-yw5zUnXyIoArTU21KCxixTYcXz5E91QCK4BGAYYCw/s80/IMG_20210223_0001.jpg', url: authorURL})
         .setDescription(`<t:${timestamp}:F>\n${formatContent(summary, 200)}`);
     const title = getTitle(entry);
     if (title)
