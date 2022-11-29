@@ -33,7 +33,7 @@ function formatEntry(entry, authorURL) {
     const summary = getSummary(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: authorName, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: authorURL})
+        .setAuthor({name: authorName, iconURL: 'https://4.bp.blogspot.com/-83OMP-ryCNc/YDwRRkljBsI/AAAAAAAAuNE/3-yw5zUnXyIoArTU21KCxixTYcXz5E91QCK4BGAYYCw/s80/IMG_20210223_0001.jpg', url: authorURL})
         .setDescription(`<t:${timestamp}:F>\n${formatContent(summary, 200)}`);
     const title = getTitle(entry);
     if (title)
