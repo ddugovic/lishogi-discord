@@ -1,19 +1,18 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
-function news(interaction) {
+function news(user, interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    return axios.post(url, {}, { headers: headers })
-        .then(response => formatPages('News', response.data.announcements.map(formatEntry), interaction, 'No news found!'))
+    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: '{}', headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatPages('News', json.announcements.map(formatEntry), interaction, 'No news found!'))
         .catch(error => {
-            console.log(`Error in news(): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in news(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -48,12 +47,12 @@ function formatURI(link) {
 }
 
 function process(bot, msg) {
-    news().then(message => msg.channel.send(message));
+    news(msg.author).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    news(interaction);
+    news(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
