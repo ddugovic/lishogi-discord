@@ -1,19 +1,18 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
 async function define(lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    const request = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
-    return axios.post(url, request, { headers: headers })
-        .then(response => formatPages('Word', Object.entries(response.data.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Words not found!'))
+    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io' };
+    const body = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatPages('Alphagram', Object.entries(json.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {
-            console.log(`Error in define(${words}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in define(${lexicon}, ${words}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
