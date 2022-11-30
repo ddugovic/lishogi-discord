@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatChallengeRule, formatCategory, formatClock } = require('../lib/format-rules');
@@ -8,27 +7,28 @@ const formatPlayer = require('../lib/format-player');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
-function recent(username, interaction) {
+function recent(user, username, interaction) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    const request = { username: username, numGames: 10, offset: 0 };
-    return axios.post(url, request, { headers: headers })
-        .then(response => Promise.all(response.data.game_info.map(scoreGame).map(formatGame)))
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
+    const query = { username: username, numGames: 10, offset: 0 };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => Promise.all(json.game_info.map(scoreGame).map(formatGame)))
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
-            console.log(`Error in recent(${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in recent(${user.username}, ${username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
 function getHistory(playerNicknames, gameId) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetGameHistory';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    const request = { gameId: gameId };
-    return axios.post(url, request, { headers: headers })
-        .then(response => formatHistory(playerNicknames, response.data.history));
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
+    const query = { gameId: gameId };
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
+        .then(response => response.json())
+        .then(json => formatHistory(playerNicknames, json.history));
 }
 
 function formatHistory(playerNicknames, history) {
@@ -112,7 +112,7 @@ async function process(bot, msg, username) {
     username = username || await getUsername(msg.author);
     if (!username)
         return await msg.channel.send('You need to set your Woogles.io username with setuser!');
-    recent(username).then(message => msg.channel.send(message));
+    recent(msg.author, username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
@@ -120,7 +120,7 @@ async function interact(interaction) {
     if (!username)
         return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    recent(username, interaction);
+    recent(interaction.user, username, interaction);
 }
 
 async function getUsername(author, username) {
