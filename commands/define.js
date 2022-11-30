@@ -5,9 +5,9 @@ const formatPages = require('../lib/format-pages');
 async function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
-    const body = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
+    const query = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
     let status, statusText;
-    return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers })
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPages('Alphagram', Object.entries(json.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {
