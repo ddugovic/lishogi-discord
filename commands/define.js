@@ -4,7 +4,7 @@ const formatPages = require('../lib/format-pages');
 
 async function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
-    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })

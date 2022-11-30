@@ -4,7 +4,7 @@ const formatPages = require('../lib/format-pages');
 
 async function anagram(user, lexicon, alphagrams, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
-    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { lexicon: lexicon, words: alphagrams.split(/[\s,]+/), definitions: true, anagrams: true };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })

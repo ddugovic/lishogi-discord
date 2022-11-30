@@ -5,7 +5,7 @@ const formatPages = require('../lib/format-pages');
 
 function news(user, interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';
-    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     let status, statusText;
     return fetch(url, { method: 'POST', body: '{}', headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
