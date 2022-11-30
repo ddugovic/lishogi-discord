@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
-async function anagram(lexicon, alphagrams, interaction) {
+async function anagram(user, lexicon, alphagrams, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io' };
     const body = { lexicon: lexicon, words: alphagrams.split(/[\s,]+/), definitions: true, anagrams: true };
@@ -11,7 +11,7 @@ async function anagram(lexicon, alphagrams, interaction) {
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPages('Alphagram', Object.entries(json.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {
-            console.log(`Error in anagram(${lexicon}, ${alphagrams}): ${error}`);
+            console.log(`Error in anagram(${user.username}, ${lexicon}, ${alphagrams}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -36,7 +36,7 @@ async function process(bot, msg, suffix) {
     if (alphagrams && alphagrams.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     else if (lexicon && formatLexicon(lexicon) && alphagrams)
-        await anagram(lexicon, alphagrams).then(message => msg.channel.send(message));
+        await anagram(msg.author, lexicon, alphagrams).then(message => msg.channel.send(message));
     else
         await msg.channel.send(formatLexicon(lexicon) ? 'Lexicon or words not specified!' : 'Lexicon not found!');
 }
@@ -46,7 +46,7 @@ async function interact(interaction) {
     if (alphagrams.includes('?'))
         return interaction.editReply('Blank tiles are not supported');
     await interaction.deferReply();
-    anagram(interaction.options.getString('lexicon'), alphagrams.toUpperCase(), interaction);
+    anagram(interaction.user, interaction.options.getString('lexicon'), alphagrams.toUpperCase(), interaction);
 }
 
 module.exports = { process, interact };

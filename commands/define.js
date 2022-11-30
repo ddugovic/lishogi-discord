@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const { formatLexicon } = require('../lib/format-lexicon');
 const formatPages = require('../lib/format-pages');
 
-async function define(lexicon, words, interaction) {
+async function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io' };
     const body = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
@@ -11,7 +11,7 @@ async function define(lexicon, words, interaction) {
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPages('Alphagram', Object.entries(json.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
         .catch(error => {
-            console.log(`Error in define(${lexicon}, ${words}): ${error}`);
+            console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -36,7 +36,7 @@ async function process(bot, msg, suffix) {
     if (words.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     else if (lexicon && formatLexicon(lexicon) && words)
-        await define(lexicon, words).then(message => msg.channel.send(message));
+        await define(msg.author, lexicon, words).then(message => msg.channel.send(message));
     else
         await msg.channel.send(formatLexicon(lexicon) ? 'Words not specified!' : 'Lexicon not found!');
 }
@@ -47,7 +47,7 @@ async function interact(interaction) {
     if (words.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     await interaction.deferReply();
-    define(interaction.options.getString('lexicon'), words.toUpperCase(), interaction);
+    define(interaction.user, interaction.options.getString('lexicon'), words.toUpperCase(), interaction);
 }
 
 module.exports = { process, interact };
