@@ -1,21 +1,20 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const { getLexiconCategory } = require('../lib/format-lexicon');
 const formatPlayer = require('../lib/format-player');
 const User = require('../models/User');
 
-async function profile(username) {
+async function profile(user, username) {
     const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    const request = { username: username.toLowerCase() };
-    return axios.post(url, request, { headers: headers })
-        .then(response => formatProfile(response.data, username))
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
+    const query = { username: username.toLowerCase() };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => { return status == 200 ? formatProfile(json, username) : 'Player not found!'; })
         .catch(error => {
-            console.log(`Error in profile(${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in profile(${user.username}, ${username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -134,7 +133,7 @@ async function process(bot, msg, username) {
     username = username || await getUsername(msg.author);
     if (!username)
         return await msg.channel.send('You need to set your Woogles.io username with setuser!');
-    profile(username).then(message => msg.channel.send(message));
+    profile(msg.author, username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
@@ -142,7 +141,7 @@ async function interact(interaction) {
     if (!username)
         return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    interaction.editReply(await profile(username));
+    interaction.editReply(await profile(interaction.user, username));
 }
 
 async function getUsername(author, username) {
