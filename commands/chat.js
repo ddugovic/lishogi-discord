@@ -1,16 +1,14 @@
-const axios = require('axios');
-
-function chat() {
+function chat(user) {
     const url = 'https://woogles.io/twirp/user_service.SocializeService/GetChatsForChannel';
-    const headers = { authority: 'woogles.io', origin: 'https://woogles.io' };
-    const request = { channel: 'chat.lobby' };
-    return axios.post(url, request, { headers: headers })
-        .then(response => formatChat(response.data.messages))
+    const headers = { accept: 'application/json', authority: 'woogles.io', 'content-type': 'application/json', origin: 'https://woogles.io', 'user-agent': 'Woogles Statbot' };
+    const query = { channel: 'chat.lobby' };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatChat(json.messages))
         .catch(error => {
-            console.log(`Error in chat(): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in chat(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -22,9 +20,13 @@ function formatMessage(message) {
     return `<t:${Math.floor(message.timestamp/1000)}:t> ${message.username}: ${message.message}`;
 }
 
-async function interact(interaction) {
-    await interaction.deferReply({ ephemeral: true });
-    await interaction.reply({ content: await chat(), ephemeral: true });
+function process(bot, msg) {
+    chat(msg.author).then(message => msg.channel.send(message));
 }
 
-module.exports = { interact };
+async function interact(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply({ content: await chat(interaction.user), ephemeral: true });
+}
+
+module.exports = {process, interact};
