@@ -1,34 +1,28 @@
-const axios = require('axios');
-
-async function puzzle() {
-    // Getting a puzzle ID fails for some reason, so return instead.
-    return 'https://woogles.io/puzzle';
+async function puzzle(user) {
     const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
-    const headers = {
-        'authority': 'woogles.io',
-        'origin': 'https://woogles.io'
-    };
-    return axios.post(url, 'NWL20', { headers: headers })
-        .then(response => formatPuzzle(response.data))
-        .catch((err) => {
-            console.log(`Error in puzzle(): \
-                ${err.response.status} ${err.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+    const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
+    const query = { lexicon: 'NWL20' };
+    let status, statusText;
+    return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatPuzzle(json))
+        .catch(error => {
+            console.log(`Error in puzzle(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-function formatPuzzle(data) {
-    return `https://woogles.io/puzzle/${data}`;
+function formatPuzzle(json) {
+    return `https://woogles.io/puzzle/${json.puzzle_id}`;
 }
 
 function process(bot, msg) {
-    puzzle().then(message => msg.channel.send(message));
+    puzzle(msg.author).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    interaction.editReply(await puzzle());
+    interaction.editReply(await puzzle(interaction.user));
 }
 
 module.exports = {process, interact};
