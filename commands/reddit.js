@@ -4,7 +4,7 @@ const formatPages = require('../lib/format-pages');
 const fn = require('friendly-numbers');
 const RedditImageFetcher = require('reddit-image-fetcher');
 
-function reddit(author, interaction) {
+function reddit(user, interaction) {
     return RedditImageFetcher.fetch({
         searchLimit: 100,
         total: 10,
@@ -15,10 +15,8 @@ function reddit(author, interaction) {
         .then(response => response.map(formatPost))
         .then(embeds => formatPages(embeds, interaction, 'No safe for work images found!'))
         .catch(error => {
-            console.log(`Error in reddit(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in reddit(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${response.status} ${response.statusText}`;
         });
 }
 

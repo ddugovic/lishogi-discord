@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-async function deleteUser(author, username) {
+async function deleteUser(user, username) {
     if (await User.findByIdAndDelete(author.id).exec()) {
         return `User deleted: ${author.username}`;
     }

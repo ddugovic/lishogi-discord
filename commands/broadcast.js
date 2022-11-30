@@ -1,20 +1,19 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatMarkup } = require('../lib/format-html');
 const formatPages = require('../lib/format-pages');
 const parseDocument = require('../lib/parse-document');
 
-function broadcast(author, interaction) {
+function broadcast(user, interaction) {
     const url = 'https://lidraughts.org/api/broadcast';
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => parseDocument(response.data).map(formatBroadcast))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+	.then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => parseDocument(json).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
-            console.log(`Error in broadcast(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in broadcast(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

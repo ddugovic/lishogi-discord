@@ -1,4 +1,3 @@
-const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
@@ -8,18 +7,18 @@ const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
-async function leaderboard(author, mode, interaction) {
+async function leaderboard(user, mode, interaction) {
     if (!mode)
-        mode = await getMode(author) || 'blitz';
+        mode = await getMode(user) || 'blitz';
     const url = `https://lidraughts.org/player/top/150/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
-        .then(response => formatLeaders(response.data.users, mode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/vnd.lidraughts.v3+json' } })
+	.then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatLeaders(json.users, mode))
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
-            console.log(`Error in leaderboard(${author.username} ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in leaderboard(${user.username}, ${mode}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -33,9 +32,10 @@ function formatLeaders(leaders, mode) {
     const ranks = rankLeaders(leaders);
     const url = 'https://lidraughts.org/api/users';
     const ids = leaders.map(leader => leader.id);
-    return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const players = rankPlayers(response.data, ranks).sort((a,b) => a.rank - b.rank);
+    return fetch(url, { method: 'post', body: ids.join(','), headers: { Accept: 'application/json' } })
+	.then(response => response.json())
+        .then(json => {
+            const players = rankPlayers(json, ranks).sort((a,b) => a.rank - b.rank);
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))

@@ -1,22 +1,18 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 
-function arena(author, mode, interaction) {
-    const header = { headers: { Accept: 'application/json' } };
-    return axios.get('https://lidraughts.org/api/tournament', header)
-        .then(response => setArenas(mergeArenas(response.data), mode))
+function arena(user, mode, interaction) {
+    let status, statusText;
+    return fetch('https://lidraughts.org/api/tournament', { headers: { Accept: 'application/json' } })
+	.then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setArenas(mergeArenas(json), mode))
         .then(embeds => formatPages(embeds, interaction, 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error} ${error.stack}`);
-            console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in arena(${user.username}, ${mode}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -40,8 +36,8 @@ function filterArena(arena, mode) {
 
 function setArena(arena) {
     const url = `https://lidraughts.org/api/tournament/${arena.id}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatArena(response.data));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => formatArena(json));
 }
 
 function compareArenas(a, b) {
