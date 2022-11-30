@@ -1,18 +1,17 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatPages = require('../lib/format-pages');
 const lexica = ['CSW', 'TWL'];
 
-function equity(lexicon, rack, interaction) {
+function equity(user, lexicon, rack, interaction) {
     const url = `https://cross-tables.com/leaves_values.php?lexicon=${lexicon}&rack=${rack}`
     const headers = { Accept: 'application/json', 'User-Agent': 'Woogles Statbot' };
-    return axios.get(url, { headers: headers })
-        .then(response => formatPages('Rack', response.data.error ? [] : [formatEquity(lexicon, response.data)], interaction, response.data.error))
+    let status, statusText;
+    return fetch(url, { headers: headers })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatPages('Rack', json.error ? [] : [formatEquity(lexicon, json)], interaction, json.error))
         .catch(error => {
-            console.log(`Error in equity(): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                [I${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in equity(${user.username}, ${lexicon}, ${rack}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -42,14 +41,14 @@ function chunk(arr, size) {
 async function process(bot, msg, suffix) {
     const [lexicon, rack] = suffix.toUpperCase().split(/[^A-Z?]+/i, 2);
     if (lexica.includes(lexicon) && rack)
-        await equity(lexicon, rack).then(message => msg.channel.send(message));
+        await equity(msg.author, lexicon, rack).then(message => msg.channel.send(message));
     else
         await msg.channel.send(lexica.includes(lexicon) ? 'Rack not specified!' : 'Lexicon not found!');
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    equity(interaction.options.getString('lexicon'), interaction.options.getString('rack').toUpperCase(), interaction);
+    equity(interaction.user, interaction.options.getString('lexicon'), interaction.options.getString('rack').toUpperCase(), interaction);
 }
 
 module.exports = { process, interact };
