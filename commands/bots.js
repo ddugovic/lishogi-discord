@@ -1,4 +1,3 @@
-const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
@@ -8,16 +7,16 @@ const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink } = require('../lib/format-site-links');
 const parseDocument = require('../lib/parse-document');
 
-function bots(author, interaction) {
+function bots(user, interaction) {
     const mode = getMode(author) || 'blitz';
-    return axios.get('https://playstrategy.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => filter(parseDocument(response.data)).map(bot => formatBot(bot, mode)))
+    let status, statusText;
+    return fetch('https://playstrategy.org/api/bot/online?nb=50', { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => filter(parseDocument(json)).map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
-            console.log(`Error in bots(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in bots(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

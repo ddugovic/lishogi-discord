@@ -1,4 +1,3 @@
-const axios = require('axios');
 const User = require('../models/User');
 
 async function tv(author, mode) {
@@ -7,13 +6,13 @@ async function tv(author, mode) {
         mode = (user && user.favoriteMode) ? user.favoriteMode : 'All Chess';
     }
     const url = 'https://playstrategy.org/tv/channels';
-    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
-        .then(response => formatTv(response.data, mode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatTv(json, mode))
         .catch((err) => {
-            console.log(`Error in tv(${author.username}, ${mode}): \
-                ${err.response.status} ${err.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${err.response.status} ${err.response.statusText}`;
+            console.log(`Error in tv(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

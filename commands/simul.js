@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -6,13 +5,13 @@ const User = require('../models/User');
 
 async function simul(author) {
     const url = 'https://playstrategy.org/api/simul';
-    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
-        .then(response => setSimul(response.data))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setSimul(json))
         .catch(error => {
-            console.log(`Error in simul(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in simul(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

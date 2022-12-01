@@ -1,4 +1,3 @@
-const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
@@ -12,14 +11,14 @@ async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://playstrategy.org/player/top/150/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
-        .then(response => formatLeaders(response.data.users, mode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/vnd.playstrategy.v3+json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatLeaders(json.users, mode))
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
-            console.log(`Error in leaderboard(${author.username} ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in leaderboard(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -33,9 +32,10 @@ function formatLeaders(leaders, mode) {
     const ranks = rankLeaders(leaders);
     const url = 'https://playstrategy.org/api/users';
     const ids = leaders.map(leader => leader.id);
-    return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-        .then(response => {
-            const players = rankPlayers(response.data, ranks).sort((a,b) => a.rank - b.rank);
+    return fetch(url, { method: 'post', body: ids.join(','), headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => {
+            const players = rankPlayers(json, ranks).sort((a,b) => a.rank - b.rank);
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))

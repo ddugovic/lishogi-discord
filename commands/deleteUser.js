@@ -1,11 +1,11 @@
 const User = require('../models/User');
 
-async function deleteUser(author, username) {
+async function deleteUser(user, username) {
     if (await User.findByIdAndDelete(author.id).exec()) {
-        return `User deleted: ${author.username}`;
+        return `User deleted: ${user.username}`;
     }
     else {
-        console.log(`Error in deleteUser(${author.username})`);
+        console.log(`Error in deleteUser(${user.username})`);
         return 'An error occurred handling your request.';
     }
 }

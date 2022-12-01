@@ -1,21 +1,20 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
 const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
 
-function blog(author, interaction) {
+function blog(user, interaction) {
     const url = 'https://playstrategy.org/blog.atom';
-    return axios.get(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => parseFeed(response.data))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+        .then(text => parseFeed(text))
         .then(feed => feed.entry.map(formatEntry))
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
-            console.log(`Error in blog(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in blog(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const countryFlags = require('emoji-flags');
 const fn = require('friendly-numbers');
@@ -21,14 +20,14 @@ async function profile(author, username) {
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://playstrategy.org/api/user/${username}?trophies=true`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatProfile(response.data, favoriteMode))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatProfile(json, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in profile(${author.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -112,9 +111,10 @@ function getCountryAndName(profile) {
 
 function setStats(embed, username, count, playTime, mode, rating) {
     const url = `https://playstrategy.org/api/user/${username}/perf/${mode}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => {
-            return embed.addFields(formatStats(count, playTime, mode, rating, response.data));
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => {
+            return embed.addFields(formatStats(count, playTime, mode, rating, json));
         });
 }
 
@@ -136,8 +136,9 @@ function formatAbout(embed, username, profile) {
 
 function setHistory(embed, username) {
     const url = `https://playstrategy.org/api/user/${username}/rating-history`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => formatHistory(response.data))
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => formatHistory(json))
         .then(image => image ? embed.setImage(image) : embed);
 }
 
@@ -263,8 +264,9 @@ function getImage(text) {
 
 function setGames(embed, username) {
     const url = `https://playstrategy.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
-    return axios.get(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => parseDocument(response.data))
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => response.json())
+        .then(json => parseDocument(json))
         .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
 }
 

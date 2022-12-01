@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -7,19 +6,19 @@ const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 
-function team(author, text, interaction) {
+function team(user, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
     const url = `https://playstrategy.org/api/team/search?text=${text}`;
-    return axios.get(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.data.currentPageResults.map(formatTeam))
+    let status, statusText;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => json.currentPageResults.map(formatTeam))
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
-            console.log(`Error in team(${author.text}, ${text}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in team(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

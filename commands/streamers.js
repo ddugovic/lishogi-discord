@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
@@ -7,15 +6,15 @@ const formatPages = require('../lib/format-pages');
 const {  formatUserLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 
-function streamers(author, interaction) {
-    return axios.get('https://playstrategy.org/streamer/live')
-        .then(response => setStreamers(response.data))
+function streamers(user, interaction) {
+    let status, statusText;
+    return fetch('https://playstrategy.org/streamer/live')
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => setStreamers(json))
         .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
-            console.log(`Error in streamers(${author.username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in user(${user.username}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -23,8 +22,9 @@ function setStreamers(streamers) {
     if (streamers.length) {
         const url = 'https://playstrategy.org/api/users';
         const ids = streamers.map(streamer => streamer.id);
-        return axios.post(url, ids.join(','), { headers: { Accept: 'application/json' } })
-            .then(response => chunk(response.data.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
+        return fetch(url, { method: 'post', body: ids.join(','), headers: { Accept: 'application/json' } })
+            .then(response => response.json())
+            .then(json => chunk(json.map(formatStreamer).sort((a,b) => b.score - a.score), 6).map(fields => {
                 return new EmbedBuilder()
                     .setColor(getColor(Math.max(...fields.map(field => field.rating))))
                     .setThumbnail('https://assets.playstrategy.org/assets/logo/playstrategy-favicon-64.png')
