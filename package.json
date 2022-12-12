@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "chokidar": "^3.5.3",
-    "mocha": "^10.1.0",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.19"
   }
 }
