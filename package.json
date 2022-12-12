@@ -27,7 +27,7 @@
     "friendly-numbers": "^1.0.1",
     "mongoose": "^6.8.0",
     "plural": "^1.1.0",
-    "re2": "^1.17.7",
+    "re2": "^1.18.0",
     "reddit-image-fetcher": "^2.0.11",
     "unix-timestamp": "^1.0.2",
     "url-regex-safe": "^3.0.0"
