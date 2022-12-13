@@ -34,7 +34,7 @@
     "quickchart-js": "^3.1.0",
     "re2": "^1.18.0",
     "reddit-fetch": "^1.5.1",
-    "sanitize-html": "^2.7.1",
+    "sanitize-html": "^2.8.0",
     "shogiops": "^0.10.1",
     "url-regex-safe": "^3.0.0",
     "xml2js": "^0.4.23"
