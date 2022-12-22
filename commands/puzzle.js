@@ -1,11 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 
-function puzzle(author) {
+function puzzle(author, theme) {
     const url = 'https://lichess.org/api/puzzle/daily';
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPuzzle(json.game, json.puzzle))
+        .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown'))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in puzzle(${author.username}): ${error}`);
@@ -13,7 +13,7 @@ function puzzle(author) {
         });
 }
 
-function formatPuzzle(game, puzzle) {
+function formatPuzzle(game, puzzle, theme) {
     const players = game.players.map(formatPlayer).join(' - ');
     return new EmbedBuilder()
         .setColor(getColor(puzzle.rating))
@@ -25,7 +25,7 @@ function formatPuzzle(game, puzzle) {
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
 	])
-        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
+        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif?theme=${theme}`);
 }
 
 function getColor(rating) {
@@ -48,12 +48,12 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, mode) {
-    puzzle(msg.author, mode).then(message => msg.channel.send(message));
+function process(bot, msg, theme) {
+    puzzle(msg.author, theme).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await puzzle(interaction.user));
+    await interaction.editReply(await puzzle(interaction.user, interaction.options.getString('theme')));
 }
 
 module.exports = {process, interact};

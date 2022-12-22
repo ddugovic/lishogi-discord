@@ -48,7 +48,7 @@
     Display recent changes
 !news
     Display recent news
-!puzzle
+!puzzle [theme]
     Display today's puzzle
 !reddit
     Fetch hot r/chess posts

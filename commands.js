@@ -117,7 +117,7 @@ const commands = {
         interact: profile.interact
     },
     "puzzle": {
-        usage: "",
+        usage: "[theme]",
         description: "Display today's puzzle",
         process: puzzle.process,
         interact: puzzle.interact
