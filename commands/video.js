@@ -19,28 +19,23 @@ function video(author, text, interaction) {
 
 function getVideos(document) {
     const videos = [];
-    const pattern = /<a class="[ \w]+" href="(\/video\/[-\w]+?\??(?:q=\w+)?)"><span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span><span class="target">(.+?)<\/span><span class="tags">(.+?)<\/span>/g;
+    const pattern = /<a class="[ \w]+" href="\/video\/([-\w]+)?\??(?:q=[ \w]+)?"><span class="duration">(.+?)<\/span>.+?<span class="full-title">(.+?)<\/span><span class="author">(.+?)<\/span><span class="target">(.+?)<\/span><span class="tags">(.+?)<\/span>/g;
     for (match of document.matchAll(pattern))
         videos.push([match[1], match[2], match[3], match[4], match[5], match[6]]);
     return videos;
 }
 
 function formatVideo(video) {
-    const [link, duration, name, author, target, tags] = video;
+    const [uri, duration, name, author, target, tags] = video;
     const seconds = duration.split(/:/).reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
     return new EmbedBuilder()
         .setColor(formatColor(score, 0, 255-score))
         .setAuthor({name: author, iconURL: null})
         .setTitle(`${decode(name)} (${duration})`)
-        .setURL(`https://youtube.com${link}`)
-        .setThumbnail(getImage(link))
+        .setURL(`https://youtu.be/${uri}`)
+        .setThumbnail(`https://img.youtube.com/vi/${uri}/0.jpg`)
         .addFields({ name: 'Target', value: title(target), inline: true });
-}
-
-function getImage(link) {
-    const match = link.match(/\/video\/([-\w]+)\??(?:q=\w+)?/);
-    return `https://img.youtube.com/vi/${match[1]}/0.jpg`;
 }
 
 function shuffle(array) {
