@@ -99,7 +99,7 @@ const commands = {
         interact: news.interact
     },
     "playing": {
-        usage: "[user]",
+        usage: "[user] [theme]",
         description: "Share your (or a user's) current game",
         process: playing.process,
         interact: playing.interact

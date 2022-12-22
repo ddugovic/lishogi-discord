@@ -28,7 +28,7 @@
     Display Jerome Gambit news
 !leaderboard [game mode]
     Display top-rated players
-!playing [username]
+!playing [username] [theme]
     Share your (or a user's) current game
 !arena [game mode] [status]
     Find a created, started, or finished arena

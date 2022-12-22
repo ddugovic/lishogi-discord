@@ -8,7 +8,7 @@ function puzzle(author, theme) {
         .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown'))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in puzzle(${author.username}): ${error}`);
+            console.log(`Error in puzzle(${author.username}, ${theme}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }

@@ -5,7 +5,7 @@ const { formatSanVariation, numberVariation } = require('../lib/format-variation
 const plural = require('plural');
 const User = require('../models/User');
 
-async function playing(author, username) {
+async function playing(author, username, theme) {
     if (!username) {
         username = await getName(author);
         if (!username)
@@ -15,10 +15,10 @@ async function playing(author, username) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-	.then(json => formatCurrentGame(json, username))
+	.then(json => formatCurrentGame(json, username, theme ?? 'brown'))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in playing(${author.username}, ${username}): ${error}`);
+            console.log(`Error in playing(${author.username}, ${username}, ${theme}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -29,7 +29,7 @@ async function getName(author) {
         return user.lichessName;
 }
 
-async function formatCurrentGame(game, username) {
+async function formatCurrentGame(game, username, theme) {
     const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
@@ -39,7 +39,7 @@ async function formatCurrentGame(game, username) {
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
-        embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif`);
+        embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}`);
     if (game.analysis) {
         const playerNames = [game.players.white, game.players.black].map(getPlayerName);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
@@ -138,12 +138,12 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, username) {
-    playing(msg.author, username).then(message => msg.channel.send(message));
+function process(bot, msg, suffix) {
+    playing(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username')));
+    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username'), interaction.options.getString('theme')));
 }
 
 module.exports = {process, interact};
