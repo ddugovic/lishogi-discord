@@ -27,7 +27,7 @@
         "re2": "^1.18.0",
         "reddit-fetch": "^1.5.1",
         "sanitize-html": "^2.8.0",
-        "shogiops": "^0.10.1",
+        "shogiops": "^0.11.0",
         "url-regex-safe": "^3.0.0",
         "xml2js": "^0.4.23"
       },
@@ -3464,9 +3464,9 @@
       "integrity": "sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw=="
     },
     "node_modules/shogiops": {
-      "version": "0.10.1",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.10.1.tgz",
-      "integrity": "sha512-mcAWwlL4zU8wdxfvvDbVaR8th8Rwy8DLCFEr+CpX6kDCkkDV9bdWPbKdcuv/F4w2oWQkImwEGKHwJ7sGoyMHYg==",
+      "version": "0.11.0",
+      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.11.0.tgz",
+      "integrity": "sha512-0zODg4I4Q30P9aLJj2WK/birRLTQ7jjoDuGf1OoepoIcxtQpKZcZGMMu0hImU/JRGi//NhBo0FUaeqwzZmDOGg==",
       "dependencies": {
         "@badrap/result": "^0.2"
       }
@@ -6691,9 +6691,9 @@
       "integrity": "sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw=="
     },
     "shogiops": {
-      "version": "0.10.1",
-      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.10.1.tgz",
-      "integrity": "sha512-mcAWwlL4zU8wdxfvvDbVaR8th8Rwy8DLCFEr+CpX6kDCkkDV9bdWPbKdcuv/F4w2oWQkImwEGKHwJ7sGoyMHYg==",
+      "version": "0.11.0",
+      "resolved": "https://registry.npmjs.org/shogiops/-/shogiops-0.11.0.tgz",
+      "integrity": "sha512-0zODg4I4Q30P9aLJj2WK/birRLTQ7jjoDuGf1OoepoIcxtQpKZcZGMMu0hImU/JRGi//NhBo0FUaeqwzZmDOGg==",
       "requires": {
         "@badrap/result": "^0.2"
       }
