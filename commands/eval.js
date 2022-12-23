@@ -4,7 +4,7 @@ const formatColor = require('../lib/format-color');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 
-function eval(author, fen) {
+function eval(author, fen, theme) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
@@ -12,7 +12,7 @@ function eval(author, fen) {
         let status, statusText;
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-            .then(json => formatCloudEval(fen, json))
+            .then(json => formatCloudEval(fen, json, theme ?? 'brown'))
             .catch(error => {
                 console.log(`Error in eval(${author.username}, ${fen}): ${error}`);
                 return `An error occurred handling your request: ${status} ${statusText}`;
@@ -22,7 +22,7 @@ function eval(author, fen) {
     }
 }
 
-function formatCloudEval(fen, eval) {
+function formatCloudEval(fen, eval, theme) {
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
@@ -38,7 +38,7 @@ function formatCloudEval(fen, eval) {
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(':cloud: Cloud Evaluation')
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
-	    .setImage(formatPositionURL(fen)),
+	    .setImage(formatPositionURL(fen, undefined, theme)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
@@ -77,7 +77,7 @@ function process(bot, msg, fen) {
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? ''));
+    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme')));
 }
 
 module.exports = {process, interact};

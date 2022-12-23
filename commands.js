@@ -27,7 +27,7 @@ const video = require('./commands/video');
 
 const commands = {
     "arena": {
-        usage: "[game mode]",
+        usage: "[game mode] [theme]",
         description: "Find a created, started, or finished arena",
         process: arena.process,
         interact: arena.interact
@@ -69,7 +69,7 @@ const commands = {
         reply: deleteUser.reply
     },
     "eval": {
-        usage: "[fen]",
+        usage: "[fen] [theme]",
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         interact: eval.interact

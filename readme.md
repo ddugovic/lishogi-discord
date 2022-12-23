@@ -30,7 +30,7 @@
     Display top-rated players
 !playing [username] [theme]
     Share your (or a user's) current game
-!arena [game mode] [status]
+!arena [game mode] [status] [theme]
     Find a created, started, or finished arena
 !blog
     Display recent blog entries
@@ -42,7 +42,7 @@
     Find a coach
 !community [username]
     Display recent community (or user) blog entries
-!eval [fen]
+!eval [fen] [theme]
     Get the cached evaluation of a position, if available
 !log
     Display recent changes

@@ -101,14 +101,14 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...arenas)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)),
+    new SlashCommandBuilder().setName('arena').setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...arenas)).addStringOption(option => option.setName('status').setDescription('Select an arena status').addChoices(...statuses)).addStringOption(option => option.setName('theme').setDescription('Select a board theme').addChoices(...themes)),
     new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('bots').setDescription("Display online bots with source code"),
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lichess"),
     new SlashCommandBuilder().setName('coach').setDescription("Find a coach"),
     new SlashCommandBuilder().setName('community').setDescription("Display recent community (or user) blog entries").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lichess username from the bot's database"),
-    new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')),
+    new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')).addStringOption(option => option.setName('theme').setDescription('Select a board theme').addChoices(...themes)),
     new SlashCommandBuilder().setName('jerome').setDescription("Display Jerome Gambit news"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Select a leaderboard').addChoices(...leaderboards)),
     new SlashCommandBuilder().setName('log').setDescription("Display recent changes"),
