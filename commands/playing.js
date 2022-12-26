@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatHandicap = require('../lib/format-handicap');
-const { formatVariation } = require('../lib/format-variation');
+const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -94,14 +94,9 @@ function getPlayerName(player) {
 }
 
 async function formatGame(game) {
-    const handicap = formatHandicap(game.initialSfen);
-    const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialSfen, game.moves)}` : '';
+    const handicap = formatHandicap(game.variant, game.initialSfen);
+    const opening = game.moves ? ` ${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
     return `(${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
-}
-
-async function formatOpening(opening, initialSfen, moves) {
-    const variation = await formatVariation(initialSfen, moves.split(/ /).slice(0, opening ? opening.ply : 10));
-    return opening ? `${opening.name}\n*${variation}*` : `*${variation}*`;
 }
 
 function formatAnalysis(analysis, playerNames) {

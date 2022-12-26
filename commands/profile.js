@@ -8,7 +8,7 @@ const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatHandicap = require('../lib/format-handicap');
 const formatSeconds = require('../lib/format-seconds');
-const { formatVariation } = require('../lib/format-variation');
+const { formatOpening } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
@@ -301,8 +301,8 @@ async function formatGame(game, username) {
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
-    const opening = game.moves ? `\n${await formatOpening(game.opening, game.initialSfen, game.moves)}` : '';
-    return `${outcome} ${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    const opening = game.moves ? `\n${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
+    return `${outcome} ${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.variant, game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
@@ -319,12 +319,6 @@ function formatPlayerName(player) {
 
 function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
-}
-
-async function formatOpening(opening, initialSfen, moves) {
-    const ply = opening ? opening.ply : 10;
-    const variation = await formatVariation(initialSfen, moves.split(/ /).slice(0, ply));
-    return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
 }
 
 // For sorting through modes... lishogi api does not put these in an array so we do it ourselves
