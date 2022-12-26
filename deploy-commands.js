@@ -4,6 +4,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const arenas = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Minishogi', value: 'minishogi' },
     { name: 'Rapid', value: 'rapid' },
@@ -14,6 +15,7 @@ const channels = [
     { name: 'Top Rated', value: 'Top Rated' },
     { name: 'Blitz', value: 'Blitz' },
     { name: 'Bullet', value: 'Bullet' },
+    { name: 'Chu shogi', value: 'Chushogi' },
     { name: 'Classical', value: 'Classical' },
     { name: 'Minishogi', value: 'Minishogi' },
     { name: 'Rapid', value: 'Rapid' },
@@ -23,6 +25,7 @@ const channels = [
 const modes = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Minishogi', value: 'minishogi' },
     { name: 'Puzzle', value: 'puzzle' },
@@ -32,6 +35,7 @@ const modes = [
 const ratings = [
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Correspondence', value: 'correspondence' },
     { name: 'Minishogi', value: 'minishogi' },
