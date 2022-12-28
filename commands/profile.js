@@ -43,6 +43,17 @@ async function formatProfile(user, favoriteMode) {
     if (user.disabled)
         return 'This account is closed.';
 
+    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
+    const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
+    const requests = [ getUserStatus(user.username), perf, getGames(user.username) ];
+    if (user.count.rated || user.perfs.puzzle) {
+        requests.push(getHistory(user.username));
+        if (user.perfs.storm && user.perfs.storm.runs)
+            requests.push(getStormHistory(user.username));
+    }
+    const responses = await Promise.all(requests);
+    const status = responses[0][0];
+
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
@@ -61,24 +72,29 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lishogi.org/?user=${user.username}#friend`);
     }
-    const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    if (unranked(mode, rating))
-        embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating));
-    else
-        embed = await setStats(embed, user.username, user.count, user.playTime, mode, rating);
-    const about = formatAbout(embed, user.username, user.profile);
-    if (about)
-        embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: about });
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[1]));
+
+    const profile = user.profile;
+    if (profile && (profile.links || profile.bio))
+        embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: formatAbout(embed, user.username, profile) });
+
+    if (user.count.all) {
+        const games = responses[2];
+        const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
+        embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') });
+    }
     if (user.count.rated || user.perfs.puzzle) {
-        const requests = [ getHistory(user.username) ];
-        if (user.perfs.storm && user.perfs.storm.runs)
-            requests.push(getStormHistory(user.username));
-        const history = await Promise.all(requests);
-        const image = await formatHistory(...history);
+        const image = await formatHistory(...responses.slice(3));
         if (image)
             embed = embed.setImage(image);
     }
-    return user.count.all ? await setGames(embed, user.username) : embed;
+    return embed;
+}
+
+function getUserStatus(username) {
+    const url = `https://lishogi.org/api/users/status?ids=${username}&withGameIds=true`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
+        .then(response => response.json());
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
@@ -119,13 +135,10 @@ function getCountryAndName(profile) {
         return [profile.country, profile.firstName, profile.lastName];
 }
 
-function setStats(embed, username, count, playTime, mode, rating) {
+function getPerf(username, mode) {
     const url = `https://lishogi.org/api/user/${username}/perf/${mode}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.json())
-        .then(json => {
-            return embed.addFields(formatStats(count, playTime, mode, rating, json));
-        });
+        .then(response => response.json());
 }
 
 function formatAbout(embed, username, profile) {
@@ -133,7 +146,7 @@ function formatAbout(embed, username, profile) {
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [links.join(' | ')];
-    if (profile && profile.bio) {
+    if (profile.bio) {
         const image = getImage(profile.bio);
         if (image)
             embed = embed.setThumbnail(image);
@@ -206,20 +219,15 @@ function getTimestamp(date) {
 }
 
 function getMostPlayedMode(perfs, favoriteMode) {
-    var modes = modesArray(perfs);
-    var mostPlayedMode = modes[0][0];
-    var mostPlayedRating = modes[0][1];
-    for (var i = 0; i < modes.length; i++) {
+    var mostPlayedMode;
+    var mostPlayedRating;
+    for (const [mode, perf] of Object.entries(perfs)) {
+        if (mode.toLowerCase() == favoriteMode)
+            return [mode, perf];
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedRating.games) {
-            mostPlayedMode = modes[i][0];
-            mostPlayedRating = modes[i][1];
-        }
-    }
-    for (var i = 0; i < modes.length; i++) {
-        if (modes[i][0].toLowerCase() == favoriteMode) {
-            mostPlayedMode = modes[i][0];
-            mostPlayedRating = modes[i][1];
+        if (mode != 'puzzle' && (mostPlayedRating == undefined || perf.games > mostPlayedRating.games)) {
+            mostPlayedMode = mode;
+            mostPlayedRating = perf;
         }
     }
     return [mostPlayedMode, mostPlayedRating];
@@ -286,13 +294,11 @@ function getImage(text) {
         return match[0];
 }
 
-function setGames(embed, username) {
+function getGames(username) {
     const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: 'true', ongoing: 'true' } })
         .then(response => response.text())
-        .then(json => parseDocument(json))
-        .then(games => Promise.all(games.filter(game => game.status != 'aborted').map(game => formatGame(game, username))))
-        .then(fields => embed.addFields({ name: `:calendar_spiral: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') }));
+        .then(json => parseDocument(json));
 }
 
 async function formatGame(game, username) {
@@ -321,21 +327,6 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-// For sorting through modes... lishogi api does not put these in an array so we do it ourselves
-function modesArray(list) {
-    var array = [];
-    // Count up number of keys...
-    var count = 0;
-    for (var key in list)
-        if (list.hasOwnProperty(key))
-            count++;
-    // Set up the array.
-    for (var i = 0; i < count; i++) {
-        array[i] = Object.entries(list)[i];
-    }
-    return array;
-}
-
 function title(str) {
     return str.split(/_/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
@@ -347,17 +338,11 @@ function process(bot, msg, username) {
 }
 
 async function interact(interaction) {
-    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    const username = interaction.options.getString('username') || await getName(interaction.user);
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
     await interaction.deferReply();
     await interaction.editReply(await profile(interaction.user, username));
-}
-
-async function getUsername(author, username) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lishogiName;
 }
 
 module.exports = {process, interact};
