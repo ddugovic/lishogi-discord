@@ -81,7 +81,7 @@ async function formatProfile(user, favoriteMode) {
 
     const blog = responses[2];
     if (blog.entry)
-        embed = embed.addFields({ name: `:pencil: Recent Blog`, value: blog.entry.slice(0, 3).map(formatEntry).join('\n\n') });
+        embed = embed.addFields({ name: `:pencil: Recent Blog`, value: parseDocument(blog.entry).slice(0, 3).map(formatEntry).join('\n\n') });
     if (user.count.all) {
         const games = responses[3];
         const fields = games.filter(game => game.status != 'aborted').map(formatGame);
