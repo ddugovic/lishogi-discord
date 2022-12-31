@@ -46,6 +46,8 @@
     Display recent news
 !puzzle
     Display today's puzzle
+!reach
+    Display Reach Mahjong news
 !reddit
     Fetch hot r/shogi posts
 !schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]
