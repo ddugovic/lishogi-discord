@@ -18,22 +18,22 @@ const arenas = [
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const channels = [
-    { name: 'Top Rated', value: 'Top Rated' },
-    { name: 'Antichess', value: 'Antichess' },
-    { name: 'Atomic', value: 'Atomic' },
-    { name: 'Blitz', value: 'Blitz' },
-    { name: 'Bot', value: 'Bot' },
-    { name: 'Bullet', value: 'Bullet' },
-    { name: 'Chess960', value: 'Chess960' },
-    { name: 'Classical', value: 'Classical' },
-    { name: 'Crazyhouse', value: 'Crazyhouse' },
-    { name: 'Horde', value: 'Horde' },
-    { name: 'King of the Hill', value: 'King of the Hill' },
-    { name: 'Racing Kings', value: 'Racing Kings' },
-    { name: 'Rapid', value: 'Rapid' },
-    { name: 'Three-check', value: 'Three-check' },
-    { name: 'UltraBullet', value: 'UltraBullet' },
-    { name: 'Computer', value: 'Computer' }
+    { name: 'Top Rated', value: 'best' },
+    { name: 'Antichess', value: 'antichess' },
+    { name: 'Atomic', value: 'atomic' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bot', value: 'bot' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Chess960', value: 'chess960' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Crazyhouse', value: 'crazyhouse' },
+    { name: 'Horde', value: 'horde' },
+    { name: 'King of the Hill', value: 'kingOfTheHill' },
+    { name: 'Racing Kings', value: 'racingKings' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Three-check', value: 'threeCheck' },
+    { name: 'UltraBullet', value: 'ultraBullet' },
+    { name: 'Computer', value: 'computer' }
 ];
 const leaderboards = [
     { name: 'Antichess', value: 'antichess' },
