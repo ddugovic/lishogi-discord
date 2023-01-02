@@ -30,12 +30,11 @@ async function getName(author) {
 }
 
 async function formatCurrentGame(game, username, theme) {
-    const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setTitle(`${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(game.clock, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')

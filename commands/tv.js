@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatVariant = require('../lib/format-variant');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
@@ -44,7 +45,7 @@ function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
-    return `${formatClock(game.clock)} [${players}](${url})${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} [${players}](${url})${opening}`;
 }
 
 function formatOpening(opening, moves) {
@@ -65,11 +66,6 @@ function formatPlayer(player) {
 
 function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
-}
-
-function formatClock(clock) {
-    const base = clock.initial == 15 ? '¼' : clock.initial == 30 ? '½' : clock.initial == 45 ? '¾' : clock.initial / 60;
-    return `${base}+${clock.increment}`;
 }
 
 function process(bot, msg, mode) {

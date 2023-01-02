@@ -321,12 +321,11 @@ function getGames(username) {
 }
 
 function formatGame(game) {
-    const clock = game.clock;
     const url = `https://lichess.org/${game.id}`;
     const status = formatStatus(game);
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
-    return `${formatClock(clock ? clock.initial : 0, clock ? clock.increment : 0, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {
