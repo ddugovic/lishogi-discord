@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const formatHandicap = require('../lib/format-handicap');
+const { formatHandicap } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');

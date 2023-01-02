@@ -6,8 +6,8 @@ const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks } = require('../lib/format-site-links');
-const formatHandicap = require('../lib/format-handicap');
 const formatSeconds = require('../lib/format-seconds');
+const { formatHandicap, formatVariant } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
@@ -202,8 +202,9 @@ function getSeries(perfs, time) {
     for (perf of Object.values(perfs)) {
         const series = perf.points.map(point => { return { t: Date.UTC(point[0], point[1], point[2]), y: point[3] } }).filter(point => (point.t >= time));
         if (series.length) {
+            const variant = perf.name.toLowerCase();
             data.push(...series);
-            history.push({ label: perf.name, data: series });
+            history.push({ label: formatVariant(variant), data: series });
         }
     }
     return [data, history];
