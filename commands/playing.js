@@ -5,7 +5,7 @@ const { formatSanVariation, numberVariation } = require('../lib/format-variation
 const plural = require('plural');
 const User = require('../models/User');
 
-async function playing(author, username, theme) {
+async function playing(author, username, theme, piece) {
     if (!username) {
         username = await getName(author);
         if (!username)
@@ -15,10 +15,10 @@ async function playing(author, username, theme) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-	.then(json => formatCurrentGame(json, username, theme ?? 'brown'))
+	.then(json => formatCurrentGame(json, username, theme ?? 'brown', piece ?? 'cburnett'))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in playing(${author.username}, ${username}, ${theme}): ${error}`);
+            console.log(`Error in playing(${author.username}, ${username}, ${theme}, ${piece}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -29,7 +29,7 @@ async function getName(author) {
         return user.lichessName;
 }
 
-async function formatCurrentGame(game, username, theme) {
+async function formatCurrentGame(game, username, theme, piece) {
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
@@ -38,7 +38,7 @@ async function formatCurrentGame(game, username, theme) {
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(formatGame(game));
     if (game.status != 'started')
-        embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}`);
+        embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}&piece=${piece}`);
     if (game.analysis) {
         const playerNames = [game.players.white, game.players.black].map(getPlayerName);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
@@ -142,7 +142,7 @@ function process(bot, msg, suffix) {
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username'), interaction.options.getString('theme')));
+    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username'), interaction.options.getString('theme'), interaction.options.getString('piece')));
 }
 
 module.exports = {process, interact};

@@ -28,9 +28,9 @@
     Display Jerome Gambit news
 !leaderboard [game mode]
     Display top-rated players
-!playing [username] [theme]
+!playing [username] [theme] [piece]
     Share your (or a user's) current game
-!arena [game mode] [status] [theme]
+!arena [game mode] [status] [theme] [piece]
     Find a created, started, or finished arena
 !blog
     Display recent blog entries
@@ -42,13 +42,13 @@
     Find a coach
 !community [username]
     Display recent community (or user) blog entries
-!eval [fen] [theme]
+!eval [fen] [theme] [piece]
     Get the cached evaluation of a position, if available
 !log
     Display recent changes
 !news
     Display recent news
-!puzzle [theme] [pieces]
+!puzzle [theme] [piece]
     Display today's puzzle
 !reddit
     Fetch hot r/chess posts

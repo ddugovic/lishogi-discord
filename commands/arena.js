@@ -6,42 +6,42 @@ const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-
 const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
 
-function arena(author, mode, progress, theme, interaction) {
+function arena(author, mode, progress, theme, piece, interaction) {
     const suffix = [progress, mode].join(' ').trim();
     const header = { headers: { Accept: 'application/json' } };
     let status, statusText;
     return fetch('https://lichess.org/api/tournament', header)
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => setArenas(json, mode, progress, theme ?? 'brown'))
+        .then(json => setArenas(json, mode, progress, theme ?? 'brown', piece ?? 'cburnett'))
         .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}, ${progress}, ${theme}): ${error}`);
+            console.log(`Error in arena(${author.username}, ${mode}, ${progress}, ${theme}, ${piece}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-async function setArenas(data, mode, progress, theme) {
+async function setArenas(data, mode, progress, theme, piece) {
     var arenas = [];
     for (const [key, value] of Object.entries(data))
         if (!progress || key == progress)
             arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
-    return arenas.length == 1 ? [await setArena(arenas[0], theme)] : arenas.map(arena => formatArena(arena, theme));
+    return arenas.length == 1 ? [await setArena(arenas[0], theme, piece)] : arenas.map(arena => formatArena(arena, theme, piece));
 }
 
 function filterArena(arena, mode) {
     return mode == 'thematic' ? arena.position : arena.perf.key == mode;
 }
 
-function setArena(arena, theme) {
+function setArena(arena, theme, piece) {
     const url = `https://lichess.org/api/tournament/${arena.id}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
-        .then(json => formatArena(json, theme));
+        .then(json => formatArena(json, theme, piece));
 }
 
-function formatArena(arena, theme) {
+function formatArena(arena, theme, piece) {
     const red = Math.min(arena.nbPlayers, 255);
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
@@ -52,7 +52,7 @@ function formatArena(arena, theme) {
         .setDescription(getDescription(arena));
     const position = arena.featured ?? arena.position
     if (position)
-	embed = embed.setImage(formatPositionURL(position.fen, position.lastMove, theme));
+	embed = embed.setImage(formatPositionURL(position.fen, position.lastMove, theme, piece));
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(
@@ -108,11 +108,11 @@ function formatPlayer(player) {
 }
 
 function process(bot, msg, suffix) {
-    arena(msg.author, ...suffix.split(/ /, 3)).then(message => msg.channel.send(message));
+    arena(msg.author, ...suffix.split(/ /, 4)).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction.options.getString('theme'), interaction);
+    arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction.options.getString('theme'), interaction.options.getString('piece'), interaction);
 }
 
 module.exports = {process, interact};

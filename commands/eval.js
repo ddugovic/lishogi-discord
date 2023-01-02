@@ -4,7 +4,7 @@ const formatColor = require('../lib/format-color');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 
-function eval(author, fen, theme) {
+function eval(author, fen, theme, piece) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
@@ -12,9 +12,9 @@ function eval(author, fen, theme) {
         let status, statusText;
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-            .then(json => formatCloudEval(fen, json, theme ?? 'brown'))
+            .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett'))
             .catch(error => {
-                console.log(`Error in eval(${author.username}, ${fen}): ${error}`);
+                console.log(`Error in eval(${author.username}, ${fen}, ${theme}, ${piece}): ${error}`);
                 return `An error occurred handling your request: ${status} ${statusText}`;
             });
     } else {
@@ -22,7 +22,7 @@ function eval(author, fen, theme) {
     }
 }
 
-function formatCloudEval(fen, eval, theme) {
+function formatCloudEval(fen, eval, theme, piece) {
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
@@ -38,7 +38,7 @@ function formatCloudEval(fen, eval, theme) {
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(':cloud: Cloud Evaluation')
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
-	    .setImage(formatPositionURL(fen, undefined, theme)),
+	    .setImage(formatPositionURL(fen, undefined, theme, piece)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
@@ -77,7 +77,7 @@ function process(bot, msg, fen) {
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme')));
+    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece')));
 }
 
 module.exports = {process, interact};
