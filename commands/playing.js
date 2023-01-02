@@ -30,12 +30,11 @@ async function getName(author) {
 }
 
 async function formatCurrentGame(game, username) {
-    const clock = game.clock;
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
         .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setTitle(`${formatClock(game.clock.initial, game.clock.increment, game.clock.byoyomi, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
+        .setTitle(`${formatClock(game.clock, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lishogi.org/${game.id}`)
         .setDescription(await formatGame(game));
     if (game.status != 'started')

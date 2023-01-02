@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require('discord.js');
-const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const User = require('../models/User');
 
