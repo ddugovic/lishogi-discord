@@ -1,19 +1,19 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 
-function puzzle(author, theme) {
+function puzzle(author, theme, piece) {
     const url = 'https://lichess.org/api/puzzle/daily';
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown'))
+        .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown', piece ?? 'cburnett'))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in puzzle(${author.username}, ${theme}): ${error}`);
+            console.log(`Error in puzzle(${author.username}, ${theme}, ${piece}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-function formatPuzzle(game, puzzle, theme) {
+function formatPuzzle(game, puzzle, theme, piece) {
     const players = game.players.map(formatPlayer).join(' - ');
     return new EmbedBuilder()
         .setColor(getColor(puzzle.rating))
@@ -25,7 +25,7 @@ function formatPuzzle(game, puzzle, theme) {
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
 	])
-        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif?theme=${theme}`);
+        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif?theme=${theme}&piece=${piece}`);
 }
 
 function getColor(rating) {
@@ -48,12 +48,12 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, theme) {
-    puzzle(msg.author, theme).then(message => msg.channel.send(message));
+function process(bot, msg, suffix) {
+    puzzle(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await puzzle(interaction.user, interaction.options.getString('theme')));
+    await interaction.editReply(await puzzle(interaction.user, interaction.options.getString('theme'), interaction.options.getString('piece')));
 }
 
 module.exports = {process, interact};
