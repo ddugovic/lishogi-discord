@@ -9,7 +9,7 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = `https://lichess.org/api/tv/${mode ?? 'best'}?nb=3&opening=true`;
+    const url = `https://lichess.org/api/tv/${mode ?? 'best'}?clocks=false&nb=3&opening=true`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })

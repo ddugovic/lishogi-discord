@@ -42,8 +42,8 @@ function formatCloudEval(fen, eval, theme, piece) {
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&moves=0&topGames=3`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, moves: 0, topGames: 3 } })
+    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, topGames: 3 } })
         .then(response => response.json())
         .then(json => formatGames(embeds, fen, json.topGames));
 }

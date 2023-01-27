@@ -314,7 +314,7 @@ function getImage(text) {
 }
 
 function getGames(username) {
-    const url = `https://lichess.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
+    const url = `https://lichess.org/api/games/user/${username}?accuracy=true&clocks=false&max=3&opening=true&ongoing=true`;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: true, ongoing: true } })
         .then(response => response.text())
         .then(text => parseDocument(text));
