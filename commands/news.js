@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatChunks } = require('../lib/format-pages');
+const { formatChunks, formatError } = require('../lib/format-pages');
 const html2md = require('html-to-md');
 const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require('../lib/parse-feed');
 
@@ -14,7 +14,7 @@ function news(author, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction);
         });
 }
 
