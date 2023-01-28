@@ -2,6 +2,7 @@ const { formatPages } = require('../lib/format-pages');
 const { formatLog } = require('../lib/format-html');
 
 function log(author, interaction) {
+    let status, statusText;
     return fetch(`https://lishogi.org/changelog`)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => formatLog(text))

@@ -5,17 +5,16 @@ const { formatPages } = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
-function arena(author, mode, status, interaction) {
+function arena(author, mode, progress, interaction) {
     const suffix = [status, mode].join(' ').trim();
+    let status, statusText;
     return fetch('https://lishogi.org/api/tournament', { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => setArenas(json, mode, status))
+        .then(json => setArenas(json, mode, progress))
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 

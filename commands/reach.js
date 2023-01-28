@@ -5,6 +5,7 @@ const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function reach(author, interaction) {
     const url = 'http://reachmahjong.com/feed/';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => parseFeed(text))

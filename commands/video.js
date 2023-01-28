@@ -6,6 +6,7 @@ const { formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
     const url = `https://lishogi.org/video?q=${escape(text)}`;
+    let status, statusText;
     return fetch(url, { params: { q: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => setVideos(text, interaction))

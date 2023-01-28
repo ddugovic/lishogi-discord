@@ -11,6 +11,7 @@ async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
     const url = `https://lishogi.org/player/top/150/${mode}`;
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatLeaders(json.users, mode))

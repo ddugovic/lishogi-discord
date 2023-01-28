@@ -11,12 +11,13 @@ function team(author, text, interaction) {
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
     const url = `https://lishogi.org/api/team/search?text=${text}`;
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { text: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => json.currentPageResults.map(formatTeam))
         .then(embeds => formatPages('Team', embeds, interaction, 'No team found.'))
         .catch(error => {
-            console.log(`Error in team(${author.username}): ${error}`);
+            console.log(`Error in team(${author.username}, ${text}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }

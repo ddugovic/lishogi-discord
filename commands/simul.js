@@ -7,6 +7,7 @@ const { formatSiteLinks } = require('../lib/format-site-links');
 function simul(author, mode, interaction) {
     const url = 'https://lishogi.org/api/simul';
     const message = mode ? `No ${mode} event found!` : `No event found!`;
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatSimuls(json, mode))

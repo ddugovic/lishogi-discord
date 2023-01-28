@@ -6,6 +6,7 @@ const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL
 
 function blog(author, interaction) {
     const url = 'https://lishogi.org/blog.atom';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => parseFeed(text))

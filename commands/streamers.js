@@ -6,6 +6,7 @@ const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
+    let status, statusText;
     return fetch('https://lishogi.org/streamer/live', { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setStreamers(json))

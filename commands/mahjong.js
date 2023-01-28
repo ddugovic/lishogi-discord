@@ -6,6 +6,7 @@ const fn = require('friendly-numbers');
 const { decodeText, fetchRedditPosts, formatAuthorName, formatDescription, formatURL } = require('../lib/search-reddit');
 
 function mahjong(author, interaction) {
+    let status, statusText;
     return fetchRedditPosts('mahjong')
         .then(response => Object.values(response).map(post => formatPost(post.data)))
         .then(embeds => formatPages('Post', embeds, interaction, 'No posts found!'))

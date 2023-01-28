@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const html2md = require('html-to-md');
 
 async function coach(author) {
+    let status, statusText;
     return fetch('https://lishogi.org/coach')
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => setCoaches(text))

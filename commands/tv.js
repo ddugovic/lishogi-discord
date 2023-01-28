@@ -6,6 +6,7 @@ async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
     const url = 'https://lishogi.org/tv/channels';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => {

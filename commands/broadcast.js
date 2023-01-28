@@ -6,6 +6,7 @@ const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
     const url = 'https://lishogi.org/api/broadcast';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => parseDocument(text).map(formatBroadcast))

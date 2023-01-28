@@ -22,6 +22,7 @@ async function profile(author, username) {
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))

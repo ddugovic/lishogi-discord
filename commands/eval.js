@@ -3,6 +3,7 @@ const sfen = import('shogiops/sfen.js');
 async function eval(author, fen) {
     if (fen && sfen.parseSfen(fen).isOk) {
         const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+        let status, statusText;
         return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
             .then(json => formatCloudEval(fen, json))

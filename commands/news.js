@@ -6,6 +6,7 @@ const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require(
 
 function news(author, interaction) {
     const url = 'http://shogihub.com/updates.atom';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => parseFeed(text))

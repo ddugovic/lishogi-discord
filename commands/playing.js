@@ -13,6 +13,7 @@ async function playing(author, username) {
             return 'You need to set your lishogi username with setuser!';
     }
     const url = `https://lishogi.org/api/user/${username}/current-game`;
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatCurrentGame(json, username))
