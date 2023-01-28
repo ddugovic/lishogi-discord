@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatMarkup } = require('../lib/format-html');
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
@@ -13,7 +13,7 @@ function broadcast(author, interaction) {
         .then(embeds => formatPages('Broadcast', embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

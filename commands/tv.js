@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatPages } = require('../lib/format-pages');
 const User = require('../models/User');
 
 async function tv(author, mode) {
@@ -17,7 +18,7 @@ async function tv(author, mode) {
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

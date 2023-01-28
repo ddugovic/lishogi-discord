@@ -2,18 +2,19 @@ const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatChunks } = require('../lib/format-pages');
+const { formatChunks, formatError } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
+    const url = 'https://lishogi.org/streamer/live';
     let status, statusText;
-    return fetch('https://lishogi.org/streamer/live', { headers: { Accept: 'application/json' } })
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setStreamers(json))
         .then(embeds => formatChunks(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

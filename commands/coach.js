@@ -1,14 +1,16 @@
 const { EmbedBuilder } = require('discord.js');
+const { formatError } = require('../lib/format-pages');
 const html2md = require('html-to-md');
 
 async function coach(author) {
+    const url = 'https://lishogi.org/coach';
     let status, statusText;
-    return fetch('https://lishogi.org/coach')
+    return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => setCoaches(text))
         .catch(error => {
             console.log(`Error in coach(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

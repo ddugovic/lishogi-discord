@@ -5,6 +5,7 @@ const formatClock = require('../lib/format-clock');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
+const { formatError } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatHandicap, formatVariant } = require('../lib/format-variant');
@@ -29,7 +30,7 @@ async function profile(author, username) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

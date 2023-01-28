@@ -2,7 +2,7 @@ const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { escape } = require('querystring')
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
     const url = `https://lishogi.org/video?q=${escape(text)}`;
@@ -13,7 +13,7 @@ function video(author, text, interaction) {
         .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}, ${text}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function reach(author, interaction) {
@@ -13,7 +13,7 @@ function reach(author, interaction) {
         .then(embeds => formatPages('Article', embeds, interaction, 'No Reach Mahjong news found!'))
         .catch(error => {
             console.log(`Error in reach(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

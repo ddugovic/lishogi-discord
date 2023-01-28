@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatError } = require('../lib/format-pages');
 const urlRegexSafe = require('url-regex-safe');
 
 function puzzle(author) {
@@ -11,7 +12,7 @@ function puzzle(author) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in puzzle(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

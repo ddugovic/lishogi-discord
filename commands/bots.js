@@ -2,7 +2,7 @@ const flags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink } = require('../lib/format-site-links');
 const parseDocument = require('../lib/parse-document');
@@ -18,7 +18,7 @@ function bots(author, interaction) {
         .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

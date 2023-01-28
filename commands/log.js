@@ -1,15 +1,16 @@
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 const { formatLog } = require('../lib/format-html');
 
 function log(author, interaction) {
     let status, statusText;
-    return fetch(`https://lishogi.org/changelog`)
+    const url = 'https://lishogi.org/changelog';
+    return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => formatLog(text))
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in log(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

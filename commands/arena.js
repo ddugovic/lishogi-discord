@@ -1,20 +1,21 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const { formatPages } = require('../lib/format-pages');
+const { formatError, formatPages } = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
 function arena(author, mode, progress, interaction) {
     const suffix = [status, mode].join(' ').trim();
     let status, statusText;
-    return fetch('https://lishogi.org/api/tournament', { headers: { Accept: 'application/json' } })
+    const url = 'https://lishogi.org/api/tournament';
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setArenas(json, mode, progress))
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 

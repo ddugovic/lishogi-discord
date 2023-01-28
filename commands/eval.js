@@ -1,3 +1,4 @@
+const { formatError } = require('../lib/format-pages');
 const sfen = import('shogiops/sfen.js');
 
 async function eval(author, fen) {
@@ -9,7 +10,7 @@ async function eval(author, fen) {
             .then(json => formatCloudEval(fen, json))
             .catch((err) => {
                 console.log(`Error in eval(${author.username}, ${fen}): ${error}`);
-                return `An error occurred handling your request: ${status} ${statusText}`;
+                return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
     } else {
         return fen ? 'Invalid SFEN!' : 'Missing SFEN!'

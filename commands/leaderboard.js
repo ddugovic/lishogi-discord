@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatChunks } = require('../lib/format-pages');
+const { formatChunks, formatError } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
@@ -18,7 +18,7 @@ async function leaderboard(author, mode, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username}, ${mode}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 
