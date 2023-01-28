@@ -14,7 +14,7 @@ function news(author, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction);
+            return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 
