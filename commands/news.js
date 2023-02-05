@@ -5,7 +5,7 @@ const html2md = require('html-to-md');
 const { parseFeed, formatContent, getAuthorName, getContent, getURL } = require('../lib/parse-feed');
 
 function news(author, interaction) {
-    const url = 'http://shogihub.com/updates.atom';
+    const url = 'https://news.google.com/rss/search?q=shogi';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
@@ -19,28 +19,26 @@ function news(author, interaction) {
 }
 
 function formatNews(feed) {
+    const channel = feed.channel;
     const embeds = [];
-    const authorURL = feed.link[0]['$'].href;
-    for (const entry of feed.entry.values())
-        if (entry.title.startsWith('NEWS'))
-            embeds.push(formatEntry(entry, authorURL));
+    const authorName = channel.title;
+    const authorURL = channel.link;
+    for (const entry of channel.item)
+        embeds.push(formatEntry(entry, authorName, authorURL));
     return embeds;
 }
 
-function formatEntry(entry, authorURL) {
-    const timestamp = Math.floor(new Date(entry.published).getTime() / 1000);
+function formatEntry(entry, authorName, authorURL) {
+    const timestamp = Math.floor(new Date(entry.pubDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    const authorName = getAuthorName(entry);
     const content = getContent(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: authorURL})
+        .setAuthor({name: authorName, url: authorURL})
         .setTitle(entry.title)
+        .setURL(getURL(entry))
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 200)}`);
-    const url = getURL(entry);
-    if (url)
-        embed = embed.setURL(url);
     const image = getImage(html2md(content));
     if (image)
         embed = embed.setThumbnail(image);
