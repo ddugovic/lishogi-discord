@@ -7,14 +7,14 @@ const formatPlayer = require('../lib/format-player');
 const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
-function recent(user, username, interaction) {
+function recent(user, username, fast, interaction) {
     const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { username: username, numGames: 10, offset: 0 };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => Promise.all(json.game_info.map(scoreGame).map(formatGame)))
+        .then(json => Promise.all(json.game_info.map(scoreGame).map(game => formatGame(game, fast))))
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
             console.log(`Error in recent(${user.username}, ${username}): ${error}`);
@@ -88,7 +88,7 @@ function scoreGame(game) {
     return game;
 }
 
-async function formatGame(game) {
+async function formatGame(game, fast) {
     const playerNames = game.players.map(formatPlayer);
     const playerNicknames = game.players.map(player => player.nickname);
     const blue = Math.min(Math.max(Math.abs(game.scores[0] - game.scores[1]), 0), 255);
@@ -98,7 +98,7 @@ async function formatGame(game) {
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
-	.setImage(`https://woogles.io/gameimg/${game.game_id}-v2-a.gif`);
+	.setImage(getImageURL(game.game_id, fast))
     const request = game.game_request;
     if (request)
         return embed.setTitle(`${formatCategory(request.rules.board_layout_name, request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${formatClock(request.initial_time_seconds, request.increment_seconds, request.max_overtime_minutes)} ${playerNames.join(' - ')} (${formatChallengeRule(request.challenge_rule)} ${game.scores.join(' - ')}) #${game.game_id}`)
@@ -108,19 +108,25 @@ async function formatGame(game) {
     return embed;
 }
 
-async function process(bot, msg, username) {
-    username = username || await getUsername(msg.author);
+async function process(bot, msg, suffix) {
+    const [name, fast] = suffix.split(' ', 2);
+    const username = name || await getUsername(msg.author);
     if (!username)
         return await msg.channel.send('You need to set your Woogles.io username with setuser!');
-    recent(msg.author, username).then(message => msg.channel.send(message));
+    recent(msg.author, username, fast ?? 0).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
+    const fast = interaction.options.getBoolean('fast');
     const username = interaction.options.getString('username') || await getUsername(interaction.user);
     if (!username)
         return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    recent(interaction.user, username, interaction);
+    recent(interaction.user, username, fast, interaction);
+}
+
+function getImageURL(gameId, fast) {
+    return `https://woogles.io/gameimg/${gameId}-v2-${fast ? 'a' : 'b'}.gif`;
 }
 
 async function getUsername(author, username) {

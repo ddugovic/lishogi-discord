@@ -69,7 +69,7 @@ const commands = {
         interact: puzzle.interact
     },
     "recent": {
-        usage: "[user]",
+        usage: "[user] [fast]",
         description: "Share your (or a user's) recent games",
         process: recent.process,
         interact: recent.interact

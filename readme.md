@@ -20,7 +20,7 @@
     Set your woogles username
 !deleteuser
     Delete your woogles username from the bot's database
-!recent [username]
+!recent [username] [fast]
     Share your (or a user's) recent games
 !profile [username]
     Display your (or a user's) profile
