@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
+const graphPerfHistory = require('../lib/graph-perf-history');
 
 function eval(author, fen, theme, piece) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
@@ -22,7 +23,7 @@ function eval(author, fen, theme, piece) {
     }
 }
 
-function formatCloudEval(fen, eval, theme, piece) {
+async function formatCloudEval(fen, eval, theme, piece) {
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
@@ -42,7 +43,15 @@ function formatCloudEval(fen, eval, theme, piece) {
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
+    var url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}`;
+    const response = await fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
+        .then(response => response.json());
+    if (response.history) {
+        const image = await formatHistory(response.history);
+        if (image)
+            embeds.push(new EmbedBuilder().setImage(image));
+    }
+    url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, topGames: 3 } })
         .then(response => response.json())
         .then(json => formatGames(embeds, fen, json.topGames));
@@ -57,6 +66,30 @@ function formatGames(embeds, fen, games) {
 function formatGame(fen, game) {
     const variation = [game.uci];
     return `${formatUciVariation(fen, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+}
+
+function formatHistory(months) {
+    const [data, history] = getSeries(months);
+    if (data.length) {
+        const chart = graphPerfHistory(data, history, new Date());
+        const url = chart.getUrl();
+        return url.length <= 2000 ? url : chart.getShortUrl();
+    }
+}
+
+function getSeries(months) {
+    const data = [];
+    const history = [];
+    const white = months.map(point => { return { t: Date.parse(point.month), y: point.white } });
+    data.push(...white);
+    history.push({ label: 'White', data: white });
+    const draws = months.map(point => { return { t: Date.parse(point.month), y: point.draws } });
+    data.push(...draws);
+    history.push({ label: 'Draw', data: draws });
+    const black = months.map(point => { return { t: Date.parse(point.month), y: point.black } });
+    data.push(...black);
+    history.push({ label: 'Black', data: black });
+    return [data, history];
 }
 
 function formatVariation(fen, pv) {
