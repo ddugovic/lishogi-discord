@@ -40,7 +40,7 @@ async function formatCurrentGame(game, username, theme, piece) {
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}&piece=${piece}`);
     if (game.analysis) {
-        const playerNames = [game.players.white, game.players.black].map(getPlayerName);
+        const playerNames = [game.players.white, game.players.black].map(getPlayerNameAndAccuracy);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
     }
     return embed;
@@ -83,6 +83,11 @@ function formatUser(user, record) {
     const patron = user.patron ? ' 🦄' : '';
     const name = user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
     return record != undefined ? `${name} (${record})` : name;
+}
+
+function getPlayerNameAndAccuracy(player) {
+    const name = getPlayerName(player);
+    return player.analysis ? `${name} (${player.analysis.accuracy}%)` : name;
 }
 
 function getPlayerName(player) {
