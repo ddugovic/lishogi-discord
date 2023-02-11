@@ -11,7 +11,7 @@ async function playing(author, username, theme, piece) {
         if (!username)
             return 'You need to set your lichess username with setuser!';
     }
-    const url = `https://lichess.org/api/user/${username}/current-game?accuracy=true&clocks=false`;
+    const url = `https://lichess.org/api/user/${username}/current-game?accuracy=true&clocks=false&evals=false`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -39,9 +39,10 @@ async function formatCurrentGame(game, username, theme, piece) {
         .setDescription(formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}&piece=${piece}`);
-    if (game.analysis) {
-        const playerNames = [game.players.white, game.players.black].map(getPlayerNameAndAccuracy);
-        embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
+    if (game.players.white.analysis || game.players.black.analysis) {
+        const players = [game.players.white, game.players.black];
+        const playerNames = players.map(getPlayerNameAndAccuracy);
+        embed = embed.addFields(formatAnalysis(playerNames, ...players));
     }
     return embed;
 }
@@ -107,28 +108,17 @@ function formatOpening(opening, initialFen, moves) {
     return opening ? `${opening.name}\n*${formatSanVariation(initialFen, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
-function formatAnalysis(analysis, playerNames) {
-    const nodePairs = chunk(analysis.map(getJudgmentName), 2);
-    const white = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
-    const black = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
-    for (i = 0; i < nodePairs.length; i++) {
-        const [whiteJudgment, blackJudgment] = nodePairs[i];
-        if (whiteJudgment) white[whiteJudgment]++;
-        if (blackJudgment) black[blackJudgment]++;
-    }
+function formatAnalysis(playerNames, white, black) {
+    const whiteJudgments = { 'Inaccuracy': white.analysis.inaccuracy, 'Mistake': white.analysis.mistake, 'Blunder': white.analysis.blunder };
+    const blackJudgments = { 'Inaccuracy': black.analysis.inaccuracy, 'Mistake': black.analysis.mistake, 'Blunder': black.analysis.blunder };
     return [
-        { name: playerNames[0] ?? 'White', value: formatJudgments(white), inline: true },
-        { name: playerNames[1] ?? 'Black', value: formatJudgments(black), inline: true }
+        { name: playerNames[0] ?? 'White', value: formatJudgments(whiteJudgments), inline: true },
+        { name: playerNames[1] ?? 'Black', value: formatJudgments(blackJudgments), inline: true }
     ];
 }
 
 function formatJudgments(judgments) {
     return Object.entries(judgments).map(entry => `**${entry[1]}** ${plural(...entry)}`).join('\n');
-}
-
-function getJudgmentName(node) {
-    if (node.judgment)
-        return node.judgment.name;
 }
 
 function chunk(arr, size) {
