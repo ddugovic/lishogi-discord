@@ -43,18 +43,28 @@ async function formatCloudEval(fen, eval, theme, piece) {
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-    var url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}`;
-    const response = await fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
-        .then(response => response.json());
-    if (response.history) {
-        const image = await formatHistory(response.history);
+
+    const requests = [ getHistory(fen), getMasterGames(fen) ];
+    const [history, games] = await Promise.all(requests);
+
+    if (history) {
+        const image = await formatHistory(history.history);
         if (image)
             embeds.push(new EmbedBuilder().setImage(image));
     }
-    url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, topGames: 3 } })
-        .then(response => response.json())
-        .then(json => formatGames(embeds, fen, json.topGames));
+    return formatGames(embeds, fen, games.topGames);
+}
+
+function getHistory(fen) {
+    const url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
+        .then(response => response.json());
+}
+
+function getMasterGames(fen) {
+    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
+        .then(response => response.json());
 }
 
 function formatGames(embeds, fen, games) {
@@ -65,7 +75,7 @@ function formatGames(embeds, fen, games) {
 
 function formatGame(fen, game) {
     const variation = [game.uci];
-    return `${formatUciVariation(fen, variation)} [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+    return `${formatUciVariation(fen, variation)} :chess_pawn: [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
 }
 
 function formatHistory(months) {
