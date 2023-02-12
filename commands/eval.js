@@ -80,7 +80,7 @@ function getMasterGames(fen) {
 
 function formatGame(fen, game) {
     const variation = [game.uci];
-    return `${formatUciVariation(fen, variation)} :chess_pawn: [${game.white.name} - ${game.black.name}, ${game.month}](https://lichess.org/${game.id})`;
+    return `${formatUciVariation(fen, variation)} :chess_pawn: [${game.white.name} - ${game.black.name}](https://lichess.org/${game.id}) *${game.month}*`;
 }
 
 function formatHistory(months) {
