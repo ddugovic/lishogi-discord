@@ -61,7 +61,7 @@ async function formatCloudEval(fen, eval, theme, piece) {
 function getOpeningName(history, games) {
     if (history && history.opening)
         return history.opening.name;
-    if (games && games .opening)
+    if (games && games.opening)
         return games.opening.name;
 }
 
