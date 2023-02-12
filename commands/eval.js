@@ -24,6 +24,9 @@ function eval(author, fen, theme, piece) {
 }
 
 async function formatCloudEval(fen, eval, theme, piece) {
+    const requests = [ getHistory(fen), getMasterGames(fen) ];
+    const [history, games] = await Promise.all(requests);
+
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = [];
@@ -37,15 +40,12 @@ async function formatCloudEval(fen, eval, theme, piece) {
             .setColor(formatColor(red, 0, 255 - red))
             .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
-            .setTitle(':cloud: Cloud Evaluation')
+            .setTitle(`:cloud: ${getOpeningName(history, games) ?? 'Cloud Evaluation'}`)
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
 	    .setImage(formatPositionURL(fen, undefined, theme, piece)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-
-    const requests = [ getHistory(fen), getMasterGames(fen) ];
-    const [history, games] = await Promise.all(requests);
 
     if (history) {
         const image = await formatHistory(history.history);
@@ -56,6 +56,13 @@ async function formatCloudEval(fen, eval, theme, piece) {
         embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: games.topGames.map(game => formatGame(fen, game)).join('\n') }));
     }
     return { embeds: embeds };
+}
+
+function getOpeningName(history, games) {
+    if (history && history.opening)
+        return history.opening.name;
+    if (games && games .opening)
+        return games.opening.name;
 }
 
 function getHistory(fen) {
