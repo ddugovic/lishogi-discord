@@ -66,8 +66,9 @@ function getOpeningName(history, games) {
 }
 
 function getHistory(fen) {
-    const url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
+    const now = new Date();
+    const url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}&since=${now.getFullYear()-5}-${now.getMonth()}`;
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json());
 }
 
