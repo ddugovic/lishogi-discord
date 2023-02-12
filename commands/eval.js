@@ -52,7 +52,10 @@ async function formatCloudEval(fen, eval, theme, piece) {
         if (image)
             embeds.push(new EmbedBuilder().setImage(image));
     }
-    return formatGames(embeds, fen, games.topGames);
+    if (games.topGames.length) {
+        embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: games.topGames.map(game => formatGame(fen, game)).join('\n') }));
+    }
+    return { embeds: embeds };
 }
 
 function getHistory(fen) {
@@ -65,12 +68,6 @@ function getMasterGames(fen) {
     const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
         .then(response => response.json());
-}
-
-function formatGames(embeds, fen, games) {
-    if (games.length)
-        embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: games.map(game => formatGame(fen, game)).join('\n') }));
-    return { embeds: embeds };
 }
 
 function formatGame(fen, game) {
