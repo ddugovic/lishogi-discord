@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^1.5.0",
+    "@hugop/discord-table": "^1.0.1",
     "convert-seconds": "^1.0.1",
     "customizable-discordjs-pagination": "^2.0.1",
     "discord-api-types": "^0.37.5",
@@ -28,7 +29,7 @@
     "mongoose": "^6.9.0",
     "plural": "^1.1.0",
     "re2": "^1.18.0",
-    "reddit-image-fetcher": "^2.0.11",
+    "reddit-fetch": "^1.5.1",
     "unix-timestamp": "^1.0.2",
     "url-regex-safe": "^3.0.0"
   },
