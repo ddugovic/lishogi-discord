@@ -24,8 +24,8 @@
         "plural": "^1.1.0",
         "quickchart-js": "^3.1.0",
         "re2": "^1.18.0",
-        "reddit-image-fetcher": "^2.0.11",
-        "sanitize-html": "^2.9.0",
+        "reddit-fetch": "^1.5.1",
+        "sanitize-html": "^2.10.0",
         "url-regex-safe": "^3.0.0",
         "xml2js": "^0.4.23"
       },
@@ -2051,25 +2051,6 @@
         "flat": "cli.js"
       }
     },
-    "node_modules/follow-redirects": {
-      "version": "1.14.9",
-      "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.9.tgz",
-      "integrity": "sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==",
-      "funding": [
-        {
-          "type": "individual",
-          "url": "https://github.com/sponsors/RubenVerborgh"
-        }
-      ],
-      "engines": {
-        "node": ">=4.0"
-      },
-      "peerDependenciesMeta": {
-        "debug": {
-          "optional": true
-        }
-      }
-    },
     "node_modules/friendly-numbers": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/friendly-numbers/-/friendly-numbers-1.0.1.tgz",
@@ -3373,21 +3354,12 @@
         "node": ">=8.10.0"
       }
     },
-    "node_modules/reddit-image-fetcher": {
-      "version": "2.0.11",
-      "resolved": "https://registry.npmjs.org/reddit-image-fetcher/-/reddit-image-fetcher-2.0.11.tgz",
-      "integrity": "sha512-6FZC4dEuwGzlcs825EeXb4Pz9ik5wkRjGbfq5FPiUstCojM869Dhe2F6NgWyh8WEzOu7M3DUjgqhbHec4+TVqQ==",
+    "node_modules/reddit-fetch": {
+      "version": "1.5.1",
+      "resolved": "https://registry.npmjs.org/reddit-fetch/-/reddit-fetch-1.5.1.tgz",
+      "integrity": "sha512-N3PNDmCUb3S/z78aOI5Cz5nOiMJl41K5/JDtA3hUM4VZfMObBgvpP4vWaRfNiJ7tWMekCgt9dWdvegf3Lj5XKg==",
       "dependencies": {
-        "axios": "^0.21.1",
-        "shuffle-array": "^1.0.1"
-      }
-    },
-    "node_modules/reddit-image-fetcher/node_modules/axios": {
-      "version": "0.21.4",
-      "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz",
-      "integrity": "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==",
-      "dependencies": {
-        "follow-redirects": "^1.14.0"
+        "node-fetch": "^2.6.0"
       }
     },
     "node_modules/require-directory": {
@@ -3447,9 +3419,9 @@
       "optional": true
     },
     "node_modules/sanitize-html": {
-      "version": "2.9.0",
-      "resolved": "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.9.0.tgz",
-      "integrity": "sha512-KY1hpSbqFNcpoLf+nP7iStbP5JfQZ2Nd19ZEE7qFsQqRdp+sO5yX/e5+HoG9puFAcSTEpzQuihfKUltDcLlQjg==",
+      "version": "2.10.0",
+      "resolved": "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.10.0.tgz",
+      "integrity": "sha512-JqdovUd81dG4k87vZt6uA6YhDfWkUGruUu/aPmXLxXi45gZExnt9Bnw/qeQU8oGf82vPyaE0vO4aH0PbobB9JQ==",
       "dependencies": {
         "deepmerge": "^4.2.2",
         "escape-string-regexp": "^4.0.0",
@@ -3498,11 +3470,6 @@
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/set-blocking/-/set-blocking-2.0.0.tgz",
       "integrity": "sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw=="
-    },
-    "node_modules/shuffle-array": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/shuffle-array/-/shuffle-array-1.0.1.tgz",
-      "integrity": "sha512-0TFRU8zVQaLatWKr0/czo19VyPNgb/a3sBc1GAjVfivfzEGaS54vueNgtAu/8/pW7EM/VF5fwq9zgpLdGyRmVw=="
     },
     "node_modules/sift": {
       "version": "16.0.1",
@@ -5680,11 +5647,6 @@
       "integrity": "sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==",
       "dev": true
     },
-    "follow-redirects": {
-      "version": "1.14.9",
-      "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.9.tgz",
-      "integrity": "sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w=="
-    },
     "friendly-numbers": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/friendly-numbers/-/friendly-numbers-1.0.1.tgz",
@@ -6650,23 +6612,12 @@
         "picomatch": "^2.2.1"
       }
     },
-    "reddit-image-fetcher": {
-      "version": "2.0.11",
-      "resolved": "https://registry.npmjs.org/reddit-image-fetcher/-/reddit-image-fetcher-2.0.11.tgz",
-      "integrity": "sha512-6FZC4dEuwGzlcs825EeXb4Pz9ik5wkRjGbfq5FPiUstCojM869Dhe2F6NgWyh8WEzOu7M3DUjgqhbHec4+TVqQ==",
+    "reddit-fetch": {
+      "version": "1.5.1",
+      "resolved": "https://registry.npmjs.org/reddit-fetch/-/reddit-fetch-1.5.1.tgz",
+      "integrity": "sha512-N3PNDmCUb3S/z78aOI5Cz5nOiMJl41K5/JDtA3hUM4VZfMObBgvpP4vWaRfNiJ7tWMekCgt9dWdvegf3Lj5XKg==",
       "requires": {
-        "axios": "^0.21.1",
-        "shuffle-array": "^1.0.1"
-      },
-      "dependencies": {
-        "axios": {
-          "version": "0.21.4",
-          "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz",
-          "integrity": "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==",
-          "requires": {
-            "follow-redirects": "^1.14.0"
-          }
-        }
+        "node-fetch": "^2.6.0"
       }
     },
     "require-directory": {
@@ -6700,9 +6651,9 @@
       "optional": true
     },
     "sanitize-html": {
-      "version": "2.9.0",
-      "resolved": "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.9.0.tgz",
-      "integrity": "sha512-KY1hpSbqFNcpoLf+nP7iStbP5JfQZ2Nd19ZEE7qFsQqRdp+sO5yX/e5+HoG9puFAcSTEpzQuihfKUltDcLlQjg==",
+      "version": "2.10.0",
+      "resolved": "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.10.0.tgz",
+      "integrity": "sha512-JqdovUd81dG4k87vZt6uA6YhDfWkUGruUu/aPmXLxXi45gZExnt9Bnw/qeQU8oGf82vPyaE0vO4aH0PbobB9JQ==",
       "requires": {
         "deepmerge": "^4.2.2",
         "escape-string-regexp": "^4.0.0",
@@ -6745,11 +6696,6 @@
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/set-blocking/-/set-blocking-2.0.0.tgz",
       "integrity": "sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw=="
-    },
-    "shuffle-array": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/shuffle-array/-/shuffle-array-1.0.1.tgz",
-      "integrity": "sha512-0TFRU8zVQaLatWKr0/czo19VyPNgb/a3sBc1GAjVfivfzEGaS54vueNgtAu/8/pW7EM/VF5fwq9zgpLdGyRmVw=="
     },
     "sift": {
       "version": "16.0.1",
