@@ -17,7 +17,7 @@ function recent(user, username, fast, interaction) {
         .then(json => Promise.all(json.game_info.map(scoreGame).map(game => formatGame(game, fast))))
         .then(embeds => formatPages('Game', embeds, interaction, 'No games found!'))
         .catch(error => {
-            console.log(`Error in recent(${user.username}, ${username}): ${error}`);
+            console.log(`Error in recent(${user}, ${username}, ${fast}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
