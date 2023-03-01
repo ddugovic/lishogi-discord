@@ -26,6 +26,7 @@
         "url-regex-safe": "^3.0.0"
       },
       "devDependencies": {
+        "chokidar": "^3.5.3",
         "mocha": "^10.2.0",
         "nodemon": "^2.0.19"
       }
