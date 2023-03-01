@@ -36,5 +36,8 @@
   "devDependencies": {
     "mocha": "^10.2.0",
     "nodemon": "^2.0.19"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
   }
 }
