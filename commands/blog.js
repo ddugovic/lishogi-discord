@@ -33,7 +33,7 @@ function formatEntry(entry) {
         .setURL(getURL(entry))
         .setThumbnail('https://woogles.io/logo192.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
-    const image = getImageURL(entry);
+    const image = entry.image ?? getImageURL(entry);
     if (image)
         embed = embed.setImage(image);
     return embed;
