@@ -23,6 +23,7 @@ const xtlexica = [
 
 const commands = [
     new SlashCommandBuilder().setName('anagram').setDescription("Define anagrams of alphagrams from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...lexica)).addStringOption(option => option.setName('alphagrams').setDescription('Enter alphagrams to anagram and define').setRequired(true)),
+    new SlashCommandBuilder().setName('blog').setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName('chat').setDescription("Display lobby chat"),
     new SlashCommandBuilder().setName('define').setDescription("Define words from lexicon").addStringOption(option => option.setName('lexicon').setDescription('Select lexicon').setRequired(true).addChoices(...lexica)).addStringOption(option => option.setName('words').setDescription('Enter words to define').setRequired(true)),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your woogles username from the bot's database"),

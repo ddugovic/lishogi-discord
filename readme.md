@@ -26,6 +26,8 @@
     Display your (or a user's) profile
 !anagram <lexicon> <alphagrams>
     Define anagrams of alphagrams from lexicon
+!blog
+    Display recent blog entries
 !chat
     Display lobby chat
 !define <lexicon> <words>

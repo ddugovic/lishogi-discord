@@ -1,5 +1,6 @@
 // Include commands
 const anagram = require('./commands/anagram');
+const blog = require('./commands/blog');
 const chat = require('./commands/chat');
 const define = require('./commands/define');
 const deleteUser = require('./commands/deleteUser');
@@ -19,6 +20,12 @@ const commands = {
         description: "Define anagrams of alphagrams from lexicon",
         process: anagram.process,
         interact: anagram.interact
+    },
+    "blog": {
+        usage: "",
+        description: "Display recent blog entries",
+        process: blog.process,
+        interact: blog.interact
     },
     "chat": {
         usage: "",
