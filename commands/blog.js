@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatError, formatPages } = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
-const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
+const { parseFeed, formatContent, getAuthors, getContent, getImageURL, getURL } = require('../lib/parse-feed');
 
 function blog(author, interaction) {
     const url = 'https://blog.woogles.io/index.xml';
@@ -22,11 +22,13 @@ function formatEntry(entry) {
     const timestamp = Math.floor(new Date(entry.pubDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    const authorName = getAuthorName(entry) ?? 'No Author';
+    const authors = getAuthors(entry);
+    const authorNames = (authors instanceof Array ? authors.join(', ') : authors) ?? 'No Author';
+    const authorURL = getUserLink(`@${authors instanceof Array ? authors.join(', ') : authors}`);
     const content = getContent(entry);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({ name: authorName, iconURL: 'https://woogles.io/logo192.png', url: getUserLink(authorName) })
+        .setAuthor({ name: authorNames, iconURL: 'https://woogles.io/logo192.png', url: authorURL })
         .setTitle(entry.title ?? 'Untitled')
         .setURL(getURL(entry))
         .setThumbnail('https://woogles.io/logo192.png')
