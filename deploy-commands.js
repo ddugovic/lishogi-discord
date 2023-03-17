@@ -53,6 +53,7 @@ const leaderboards = [
 const pieces = [
     { name: 'Default', value: 'cburnett' },
     { name: 'Horsey', value: 'horsey' },
+    { name: 'Letter', value: 'letter' },
     { name: 'Shapes', value: 'shapes' }
 ];
 const ratings = [
