@@ -52,8 +52,14 @@ const leaderboards = [
 ];
 const pieces = [
     { name: 'Default', value: 'cburnett' },
+    { name: 'California', value: 'california' },
+    { name: 'Cardinal', value: 'cardinal' },
+    { name: 'Disguised', value: 'disguised' },
+    { name: 'Gioco', value: 'gioco' },
     { name: 'Horsey', value: 'horsey' },
     { name: 'Letter', value: 'letter' },
+    { name: 'Merida', value: 'merida' },
+    { name: 'Pixel', value: 'pixel' },
     { name: 'Shapes', value: 'shapes' }
 ];
 const ratings = [
