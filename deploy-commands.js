@@ -83,6 +83,7 @@ const themes = [
     { name: 'Brown', value: 'brown' },
     { name: 'Green', value: 'green' },
     { name: 'IC', value: 'ic' },
+    { name: 'Pink', value: 'pink' },
     { name: 'Purple', value: 'purple' }
 ];
 const variants = [
