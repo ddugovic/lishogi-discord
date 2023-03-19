@@ -5,7 +5,7 @@ const formatClock = require('../lib/format-clock');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSanVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
@@ -148,6 +148,8 @@ function getPerf(username, mode) {
 
 function formatAbout(embed, username, profile) {
     const links = formatSocialLinks(profile.links ?? profile.bio ?? '');
+    if (profile && profile.bio)
+        links.unshift(...getSiteLinks(profile.bio));
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
     const result = [links.join(' | ')];
