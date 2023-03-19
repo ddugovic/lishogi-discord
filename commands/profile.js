@@ -6,7 +6,7 @@ const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatError } = require('../lib/format-pages');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatHandicap, formatVariant } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
@@ -145,6 +145,8 @@ function getPerf(username, mode) {
 
 function formatAbout(embed, username, profile) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (profile && profile.bio)
+        links.unshift(...getSiteLinks(profile.bio));
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [links.join(' | ')];
