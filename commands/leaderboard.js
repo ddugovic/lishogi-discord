@@ -1,5 +1,6 @@
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
+const emailRegexSafe = require('email-regex-safe');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -101,7 +102,7 @@ function formatProfile(username, profile, playTime) {
 function formatBio(bio) {
     const social = /:\/\/|\b(?:discord\.gg|github\.com|instagram\.com|twitch\.tv|twitter\.com|youtube\.com|youtu\.be)\b/i;
     for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
+        if (bio[i].match(social) || bio[i].match(emailRegexSafe())) {
             bio = bio.slice(0, i);
             break;
         }
