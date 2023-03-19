@@ -4,7 +4,7 @@ const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatError, formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
-const { formatSiteLink } = require('../lib/format-site-links');
+const { formatSiteLink, getSiteLinks } = require('../lib/format-site-links');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
@@ -69,6 +69,8 @@ function setAbout(embed, username, profile, playTime) {
     const duration = formatSeconds(playTime ? playTime.tv : 0).split(/, /, 2)[0];
     const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (profile && profile.bio)
+        links.unshift(...getSiteLinks(profile.bio));
     if (links.length)
         result.push(links.join(' | '));
     if (profile && profile.bio) {
