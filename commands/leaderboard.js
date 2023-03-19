@@ -80,11 +80,14 @@ function getColor(rating) {
 }
 
 function formatProfile(username, profile, fideRating, playTime) {
-    const duration = formatSeconds(playTime ? playTime.tv : 0).split(/, /, 2)[0];
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
-    const result = [`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`];
+    const result = [];
+    if (playTime) {
+        const duration = formatSeconds(playTime.tv).split(/, /, 2)[0];
+        result.push(`Time on :tv:: ${duration.replace('minutes','min.').replace('seconds','sec.')}`);
+    }
     result.push(links.join(' | '));
     var rating = 0;
     if (profile && profile.bio) {
