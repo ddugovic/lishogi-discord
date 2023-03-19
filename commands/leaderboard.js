@@ -4,7 +4,7 @@ const emailRegexSafe = require('email-regex-safe');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -82,6 +82,8 @@ function getColor(rating) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (profile && profile.bio)
+        links.unshift(...getSiteLinks(profile.bio));
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
     const result = [];
