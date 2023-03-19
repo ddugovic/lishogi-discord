@@ -4,7 +4,7 @@ const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatChunks, formatError } = require('../lib/format-pages');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
 
@@ -103,6 +103,8 @@ function getColor(index, length) {
 
 function formatProfile(username, profile, playTime) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
+    if (profile && profile.bio)
+        links.unshift(...getSiteLinks(profile.bio));
     links.unshift(`[Profile](https://lishogi.org/@/${username})`);
 
     const result = [];
