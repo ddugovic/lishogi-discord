@@ -79,7 +79,7 @@ function getColor(rating) {
     return formatColor(red, 0, 255-red);
 }
 
-function formatProfile(username, profile, fideRating, playTime) {
+function formatProfile(username, profile, playTime) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
