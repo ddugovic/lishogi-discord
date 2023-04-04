@@ -265,7 +265,7 @@ function getImage(text) {
 function setGames(embed, username) {
     const url = `https://lidraughts.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(json => parseDocument(json))
         .then(games => embed.addFields({ name: `Recent ${plural('Game', games.length)}`, value: games.filter(game => game.status != 'aborted').map(formatGame).join('\n\n') }));
 }
