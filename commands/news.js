@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 
 function news(user, interaction) {
     const url = 'https://woogles.io/twirp/config_service.ConfigService/GetAnnouncements';

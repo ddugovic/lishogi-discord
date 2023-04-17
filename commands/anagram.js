@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { formatLexicon } = require('../lib/format-lexicon');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 
 async function anagram(user, lexicon, alphagrams, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';

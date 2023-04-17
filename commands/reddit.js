@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { checkLink, formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const formatTable = require('../lib/format-table');
 const fn = require('friendly-numbers');
 const redditFetch = require('reddit-fetch');

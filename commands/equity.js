@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const lexica = ['CSW', 'TWL'];
 
 function equity(user, lexicon, rack, interaction) {
