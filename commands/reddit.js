@@ -69,8 +69,7 @@ function formatDescription(selftext, url_overridden_by_dest, url) {
     // Formats simple tables
     var text = selftext ? decode(selftext).replace(/\n+(?:&#x200B;|\**)\n+/g, '\n\n') : formatURL(url_overridden_by_dest ?? url);
     text = text.replace(/(?<=https?:\/\/)www\./g, '');
-    //const pattern = /(?<=^|\n)((?:\[?\*\*[^\*\|]+\*\*(?:\]\(https?:\/\/[-\w\.\/]+\))?(?: \| )?)+)\r?\n(?::-+:?\|?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/;
-    const pattern = /(?<=^|\n)((?:[^\|\n]+(?:$| \| ))+)\r?\n(?::?-+(?: \| |:\|:)?)+((?:\r?\n(?:[^\|\n]+[$\|]?)+)+)/m;
+    const pattern = /(?<=^|\n)((?:\|[^:\|\n]+)+\|)\r?\n(?:\|:-)+\|\r?\n((?:(?:\|[^:\|\n]+)+\|\r?\n)+)/m;
     let match;
     while ((match = text.match(pattern)))
         text = text.replace(match[0], formatTable(match[1].trim().replace(/\*\*/g, ''), match[2].trim()))
