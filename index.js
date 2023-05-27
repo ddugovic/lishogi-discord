@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { Client, GatewayIntentBits, InteractionType } = require('discord.js');
+const { ActivityType, Client, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -13,8 +13,7 @@ mongoose.connect(config.mongourl, {
 const client = new Client({
     allowedMentions: { parse: [] },
     disabledEvents: [ 'TYPING_START' ],
-    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages ],
-    presence: { activities: [{ name: 'lichess.org' , type: 'WATCHING' }], status: 'online' }
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages ]
 });
 
 // Set up commands
@@ -23,6 +22,7 @@ const help = require('./commands/help');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
+    client.user.setPresence({ activities: [{ name: 'lichess.org', type: ActivityType.Watching }], status: 'online' });
 });
 
 client.on('guildCreate', (guild) => {
