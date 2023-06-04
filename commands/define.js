@@ -32,13 +32,13 @@ const flags = {
 }
 
 async function process(bot, msg, suffix) {
-    const [lexicon, words] = suffix.toUpperCase().split(/[^A-Z0-9?]+/i, 2);
+    const [lexicon, words] = (suffix + ' ').toUpperCase().split(/\s+/, 2);
     if (words.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     else if (lexicon && formatLexicon(lexicon) && words)
         await define(msg.author, lexicon, words).then(message => msg.channel.send(message));
     else
-        await msg.channel.send(formatLexicon(lexicon) ? 'Words not specified!' : 'Lexicon not found!');
+        await msg.channel.send(formatLexicon(lexicon) ? 'Words not specified! (usage: `!define lexicon words`)' : 'Lexicon not found!');
 }
 
 
