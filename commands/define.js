@@ -26,7 +26,7 @@ function formatEntry(lexicon, word, entry) {
         .setAuthor({ name: formatLexicon(lexicon), iconURL: flags[lexicon] })
         .setTitle(entry.v ? word : `${word}*`)
         .setThumbnail('https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg')
-        .setDescription(entry.v ? entry.d : 'Definition not found!');
+        .setDescription(entry.v ? (entry.d || 'Definition not found!') : 'Word not found!');
     return embed;
 }
 
