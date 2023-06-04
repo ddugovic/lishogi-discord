@@ -2,6 +2,11 @@ const { EmbedBuilder } = require('discord.js');
 const { formatLexicon } = require('../lib/format-lexicon');
 const { formatPages } = require('../lib/format-pages');
 
+function paginate(lexicon, status, results) {
+  if (status == 200)
+    return Object.entries(results).map(entry => formatEntry(lexicon, ...entry));
+}
+
 async function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
@@ -9,7 +14,7 @@ async function define(user, lexicon, words, interaction) {
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPages('Alphagram', Object.entries(json.results).map(entry => formatEntry(lexicon, ...entry)), interaction, 'Alphagrams not found!'))
+        .then(json => formatPages('Word', paginate(lexicon, status, json.results) ?? [], interaction, 'Words not found!'))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
@@ -32,11 +37,11 @@ const flags = {
 }
 
 async function process(bot, msg, suffix) {
-    const [lexicon, words] = (suffix + ' ').toUpperCase().split(/\s+/, 2);
+    const [lexicon, words] = ((suffix ?? '').trim() + ' ').toUpperCase().split(/\s+/, 2);
     if (words.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     else if (lexicon && formatLexicon(lexicon) && words)
-        await define(msg.author, lexicon, words).then(message => msg.channel.send(message));
+        await define(msg.author, lexicon, words.trim()).then(message => msg.channel.send(message));
     else
         await msg.channel.send(formatLexicon(lexicon) ? 'Words not specified! (usage: `!define lexicon words`)' : 'Lexicon not found!');
 }
