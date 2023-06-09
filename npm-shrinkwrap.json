@@ -27,7 +27,6 @@
         "plural": "^1.1.0",
         "quickchart-js": "^3.1.0",
         "re2": "^1.19.0",
-        "reddit-fetch": "^1.5.1",
         "sanitize-html": "^2.10.0",
         "url-regex-safe": "^3.0.0",
         "xml2js": "^0.6.0"
@@ -2319,14 +2318,6 @@
       },
       "engines": {
         "node": ">=8.10.0"
-      }
-    },
-    "node_modules/reddit-fetch": {
-      "version": "1.5.1",
-      "resolved": "https://registry.npmjs.org/reddit-fetch/-/reddit-fetch-1.5.1.tgz",
-      "integrity": "sha512-N3PNDmCUb3S/z78aOI5Cz5nOiMJl41K5/JDtA3hUM4VZfMObBgvpP4vWaRfNiJ7tWMekCgt9dWdvegf3Lj5XKg==",
-      "dependencies": {
-        "node-fetch": "^2.6.0"
       }
     },
     "node_modules/require-directory": {
@@ -4681,14 +4672,6 @@
       "dev": true,
       "requires": {
         "picomatch": "^2.2.1"
-      }
-    },
-    "reddit-fetch": {
-      "version": "1.5.1",
-      "resolved": "https://registry.npmjs.org/reddit-fetch/-/reddit-fetch-1.5.1.tgz",
-      "integrity": "sha512-N3PNDmCUb3S/z78aOI5Cz5nOiMJl41K5/JDtA3hUM4VZfMObBgvpP4vWaRfNiJ7tWMekCgt9dWdvegf3Lj5XKg==",
-      "requires": {
-        "node-fetch": "^2.6.0"
       }
     },
     "require-directory": {

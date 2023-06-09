@@ -50,8 +50,6 @@
     Display recent news
 !puzzle [theme] [piece]
     Display today's puzzle
-!reddit
-    Fetch hot r/chess posts
 !simul [variant]
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
