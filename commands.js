@@ -8,7 +8,6 @@ const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const fesa = require('./commands/fesa');
 const leaderboard = require('./commands/leaderboard');
-const mahjong = require('./commands/mahjong');
 const news = require('./commands/news');
 const reach = require('./commands/reach');
 const setUser = require('./commands/setUser');
@@ -16,7 +15,6 @@ const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
-const reddit = require('./commands/reddit');
 const schedule = require('./commands/schedule');
 const setGameMode = require('./commands/setGameMode');
 const simul = require('./commands/simul');
@@ -81,12 +79,6 @@ const commands = {
         process: leaderboard.process,
         interact: leaderboard.interact
     },
-    "mahjong": {
-        usage: "",
-        description: "Fetch hot r/mahjong posts",
-        process: mahjong.process,
-        interact: mahjong.interact
-    },
     "news": {
         usage: "",
         description: "Display recent news",
@@ -122,12 +114,6 @@ const commands = {
         description: "Display Reach Mahjong news",
         process: reach.process,
         interact: reach.interact
-    },
-    "reddit": {
-        usage: "",
-        description: "Fetch hot r/shogi posts",
-        process: reddit.process,
-        interact: reddit.interact
     },
     "schedule": {
         usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]",

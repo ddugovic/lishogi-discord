@@ -40,16 +40,12 @@
     Find a coach
 !fesa
     Display FESA news
-!mahjong
-    Fetch hot r/mahjong posts
 !news
     Display recent news
 !puzzle
     Display today's puzzle
 !reach
     Display Reach Mahjong news
-!reddit
-    Fetch hot r/shogi posts
 !schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]
     Schedule event (tournament) game
 !simul
