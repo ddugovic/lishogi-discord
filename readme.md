@@ -38,8 +38,6 @@
     Display the latest announcement
 !puzzle
     Display today's puzzle
-!reddit
-    Fetch r/omgwords image
 !timestamp <year> <month> <day> [hour] [minute] [second] [offset]
     Print discord magic timestamp
 !privacy
