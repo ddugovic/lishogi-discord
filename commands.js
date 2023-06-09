@@ -9,7 +9,6 @@ const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
-const reddit = require('./commands/reddit');
 const setGameMode = require('./commands/setGameMode');
 const simul = require('./commands/simul');
 const streamers = require('./commands/streamers');
@@ -70,12 +69,6 @@ const commands = {
         description: "Display today's puzzle",
         process: puzzle.process,
         reply: puzzle.reply
-    },
-    "reddit": {
-        usage: "",
-        description: "Fetch r/checkers image",
-        process: reddit.process,
-        interact: reddit.interact
     },
     "setgamemode": {
         usage: "[game mode]",

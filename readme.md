@@ -36,8 +36,6 @@
     Find an upcoming or recent broadcast created by lidraughts
 !puzzle
     Display today's puzzle
-!reddit
-    Fetch r/checkers image
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
 !streamers
