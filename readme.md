@@ -32,8 +32,6 @@
     Display recent news
 !puzzle
     Display today's puzzle
-!reddit
-    Fetch hot r/chess posts
 !titled <title>
     Display a titled player URL
 !privacy

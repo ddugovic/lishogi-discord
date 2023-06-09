@@ -44,7 +44,6 @@ const commands = [
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter chess.com player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
-    new SlashCommandBuilder().setName('reddit').setDescription("Fetch hot r/chess posts"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Select your favorite game (or puzzle) mode').addChoices(...ratings)),
     new SlashCommandBuilder().setName('setuser').setDescription("Set your chess.com username").addStringOption(option => option.setName('username').setDescription('Enter your chess.com username').setRequired(true)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition").addStringOption(option => option.setName('variant').setDescription('Select a chess variant').addChoices(...variants)),

@@ -6,7 +6,6 @@ const news = require('./commands/news');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
-const reddit = require('./commands/reddit');
 const setUser = require('./commands/setUser');
 const streamers = require('./commands/streamers');
 const setGameMode = require('./commands/setGameMode');
@@ -54,12 +53,6 @@ const commands = {
         description: "Displays today's puzzle",
         process: puzzle.process,
         interact: puzzle.interact
-    },
-    "reddit": {
-        usage: "",
-        description: "Fetch hot r/chess posts",
-        process: reddit.process,
-        interact: reddit.interact
     },
     "streamers": {
         usage: "",
