@@ -1,4 +1,4 @@
-const { INITIAL_FEN, makeFen, parseFen } = require('chessops/fen');
+const { INITIAL_FEN, makeFen, parseFen } = import('chessops/fen.js');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatPositionURL } = require('../lib/format-site-links');
