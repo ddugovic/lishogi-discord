@@ -38,6 +38,6 @@
   },
   "devDependencies": {
     "mocha": "^10.2.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^1.14.9"
   }
 }
