@@ -1,11 +1,11 @@
-const { INITIAL_FEN, makeFen, parseFen } = import('chessops/fen.js');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
-function eval(author, fen, theme, piece) {
+async function eval(author, fen, theme, piece) {
+    const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen.js');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
@@ -29,9 +29,7 @@ async function formatCloudEval(fen, eval, theme, piece) {
 
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
-    const variations = [];
-    for (const pv in eval.pvs)
-        variations.push(formatVariation(fen, eval.pvs[pv]));
+    const variations = await Promise.all(eval.pvs.map(pv => formatVariation(fen, pv)));
     const red = Math.min(mnodes, 255);
 
     const fenUri = fen.replace(/ /g,'+');
@@ -53,7 +51,8 @@ async function formatCloudEval(fen, eval, theme, piece) {
             embeds.push(new EmbedBuilder().setImage(image));
     }
     if (games.topGames.length) {
-        embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: games.topGames.map(game => formatGame(fen, game)).join('\n') }));
+	const lines = await Promise.all(games.topGames.map(game => formatGame(fen, game)));
+        embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: lines.join('\n') }));
     }
     return { embeds: embeds };
 }
@@ -78,9 +77,10 @@ function getMasterGames(fen) {
         .then(response => response.json());
 }
 
-function formatGame(fen, game) {
+async function formatGame(fen, game) {
     const variation = [game.uci];
-    return `${formatUciVariation(fen, variation)} :chess_pawn: [${game.white.name} - ${game.black.name}](https://lichess.org/${game.id}) *${game.month}*`;
+    const line = await formatUciVariation(fen, variation);
+    return `${line} :chess_pawn: [${game.white.name} - ${game.black.name}](https://lichess.org/${game.id}) *${game.month}*`;
 }
 
 function formatHistory(months) {
@@ -107,9 +107,10 @@ function getSeries(months) {
     return [data, history];
 }
 
-function formatVariation(fen, pv) {
+async function formatVariation(fen, pv) {
     const variation = pv.moves.split(' ');
-    return `**${formatEval(pv)}**: ${formatUciVariation(fen, variation)}`;
+    const line = await formatUciVariation(fen, variation);
+    return `**${formatEval(pv)}**: ${line}`;
 }
 
 function formatEval(pv) {
