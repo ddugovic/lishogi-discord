@@ -3,7 +3,7 @@ const { formatError } = require('../lib/format-pages');
 async function eval(author, sfen) {
     const { parseSfen } = await import('shogiops/sfen.js');
     if (sfen && parseSfen('standard', sfen).isOk) {
-        const url = `https://lishogi.org/api/cloud-eval?fen=${sfen}&multiPv=3`;
+        const url = `https://lishogi.org/api/cloud-eval?sfen=${sfen}&multiPv=3`;
         let status, statusText;
         return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: sfen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -18,6 +18,7 @@ async function eval(author, sfen) {
 }
 
 function formatCloudEval(fen, data) {
+console.log(fen, data);
     const formatter = new Intl.NumberFormat("en-GB", { style: "decimal", signDisplay: 'always' });
     var message = `Nodes: ${Math.floor(data['knodes'] / 1000)}M, Depth: ${data['depth']}`;
     const pvs = data['pvs'];
