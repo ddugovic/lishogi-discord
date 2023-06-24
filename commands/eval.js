@@ -1,19 +1,19 @@
 const { formatError } = require('../lib/format-pages');
 
-async function eval(author, fen) {
+async function eval(author, sfen) {
     const { parseSfen } = await import('shogiops/sfen.js');
-    if (fen && parseSfen(fen).isOk) {
-        const url = `https://lishogi.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+    if (sfen && parseSfen('standard', sfen).isOk) {
+        const url = `https://lishogi.org/api/cloud-eval?fen=${sfen}&multiPv=3`;
         let status, statusText;
-        return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: fen, multiPv: 3 } })
+        return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' }, params: { fen: sfen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-            .then(json => formatCloudEval(fen, json))
+            .then(json => formatCloudEval(sfen, json))
             .catch((err) => {
-                console.log(`Error in eval(${author.username}, ${fen}): ${error}`);
+                console.log(`Error in eval(${author.username}, ${sfen}): ${error}`);
                 return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
     } else {
-        return fen ? 'Invalid SFEN!' : 'Missing SFEN!'
+        return sfen ? 'Invalid SFEN!' : 'Missing SFEN!'
     }
 }
 
