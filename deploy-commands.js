@@ -14,17 +14,18 @@ const arenas = [
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const channels = [
-    { name: 'Top Rated', value: 'Top Rated' },
-    { name: 'Annan shogi', value: 'Annanshogi' },
-    { name: 'Blitz', value: 'Blitz' },
-    { name: 'Bullet', value: 'Bullet' },
-    { name: 'Chu shogi', value: 'Chushogi' },
-    { name: 'Classical', value: 'Classical' },
-    { name: 'Kyoto shogi', value: 'Kyotoshogi' },
-    { name: 'Minishogi', value: 'Minishogi' },
-    { name: 'Rapid', value: 'Rapid' },
-    { name: 'UltraBullet', value: 'UltraBullet' },
-    { name: 'Computer', value: 'Computer' }
+    { name: 'Top Rated', value: 'best' },
+    { name: 'Annan shogi', value: 'annanshogi' },
+    { name: 'Blitz', value: 'blitz' },
+    { name: 'Bullet', value: 'bullet' },
+    { name: 'Chu shogi', value: 'chushogi' },
+    { name: 'Classical', value: 'classical' },
+    { name: 'Kyoto shogi', value: 'kyotoshogi' },
+    { name: 'Minishogi', value: 'minishogi' },
+    { name: 'Rapid', value: 'rapid' },
+    { name: 'Thematic', value: 'thematic' },
+    { name: 'UltraBullet', value: 'ultraBullet' },
+    { name: 'Computer', value: 'computer' }
 ];
 const modes = [
     { name: 'Annan shogi', value: 'annanshogi' },
