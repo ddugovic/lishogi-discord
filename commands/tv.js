@@ -1,24 +1,27 @@
 const { EmbedBuilder } = require('discord.js');
+const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const { formatPages } = require('../lib/format-pages');
+const { formatHandicap, formatVariant } = require('../lib/format-variant');
+const { formatSanVariation, numberVariation } = require('../lib/format-variation');
+const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author);
-    const url = 'https://lishogi.org/tv/channels';
+    const url = `https://lishogi.org/api/tv/${mode ?? 'best'}?clocks=false&nb=3`;
     let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => {
-            if ((channel = getChannel(json, mode || 'Top Rated'))) {
-                return formatChannel(...channel);
-            }
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3 } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
+	.then(text => parseDocument(text))
+        .then(games => {
+            const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
+            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
@@ -28,25 +31,31 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function getChannel(data, mode) {
-    for (const [channel, tv] of Object.entries(data)) {
-        if (camel(channel).toLowerCase() == camel(mode).toLowerCase())
-            return [channel == 'Top Rated' ? 'best' : camel(channel), channel, tv];
-    }
-}
-
-function formatChannel(channel, name, tv) {
-    const user = formatUser(tv.user);
+function formatChannel(channel, name, game) {
+    const players = [game.players.sente, game.players.gote];
     return new EmbedBuilder()
-        .setColor(getColor(tv.rating))
-        .setAuthor({name: user.replace(/\*\*/g, ''), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${tv.user.name}`})
-        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${tv.gameId}.gif`)
-        .setTitle(`${name} :tv: ${user} (${tv.rating})`)
+        .setColor(getColor(game.players))
+        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.id}.gif`)
+        .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
         .setURL(`https://lishogi.org/tv/${channel}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
 }
 
-function getColor(rating) {
+function formatGame(game) {
+    const url = `https://lishogi.org/${game.id}`;
+    const players = [game.players.sente, game.players.gote].map(formatPlayer).join(' - ');
+    const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
+    return `${formatClock(game.clock, game.daysPerTurn)} [${players}](${url})${opening}`;
+}
+
+function formatOpening(opening, moves) {
+    const ply = opening ? opening.ply : 10;
+    const variation = moves.split(/ /).slice(0, ply);
+    return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
+}
+
+function getColor(players) {
+    const rating = ((players.sente.rating ?? 1500) + (players.gote.rating ?? 1500)) / 2;
     const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }
@@ -57,13 +66,6 @@ function formatPlayer(player) {
 
 function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
-}
-
-function camel(str) {
-    str = str.split(/\W/)
-        .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
-        .join('');
-    return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
 function process(bot, msg, mode) {
