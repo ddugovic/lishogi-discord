@@ -14,7 +14,7 @@ const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function profile(author, username) {
+async function profile(author, username, interaction) {
     const user = await User.findById(author.id).exec();
     if (!username) {
         username = await getName(author);
@@ -347,7 +347,7 @@ async function interact(interaction) {
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    await interaction.editReply(await profile(interaction.user, username));
+    await interaction.editReply(await profile(interaction.user, username, interaction));
 }
 
 module.exports = {process, interact};
