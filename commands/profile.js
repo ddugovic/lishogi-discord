@@ -83,7 +83,7 @@ async function formatProfile(user, favoriteMode) {
     if (user.count.all) {
         const games = responses[2];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
-        embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') });
+        embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
         const image = await formatHistory(...responses.slice(3));
@@ -312,7 +312,7 @@ async function formatGame(game, username) {
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
-    const opening = game.moves ? `\n${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
+    const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
     return `${outcome} ${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.variant, game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
