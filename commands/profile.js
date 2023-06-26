@@ -19,10 +19,8 @@ async function profile(author, username) {
         .then(response => formatProfile(api, response.body, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): \
-                ${error.response.status} ${error.response.statusText}`);
-            return `An error occurred handling your request: \
-                ${error.response.status} ${error.response.statusText}`;
+            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            return `An error occurred handling your request: ${error}`;
         });
 }
 
