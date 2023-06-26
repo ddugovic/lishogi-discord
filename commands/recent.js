@@ -4,7 +4,6 @@ const { formatChallengeRule, formatCategory, formatClock } = require('../lib/for
 const { formatLexicon } = require('../lib/format-lexicon');
 const { formatPages } = require('../lib/format-pages');
 const formatPlayer = require('../lib/format-player');
-const timestamp = require('unix-timestamp');
 const User = require('../models/User');
 
 function recent(user, username, fast, interaction) {
@@ -97,7 +96,7 @@ async function formatGame(game, fast) {
         .setTitle(`${playerNames.join(' - ')} (${game.scores.join(' - ')}) #${game.game_id}`)
         .setURL(`https://woogles.io/game/${game.game_id}`)
         .setThumbnail('https://woogles.io/logo192.png')
-        .setDescription(`<t:${Math.round(timestamp.fromDate(game.created_at))}>`)
+        .setDescription(`<t:${Math.round(Date.parse(game.created_at) / 1000)}>`)
 	.setImage(getImageURL(game.game_id, fast))
     const request = game.game_request;
     if (request)

@@ -22,7 +22,6 @@
         "plural": "^1.1.0",
         "re2": "^1.19.1",
         "sanitize-html": "^2.11.0",
-        "unix-timestamp": "^1.0.3",
         "url-regex-safe": "^3.0.0",
         "xml2js": "^0.6.0"
       },
@@ -2935,11 +2934,6 @@
         "node": "^14.17.0 || ^16.13.0 || >=18.0.0"
       }
     },
-    "node_modules/unix-timestamp": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/unix-timestamp/-/unix-timestamp-1.0.3.tgz",
-      "integrity": "sha512-dZYciF170upieWsbs83fQGNdLwhsARiPs3gV30fhtdPl/TLgMRuLA/5z4C9WBoPSnGHvUOrboJWCCtb84bxDPg=="
-    },
     "node_modules/url-regex-safe": {
       "version": "3.0.0",
       "resolved": "https://registry.npmjs.org/url-regex-safe/-/url-regex-safe-3.0.0.tgz",
@@ -5339,11 +5333,6 @@
       "requires": {
         "imurmurhash": "^0.1.4"
       }
-    },
-    "unix-timestamp": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/unix-timestamp/-/unix-timestamp-1.0.3.tgz",
-      "integrity": "sha512-dZYciF170upieWsbs83fQGNdLwhsARiPs3gV30fhtdPl/TLgMRuLA/5z4C9WBoPSnGHvUOrboJWCCtb84bxDPg=="
     },
     "url-regex-safe": {
       "version": "3.0.0",
