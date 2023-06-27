@@ -12,7 +12,7 @@ function broadcast(author, interaction) {
         .then(text => parseDocument(text).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
-            console.log(`Error in broadcast(${author.username}): ${error.stack}`);
+            console.log(`Error in broadcast(${author.username}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
