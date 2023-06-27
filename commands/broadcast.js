@@ -12,7 +12,7 @@ function broadcast(author, interaction) {
         .then(text => parseDocument(text).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
-            console.log(`Error in broadcast(${author.username}): ${error}`);
+            console.log(`Error in broadcast(${author.username}): ${error.stack}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -26,11 +26,18 @@ function formatBroadcast(broadcast) {
         .setURL(broadcast.tour.url)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(formatMarkup(broadcast.tour.markup))
-        .addFields({ name: 'Rounds', value: broadcast.rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound).join('\n') });
+        .addFields({ name: 'Rounds', value: formatRounds(broadcast.rounds) });
 }
 
 function formatRound(round) {
     return `<t:${round.startsAt / 1000}> – ${round.name} *<t:${round.startsAt / 1000}:R>*`;
+}
+
+function formatRounds(rounds) {
+    let schedule = rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound);
+    while (schedule.join('\n').length > 1024)
+	schedule.pop();
+    return schedule.join('\n');
 }
 
 function process(bot, msg) {
