@@ -14,11 +14,8 @@ async function tv(author, mode) {
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
 	.then(text => parseDocument(text))
-        .then(games => {
-            const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
-            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
-        })
-        .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
+        .then(games => formatTv(games, mode))
+        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
@@ -31,6 +28,12 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
+async function formatTv(games, mode) {
+    const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
+    const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
+    return embed.addFields({ name: 'Live Games', value: fields.join('\n\n') });
+}
+
 function formatChannel(channel, name, game) {
     const players = [game.players.white, game.players.black];
     return new EmbedBuilder()
@@ -41,17 +44,17 @@ function formatChannel(channel, name, game) {
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lichess!`);
 }
 
-function formatGame(game) {
+async function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
-    const opening = game.moves ? `\n${formatOpening(game.opening, game.moves)}` : '';
+    const opening = game.moves ? `\n${await formatOpening(game.opening, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} [${players}](${url})${opening}`;
 }
 
-function formatOpening(opening, moves) {
+async function formatOpening(opening, moves) {
     const ply = opening ? opening.ply : 10;
     const variation = moves.split(/ /).slice(0, ply);
-    return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
+    return opening ? `${opening.name} *${await formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
 function getColor(players) {
