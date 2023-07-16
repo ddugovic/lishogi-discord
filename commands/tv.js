@@ -8,7 +8,7 @@ const User = require('../models/User');
 
 async function tv(author, mode) {
     if (!mode)
-        mode = await getMode(author);
+        mode = await getMode(author) ?? 'standard';
     const url = `https://lishogi.org/api/tv/${mode ?? 'best'}?clocks=false&nb=3`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3 } })
@@ -16,7 +16,7 @@ async function tv(author, mode) {
 	.then(text => parseDocument(text))
         .then(games => {
             const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
-            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n\n') });
+            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
@@ -27,7 +27,7 @@ async function tv(author, mode) {
 
 async function getMode(author) {
     const user = await User.findById(author.id).exec();
-    if (user && user.favoriteMode != 'puzzle')
+    if (user && user.favoriteMode in ['annanshogi','chushogi','kyotoshogi','minishogi','computer'])
         return user.favoriteMode;
 }
 
