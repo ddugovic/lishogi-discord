@@ -84,7 +84,7 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.addFields({ name: `:pencil: Recent Blog`, value: parseDocument(blog.entry).slice(0, 3).map(formatEntry).join('\n\n') });
     if (user.count.all) {
         const games = responses[3];
-        const fields = games.filter(game => game.status != 'aborted').map(formatGame);
+        const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
         embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
@@ -322,11 +322,11 @@ function getGames(username) {
         .then(text => parseDocument(text));
 }
 
-function formatGame(game) {
+async function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const status = formatStatus(game);
     const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
-    const opening = game.moves ? `\n${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
+    const opening = game.moves ? `\n${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
@@ -346,9 +346,9 @@ function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function formatOpening(opening, initialFen, moves) {
+async function formatOpening(opening, initialFen, moves) {
     const ply = opening ? opening.ply : 10;
-    const variation = formatSanVariation(initialFen, moves.split(/ /).slice(0, ply));
+    const variation = await formatSanVariation(initialFen, moves.split(/ /).slice(0, ply));
     return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
 }
 

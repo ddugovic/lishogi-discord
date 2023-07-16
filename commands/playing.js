@@ -36,7 +36,7 @@ async function formatCurrentGame(game, username, theme, piece) {
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${formatClock(game.clock, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
-        .setDescription(formatGame(game));
+        .setDescription(await formatGame(game));
     if (game.status != 'started')
         embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}&piece=${piece}`);
     if (game.players.white.analysis || game.players.black.analysis) {
@@ -98,14 +98,14 @@ function getPlayerName(player) {
         return `Stockfish level ${player.aiLevel}`;
 }
 
-function formatGame(game) {
-    const opening = game.moves ? ` ${formatOpening(game.opening, game.initialFen, game.moves)}` : '';
+async function formatGame(game) {
+    const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
-function formatOpening(opening, initialFen, moves) {
+async function formatOpening(opening, initialFen, moves) {
     const variation = moves.split(/ /).slice(0, opening ? opening.ply : 10);
-    return opening ? `${opening.name}\n*${formatSanVariation(initialFen, variation)}*` : `*${numberVariation(variation)}*`;
+    return opening ? `${opening.name}\n*${await formatSanVariation(initialFen, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
 function formatAnalysis(playerNames, white, black) {
