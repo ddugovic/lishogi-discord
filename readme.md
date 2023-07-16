@@ -59,7 +59,7 @@
 !timestamp <year> <month> <day> [hour] [minute] [second] [offset]
     Print discord magic timestamp
 !tv [channel]
-    Share the featured game
+    Display TV game list
 !video
     Search videos for a keyword
 !privacy

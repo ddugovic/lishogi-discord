@@ -159,7 +159,7 @@ const commands = {
     },
     "tv": {
         usage: "[channel]",
-        description: "Share the featured game",
+        description: "Display TV game list",
         process: tv.process,
         interact: tv.interact
     },
