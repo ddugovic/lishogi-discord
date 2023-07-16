@@ -158,8 +158,8 @@ const commands = {
         interact: timestamp.interact
     },
     "tv": {
-        usage: "[game mode]",
-        description: "Share the featured game",
+        usage: "[channel]",
+        description: "Display TV game list",
         process: tv.process,
         interact: tv.interact
     },

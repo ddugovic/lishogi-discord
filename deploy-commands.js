@@ -14,17 +14,11 @@ const arenas = [
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const channels = [
-    { name: 'Top Rated', value: 'best' },
+    { name: 'Standard', value: 'standard' },
     { name: 'Annan shogi', value: 'annanshogi' },
-    { name: 'Blitz', value: 'blitz' },
-    { name: 'Bullet', value: 'bullet' },
     { name: 'Chu shogi', value: 'chushogi' },
-    { name: 'Classical', value: 'classical' },
     { name: 'Kyoto shogi', value: 'kyotoshogi' },
     { name: 'Minishogi', value: 'minishogi' },
-    { name: 'Rapid', value: 'rapid' },
-    { name: 'Thematic', value: 'thematic' },
-    { name: 'UltraBullet', value: 'ultraBullet' },
     { name: 'Computer', value: 'computer' }
 ];
 const modes = [
@@ -86,7 +80,7 @@ const commands = [
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
     new SlashCommandBuilder().setName('timestamp').setDescription("Print discord magic timestamp").addIntegerOption(option => option.setName('year').setDescription('Year (1970-)').setMinValue(1970).setRequired(true)).addIntegerOption(option => option.setName('month').setDescription('Month (1-12)').setMinValue(1).setMaxValue(12).setRequired(true)).addIntegerOption(option => option.setName('day').setDescription('Day (1-31)').setMinValue(1).setMaxValue(31).setRequired(true)).addIntegerOption(option => option.setName('hour').setDescription('Hour (0-23)').setMinValue(0).setMaxValue(23).setRequired(true)).addIntegerOption(option => option.setName('minute').setDescription('Minute (0-59)').setMinValue(0).setMaxValue(59).setRequired(true)).addIntegerOption(option => option.setName('offset').setDescription('UTC offset between -12 and +14').setMinValue(-12).setMaxValue(14)).addIntegerOption(option => option.setName('offsetmin').setDescription('Fractional UTC offset minutes (0-59)').setMinValue(0).setMaxValue(59)),
-    new SlashCommandBuilder().setName('tv').setDescription("Share the featured game").addStringOption(option => option.setName('mode').setDescription('Select a game mode').addChoices(...channels)),
+    new SlashCommandBuilder().setName('tv').setDescription("Display TV game list").addStringOption(option => option.setName('mode').setDescription('Select channel').addChoices(...channels)),
     new SlashCommandBuilder().setName('video').setDescription("Search videos for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords')),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
