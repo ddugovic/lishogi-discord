@@ -21,7 +21,7 @@
     "@hugop/discord-table": "^1.0.1",
     "chessops": "^0.12.7",
     "convert-seconds": "^1.0.1",
-    "customizable-discordjs-pagination": "^2.0.3",
+    "customizable-discordjs-pagination": "^2.1.0",
     "discord-api-types": "^0.37.46",
     "discord-lister": "^1.4.0",
     "discord.js": "^14.11.0",
