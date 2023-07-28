@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const emailRegexSafe = require('email-regex-safe');
+const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
@@ -124,9 +124,8 @@ function formatProfile(username, profile, playTime) {
 
 function formatBio(bio) {
     const social = /:\/\/|\b(?:discord\.gg|github\.com|instagram\.com|twitch\.tv|twitter\.com|youtube\.com|youtu\.be)\b/i;
-    const email = emailRegexSafe();
     for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social) || bio[i].match(email)) {
+        if (bio[i].match(social) || bio[i].match(emailRegex)) {
             bio = bio.slice(0, i);
             break;
         }
