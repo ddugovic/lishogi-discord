@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { checkLink } = require('../lib/format-links');
 const { formatError } = require('../lib/format-pages');
-const validUrl = require('valid-url');
 
 function puzzle(author) {
     const url = 'https://lishogi.org/api/puzzle/daily';
@@ -36,7 +36,7 @@ function getColor(rating) {
 }
 
 function getLink(text) {
-    if (validUrl.isUri(text))
+    if (checkLink(text))
         return text;
 }
 
