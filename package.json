@@ -31,9 +31,8 @@
     "ndjson-parse": "^1.0.4",
     "plural": "^1.1.0",
     "quickchart-js": "^3.1.2",
-    "re2": "^1.19.1",
     "sanitize-html": "^2.11.0",
-    "url-regex-safe": "^3.0.0",
+    "valid-url": "^1.0.9",
     "xml2js": "^0.6.0"
   },
   "devDependencies": {
