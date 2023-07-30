@@ -136,7 +136,7 @@ function setClubs(api, embed, username) {
 }
 
 function formatClub(club) {
-    return club.name.replace(/\bchess(?:\.com)\b/i, ':chess_pawn:');
+    return club.name.replace(/\bchess(?:\.com)?\b/i, ':chess_pawn:');
 }
 
 function setDailyChess(api, embed, username) {
