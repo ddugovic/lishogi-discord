@@ -19,7 +19,7 @@ async function profile(author, username) {
         .then(response => formatProfile(api, response.body, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            console.log(`Error in profile(${author.username}, ${username}): ${error.stack}`);
             return `An error occurred handling your request: ${error}`;
         });
 }
@@ -131,8 +131,12 @@ function setClubs(api, embed, username) {
     return api.getPlayerClubs(username)
         .then(response => {
             const clubs = response.body.clubs;
-            return clubs.length ? embed.addFields({ name: 'Clubs', value: clubs.map(club => club.name).join('\n'), inline: true }) : embed;
+            return clubs.length ? embed.addFields({ name: 'Clubs', value: clubs.map(formatClub).join('\n'), inline: true }) : embed;
         });
+}
+
+function formatClub(club) {
+    return club.name.replace(/\bchess(?:\.com)\b/i, ':chess_pawn:');
 }
 
 function setDailyChess(api, embed, username) {
