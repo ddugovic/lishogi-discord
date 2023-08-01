@@ -17,7 +17,7 @@
   "author": "Tim Beck",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/rest": "^1.7.1",
+    "@discordjs/rest": "^2.0.0",
     "@hugop/discord-table": "^1.0.1",
     "convert-seconds": "^1.0.1",
     "customizable-discordjs-pagination": "^2.1.0",
