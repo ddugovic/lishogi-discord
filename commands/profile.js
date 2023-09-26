@@ -25,8 +25,9 @@ function formatProfile(data, username) {
         .setColor(0x00FFFF)
         .setTitle(player)
         .setURL(`https://woogles.io/profile/${username}`)
-        .setThumbnail(data.avatar_url)
         .setDescription(data.about);
+    if (data.avatar_url)
+        embed = embed.setThumbnail(data.avatar_url);
     if (data.ratings_json && data.stats_json) {
         let [ratings, records] = parseStats(
             parseData(data.ratings_json),
