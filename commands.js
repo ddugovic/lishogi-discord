@@ -116,7 +116,7 @@ const commands = {
         interact: reach.interact
     },
     "schedule": {
-        usage: "<event> <sente> <gote> <year> <month> <day> <local hour> <minute> [local offset] [local offset minutes]",
+        usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute>",
         description: "Schedule event (tournament) game",
         process: schedule.process,
         interact: schedule.interact
@@ -152,7 +152,7 @@ const commands = {
         interact: team.interact
     },
     "timestamp": {
-        usage: "<year> <month> <day> <local hour> <minute> [local offset] [local offset minutes]",
+        usage: "<year> <month> <day> <hour> <minute>",
         description: "Print discord magic timestamp",
         process: timestamp.process,
         interact: timestamp.interact

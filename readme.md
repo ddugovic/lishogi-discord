@@ -46,7 +46,7 @@
     Display today's puzzle
 !reach
     Display Reach Mahjong news
-!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute> [offset] [offset minutes]
+!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute>
     Schedule event (tournament) game
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
@@ -54,7 +54,7 @@
     Display live streamers
 !team
     Search teams for a keyword
-!timestamp <year> <month> <day> <hour> <minute> [offset] [offset minutes]
+!timestamp <year> <month> <day> <hour> <minute>
     Print discord magic timestamp
 !tv [game mode]
     Display TV game list
