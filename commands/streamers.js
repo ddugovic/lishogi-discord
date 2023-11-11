@@ -51,6 +51,9 @@ function formatLang(lang) {
 
 function formatStream(username, title, streamer, stream) {
     const links = formatStreamerLinks(streamer.twitch, streamer.youTube);
+    if (stream.service == 'youTube') {
+        links.reverse();
+    }
     const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), `:satellite: ${links.join(' | ')}`];
     var length = 0;
     var rating = 0;
