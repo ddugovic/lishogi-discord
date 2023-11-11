@@ -3,7 +3,6 @@ const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
-const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
     let status, statusText;
@@ -61,25 +60,13 @@ function formatStream(username, title, streamer, stream) {
     var length = 0;
     var rating = 0;
     if (streamer.headline && streamer.description) {
-        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:')}*\n${formatDescription(streamer.description.split(/\s+/))}`;
+        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:')}*`;
         if ((length = text.length)) {
             rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
             result.push(text);
 	}
     }
     return [`${result.join('\n')}`, rating, length + rating];
-}
-
-function formatDescription(text) {
-    const social = /:\/\/|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    for (let i = 0; i < text.length; i++) {
-        if (text[i].match(social)) {
-            text = text.slice(0, i);
-            break;
-        }
-        text[i] = formatSiteLinks(text[i]);
-    }
-    return text.join(' ');
 }
 
 function chunk(arr, size) {
