@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
-const { formatSocialLinks } = require('../lib/format-links');
+const { formatStreamerLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
 function streamers(author, interaction) {
@@ -50,13 +50,8 @@ function formatLang(lang) {
 }
 
 function formatStream(username, title, streamer, stream) {
-    const links = [`:satellite: [Stream](https://lichess.org/streamer/${username})`];
-    if (streamer.twitch)
-        links.push(formatSocialLinks(streamer.twitch));
-    if (streamer.youTube)
-        links.push(formatSocialLinks(streamer.youTube));
-
-    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
+    const links = formatStreamerLinks(streamer.twitch, streamer.youTube);
+    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lichess\.org/gi, ':horse:').replaceAll(/\|?(?: \!\w+)+/g, ''), `:satellite: ${links.join(' | ')}`];
     var length = 0;
     var rating = 0;
     if (streamer.headline && streamer.description) {
