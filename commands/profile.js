@@ -25,7 +25,6 @@ async function profile(author, username) {
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))
-        .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
@@ -92,7 +91,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return embed;
+    return { embeds: [ embed ] };
 }
 
 function getUserStatus(username) {
