@@ -93,7 +93,7 @@ function getLastName(profile) {
 
 function getFlagAndRating(profile) {
     if (profile)
-        return [profile.flag, profile.fideRating];
+        return [profile.country, profile.fideRating];
 }
 
 function getColor(index, length) {

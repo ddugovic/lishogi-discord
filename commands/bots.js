@@ -55,7 +55,7 @@ function formatBot(bot, mode) {
 
 function getFlagAndName(profile) {
     if (profile)
-        return [profile.flag, profile.firstName, profile.lastName];
+        return [profile.country, profile.firstName, profile.lastName];
 }
 
 function getRating(perfs, mode) {
