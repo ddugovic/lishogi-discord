@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const flags = require('emoji-flags');
 const formatColor = require('../lib/format-color');
+const formatCountry = require('../lib/format-country');
 const { formatStreamerLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
@@ -44,9 +44,9 @@ function formatStreamer(streamer) {
 
 function formatLang(lang) {
     // ASSUME until language emojis exist (or API provides flags), language == country
-    const flag = lang ? flags.countryCode(lang.toUpperCase()) : null;
-    if (flag)
-        return `${flag.emoji} `;
+    const countryName = lang ? formatCountry(lang.toUpperCase()) : null;
+    if (countryName)
+        return `${countryName} `;
 }
 
 function formatStream(username, title, streamer, stream) {
