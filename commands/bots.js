@@ -1,6 +1,6 @@
-const flags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatCountry = require('../lib/format-country');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const { formatError, formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
@@ -34,11 +34,14 @@ function filter(bots) {
 
 function formatBot(bot, mode) {
     const username = bot.username;
-    const [country, firstName, lastName] = getCountryAndName(bot.profile) ?? [];
+    const [flag, firstName, lastName] = getFlagAndName(bot.profile) ?? [];
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
-    if (country && flags.countryCode(country))
-        nickname = `${flags.countryCode(country).emoji} ${nickname}`;
+    if (flag) {
+        const countryName = formatCountry(flag);
+        if (countryName)
+            nickname = `${countryName} ${nickname}`;
+    }
 
     const badges = bot.patron ? '⛩️' : '';
     const embed = new EmbedBuilder()
@@ -50,9 +53,9 @@ function formatBot(bot, mode) {
     return setAbout(embed, bot.username, bot.profile, bot.playTime);
 }
 
-function getCountryAndName(profile) {
+function getFlagAndName(profile) {
     if (profile)
-        return [profile.country, profile.firstName, profile.lastName];
+        return [profile.flag, profile.firstName, profile.lastName];
 }
 
 function getRating(perfs, mode) {

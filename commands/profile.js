@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
-const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatError } = require('../lib/format-pages');
@@ -56,7 +55,7 @@ async function formatProfile(user, favoriteMode) {
     const responses = await Promise.all(requests);
     const status = responses[0][0];
 
-    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
+    const [firstName, lastName] = getName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], user.online, user.playing, user.streaming);
 
@@ -132,9 +131,9 @@ function unranked(mode, rating) {
     return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
-function getCountryAndName(profile) {
+function getName(profile) {
     if (profile)
-        return [profile.country, profile.firstName, profile.lastName];
+        return [profile.firstName, profile.lastName];
 }
 
 function getPerf(username, mode) {

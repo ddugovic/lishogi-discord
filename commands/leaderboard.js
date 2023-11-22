@@ -75,11 +75,11 @@ function formatName(player) {
     var name = getLastName(player.profile) ?? player.username;
     if (player.title)
         name = `**${player.title}** ${name}`;
-    const [country, rating] = getCountryAndRating(player.profile) || [];
-    if (country) {
-        const countryFlag = formatCountry(country);
-        if (countryFlag)
-            name = `${countryFlag} ${name}`;
+    const [flag, rating] = getFlagAndRating(player.profile) || [];
+    if (flag) {
+        const countryName = formatCountry(flag);
+        if (countryName)
+            name = `${countryName} ${name}`;
     }
     if (rating)
         name += ` (${rating})`;
@@ -91,9 +91,9 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getCountryAndRating(profile) {
+function getFlagAndRating(profile) {
     if (profile)
-        return [profile.country, profile.fideRating];
+        return [profile.flag, profile.fideRating];
 }
 
 function getColor(index, length) {
