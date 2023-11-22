@@ -1,7 +1,7 @@
-const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
 const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
+const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
@@ -57,9 +57,12 @@ function formatName(player) {
     var name = getLastName(player.profile) ?? player.username;
     if (player.title)
         name = `**${player.title}** ${name}`;
-    const [country, rating] = getCountryAndRating(player.profile) || [];
-    if (country && countryFlags.countryCode(country))
-        name = `${countryFlags.countryCode(country).emoji} ${name}`;
+    const [flag, rating] = getFlagAndRating(player.profile) || [];
+    if (flag) {
+        const countryName = formatCountry(flag);
+        if (countryName)
+            name = `${countryName} ${name}`;
+    }
     if (rating)
         name += ` (${rating})`;
     return name;
@@ -70,9 +73,9 @@ function getLastName(profile) {
         return profile.lastName;
 }
 
-function getCountryAndRating(profile) {
+function getFlagAndRating(profile) {
     if (profile)
-        return [profile.country, profile.fideRating];
+        return [profile.flag, profile.fideRating];
 }
 
 function getColor(rating) {

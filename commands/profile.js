@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
-const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
@@ -53,7 +52,7 @@ async function formatProfile(user, favoriteMode) {
     const responses = await Promise.all(requests);
     const status = responses[0][0];
 
-    const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
+    const [firstName, lastName] = getName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], status.online, status.playing, status.streaming);
     const url = status.playing ? `https://lichess.org/${status.playingId}` : user.url;
@@ -64,11 +63,6 @@ async function formatProfile(user, favoriteMode) {
         .setThumbnail(user.title == 'BOT' ? 'https://lichess1.org/assets/images/icons/bot.png' : 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
     if (status.online) {
         var nickname = formatNickname(firstName, lastName) ?? user.username;
-        if (country) {
-            const countryName = formatCountry(country);
-            if (countryName)
-                nickname = `${countryName} ${nickname}`;
-        }
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lichess.org/?user=${user.username}#friend`);
     }
@@ -134,9 +128,9 @@ function unranked(mode, rating) {
     return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
-function getCountryAndName(profile) {
+function getName(profile) {
     if (profile)
-        return [profile.country, profile.firstName, profile.lastName];
+        return [profile.firstName, profile.lastName];
 }
 
 function getPerf(username, mode) {
