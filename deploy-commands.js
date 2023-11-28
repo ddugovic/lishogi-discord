@@ -99,7 +99,8 @@ rest.put(Routes.applicationCommands(config.clientId), { body: commands })
     .then(() => console.log(`Successfully registered ${commands.length} application slash commands for client ${config.clientId}.`))
     .catch(console.error);
 
-fetch(`https://discordbotlist.com/api/v1/bots/${config.clientId}/commands`, { method: 'post', body: commands })
-    .then(() => console.log(`Successfully posted to DBL ${commands.length} commands for client ${config.clientId}.`))
+fetch(`https://discordbotlist.com/api/v1/bots/${config.clientId}/commands`, { method: 'post', body: commands, headers: { Accept: 'application/json', Authorization: config.discordbotlisttoken } })
+    .then(response => response.json())
+    .then(json => { console.log(json); console.log(`Posted to DBL ${commands.length} commands for client ${config.clientId}.`); })
     .catch(console.error);
 
