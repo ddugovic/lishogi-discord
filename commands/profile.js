@@ -24,8 +24,9 @@ function formatProfile(data, username) {
     var embed = new EmbedBuilder()
         .setColor(0x00FFFF)
         .setTitle(player)
-        .setURL(`https://woogles.io/profile/${username}`)
-        .setDescription(data.about);
+        .setURL(`https://woogles.io/profile/${username}`);
+    if (data.about)
+        embed = embed.setDescription(data.about);
     if (data.avatar_url)
         embed = embed.setThumbnail(data.avatar_url);
     if (data.ratings_json && data.stats_json) {
