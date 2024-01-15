@@ -91,7 +91,7 @@ const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const rest = new REST({ version: '10' }).setToken(config.token);
-/*
+
 rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { body: guildCommands })
     .then(() => console.log(`Successfully registered ${guildCommands.length} application guild slash commands for client ${config.clientId}.`))
     .catch(console.error);
@@ -99,8 +99,8 @@ rest.put(Routes.applicationGuildCommands(config.clientId, config.guildId), { bod
 rest.put(Routes.applicationCommands(config.clientId), { body: commands })
     .then(() => console.log(`Successfully registered ${commands.length} application slash commands for client ${config.clientId}.`))
     .catch(console.error);
-*/
+/*
 fetch(`https://discordbotlist.com/api/v1/bots/${config.clientId}/commands`, { method: 'post', body: commands, headers: { Accept: 'application/json', Authorization: config.discordbotlisttoken } })
     .then(response => response.json())
     .then(json => console.log(json));
-
+*/
