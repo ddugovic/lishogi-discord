@@ -52,7 +52,7 @@ async function formatProfile(user, favoriteMode) {
     const responses = await Promise.all(requests);
     const status = responses[0][0];
 
-    const [firstName, lastName] = getName(user.profile) ?? [];
+    const [firstName, lastName] = getProfileName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
     const [color, author] = formatUser(user.title, name, user.patron, user.trophies ?? [], status.online, status.playing, status.streaming);
     const url = status.playing ? `https://lichess.org/${status.playingId}` : user.url;
@@ -128,7 +128,7 @@ function unranked(mode, rating) {
     return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
-function getName(profile) {
+function getProfileName(profile) {
     if (profile)
         return [profile.firstName, profile.lastName];
 }
