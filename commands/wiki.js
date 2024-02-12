@@ -2,15 +2,14 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatChunks, formatError } = require('../lib/format-pages');
 const html2md = require('html-to-md');
-const { parseFeed, formatContent, getContent, getURL } = require('../lib/parse-feed');
+const { formatContent } = require('../lib/parse-feed');
 
 function wiki(author, interaction) {
-    const url = 'http://wiki.shogiharbour.com/api.php?urlversion=1&days=30&limit=50&action=feedrecentchanges&feedformat=atom';
+    const url = 'http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=pageprops&list=categorymembers&cmtitle=Category:Strategies';
     let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-        .then(text => parseFeed(text))
-        .then(feed => formatFeed(feed))
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => formatFeed(json))
         .then(embeds => formatChunks(embeds, interaction, 'No recent edit found!'))
         .catch(error => {
             console.log(`Error in wiki(${author.username}): ${error}`);
@@ -19,23 +18,25 @@ function wiki(author, interaction) {
 }
 
 function formatFeed(feed) {
+    const pageids = feed.query.categorymembers.map(member => member.pageid).join('|');
+    const url = `http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=revisions&pageids=${pageids}&formatversion=2&rvprop=content`;
+    return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then(json => formatPages(json));
+}
+
+function formatPages(pages) {
     const embeds = [];
-    for (const entry of feed.entry)
-        embeds.push(formatEntry(entry));
+    for (const page of pages.query.pages)
+        embeds.push(formatRevision(page.revisions[0], page.title));
     return embeds;
 }
 
-function formatEntry(entry) {
-    const timestamp = Math.floor(new Date(entry.updated).getTime() / 1000);
-    const now = Math.floor(new Date().getTime() / 1000);
-    const red = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    const content = getContent(entry.summary);
+function formatRevision(page, title) {
     var embed = new EmbedBuilder()
-        .setColor(formatColor(red, 0, 255-red))
-        .setTitle(entry.title)
-        .setURL(getURL(entry))
-        .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 200)}`);
-    const image = getImage(html2md(content));
+        .setTitle(title)
+        .setDescription(formatContent(page.content, 200));
+    const image = getImage(html2md(page.content));
     if (image)
         embed = embed.setThumbnail(image);
     return embed;
