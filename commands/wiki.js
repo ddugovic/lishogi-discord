@@ -5,13 +5,13 @@ const html2md = require('html-to-md');
 const { parseFeed, formatContent, getContent, getURL } = require('../lib/parse-feed');
 
 function wiki(author, interaction) {
-    const url = 'http://wiki.shogiharbour.com/api.php?urlversion=1&days=7&limit=50&action=feedrecentchanges&feedformat=atom';
+    const url = 'http://wiki.shogiharbour.com/api.php?urlversion=1&days=30&limit=50&action=feedrecentchanges&feedformat=atom';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/atom+xml' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => parseFeed(text))
         .then(feed => formatFeed(feed))
-        .then(embeds => formatChunks(embeds, interaction, 'No edit found!'))
+        .then(embeds => formatChunks(embeds, interaction, 'No recent edit found!'))
         .catch(error => {
             console.log(`Error in wiki(${author.username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
