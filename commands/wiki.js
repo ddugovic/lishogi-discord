@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatChunks, formatError } = require('../lib/format-pages');
-const html2md = require('html-to-md');
 const { formatContent } = require('../lib/parse-feed');
 
 function wiki(author, category, interaction) {
@@ -37,7 +36,7 @@ function formatRevision(page, title) {
         .setTitle(title)
         .setURL(`http://wiki.shogiharbour.com/index.php/${title.replace(' ','_')}`)
         .setDescription(formatContent(page.content, 200));
-    const image = getImage(html2md(page.content));
+    const image = getImage(page.content);
     if (image)
         embed = embed.setThumbnail(image);
     return embed;
