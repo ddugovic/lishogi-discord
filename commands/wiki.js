@@ -4,21 +4,21 @@ const { formatChunks, formatError } = require('../lib/format-pages');
 const html2md = require('html-to-md');
 const { formatContent } = require('../lib/parse-feed');
 
-function wiki(author, interaction) {
-    const url = 'http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=pageprops&list=categorymembers&cmtitle=Category:Strategies';
+function wiki(author, category, interaction) {
+    const url = `http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=pageprops&list=categorymembers&cmtitle=Category:${category}`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatFeed(json))
-        .then(embeds => formatChunks(embeds, interaction, 'No recent edit found!'))
+        .then(json => formatMembers(json))
+        .then(embeds => formatChunks(embeds, interaction, 'No pages found!'))
         .catch(error => {
-            console.log(`Error in wiki(${author.username}): ${error}`);
+            console.log(`Error in wiki(${author.username}, ${category}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 
-function formatFeed(feed) {
-    const pageids = feed.query.categorymembers.map(member => member.pageid).join('|');
+function formatMembers(members) {
+    const pageids = members.query.categorymembers.map(member => member.pageid).join('|');
     const url = `http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=revisions&pageids=${pageids}&formatversion=2&rvprop=content`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
@@ -49,12 +49,12 @@ function getImage(content) {
 }
 
 function process(bot, msg) {
-    wiki(msg.author).then(message => msg.channel.send(message));
+    wiki(msg.author, 'Strategies').then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     await interaction.deferReply();
-    wiki(interaction.user, interaction);
+    wiki(interaction.user, interaction.options.getString('category'), interaction);
 }
 
 module.exports = {process, interact};

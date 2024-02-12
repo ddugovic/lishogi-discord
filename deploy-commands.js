@@ -13,6 +13,12 @@ const arenas = [
     { name: 'Thematic', value: 'thematic' },
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
+const categories = [
+    { name: 'Players', value: 'Players' },
+    { name: 'Proverbs', value: 'Proverbs' },
+    { name: 'Strategies', value: 'Strategies' },
+    { name: 'Terminology', value: 'Terminology' }
+];
 const channels = [
     { name: 'Standard', value: 'standard' },
     { name: 'Annan shogi', value: 'annanshogi' },
@@ -82,7 +88,7 @@ const commands = [
     new SlashCommandBuilder().setName('timestamp').setDescription("Print discord magic timestamp").addIntegerOption(option => option.setName('year').setDescription('Year (2000-2100)').setMinValue(2000).setMaxValue(2100).setRequired(true)).addIntegerOption(option => option.setName('month').setDescription('Month (1-12)').setMinValue(1).setMaxValue(12).setRequired(true)).addIntegerOption(option => option.setName('day').setDescription('Day (1-31)').setMinValue(1).setMaxValue(31).setRequired(true)).addIntegerOption(option => option.setName('utc_hour').setDescription('UTC hour (0-23)').setMinValue(0).setMaxValue(23).setRequired(true)).addIntegerOption(option => option.setName('minute').setDescription('Minute (0-59)').setMinValue(0).setMaxValue(59).setRequired(true)),
     new SlashCommandBuilder().setName('tv').setDescription("Display TV game list").addStringOption(option => option.setName('mode').setDescription('Select channel').addChoices(...channels)),
     new SlashCommandBuilder().setName('video').setDescription("Search videos for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords')),
-    new SlashCommandBuilder().setName('wiki').setDescription("Display recent Shogi Harbour wiki edits"),
+    new SlashCommandBuilder().setName('wiki').setDescription("Display Shogi Harbour wiki pages").addStringOption(option => option.setName('category').setDescription('Category').setRequired(true).addChoices(...categories)),
     new SlashCommandBuilder().setName('help').setDescription("Display a list of available commands")
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.SendMessages).toJSON());

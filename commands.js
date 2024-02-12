@@ -171,8 +171,8 @@ const commands = {
         interact: video.interact
     },
     "wiki": {
-        usage: "",
-        description: "Display recent Shogi Harbour wiki edits",
+        usage: "[category]",
+        description: "Display Shogi Harbour wiki pages",
         process: wiki.process,
         interact: wiki.interact
     }
