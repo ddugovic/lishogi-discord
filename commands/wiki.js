@@ -35,6 +35,7 @@ function formatPages(pages) {
 function formatRevision(page, title) {
     var embed = new EmbedBuilder()
         .setTitle(title)
+        .setURL(`http://wiki.shogiharbour.com/index.php/${title.replace(' ','_')}`)
         .setDescription(formatContent(page.content, 200));
     const image = getImage(html2md(page.content));
     if (image)
@@ -48,8 +49,8 @@ function getImage(content) {
         return match[1];
 }
 
-function process(bot, msg) {
-    wiki(msg.author, 'Strategies').then(message => msg.channel.send(message));
+function process(bot, msg, category) {
+    wiki(msg.author, category).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
