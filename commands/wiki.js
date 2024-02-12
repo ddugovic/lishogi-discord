@@ -5,7 +5,7 @@ const html2md = require('html-to-md');
 const { formatContent } = require('../lib/parse-feed');
 
 function wiki(author, category, interaction) {
-    const url = `http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=pageprops&list=categorymembers&cmtitle=Category:${category}`;
+    const url = `http://wiki.shogiharbour.com/api.php?action=query&format=json&prop=pageprops&list=categorymembers&cmtitle=Category:${category}&cmlimit=50`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
