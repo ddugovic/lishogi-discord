@@ -8,12 +8,13 @@ const guildCommands = [
 
 const lexica = [
     { name: 'CSW 21 (World English)', value: 'CSW21' },
-    { name: 'NWL 20 (North American English)', value: 'NWL20' },
+    { name: 'NWL 23 (North American English)', value: 'NWL23' },
     { name: 'CEL (Common English)', value: 'ECWL' },
     { name: 'Català (Catalan)', value: 'DISC2' },
     { name: 'Deutsch (German)', value: 'RD28' },
     { name: 'Français (French)', value: 'FRA20' },
     { name: 'Norsk (Norwegian)', value: 'NSF21' },
+    { name: 'Polski (Polish)', value: 'OSPS49' },
     { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL20' }
 ];
 
