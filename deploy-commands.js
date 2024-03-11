@@ -12,7 +12,7 @@ const lexica = [
     { name: 'CEL (Common English)', value: 'ECWL' },
     { name: 'Català (Catalan)', value: 'DISC2' },
     { name: 'Deutsch (German)', value: 'RD28' },
-    { name: 'Français (French)', value: 'FRA20' },
+    { name: 'Français (French)', value: 'FRA24' },
     { name: 'Norsk (Norwegian)', value: 'NSF21' },
     { name: 'Polski (Polish)', value: 'OSPS49' },
     { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL20' }
