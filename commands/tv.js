@@ -12,12 +12,11 @@ async function tv(author, mode) {
     let status, statusText;
     return fetch('https://lishogi.org/api/tv/channels')
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(games => {
-            const game = games[mode];
-            return formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), game);
-            //return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
+        .then(channels => {
+            const channel = channels[mode];
+            if (channel) { return formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), channel); }
         })
-        .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
+        .then(embed => { return embed ? { embeds : [ embed ] } : 'Channel not found!' })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
@@ -30,13 +29,23 @@ async function getMode(author) {
         return user.favoriteMode;
 }
 
-function formatChannel(channel, name, game) {
-    return new EmbedBuilder()
-        .setColor(getColor(game))
-        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.gameId}.gif`)
-        .setTitle(`${name} :tv: ${formatPlayer(game)}`)
-        .setURL(`https://lishogi.org/tv/${channel}`)
+function formatChannel(mode, name, channel) {
+    const embed = new EmbedBuilder()
+        .setColor(getColor(channel))
+        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${channel.gameId}.gif`)
+        .setTitle(`${name} :tv: ${formatPlayer(channel)}`)
+        .setURL(`https://lishogi.org/tv/${mode}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
+
+    return getLiveGames(mode)
+        .then(games => games.length == 0 ? embed : embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') }));
+}
+
+async function getLiveGames(channel) {
+    const url = `https://lishogi.org/api/tv/${channel ?? 'best'}?clocks=false&nb=3`;
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3 } })
+        .then(response => response.text())
+        .then(text => parseDocument(text));
 }
 
 function formatGame(game) {
