@@ -9,17 +9,13 @@ const User = require('../models/User');
 async function tv(author, mode) {
     if (!mode)
         mode = await getMode(author) ?? 'standard';
-    const url = `https://lishogi.org/api/tv/${mode ?? 'best'}?clocks=false&nb=3`;
     let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3 } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-	.then(text => parseDocument(text))
+    return fetch('https://lishogi.org/api/tv/channels')
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(games => {
-            let embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
-            if (games.length) {
-                embed = embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
-            }
-            return embed;
+            const game = games[mode];
+            return formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), game);
+            //return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
@@ -35,20 +31,12 @@ async function getMode(author) {
 }
 
 function formatChannel(channel, name, game) {
-    if (game) {
-        const players = [game.players.sente, game.players.gote];
-        return new EmbedBuilder()
-            .setColor(getColor(game.players))
-            .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.id}.gif`)
-            .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
-            .setURL(`https://lishogi.org/tv/${channel}`)
-            .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
-    } else {
-        return new EmbedBuilder()
-            .setTitle(`${name} :tv:`)
-            .setURL(`https://lishogi.org/tv/${channel}`)
-            .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
-    }
+    return new EmbedBuilder()
+        .setColor(getColor(game))
+        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.gameId}.gif`)
+        .setTitle(`${name} :tv: ${formatPlayer(game)}`)
+        .setURL(`https://lishogi.org/tv/${channel}`)
+        .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
 }
 
 function formatGame(game) {
@@ -64,8 +52,8 @@ function formatOpening(opening, moves) {
     return opening ? `${opening.name} *${formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
-function getColor(players) {
-    const rating = ((players.sente.rating ?? 1500) + (players.gote.rating ?? 1500)) / 2;
+function getColor(game) {
+    const rating = game.rating ?? 1500;
     const red = Math.min(Math.max(Math.floor((rating - 2000) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }
