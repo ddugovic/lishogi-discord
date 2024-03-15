@@ -15,8 +15,11 @@ async function tv(author, mode) {
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
 	.then(text => parseDocument(text))
         .then(games => {
-            const embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
-            return embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
+            let embed = formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), games[0]);
+            if (games.length) {
+                embed = embed.addFields({ name: 'Live Games', value: games.map(formatGame).join('\n') });
+            }
+            return embed;
         })
         .then(embed => { return embed ? { embeds: [ embed ] } : 'Channel not found!' })
         .catch(error => {
@@ -32,13 +35,20 @@ async function getMode(author) {
 }
 
 function formatChannel(channel, name, game) {
-    const players = [game.players.sente, game.players.gote];
-    return new EmbedBuilder()
-        .setColor(getColor(game.players))
-        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.id}.gif`)
-        .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
-        .setURL(`https://lishogi.org/tv/${channel}`)
-        .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
+    if (game) {
+        const players = [game.players.sente, game.players.gote];
+        return new EmbedBuilder()
+            .setColor(getColor(game.players))
+            .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${game.id}.gif`)
+            .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
+            .setURL(`https://lishogi.org/tv/${channel}`)
+            .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
+    } else {
+        return new EmbedBuilder()
+            .setTitle(`${name} :tv:`)
+            .setURL(`https://lishogi.org/tv/${channel}`)
+            .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
+    }
 }
 
 function formatGame(game) {
