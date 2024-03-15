@@ -27,7 +27,7 @@ async function tv(author, mode) {
 
 async function getMode(author) {
     const user = await User.findById(author.id).exec();
-    if (user && user.favoriteMode in ['annanshogi','chushogi','kyotoshogi','minishogi','computer'])
+    if (user && user.favoriteMode in ['annanshogi','checkshogi','chushogi','kyotoshogi','minishogi','computer'])
         return user.favoriteMode;
 }
 

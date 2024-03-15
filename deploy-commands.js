@@ -5,6 +5,7 @@ const arenas = [
     { name: 'Annan shogi', value: 'annanshogi' },
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Checkshogi', value: 'checkshogi' },
     { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Kyoto shogi', value: 'kyotoshogi' },
