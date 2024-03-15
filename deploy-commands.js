@@ -23,6 +23,7 @@ const categories = [
 const channels = [
     { name: 'Standard', value: 'standard' },
     { name: 'Annan shogi', value: 'annanshogi' },
+    { name: 'Checkshogi', value: 'checkshogi' },
     { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Kyoto shogi', value: 'kyotoshogi' },
     { name: 'Minishogi', value: 'minishogi' },
@@ -32,6 +33,7 @@ const modes = [
     { name: 'Annan shogi', value: 'annanshogi' },
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Checkshogi', value: 'checkshogi' },
     { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Kyoto shogi', value: 'kyotoshogi' },
@@ -44,6 +46,7 @@ const ratings = [
     { name: 'Annan shogi', value: 'Annanshogi' },
     { name: 'Blitz', value: 'blitz' },
     { name: 'Bullet', value: 'bullet' },
+    { name: 'Checkshogi', value: 'checkshogi' },
     { name: 'Chu shogi', value: 'chushogi' },
     { name: 'Classical', value: 'classical' },
     { name: 'Correspondence', value: 'correspondence' },
