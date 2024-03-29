@@ -7,6 +7,7 @@ const coach = require('./commands/coach');
 const community = require('./commands/community');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
+const feed = require('./commands/feed');
 const jerome = require('./commands/jerome');
 const leaderboard = require('./commands/leaderboard');
 const log = require('./commands/log');
@@ -72,6 +73,12 @@ const commands = {
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         interact: eval.interact
+    },
+    "feed": {
+        usage: "",
+        description: "Display recent feed entries",
+        process: feed.process,
+        interact: feed.interact
     },
     "jerome": {
         usage: "",

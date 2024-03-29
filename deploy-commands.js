@@ -122,6 +122,7 @@ const commands = [
     new SlashCommandBuilder().setName('community').setDescription("Display recent community (or user) blog entries").addStringOption(option => option.setName('username').setDescription('Enter lichess player username')),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lichess username from the bot's database"),
     new SlashCommandBuilder().setName('eval').setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName('fen').setDescription('FEN (Forsyth-Edwards Notation)')).addStringOption(option => option.setName('theme').setDescription('Select a board theme').addChoices(...themes)).addStringOption(option => option.setName('piece').setDescription('Select a piece set').addChoices(...pieces)),
+    new SlashCommandBuilder().setName('feed').setDescription("Display recent feed entries"),
     new SlashCommandBuilder().setName('jerome').setDescription("Display Jerome Gambit news"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Select a leaderboard').addChoices(...leaderboards)),
     new SlashCommandBuilder().setName('log').setDescription("Display recent changes"),

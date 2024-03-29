@@ -44,6 +44,8 @@
     Display recent community (or user) blog entries
 !eval [fen] [theme] [piece]
     Get the cached evaluation of a position, if available
+!feed
+    Display recent feed entries
 !log
     Display recent changes
 !news
