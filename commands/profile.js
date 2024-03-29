@@ -82,7 +82,7 @@ async function formatProfile(user, favoriteMode) {
 
     const studies = responses[2];
     if (studies.length)
-        embed = embed.addFields({ name: `:pencil: Studies`, value: parseDocument(studies).slice(0, 3).map(formatStudy).join('\n') });
+        embed = embed.addFields({ name: `:notebook: Studies`, value: parseDocument(studies).slice(0, 3).map(formatStudy).join('\n') });
     if (user.count.all) {
         const games = responses[3];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
