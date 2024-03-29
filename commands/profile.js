@@ -43,7 +43,7 @@ async function formatProfile(user, favoriteMode) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getBlog(user.username), getGames(user.username) ];
+    const requests = [ getUserStatus(user.username), perf, getBlog(user.username), getStudies(user.username), getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -74,14 +74,17 @@ async function formatProfile(user, favoriteMode) {
 
     const blog = responses[2];
     if (blog.entry)
-        embed = embed.addFields({ name: `:pencil: Recent Blog`, value: parseDocument(blog.entry).slice(0, 3).map(formatEntry).join('\n\n') });
+        embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.entry).slice(0, 3).map(formatEntry).join('\n') });
+    const studies = responses[3];
+    if (studies.length)
+        embed = embed.addFields({ name: `:pencil: Studies`, value: parseDocument(studies).slice(0, 3).map(formatStudy).join('\n') });
     if (user.count.all) {
-        const games = responses[3];
+        const games = responses[4];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
-        embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n\n') });
+        embed = embed.addFields({ name: `:crossed_swords: ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(4));
+        const image = await formatHistory(...responses.slice(5));
         if (image)
             embed = embed.setImage(image);
     }
@@ -164,11 +167,24 @@ function getBlog(username) {
         .then(text => parseFeed(text));
 }
 
+function getStudies(username) {
+    const url = `https://lichess.org/api/study/by/${username}`;
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
+        .then(response => response.text())
+        .then(text => parseDocument(text));
+}
+
 function formatEntry(entry) {
     const published = Math.floor(new Date(entry.published).getTime() / 1000);
     const url = getURL(entry);
     const content = getContent(entry);
     return `<t:${published}:R> [${entry.title}](${url}) *${formatContent(content, 80)}*`;
+}
+
+function formatStudy(study) {
+    const updated = Math.floor(new Date(study.updatedAt).getTime() / 1000);
+    const url = `https://lichess.org/study/${study.id}`;
+    return `<t:${updated}:R> [${study.name}](${url})`;
 }
 
 function getHistory(username) {
