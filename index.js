@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { ActivityType, Client, GatewayIntentBits, InteractionType } = require('discord.js');
+const { ActivityType, Client, Events, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -83,7 +83,23 @@ process.on('unhandledRejection', err => {
 
 client.login(config.token);
 
-client.on('interactionCreate', async interaction => {
+client.on(Events.InteractionCreate, async interaction => {
+    if (interaction.isAutocomplete()) {
+        const commandName = interaction.commandName;
+        try {
+            const focusedValue = interaction.options.getFocused();
+            if (focusedValue.length < 3) {
+                interaction.respond([]);
+	    } else {
+                fetch(`https://lichess.org/api/player/autocomplete?term=${escape(focusedValue)}`)
+                    .then(response => response.json())
+                    .then(json => interaction.respond(json.map(choice => ({ name: choice, value: choice }))));
+	    }
+        } catch (error) {
+            console.log(`Command ${commandName} failed: ${error}`);
+        }
+        return;
+    }
     if (interaction.type != InteractionType.ApplicationCommand) return;
 
     const commandName = interaction.commandName;
@@ -96,8 +112,8 @@ client.on('interactionCreate', async interaction => {
             } else {
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }
-        } catch (e) {
-            console.log(`Command ${commandName} failed:\n${e.stack}`);
+        } catch (error) {
+            console.log(`Command ${commandName} failed: ${error}`);
         }
     } else if (commandName == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
