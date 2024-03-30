@@ -47,7 +47,7 @@ async function formatProfile(user, favoriteMode) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getStudies(user.username), getGames(user.username) ];
+    const requests = [ getUserStatus(user.username), perf, getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -80,16 +80,13 @@ async function formatProfile(user, favoriteMode) {
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: formatAbout(embed, user.username, profile) });
 
-    const studies = responses[2];
-    if (studies.length)
-        embed = embed.addFields({ name: `:notebook: Studies`, value: parseDocument(studies).slice(0, 3).map(formatStudy).join('\n') });
     if (user.count.all) {
-        const games = responses[3];
+        const games = responses[2];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
         embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(4));
+        const image = await formatHistory(...responses.slice(3));
         if (image)
             embed = embed.setImage(image);
     }
@@ -162,19 +159,6 @@ function formatAbout(embed, username, profile) {
             result.push(bio);
     }
     return result.join('\n');
-}
-
-function getStudies(username) {
-    const url = `https://lichess.org/api/study/by/${username}`;
-    return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
-        .then(response => response.text())
-        .then(text => parseDocument(text));
-}
-
-function formatStudy(study) {
-    const updated = Math.floor(new Date(study.updatedAt).getTime() / 1000);
-    const url = `https://lichess.org/study/${study.id}`;
-    return `<t:${updated}:R> [${study.name}](${url})`;
 }
 
 function getHistory(username) {
