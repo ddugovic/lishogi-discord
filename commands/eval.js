@@ -4,14 +4,14 @@ const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
-async function eval(author, fen, theme, piece) {
+async function eval(author, fen, theme, piece, since, until) {
     const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen.js');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3&since=${since}&until=${until}`;
         let status, statusText;
-        return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
+        return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3, since: since, until: until } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
             .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett'))
             .catch(error => {
@@ -121,12 +121,12 @@ function formatEval(pv) {
     return formatter.format(pv.cp/100);
 }
 
-function process(bot, msg, fen) {
-    eval(msg.author, fen).then(url => msg.channel.send(url))
+function process(bot, msg, fen, since, until) {
+    eval(msg.author, fen, since, until).then(url => msg.channel.send(url))
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece')));
+    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until')));
 }
 
 module.exports = {process, interact};

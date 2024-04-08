@@ -69,7 +69,7 @@ const commands = {
         reply: deleteUser.reply
     },
     "eval": {
-        usage: "[fen] [theme] [piece]",
+        usage: "[fen] [theme] [piece] [since] [until]",
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         interact: eval.interact
