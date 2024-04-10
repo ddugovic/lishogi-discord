@@ -9,13 +9,14 @@ async function eval(author, fen, theme, piece, since, until) {
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
-        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3&since=${since}&until=${until}`;
+        const url = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
+        const now = new Date();
         let status, statusText;
-        return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3, since: since, until: until } })
+        return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-            .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett'))
+            .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
             .catch(error => {
-                console.log(`Error in eval(${author.username}, ${fen}, ${theme}, ${piece}): ${error}`);
+                console.log(`Error in eval(${author.username}, ${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
                 return `An error occurred handling your request: ${status} ${statusText}`;
             });
     } else {
@@ -23,8 +24,8 @@ async function eval(author, fen, theme, piece, since, until) {
     }
 }
 
-async function formatCloudEval(fen, eval, theme, piece) {
-    const requests = [ getHistory(fen), getMasterGames(fen) ];
+async function formatCloudEval(fen, eval, theme, piece, since, until) {
+    const requests = [ getHistory(fen), getMasterGames(fen, since, until) ];
     const [history, games] = await Promise.all(requests);
 
     const mnodes = Math.floor(eval.knodes / 1000);
@@ -71,9 +72,9 @@ function getHistory(fen) {
         .then(response => response.json());
 }
 
-function getMasterGames(fen) {
-    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen } })
+function getMasterGames(fen, since, until) {
+    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3&since=${since}&until=${until}`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, since: since, until: until } })
         .then(response => response.json());
 }
 
