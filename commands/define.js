@@ -8,7 +8,7 @@ function paginate(lexicon, status, results) {
 }
 
 async function define(user, lexicon, words, interaction) {
-    const url = 'https://woogles.io/twirp/word_service.WordService/DefineWords';
+    const url = 'https://woogles.io/api/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
     let status, statusText;

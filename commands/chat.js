@@ -1,5 +1,5 @@
 function chat(user) {
-    const url = 'https://woogles.io/twirp/user_service.SocializeService/GetChatsForChannel';
+    const url = 'https://woogles.io/api/user_service.SocializeService/GetChatsForChannel';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { channel: 'chat.lobby' };
     let status, statusText;

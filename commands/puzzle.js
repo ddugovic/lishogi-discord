@@ -1,5 +1,5 @@
 async function puzzle(user) {
-    const url = 'https://woogles.io/twirp/puzzle_service.PuzzleService/GetStartPuzzleId';
+    const url = 'https://woogles.io/api/puzzle_service.PuzzleService/GetStartPuzzleId';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { lexicon: 'NWL20' };
     let status, statusText;

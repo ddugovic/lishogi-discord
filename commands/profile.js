@@ -5,7 +5,7 @@ const formatPlayer = require('../lib/format-player');
 const User = require('../models/User');
 
 async function profile(user, username) {
-    const url = 'https://woogles.io/twirp/user_service.ProfileService/GetProfile';
+    const url = 'https://woogles.io/api/user_service.ProfileService/GetProfile';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { username: username.toLowerCase() };
     let status, statusText;

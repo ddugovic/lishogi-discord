@@ -7,7 +7,7 @@ const formatPlayer = require('../lib/format-player');
 const User = require('../models/User');
 
 function recent(user, username, fast, interaction) {
-    const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetRecentGames';
+    const url = 'https://woogles.io/api/game_service.GameMetadataService/GetRecentGames';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { username: username, numGames: 10, offset: 0 };
     let status, statusText;
@@ -22,7 +22,7 @@ function recent(user, username, fast, interaction) {
 }
 
 function getHistory(playerNicknames, gameId) {
-    const url = 'https://woogles.io/twirp/game_service.GameMetadataService/GetGameHistory';
+    const url = 'https://woogles.io/api/game_service.GameMetadataService/GetGameHistory';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { gameId: gameId };
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
