@@ -14,11 +14,21 @@ async function define(user, lexicon, words, interaction) {
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPages('Word', paginate(lexicon, status, json.results) ?? [], interaction, 'Words not found!'))
+        .then(json => formatPages('Word', paginate(lexicon, status, filterResults(json.results)) ?? [], interaction, 'Word(s) not found!'))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
+}
+
+function filterResults(results) {
+    var a = [];
+    Object.entries(results).forEach(([key, value]) => {
+        if (value.v) {
+            a[key] = value;
+        }
+    });
+    return a;
 }
 
 function formatEntry(lexicon, word, entry) {
