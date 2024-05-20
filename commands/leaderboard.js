@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
-const formatCountry = require('../lib/format-country');
+const formatLang = require('../lib/format-lang');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
@@ -59,9 +59,9 @@ function formatName(player) {
         name = `**${player.title}** ${name}`;
     const [flag, rating] = getFlagAndRating(player.profile) || [];
     if (flag) {
-        const countryName = formatCountry(flag);
-        if (countryName)
-            name = `${countryName} ${name}`;
+        const flagName = formatLang(flag);
+        if (flagName)
+            name = `${flagName} ${name}`;
     }
     if (rating)
         name += ` (${rating})`;

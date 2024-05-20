@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatCountry = require('../lib/format-country');
+const formatLang = require('../lib/format-lang');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLink, getSiteLinks } = require('../lib/format-site-links');
 const formatPages = require('../lib/format-pages');
@@ -45,9 +45,9 @@ function formatBot(bot, mode) {
     var nickname = firstName ?? lastName ?? username;
     const name = (firstName && lastName) ? `${firstName} ${lastName}` : nickname;
     if (flag) {
-        const countryName = formatCountry(flag);
-        if (countryName)
-            nickname = `${countryName} ${nickname}`;
+        const flagName = formatLang(flag);
+        if (flagName)
+            nickname = `${flagName} ${nickname}`;
     }
 
     const badges = bot.patron ? '🦄' : '';

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatCountry = require('../lib/format-country');
+const formatLang = require('../lib/format-lang');
 const { formatStreamerLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
@@ -35,18 +35,19 @@ function getColor(rating) {
 }
 
 function formatStreamer(streamer) {
-    const lang = formatLang(streamer.stream.lang) ?? '';
+    const lang = formatFlair(streamer.stream.lang) ?? '';
     const name = streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
     const badges = streamer.patron ? ' 🦄' : '';
     const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
     return { name : `${lang}${name}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
 }
 
-function formatLang(lang) {
-    // ASSUME until language emojis exist (or API provides flags), language == country
-    const countryName = lang ? formatCountry(lang.toUpperCase()) : null;
-    if (countryName)
-        return `${countryName} `;
+function formatFlair(lang) {
+    // ASSUME until language emojis exist (or API provides flags), language == flag
+    // Future work: map some flairs to discord emojis
+    const flagName = lang ? formatLang(lang.toUpperCase()) : null;
+    if (flagName)
+        return `${flagName} `;
 }
 
 function formatStream(username, title, streamer, stream) {
