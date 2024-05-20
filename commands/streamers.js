@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatFlair = require('../lib/format-flair');
 const formatLang = require('../lib/format-lang');
 const { formatStreamerLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -35,17 +36,23 @@ function getColor(rating) {
 }
 
 function formatStreamer(streamer) {
-    const lang = formatFlair(streamer.stream.lang) ?? '';
+    const lang = formatStreamLang(streamer.stream) ?? '';
     const name = streamer.title ? `${streamer.title} ${streamer.name}` : streamer.name;
-    const badges = streamer.patron ? ' 🦄' : '';
+    const flair = formatStreamerFlair(streamer) ?? '';
+    const badges = streamer.patron ? ' 🪽' : '';
     const [profile, rating, score] = formatStream(streamer.name, streamer.title, streamer.streamer, streamer.stream);
-    return { name : `${lang}${name}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
+    return { name : `${lang}${name}${flair}${badges}`, value: profile, inline: true, 'rating': rating, 'score': score };
 }
 
-function formatFlair(lang) {
+function formatStreamerFlair(streamer) {
+    const flair = streamer.flair ? formatFlair(streamer.flair) : null;
+    if (flair)
+        return `${flair} `;
+}
+
+function formatStreamLang(stream) {
     // ASSUME until language emojis exist (or API provides flags), language == flag
-    // Future work: map some flairs to discord emojis
-    const flagName = lang ? formatLang(lang.toUpperCase()) : null;
+    const flagName = stream.lang ? formatLang(stream.lang.toUpperCase()) : null;
     if (flagName)
         return `${flagName} `;
 }
