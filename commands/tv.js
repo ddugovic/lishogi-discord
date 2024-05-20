@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const { formatThumbnailURL } = require('../lib/format-site-links');
 const formatVariant = require('../lib/format-variant');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
@@ -38,7 +39,7 @@ function formatChannel(channel, name, game) {
     const players = [game.players.white, game.players.black];
     return new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setThumbnail(`https://lichess1.org/game/export/gif/thumbnail/${game.id}.gif`)
+        .setThumbnail(formatThumbnailURL(game.id))
         .setTitle(`${name} :tv: ${players.map(formatPlayer).join(' - ')}`)
         .setURL(`https://lichess.org/tv/${channel}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lichess!`);

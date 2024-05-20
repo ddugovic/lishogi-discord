@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
-const { formatSiteLinks } = require('../lib/format-site-links');
+const { formatSiteLinks, formatThumbnailURL } = require('../lib/format-site-links');
 
 function simul(author, mode, interaction) {
     const url = 'https://lichess.org/api/simul';
@@ -68,7 +68,7 @@ function formatHost(player) {
 
 function getImage(host) {
     if (host.gameId)
-        return `https://lichess1.org/game/export/gif/${host.gameId}.gif`;
+        return formatThumbnailURL(host.gameId);
 }
 
 function formatDescription(text) {

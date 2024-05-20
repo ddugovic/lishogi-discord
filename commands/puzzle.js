@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const { formatThumbnailURL } = require('../lib/format-site-links');
 
 function puzzle(author, theme, piece) {
     const url = 'https://lichess.org/api/puzzle/daily';
@@ -25,7 +26,7 @@ function formatPuzzle(game, puzzle, theme, piece) {
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
 	])
-        .setImage(`https://lichess1.org/training/export/gif/thumbnail/${puzzle.id}.gif?theme=${theme}&piece=${piece}`);
+        .setImage(formatThumbnailURL(game.id, theme, piece));
 }
 
 function getColor(rating) {

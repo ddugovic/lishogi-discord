@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const { formatGifURL } = require('../lib/format-site-links');
 const { formatSanVariation, numberVariation } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
@@ -38,7 +39,7 @@ async function formatCurrentGame(game, username, theme, piece) {
         .setURL(`https://lichess.org/${game.id}`)
         .setDescription(await formatGame(game));
     if (game.status != 'started')
-        embed = embed.setImage(`https://lichess1.org/game/export/gif/${game.id}.gif?theme=${theme}&piece=${piece}`);
+        embed = embed.setImage(formatGifURL(game.id, theme, piece));
     if (game.players.white.analysis || game.players.black.analysis) {
         const players = [game.players.white, game.players.black];
         const playerNames = players.map(getPlayerNameAndAccuracy);
