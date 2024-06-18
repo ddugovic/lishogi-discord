@@ -17,7 +17,7 @@ function broadcast(author, interaction) {
 }
 
 function formatBroadcast(broadcast) {
-    const red = Math.floor(255 / broadcast.tour.tier);
+    const red = Math.floor(255 / (broadcast.tour.tier + 1));
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
