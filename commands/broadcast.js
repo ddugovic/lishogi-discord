@@ -8,7 +8,7 @@ function broadcast(author, interaction) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => (json.active ?? json.upcoming ?? json.past).map(formatBroadcast))
+        .then(json => formatBroadcasts(json))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): ${error}`);
@@ -16,8 +16,12 @@ function broadcast(author, interaction) {
         });
 }
 
+function formatBroadcasts(json) {
+    return (json.active ?? json.upcoming ?? (json.past ? json.past.currentPageResults : [])).map(formatBroadcast)
+}
+
 function formatBroadcast(broadcast) {
-    const red = Math.floor(255 / (broadcast.tour.tier + 1));
+    const red = Math.floor(255 / (broadcast.tour.tier || 1));
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
