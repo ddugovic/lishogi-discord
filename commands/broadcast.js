@@ -23,7 +23,7 @@ function formatBroadcast(broadcast) {
         .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
         .setTitle(broadcast.tour.description)
         .setURL(broadcast.tour.url)
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail(broadcast.tour.image ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(formatMarkup(broadcast.tour.markup))
         .addFields({ name: 'Next or Last Round', value: formatRound(broadcast.lastRound) });
 }
