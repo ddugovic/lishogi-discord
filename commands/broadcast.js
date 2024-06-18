@@ -2,14 +2,13 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatMarkup } = require('../lib/format-html');
 const formatPages = require('../lib/format-pages');
-const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
-    const url = 'https://lichess.org/api/broadcast';
+    const url = 'https://lichess.org/api/broadcast/top';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-        .then(text => parseDocument(text).map(formatBroadcast))
+        .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
+        .then(json => (json.active ?? json.upcoming ?? json.past).map(formatBroadcast))
         .then(embeds => formatPages(embeds, interaction, 'No broadcast found!'))
         .catch(error => {
             console.log(`Error in broadcast(${author.username}): ${error}`);
@@ -18,7 +17,7 @@ function broadcast(author, interaction) {
 }
 
 function formatBroadcast(broadcast) {
-    const red = Math.min(broadcast.rounds.length * 20, 255);
+    const red = Math.floor(255 / broadcast.tour.tier);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
         .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
@@ -26,18 +25,11 @@ function formatBroadcast(broadcast) {
         .setURL(broadcast.tour.url)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setDescription(formatMarkup(broadcast.tour.markup))
-        .addFields({ name: 'Rounds', value: formatRounds(broadcast.rounds) });
+        .addFields({ name: 'Next or Last Round', value: formatRound(broadcast.lastRound) });
 }
 
 function formatRound(round) {
     return `<t:${round.startsAt / 1000}> – ${round.name} *<t:${round.startsAt / 1000}:R>*`;
-}
-
-function formatRounds(rounds) {
-    let schedule = rounds.sort((a,b) => a.startsAt - b.startsAt).map(formatRound);
-    while (schedule.join('\n').length > 1024)
-	schedule.pop();
-    return schedule.join('\n');
 }
 
 function process(bot, msg) {
