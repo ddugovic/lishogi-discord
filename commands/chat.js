@@ -26,7 +26,7 @@ function process(bot, msg) {
 
 async function interact(interaction) {
     await interaction.deferReply({ ephemeral: true });
-    await interaction.reply({ content: await chat(interaction.user), ephemeral: true });
+    await interaction.editReply({ content: await chat(interaction.user), ephemeral: true });
 }
 
 module.exports = {process, interact};
