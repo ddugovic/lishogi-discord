@@ -4,20 +4,20 @@ const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
+const { escape } = require('querystring')
 const plural = require('plural');
 
-function team(user, text, interaction) {
+function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
-    text = text.replace(/\s+/, '');
-    const url = `https://playstrategy.org/api/team/search?text=${text}`;
+    const url = `https://playstrategy.org/api/team/search?text=${escape(text)}`;
     let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/json' } })
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { text: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => json.currentPageResults.map(formatTeam))
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
-            console.log(`Error in team(${user.username}): ${error}`);
+            console.log(`Error in team(${author.username}, ${text}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
@@ -25,16 +25,16 @@ function team(user, text, interaction) {
 function formatTeam(team) {
     const count = Math.min(Math.max(Math.floor(team.nbMembers / 100), 0), 255);
     const description = formatDescription(team.description);
-    return new EmbedBuilder()
+    var embed = new EmbedBuilder()
         .setColor(formatColor(count, 0, 255-count))
         .setThumbnail(getImage(team.description) ?? 'https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://playstrategy.org/team/${team.id}`)
         .setDescription(cleanDescription(description))
-        .addFields(
-            { name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true },
-            { name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true }
-	);
+        .addFields({ name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true });
+    if (team.leaders.length)
+        embed = embed.addFields({ name: plural('Leader', team.leaders.length), value: team.leaders.map(formatLeader).join(', '), inline: true });
+    return embed;
 }
 
 function cleanDescription(description) {
@@ -57,7 +57,6 @@ function formatDescription(text) {
 
 function formatAbout(about) {
     const social = /\bdiscord\.gg\b|\bmedia\.giphy\.com\b|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
-    const username = /@(\w+)/g;
     for (let i = 0; i < about.length; i++) {
         if (about[i].match(social)) {
             about.splice(i, 1);
@@ -81,7 +80,7 @@ function process(bot, msg, text) {
     team(msg.author, text).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
+function interact(interaction) {
     team(interaction.user, interaction.options.getString('text'), interaction);
 }
 

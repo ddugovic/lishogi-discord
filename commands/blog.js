@@ -27,7 +27,7 @@ function formatEntry(entry) {
         .setColor(formatColor(255-blue, 0, blue))
         .setTitle(entry.title)
         .setURL(getURL(entry))
-        .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
+        .setThumbnail('https://playstrategy.org/assets/logo/playstrategy-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
     const authorName = getAuthorName(entry);
     if (authorName)
@@ -42,8 +42,8 @@ function process(bot, msg) {
     blog(msg.author).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return blog(interaction.user, interaction);
+function interact(interaction) {
+    blog(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

@@ -245,7 +245,7 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /https?:\/\/(?!lichess\.org|playstrategy\.org|playstrategy\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social =  /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
