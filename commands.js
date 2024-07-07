@@ -62,7 +62,7 @@ const commands = {
         usage: "[username]",
         description: "Display your (or a user's) profile",
         process: profile.process,
-        reply: profile.reply
+        interact: profile.interact
     },
     "puzzle": {
         usage: "",
