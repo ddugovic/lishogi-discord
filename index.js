@@ -108,7 +108,9 @@ client.on(Events.InteractionCreate, async interaction => {
         try {
             if (command.interact) {
                 await interaction.deferReply();
-                command.interact(interaction);
+                const error = await command.interact(interaction);
+                if (error)
+                    await interaction.editReply({ content: error });
             } else {
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }
