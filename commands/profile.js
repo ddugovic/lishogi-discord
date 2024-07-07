@@ -14,12 +14,11 @@ const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function profile(author, username, interaction) {
-    const user = await User.findById(author.id).exec();
+function profile(user, username, interaction) {
     if (!username) {
-        username = await getName(author);
-        if (!username)
+        if (!user)
             return 'You need to set your lishogi username with setuser!';
+        username = user.lishogiName;
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
@@ -29,15 +28,13 @@ async function profile(author, username, interaction) {
         .then(json => formatProfile(json, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            console.log(`Error in profile(${user}, ${username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
 
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lishogiName;
+function getUser(userId) {
+    return User.findById(userId).exec();
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
@@ -338,16 +335,18 @@ function title(str) {
         .join(' ');
 }
 
-function process(bot, msg, username) {
-    profile(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    const user = await User.findById(msg.author.id).exec();
+    profile(user, username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    const username = interaction.options.getString('username') || await getName(interaction.user);
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    await interaction.editReply(await profile(interaction.user, username, interaction));
+    await interaction.editReply(await profile(user, username, interaction));
 }
 
 module.exports = {process, interact};
