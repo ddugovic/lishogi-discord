@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const { formatGifURL } = require('../lib/format-site-links');
-const { formatSanVariation, numberVariation } = require('../lib/format-variation');
+const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -102,11 +102,6 @@ function getPlayerName(player) {
 async function formatGame(game) {
     const opening = game.moves ? ` ${await formatOpening(game.opening, game.initialFen, game.moves)}` : '';
     return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
-}
-
-async function formatOpening(opening, initialFen, moves) {
-    const variation = moves.split(/ /).slice(0, opening ? opening.ply : 10);
-    return opening ? `${opening.name}\n*${await formatSanVariation(initialFen, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
 function formatAnalysis(playerNames, white, black) {

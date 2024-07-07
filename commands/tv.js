@@ -3,7 +3,7 @@ const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const { formatThumbnailURL } = require('../lib/format-site-links');
 const formatVariant = require('../lib/format-variant');
-const { formatSanVariation, numberVariation } = require('../lib/format-variation');
+const { formatOpening } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
@@ -48,14 +48,8 @@ function formatChannel(channel, name, game) {
 async function formatGame(game) {
     const url = `https://lichess.org/${game.id}`;
     const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
-    const opening = game.moves ? `\n${await formatOpening(game.opening, game.moves)}` : '';
+    const opening = game.moves ? `\n${await formatOpening(game.opening, null, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} [${players}](${url})${opening}`;
-}
-
-async function formatOpening(opening, moves) {
-    const ply = opening ? opening.ply : 10;
-    const variation = moves.split(/ /).slice(0, ply);
-    return opening ? `${opening.name} *${await formatSanVariation(null, variation)}*` : `*${numberVariation(variation)}*`;
 }
 
 function getColor(players) {

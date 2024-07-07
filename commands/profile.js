@@ -6,7 +6,7 @@ const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
-const { formatSanVariation } = require('../lib/format-variation');
+const { formatOpening } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const { parseFeed, formatContent, getContent, getURL } = require('../lib/parse-feed');
@@ -353,12 +353,6 @@ function formatPlayerName(player) {
 
 function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
-}
-
-async function formatOpening(opening, initialFen, moves) {
-    const ply = opening ? opening.ply : 10;
-    const variation = await formatSanVariation(initialFen, moves.split(/ /).slice(0, ply));
-    return opening ? `${opening.name} *${variation}*` : `*${variation}*`;
 }
 
 function title(str) {
