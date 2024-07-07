@@ -6,7 +6,7 @@ const User = require('../models/User');
 
 async function playing(user, username) {
     if (!username) {
-        username = await getName(author);
+        username = await getName(user.id);
         if (!username)
             return 'You need to set your playstrategy username with setuser!';
     }
@@ -22,8 +22,8 @@ async function playing(user, username) {
         });
 }
 
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
+async function getName(userId) {
+    const user = await User.findById(userId).exec();
     if (user)
         return user.playstrategyName;
 }
