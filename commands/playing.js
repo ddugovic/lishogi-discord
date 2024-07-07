@@ -12,7 +12,7 @@ async function playing(author, username, theme, piece) {
         if (!username)
             return 'You need to set your lichess username with setuser!';
     }
-    const url = `https://lichess.org/api/user/${username}/current-game?accuracy=true&clocks=false&evals=false`;
+    const url = `https://lichess.org/api/user/${username}/current-game?accuracy=true&clocks=false&division=false&evals=false`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
