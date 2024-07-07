@@ -9,7 +9,6 @@ const eval = require('./commands/eval');
 const fesa = require('./commands/fesa');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
-const reach = require('./commands/reach');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
@@ -109,12 +108,6 @@ const commands = {
         description: "Display today's puzzle",
         process: puzzle.process,
         interact: puzzle.interact
-    },
-    "reach": {
-        usage: "",
-        description: "Display Reach Mahjong news",
-        process: reach.process,
-        interact: reach.interact
     },
     "schedule": {
         usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute>",

@@ -44,8 +44,6 @@
     Display recent news
 !puzzle
     Display today's puzzle
-!reach
-    Display Reach Mahjong news
 !schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute>
     Schedule event (tournament) game
 !simul
