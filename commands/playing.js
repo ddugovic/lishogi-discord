@@ -133,7 +133,7 @@ async function process(bot, msg, username) {
 }
 
 async function interact(interaction) {
-    const user = await User.findById(msg.author.id).exec();
+    const user = await User.findById(interaction.user.id).exec();
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
