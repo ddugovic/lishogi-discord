@@ -101,6 +101,7 @@ function formatRestrictions(arena) {
 
 function formatSchedule(schedule) {
     return schedule.freq == 'shield' ? ' :shield:' :
+        schedule.freq == 'hourly' ? ' :clock:' :
         schedule.freq == 'daily' ? ' :calendar:' :
         schedule.freq == 'weekly' ? ' :calendar:' :
         schedule.freq == 'monthly' ? ' :calendar:' :
