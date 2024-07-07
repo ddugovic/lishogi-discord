@@ -14,12 +14,9 @@ const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function profile(author, username, interaction) {
-    const user = await User.findById(author.id).exec();
+function profile(user, username, interaction) {
     if (!username) {
-        username = await getName(author);
-        if (!username)
-            return 'You need to set your lidraughts username with setuser!';
+        return 'You need to set your lidraughts username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lidraughts.org/api/user/${username}?trophies=true`;
@@ -29,15 +26,9 @@ async function profile(author, username, interaction) {
         .then(json => formatProfile(json, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            console.log(`Error in profile(${user}, ${username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
-}
-
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lidraughtsName;
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
@@ -281,7 +272,7 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lidraughts\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
@@ -337,14 +328,16 @@ function title(str) {
         .join(' ');
 }
 
-function process(bot, msg, username) {
-    profile(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    const user = await User.findById(msg.author.id).exec();
+    profile(user, username || user?.lidraughtsName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    const username = interaction.options.getString('username') || await getName(interaction.user);
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.lidraughtsName;
     if (!username)
-        return await interaction.reply({ content: 'You need to set your lidraughts username with setuser!', ephemeral: true });
+        return 'You need to set your lidraughts username with setuser!';
     await interaction.deferReply();
     await interaction.editReply(await profile(interaction.user, username, interaction));
 }

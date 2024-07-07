@@ -87,20 +87,22 @@ client.on('interactionCreate', async interaction => {
     if (interaction.type != InteractionType.ApplicationCommand) return;
 
     console.log(interaction.user.id, interaction.commandName);
-    const cmdTxt = interaction.commandName;
-    let command = commands[cmdTxt];
+    const command = commands[interaction.commandName];
     if (command) {
         try {
-            if (command.interact)
-                command.interact(interaction);
-            else
-                await interaction.editReply(await command.reply(interaction));
+            if (command.interact) {
+                const error = await command.interact(interaction);
+                if (error)
+                    await interaction.reply({ content: error, ephemeral: true });
+            } else {
+                await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
+            }
         } catch (e) {
-            console.log(`Command failed:\n ${e.stack}`);
+            console.log(`Command failed:\n${e.stack}`);
         }
-    } else if (cmdTxt == 'help') {
+    } else if (interaction.commandName == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
-    } else if (cmdTxt == 'stop') {
+    } else if (interaction.commandName == 'stop') {
         await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
         stop(client, interaction.user.id);
     } else if (config.respondToInvalid) {
