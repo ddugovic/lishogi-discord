@@ -7,7 +7,7 @@ const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
-async function playing(author, username) {
+function playing(user, username) {
     if (!username) {
         username = await getName(author);
         if (!username)
@@ -136,15 +136,17 @@ function title(str) {
 }
 
 function process(bot, msg, username) {
-    playing(msg.author, username).then(message => msg.channel.send(message));
+    const user = await User.findById(msg.author.id).exec();
+    playing(user, username).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    const username = interaction.options.getString('username') || await getUsername(interaction.user);
+    const user = await User.findById(msg.author.id).exec();
+    const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    await interaction.editReply(await playing(interaction.user, username));
+    await interaction.editReply(await playing(user, username));
 }
 
 async function getUsername(author, username) {
