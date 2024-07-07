@@ -18,7 +18,6 @@ async function eval(author, sfen) {
 }
 
 function formatCloudEval(fen, data) {
-console.log(fen, data);
     const formatter = new Intl.NumberFormat("en-GB", { style: "decimal", signDisplay: 'always' });
     var message = `Nodes: ${Math.floor(data['knodes'] / 1000)}M, Depth: ${data['depth']}`;
     const pvs = data['pvs'];
