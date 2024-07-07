@@ -7,11 +7,9 @@ const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
-function playing(user, username) {
+function playing(username, interaction) {
     if (!username) {
-        username = await getName(author);
-        if (!username)
-            return 'You need to set your lishogi username with setuser!';
+        return 'You need to set your lishogi username with setuser!';
     }
     const url = `https://lishogi.org/api/user/${username}/current-game`;
     let status, statusText;
@@ -20,15 +18,9 @@ function playing(user, username) {
         .then(json => formatCurrentGame(json, username))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in playing(${author.username}, ${username}): ${error}`);
+            console.log(`Error in playing(${username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
-}
-
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lishogiName;
 }
 
 async function formatCurrentGame(game, username) {
@@ -135,9 +127,9 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, username) {
+async function process(bot, msg, username) {
     const user = await User.findById(msg.author.id).exec();
-    playing(user, username).then(message => msg.channel.send(message));
+    playing(username || user?.lishogiName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
@@ -146,7 +138,7 @@ async function interact(interaction) {
     if (!username)
         return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    await interaction.editReply(await playing(user, username));
+    await interaction.editReply(await playing(username, interaction));
 }
 
 async function getUsername(author, username) {

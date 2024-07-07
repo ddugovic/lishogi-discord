@@ -16,9 +16,7 @@ const User = require('../models/User');
 
 function profile(user, username, interaction) {
     if (!username) {
-        if (!user)
-            return 'You need to set your lishogi username with setuser!';
-        username = user.lishogiName;
+        return 'You need to set your lishogi username with setuser!';
     }
     const favoriteMode = user ? user.favoriteMode : '';
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
@@ -28,7 +26,7 @@ function profile(user, username, interaction) {
         .then(json => formatProfile(json, favoriteMode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in profile(${user}, ${username}): ${error}`);
+            console.log(`Error in profile(${username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
         });
 }
@@ -337,7 +335,7 @@ function title(str) {
 
 async function process(bot, msg, username) {
     const user = await User.findById(msg.author.id).exec();
-    profile(user, username).then(message => msg.channel.send(message));
+    profile(user, username || user?.lishogiName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
