@@ -90,7 +90,6 @@ client.on('interactionCreate', async interaction => {
     const cmdTxt = interaction.commandName;
     let command = commands[cmdTxt];
     if (command) {
-        await interaction.deferReply();
         try {
             if (command.interact)
                 command.interact(interaction);
