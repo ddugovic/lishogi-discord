@@ -58,7 +58,6 @@ const commands = [
     new SlashCommandBuilder().setName('broadcast').setDescription("Find an upcoming or recent broadcast created by lidraughts"),
     new SlashCommandBuilder().setName('deleteuser').setDescription("Delete your lidraughts username from the bot's database"),
     new SlashCommandBuilder().setName('leaderboard').setDescription("Display top-rated players").addStringOption(option => option.setName('mode').setDescription('Enter a game mode').addChoices(...modes)),
-    new SlashCommandBuilder().setName('playing').setDescription("Share your (or a user's) current game").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
     new SlashCommandBuilder().setName('privacy').setDescription("View privacy policy"),
     new SlashCommandBuilder().setName('profile').setDescription("Display your (or a user's) profile").addStringOption(option => option.setName('username').setDescription('Enter lidraughts player username')),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),

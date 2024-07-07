@@ -5,7 +5,6 @@ const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
-const playing = require('./commands/playing');
 const privacy = require('./commands/privacy');
 const profile = require('./commands/profile');
 const puzzle = require('./commands/puzzle');
@@ -45,12 +44,6 @@ const commands = {
         description: "Display top-rated players",
         process: leaderboard.process,
         interact: leaderboard.interact
-    },
-    "playing": {
-        usage: "[user]",
-        description: "Share your (or a user's) current game",
-        process: playing.process,
-        interact: playing.interact
     },
     "privacy": {
         usage: "",

@@ -26,8 +26,6 @@
     Display your (or a user's) profile
 !leaderboard [game mode]
     Display top-rated players
-!playing [username]
-    Share your (or a user's) current game
 !arena [username]
     Find an upcoming or recent arena created by lidraughts (or a user)
 !blog
