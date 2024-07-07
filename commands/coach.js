@@ -1,11 +1,13 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatPages = require('../lib/format-pages');
 const html2md = require('html-to-md');
 
 function coach(author, interaction) {
+    const url = 'https://lichess.org/coach/en-US/all/login';
     let status, statusText;
-    return fetch('https://lichess.org/coach/en-US/all/login')
+    return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
         .then(text => formatCoaches(text))
         .then(embeds => formatPages(embeds, interaction, 'No coach found!'))

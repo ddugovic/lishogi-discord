@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
 
@@ -13,7 +14,7 @@ function news(author, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in news(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

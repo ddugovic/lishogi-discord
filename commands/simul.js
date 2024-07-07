@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks, formatThumbnailURL } = require('../lib/format-site-links');
@@ -14,7 +15,7 @@ function simul(author, mode, interaction) {
         .then(embeds => formatPages(embeds, interaction, message))
         .catch(error => {
             console.log(`Error in simul(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatLang = require('../lib/format-lang');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
@@ -19,7 +20,7 @@ async function leaderboard(author, mode, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

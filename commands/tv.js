@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatThumbnailURL } = require('../lib/format-site-links');
 const formatVariant = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
@@ -19,7 +20,7 @@ async function tv(author, mode) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

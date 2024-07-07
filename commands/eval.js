@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
@@ -17,7 +18,7 @@ async function eval(author, fen, theme, piece, since, until) {
             .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
             .catch(error => {
                 console.log(`Error in eval(${author.username}, ${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
-                return `An error occurred handling your request: ${status} ${statusText}`;
+                return formatError(status, statusText, `${url} failed to respond`);
             });
     } else {
         return 'Invalid FEN!';

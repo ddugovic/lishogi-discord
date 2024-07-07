@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
+const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
@@ -26,7 +27,7 @@ async function profile(author, username) {
         .then(json => formatProfile(json, favoriteMode))
         .catch(error => {
             console.log(`Error in profile(${author.username}, ${username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

@@ -1,22 +1,24 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatPages = require('../lib/format-pages');
 const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-links');
 const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
 
 function arena(author, mode, progress, theme, piece, interaction) {
+    const url = 'https://lichess.org/api/tournament';
     const suffix = [progress, mode].join(' ').trim();
     const header = { headers: { Accept: 'application/json' } };
     let status, statusText;
-    return fetch('https://lichess.org/api/tournament', header)
+    return fetch(url, header)
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setArenas(json, mode, progress, theme ?? 'brown', piece ?? 'cburnett'))
         .then(embeds => formatPages(embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}, ${progress}, ${theme}, ${piece}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
@@ -18,7 +19,7 @@ function team(author, text, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No team found.'))
         .catch(error => {
             console.log(`Error in team(${author.username}, ${text}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

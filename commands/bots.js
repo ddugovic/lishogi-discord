@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatLang = require('../lib/format-lang');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLink, getSiteLinks } = require('../lib/format-site-links');
@@ -19,7 +20,7 @@ async function bots(author, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

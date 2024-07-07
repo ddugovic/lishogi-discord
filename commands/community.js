@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatPages = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
 const { parseFeed, formatContent, getAuthorName, getContent, getThumbnailURL, getTopics, getURL } = require('../lib/parse-feed');
@@ -14,7 +15,7 @@ function community(author, username, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in community(${author.username}, ${username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

@@ -1,19 +1,21 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const formatFlair = require('../lib/format-flair');
 const formatLang = require('../lib/format-lang');
 const { formatStreamerLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 
 function streamers(author, interaction) {
+    const url = 'https://lichess.org/api/streamer/live';
     let status, statusText;
-    return fetch('https://lichess.org/api/streamer/live')
+    return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setStreamers(json))
         .then(embeds => formatPages(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

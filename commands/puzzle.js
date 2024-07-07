@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatThumbnailURL } = require('../lib/format-site-links');
 
 function puzzle(author, theme, piece) {
@@ -10,7 +11,7 @@ function puzzle(author, theme, piece) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in puzzle(${author.username}, ${theme}, ${piece}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

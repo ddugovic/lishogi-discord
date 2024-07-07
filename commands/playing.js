@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatGifURL } = require('../lib/format-site-links');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
@@ -20,7 +21,7 @@ async function playing(author, username, theme, piece) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in playing(${author.username}, ${username}, ${theme}, ${piece}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
