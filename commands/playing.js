@@ -4,11 +4,9 @@ const formatColor = require('../lib/format-color');
 const plural = require('plural');
 const User = require('../models/User');
 
-async function playing(user, username) {
+function playing(user, username) {
     if (!username) {
-        username = await getName(author);
-        if (!username)
-            return 'You need to set your lidraughts username with setuser!';
+        return 'You need to set your lidraughts username with setuser!';
     }
     const url = `https://lidraughts.org/api/user/${username}/current-game?moves=false`;
     let status, statusText;
@@ -17,15 +15,9 @@ async function playing(user, username) {
         .then(json => formatCurrentGame(json, username))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in playing(${user.username}, ${username}): ${error}`);
+            console.log(`Error in playing(${user}, ${username}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
-}
-
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lidraughtsName;
 }
 
 function formatCurrentGame(game, username) {
@@ -107,12 +99,18 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, username) {
-    playing(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    const user = await User.findById(msg.author.id).exec();
+    playing(user, username || user?.lidraughtsName).then(message => msg.channel.send(message));
 }
 
-function reply(interaction) {
-    return playing(interaction.user, interaction.options.getString('username'));
+async function interact(interaction) {
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.lidraughtsName;
+    if (!username)
+        return 'You need to set your lidraughts username with setuser!';
+    await interaction.deferReply();
+    await interaction.editReply(await playing(user, username));
 }
 
 module.exports = {process, reply};

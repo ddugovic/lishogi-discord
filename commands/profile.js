@@ -339,7 +339,7 @@ async function interact(interaction) {
     if (!username)
         return 'You need to set your lidraughts username with setuser!';
     await interaction.deferReply();
-    await interaction.editReply(await profile(interaction.user, username, interaction));
+    await interaction.editReply(await profile(user, username, interaction));
 }
 
 module.exports = {process, interact};
