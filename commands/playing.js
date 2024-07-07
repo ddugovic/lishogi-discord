@@ -113,4 +113,4 @@ async function interact(interaction) {
     await interaction.editReply(await playing(user, username));
 }
 
-module.exports = {process, reply};
+module.exports = {process, interact};
