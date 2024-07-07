@@ -95,7 +95,7 @@ function process(bot, msg, favoriteMode) {
     arena(msg.author, favoriteMode).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
     arena(interaction.user, interaction.options.getString('mode'), interaction);
 }
 

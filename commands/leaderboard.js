@@ -141,7 +141,7 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
+async function interact(interaction) {
     leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
