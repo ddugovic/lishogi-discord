@@ -74,26 +74,26 @@ function formatArena(arena, theme, piece) {
 function formatRestrictions(arena) {
     const restrictions = [];
     if (arena.onlyTitled)
-        restrictions.push('National or FIDE title required');
+        restrictions.push('* National or FIDE title required');
     if (arena.hasMinRating) {
         if (arena.minRating.perf) {
-            restrictions.push(`${formatVariant(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
+            restrictions.push(`* ${formatVariant(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
         } else {
-            restrictions.push(`Current rating must be at least **${arena.minRating.rating}**.`);
+            restrictions.push(`* Current rating must be at least **${arena.minRating.rating}**.`);
         }
     }
     if (arena.hasMaxRating) {
         if (arena.maxRating.perf) {
-            restrictions.push(`${formatVariant(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
+            restrictions.push(`* ${formatVariant(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
 	} else {
-            restrictions.push(`Weekly rating cannot exceed **${arena.maxRating.rating}**.`);
+            restrictions.push(`* Weekly rating cannot exceed **${arena.maxRating.rating}**.`);
 	}
     }
     if (arena.minRatedGames) {
         if (arena.minRatedGames.perf) {
-            restrictions.push(`**${arena.minRatedGames.nb}** rated ${formatVariant(arena.minRatedGames.perf).toLowerCase()} games are required.`);
+            restrictions.push(`* **${arena.minRatedGames.nb}** rated ${formatVariant(arena.minRatedGames.perf).toLowerCase()} games are required.`);
         } else {
-            restrictions.push(`**${arena.minRatedGames.nb}** rated games are required.`);
+            restrictions.push(`* **${arena.minRatedGames.nb}** rated games are required.`);
         }
     }
     return restrictions;
