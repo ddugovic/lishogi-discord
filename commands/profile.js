@@ -38,14 +38,13 @@ async function formatProfile(user, favoriteMode) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getGames(user.username) ];
+    const requests = [ perf, getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
             requests.push(getStormHistory(user.username));
     }
     const responses = await Promise.all(requests);
-    const status = responses[0][0];
 
     const [country, firstName, lastName] = getCountryAndName(user.profile) ?? [];
     const name = formatName(firstName, lastName) ?? user.username;
@@ -65,29 +64,23 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lidraughts.org/?user=${user.username}#friend`);
     }
-    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[1]));
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[0]));
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: formatAbout(embed, user.username, profile) });
 
     if (user.count.all) {
-        const games = responses[2];
+        const games = responses[1];
         const fields = games.filter(game => game.status != 'aborted').map(formatGame);
         embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(3));
+        const image = await formatHistory(...responses.slice(2));
         if (image)
             embed = embed.setImage(image);
     }
     return embed;
-}
-
-function getUserStatus(username) {
-    const url = `https://lidraughts.org/api/users/status?ids=${username}&withGameIds=true`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { ids: username, withGameIds: true } })
-        .then(response => response.json());
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
