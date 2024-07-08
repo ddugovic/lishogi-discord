@@ -113,7 +113,7 @@ const commands = {
         usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute>",
         description: "Schedule event (tournament) game",
         process: schedule.process,
-        interact: schedule.interact
+        reply: schedule.reply
     },
     "setgamemode": {
         usage: "[game mode]",
@@ -149,7 +149,7 @@ const commands = {
         usage: "<year> <month> <day> <hour> <minute>",
         description: "Print discord magic timestamp",
         process: timestamp.process,
-        interact: timestamp.interact
+        reply: timestamp.reply
     },
     "tv": {
         usage: "[channel]",

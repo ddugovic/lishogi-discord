@@ -95,7 +95,7 @@ client.on('interactionCreate', async interaction => {
                 if (error)
                     await interaction.reply({ content: error, ephemeral: true });
             } else {
-                await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
+                await interaction.reply(command.reply(interaction));
             }
         } catch (e) {
             console.log(`Command failed:\n${e.stack}`);

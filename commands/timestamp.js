@@ -7,8 +7,8 @@ function process(bot, msg, suffix) {
     msg.channel.send(timestamp(...suffix.split(' ')));
 }
 
-function interact(interaction) {
+function reply(interaction) {
     return timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('utc_hour'), interaction.options.getInteger('minute'));
 }
 
-module.exports = { process, interact };
+module.exports = { process, reply };
