@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
+const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatChunks, formatError } = require('../lib/format-pages');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(author, interaction) {
@@ -14,7 +15,7 @@ function streamers(author, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
             console.log(`Error in streamers(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -95,7 +96,7 @@ function process(bot, msg, mode) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    streamers(interaction.user, interaction);
+    await interaction.editReply(await streamers(interaction.user, interaction));
 }
 
 module.exports = {process, interact};

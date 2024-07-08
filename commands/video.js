@@ -1,8 +1,9 @@
 const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
+const { formatPages } = require('../lib/format-pages');
 const { escape } = require('querystring')
-const { formatError, formatPages } = require('../lib/format-pages');
 
 function video(author, text, interaction) {
     const url = `https://lishogi.org/video?q=${escape(text)}`;
@@ -13,7 +14,7 @@ function video(author, text, interaction) {
         .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}, ${text}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -57,7 +58,7 @@ function process(bot, msg, text) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    video(interaction.user, interaction.options.getString('text'), interaction);
+    await interaction.editReply(await video(interaction.user, interaction.options.getString('text'), interaction));
 }
 
 module.exports = {process, interact};

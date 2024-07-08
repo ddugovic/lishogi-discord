@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { checkLink } = require('../lib/format-links');
-const { formatError } = require('../lib/format-pages');
 
 function puzzle(author) {
     const url = 'https://lishogi.org/api/puzzle/daily';
@@ -12,7 +12,7 @@ function puzzle(author) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in puzzle(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 

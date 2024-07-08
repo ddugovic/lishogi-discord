@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const { formatError } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
 const { formatHandicap } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
@@ -19,7 +19,7 @@ function playing(username, interaction) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in playing(${username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -136,7 +136,7 @@ async function interact(interaction) {
     const user = await User.findById(interaction.user.id).exec();
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
-        return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
+        return 'You need to set your lishogi username with setuser!';
     await interaction.deferReply();
     await interaction.editReply(await playing(username, interaction));
 }

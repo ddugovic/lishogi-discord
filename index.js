@@ -93,7 +93,7 @@ client.on('interactionCreate', async interaction => {
             if (command.interact) {
                 const error = await command.interact(interaction);
                 if (error)
-                    await interaction.editReply({ content: error });
+                    await interaction.reply({ content: error, ephemeral: true });
             } else {
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }

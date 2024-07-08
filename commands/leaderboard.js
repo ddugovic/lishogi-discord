@@ -2,8 +2,9 @@ const { EmbedBuilder } = require('discord.js');
 const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
+const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatChunks, formatError } = require('../lib/format-pages');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const User = require('../models/User');
@@ -19,7 +20,7 @@ async function leaderboard(author, mode, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username}, ${mode}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -152,7 +153,7 @@ function process(bot, msg, mode) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
+    await interaction.editReply(await leaderboard(interaction.user, interaction.options.getString('mode'), interaction));
 }
 
 module.exports = {process, interact};

@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatChunks, formatError } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatContent } = require('../lib/parse-feed');
 
 function wiki(author, category, interaction) {
@@ -12,7 +13,7 @@ function wiki(author, category, interaction) {
         .then(embeds => formatChunks(embeds, interaction, 'No pages found!'))
         .catch(error => {
             console.log(`Error in wiki(${author.username}, ${category}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -54,7 +55,7 @@ function process(bot, msg, category) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    wiki(interaction.user, interaction.options.getString('category'), interaction);
+    await interaction.editReply(await wiki(interaction.user, interaction.options.getString('category'), interaction));
 }
 
 module.exports = {process, interact};

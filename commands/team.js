@@ -1,7 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const { formatSocialLinks } = require('../lib/format-links');
-const { formatError, formatPages } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
+const { formatPages } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 const fn = require('friendly-numbers');
 const plural = require('plural');
@@ -18,7 +19,7 @@ function team(author, text, interaction) {
         .then(embeds => formatPages('Team', embeds, interaction, 'No team found.'))
         .catch(error => {
             console.log(`Error in team(${author.username}, ${text}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -82,7 +83,7 @@ function process(bot, msg, text) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    team(interaction.user, interaction.options.getString('text'), interaction);
+    await interaction.editReply(await team(interaction.user, interaction.options.getString('text'), interaction));
 }
 
 module.exports = {process, interact};

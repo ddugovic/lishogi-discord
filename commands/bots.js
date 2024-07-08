@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatCountry = require('../lib/format-country');
+const formatError = require('../lib/format-error');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const { formatError, formatPages } = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatSiteLink, getSiteLinks } = require('../lib/format-site-links');
 const parseDocument = require('../lib/parse-document');
@@ -18,7 +19,7 @@ function bots(author, interaction) {
         .then(embeds => formatPages('Bot', embeds, interaction, 'No bots are currently online.'))
         .catch(error => {
             console.log(`Error in bots(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -102,7 +103,7 @@ function process(bot, msg, mode) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    return bots(interaction.user, interaction);
+    await interaction.editReply(await bots(interaction.user, interaction));
 }
 
 module.exports = { process, interact };

@@ -7,8 +7,7 @@ function process(bot, msg, suffix) {
     msg.channel.send(timestamp(...suffix.split(' ')));
 }
 
-async function interact(interaction) {
-    await interaction.deferReply();
+function interact(interaction) {
     return timestamp(interaction.options.getString('event'), interaction.options.getMember('sente'), interaction.options.getMember('gote'), interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('utc_hour'), interaction.options.getInteger('minute'));
 }
 

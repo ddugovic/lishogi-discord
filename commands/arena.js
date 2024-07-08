@@ -1,7 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
-const { formatError, formatPages } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
+const { formatPages } = require('../lib/format-pages');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
@@ -15,7 +16,7 @@ function arena(author, mode, progress, interaction) {
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
             console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -120,7 +121,7 @@ function process(bot, msg, suffix) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
+    await interaction.editReply(await arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction));
 }
 
 module.exports = {process, interact};

@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatError, formatPages } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
+const { formatPages } = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
 
 function fesa(author, interaction) {
@@ -13,7 +14,7 @@ function fesa(author, interaction) {
         .then(embeds => formatPages('Article', embeds, interaction, 'No news found!'))
         .catch(error => {
             console.log(`Error in fesa(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -35,7 +36,7 @@ function process(bot, msg) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    return fesa(interaction.user, interaction);
+    await interaction.editReply(await fesa(interaction.user, interaction));
 }
 
 module.exports = {process, interact};

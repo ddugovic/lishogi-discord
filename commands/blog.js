@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatError, formatPages } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
+const { formatPages } = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
 const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
 
@@ -14,7 +15,7 @@ function blog(author, interaction) {
         .then(embeds => formatPages('Entry', embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -43,7 +44,7 @@ function process(bot, msg) {
 
 async function interact(interaction) {
     await interaction.deferReply();
-    return blog(interaction.user, interaction);
+    await interaction.editReply(await blog(interaction.user, interaction));
 }
 
 module.exports = {process, interact};

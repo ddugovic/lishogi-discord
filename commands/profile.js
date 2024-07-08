@@ -5,7 +5,7 @@ const formatClock = require('../lib/format-clock');
 const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
-const { formatError } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatHandicap, formatVariant } = require('../lib/format-variant');
@@ -27,7 +27,7 @@ function profile(user, username, interaction) {
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
             console.log(`Error in profile(${username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -342,7 +342,7 @@ async function interact(interaction) {
     const user = await User.findById(interaction.user.id).exec();
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
-        return await interaction.reply({ content: 'You need to set your lishogi username with setuser!', ephemeral: true });
+        return 'You need to set your lishogi username with setuser!';
     await interaction.deferReply();
     await interaction.editReply(await profile(user, username, interaction));
 }

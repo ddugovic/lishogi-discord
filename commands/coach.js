@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { formatError } = require('../lib/format-pages');
+const formatError = require('../lib/format-error');
 const html2md = require('html-to-md');
 
 async function coach(author) {
@@ -10,7 +10,7 @@ async function coach(author) {
         .then(text => setCoaches(text))
         .catch(error => {
             console.log(`Error in coach(${author.username}): ${error}`);
-            return formatError(status, statusText, interaction, `${url} failed to respond`);
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
