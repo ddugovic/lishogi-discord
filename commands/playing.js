@@ -141,10 +141,4 @@ async function interact(interaction) {
     await interaction.editReply(await playing(username, interaction));
 }
 
-async function getUsername(author, username) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lishogiName;
-}
-
 module.exports = {process, interact};
