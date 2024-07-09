@@ -91,12 +91,12 @@ client.on(Events.InteractionCreate, async interaction => {
             if (focusedValue.length < 3) {
                 interaction.respond([]);
 	    } else {
-                fetch(`https://lichess.org/api/player/autocomplete?term=${escape(focusedValue)}`)
+                fetch(`https://lichess.org/api/player/autocomplete?object=true&term=${escape(focusedValue)}`)
                     .then(response => response.json())
-                    .then(json => interaction.respond(json.map(choice => ({ name: choice, value: choice }))));
+                    .then(json => interaction.respond(json.map(choice => ({ name: choice.name, value: choice.id }))));
 	    }
         } catch (error) {
-            console.log(`Command ${commandName} failed: ${error}`);
+            console.log(`Command ${commandName} autocomplete failed: ${error}`);
         }
         return;
     }
