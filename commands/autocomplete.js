@@ -29,8 +29,7 @@ function process(bot, msg, text) {
 }
 
 async function interact(interaction) {
-    const focusedValue = interaction.options.getFocused();
-    interaction.respond(await autocomplete(interaction.user, interaction.options.getString('text'), interaction));
+    interaction.respond(await autocomplete(interaction.user, interaction.options.getFocused()));
 }
 
 module.exports = {process, interact};
