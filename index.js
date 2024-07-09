@@ -93,7 +93,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	    } else {
                 fetch(`https://lichess.org/api/player/autocomplete?object=true&term=${escape(focusedValue)}`)
                     .then(response => response.json())
-                    .then(json => interaction.respond(json.map(choice => ({ name: choice.name, value: choice.id }))));
+                    .then(json => interaction.respond(json.result.map(user => ({ name: user.name, value: user.id }))));
 	    }
         } catch (error) {
             console.log(`Command ${commandName} autocomplete failed: ${error}`);
