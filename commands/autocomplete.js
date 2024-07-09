@@ -8,7 +8,7 @@ function autocomplete(author, text) {
     }
     const url = `https://lichess.org/api/player/autocomplete?object=true&term=${escape(text)}`;
     let status, statusText;
-    return fetch(url, { params: { q: text } })
+    return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => json.result.map(user => ({ name: formatUser(user), value: user.id })))
         .catch(error => {
