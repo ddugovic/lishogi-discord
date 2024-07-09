@@ -10,11 +10,18 @@ function autocomplete(author, text) {
     let status, statusText;
     return fetch(url, { params: { q: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => json.result.map(user => ({ name: user.name, value: user.id })))
+        .then(json => json.result.map(user => ({ name: formatUser(user), value: user.id })))
         .catch(error => {
             console.log(`Error in autocomplete(${author.id}, ${text}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
+}
+
+function formatUser(user) {
+    const badge = user.patron ? '🦄' : '';
+    const name = user.title ? `${user.title} ${user.name}` : user.name;
+    const status = user.online ? ' 📶 Online' : '';
+    return `${badge}${name}${status}`;
 }
 
 function process(bot, msg, text) {
