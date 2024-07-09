@@ -87,14 +87,7 @@ client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isAutocomplete()) {
         const commandName = interaction.commandName;
         try {
-            const focusedValue = interaction.options.getFocused();
-            if (focusedValue.length < 3) {
-                interaction.respond([]);
-	    } else {
-                fetch(`https://lichess.org/api/player/autocomplete?object=true&term=${escape(focusedValue)}`)
-                    .then(response => response.json())
-                    .then(json => interaction.respond(json.result.map(user => ({ name: user.name, value: user.id }))));
-	    }
+            commands['autocomplete'].interact(interaction);
         } catch (error) {
             console.log(`Command ${commandName} autocomplete failed: ${error}`);
         }
