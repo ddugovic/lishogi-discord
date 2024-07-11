@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const autocomplete = require('./commands/autocomplete');
 const blog = require('./commands/blog');
 const bots = require('./commands/bots');
 const broadcast = require('./commands/broadcast');
@@ -30,6 +31,12 @@ const commands = {
         description: "Find a created, started, or finished arena",
         process: arena.process,
         interact: arena.interact
+    },
+    "autocomplete": {
+        usage: "<lishogi name>",
+        description: "Automatically complete lishogi username",
+        process: autocomplete.process,
+        interact: autocomplete.interact
     },
     "blog": {
         usage: "",
