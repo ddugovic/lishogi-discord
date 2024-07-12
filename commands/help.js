@@ -23,7 +23,7 @@ function process(commands, channel) {
 }
 
 function reply(commands, interaction) {
-    return help(commands);
+    return `Available Commands:\n${help(commands)}`;
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };

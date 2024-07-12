@@ -1,14 +1,12 @@
 const User = require('../models/User');
 
 async function setGameMode(author, mode) {
-    var authorId = author.id;
-    var newValues = { favoriteMode: mode };
-    if (await User.findByIdAndUpdate(authorId, newValues, {new: true}).exec()) {
-        return `${author.username} favorite mode ${mode ? 'updated' : 'cleared'}!`;
-    }
-    else {
-        console.log(`Error in setGameMode(${author.username}, ${mode})`);
-        return 'You need to set your lishogi username with setuser!';
+    const newValues = { favoriteMode: mode };
+    if (await User.findByIdAndUpdate(author.id, newValues, { upsert: true, new: true }).exec()) {
+        return `<@${author.id}> favorite mode ${mode ? 'updated' : 'cleared'}!`;
+    } else {
+        console.log(`Error in setGameMode(${author}, ${mode})`);
+        return 'An error occurred handling your request.';
     }
 }
 
@@ -17,7 +15,7 @@ function process(bot, msg, mode) {
 }
 
 async function reply(interaction) {
-    return setGameMode(interaction.user, interaction.options.getString('mode'));
+    return await setGameMode(interaction.user, interaction.options.getString('mode'));
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };

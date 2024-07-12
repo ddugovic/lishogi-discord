@@ -1,5 +1,5 @@
-function timestamp(year, month, day, hour, minute) {
-    const millis = Date.UTC(year, month-1, day, hour, minute, 0);
+function timestamp(year, month, day, hour, minute, offset) {
+    const millis = Date.UTC(year, month-1, day, hour-(offset ?? 0), minute ?? 0, 0);
     return `<t:${millis / 1000}> or <t:${millis / 1000}:R>`;
 }
 
@@ -7,8 +7,8 @@ function process(bot, msg, suffix) {
     msg.channel.send(timestamp(...suffix.split(' ')));
 }
 
-function reply(interaction) {
-    return timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('utc_hour'), interaction.options.getInteger('minute'));
+async function interact(interaction) {
+    return interaction.editReply(timestamp(interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('hour'), interaction.options.getInteger('minute'), interaction.options.getInteger('offset')));
 }
 
-module.exports = { process, reply };
+module.exports = { process, interact };

@@ -1,11 +1,10 @@
 const User = require('../models/User');
 
-async function deleteUser(author, username) {
+async function deleteUser(author) {
     if (await User.findByIdAndDelete(author.id).exec()) {
-        return `User deleted: ${author.username}`;
-    }
-    else {
-        console.log(`Error in deleteUser(${author.username})`);
+        return `User deleted: <@${author.id}>`;
+    } else {
+        console.log(`Error in deleteUser(${author})`);
         return 'An error occurred handling your request.';
     }
 }
@@ -15,7 +14,7 @@ function process(bot, msg, suffix) {
 }
 
 async function reply(interaction) {
-    return deleteUser(interaction.user);
+    return await deleteUser(interaction.user);
 }
 
-module.exports = {process, reply};
+module.exports = { process, reply };
