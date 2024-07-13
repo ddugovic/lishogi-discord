@@ -6,7 +6,7 @@ function autocomplete(author, text) {
     if (text.length < 3) {
         return [];
     }
-    const url = `https://lishogi.org/api/player/autocomplete?object=true&term=${escape(text)}`;
+    const url = `https://lishogi.org/player/autocomplete?object=true&term=${escape(text)}`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
