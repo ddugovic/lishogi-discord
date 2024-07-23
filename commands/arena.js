@@ -120,8 +120,7 @@ function process(bot, msg, suffix) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction));
+    return await arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
 }
 
 module.exports = {process, interact};

@@ -54,8 +54,7 @@ function process(bot, msg, category) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await wiki(interaction.user, interaction.options.getString('category'), interaction));
+    return await wiki(interaction.user, interaction.options.getString('category'), interaction);
 }
 
 module.exports = {process, interact};

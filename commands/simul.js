@@ -99,8 +99,7 @@ function process(bot, msg, favoriteMode) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await simul(interaction.user, interaction.options.getString('variant'), interaction));
+    return await simul(interaction.user, interaction.options.getString('variant'), interaction);
 }
 
 module.exports = {process, interact};

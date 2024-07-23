@@ -82,8 +82,7 @@ function process(bot, msg, text) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await team(interaction.user, interaction.options.getString('text'), interaction));
+    return await team(interaction.user, interaction.options.getString('text'), interaction);
 }
 
 module.exports = {process, interact};

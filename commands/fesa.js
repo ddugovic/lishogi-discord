@@ -35,8 +35,7 @@ function process(bot, msg) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await fesa(interaction.user, interaction));
+    return await fesa(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
