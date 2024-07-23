@@ -152,8 +152,7 @@ function process(bot, msg, mode) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await leaderboard(interaction.user, interaction.options.getString('mode'), interaction));
+    return await leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};

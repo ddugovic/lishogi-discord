@@ -95,8 +95,7 @@ function process(bot, msg, mode) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await streamers(interaction.user, interaction));
+    return await streamers(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

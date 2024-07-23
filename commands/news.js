@@ -57,8 +57,7 @@ function process(bot, msg) {
 }
 
 async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await news(interaction.user, interaction));
+    return await news(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
