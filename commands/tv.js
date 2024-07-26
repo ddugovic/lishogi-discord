@@ -25,11 +25,6 @@ function tv(mode, interaction) {
         });
 }
 
-function getMode(user) {
-    if (user && user.favoriteMode in ['annanshogi','checkshogi','chushogi','kyotoshogi','minishogi','computer'])
-        return user.favoriteMode;
-}
-
 async function formatChannel(mode, name, channel) {
     var embed = new EmbedBuilder()
         .setColor(getColor(channel))
@@ -83,6 +78,11 @@ function formatPlayer(player) {
 
 function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function getMode(user) {
+    if (user && user.favoriteMode in ['annanshogi','checkshogi','chushogi','kyotoshogi','minishogi','computer'])
+        return user.favoriteMode;
 }
 
 async function process(bot, msg, mode) {
