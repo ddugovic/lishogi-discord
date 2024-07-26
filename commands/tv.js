@@ -8,9 +8,9 @@ const { formatOpening } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function tv(author, mode, interaction) {
+function tv(mode, interaction) {
     if (!mode)
-        mode = await getMode(author) ?? 'standard';
+        mode = 'standard';
     let status, statusText;
     return fetch('https://lishogi.org/api/tv/channels')
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -20,13 +20,12 @@ async function tv(author, mode, interaction) {
         })
         .then(embed => formatChunks([embed], interaction, 'Channel not found!'))
         .catch(error => {
-            console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
+            console.log(`Error in tv(${mode}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-async function getMode(author) {
-    const user = await User.findById(author.id).exec();
+function getMode(user) {
     if (user && user.favoriteMode in ['annanshogi','checkshogi','chushogi','kyotoshogi','minishogi','computer'])
         return user.favoriteMode;
 }
@@ -86,12 +85,15 @@ function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function process(bot, msg, mode) {
-    tv(msg.author, mode).then(message => msg.channel.send(message));
+async function process(bot, msg, mode) {
+    const user = await User.findById(msg.author.id).exec();
+    tv(mode || getMode(user)).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return tv(interaction.user, interaction.options.getString('mode'), interaction);
+async function interact(interaction) {
+    const user = await User.findById(interaction.user.id).exec();
+    const mode = interaction.options.getString('mode') || getMode(user);
+    return tv(mode, interaction);
 }
 
 module.exports = {process, interact};
