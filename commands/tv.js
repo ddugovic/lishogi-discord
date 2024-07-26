@@ -91,7 +91,7 @@ function process(bot, msg, mode) {
 }
 
 function interact(interaction) {
-    return tv(interaction.user, interaction.options.getString('mode'));
+    return tv(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};
