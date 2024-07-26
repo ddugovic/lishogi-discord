@@ -7,7 +7,7 @@ const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
 function arena(author, mode, progress, interaction) {
-    const suffix = [status, mode].join(' ').trim();
+    const suffix = [progress, mode].join(' ').trim();
     let status, statusText;
     const url = 'https://lishogi.org/api/tournament';
     return fetch(url, { headers: { Accept: 'application/json' } })
