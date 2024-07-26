@@ -56,8 +56,8 @@ function process(bot, msg, text) {
     video(msg.author, text).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await video(interaction.user, interaction.options.getString('text'), interaction);
+function interact(interaction) {
+    return video(interaction.user, interaction.options.getString('text'), interaction);
 }
 
 module.exports = {process, interact};

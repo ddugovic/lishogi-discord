@@ -42,8 +42,8 @@ function process(bot, msg) {
     blog(msg.author).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await blog(interaction.user, interaction);
+function interact(interaction) {
+    return blog(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

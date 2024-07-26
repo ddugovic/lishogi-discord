@@ -119,8 +119,8 @@ function process(bot, msg, suffix) {
     arena(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
+function interact(interaction) {
+    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
 }
 
 module.exports = {process, interact};

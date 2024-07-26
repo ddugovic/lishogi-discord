@@ -151,8 +151,8 @@ function process(bot, msg, mode) {
     leaderboard(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
+function interact(interaction) {
+    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};

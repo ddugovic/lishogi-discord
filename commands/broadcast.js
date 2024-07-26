@@ -45,8 +45,8 @@ function process(bot, msg) {
     broadcast(msg.author).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await broadcast(interaction.user, interaction);
+function interact(interaction) {
+    return broadcast(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

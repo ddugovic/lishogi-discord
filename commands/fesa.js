@@ -34,8 +34,8 @@ function process(bot, msg) {
     fesa(msg.author).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await fesa(interaction.user, interaction);
+function interact(interaction) {
+    return fesa(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

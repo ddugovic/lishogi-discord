@@ -19,8 +19,8 @@ function process(bot, msg) {
     log(msg.author).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await log(interaction.user, interaction);
+function interact(interaction) {
+    return log(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

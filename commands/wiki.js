@@ -53,8 +53,8 @@ function process(bot, msg, category) {
     wiki(msg.author, category).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await wiki(interaction.user, interaction.options.getString('category'), interaction);
+function interact(interaction) {
+    return wiki(interaction.user, interaction.options.getString('category'), interaction);
 }
 
 module.exports = {process, interact};

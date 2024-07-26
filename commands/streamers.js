@@ -94,8 +94,8 @@ function process(bot, msg, mode) {
     streamers(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    return await streamers(interaction.user, interaction);
+function interact(interaction) {
+    return streamers(interaction.user, interaction);
 }
 
 module.exports = {process, interact};
