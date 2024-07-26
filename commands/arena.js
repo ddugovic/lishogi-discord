@@ -47,7 +47,7 @@ function formatArena(arena) {
         .setColor(formatColor(255-speed, 0, speed))
         .setAuthor({name: arena.createdBy, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-        .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
+        .setTitle(`${arena.fullName}${arena.schedule ? formatSchedule(arena.schedule) : ''}`)
         .setURL(`https://lishogi.org/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
     if (arena.featured)
