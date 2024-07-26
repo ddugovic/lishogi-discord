@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { ActivityType, Client, GatewayIntentBits, InteractionType } = require('discord.js');
+const { ActivityType, Client, Events, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -52,9 +52,9 @@ client.on('messageCreate', (msg) => {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
             command.process(client, msg, suffix);
-        } catch (e) {
-            console.log(`Command failed:\n ${e.stack}`);
-            msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
+        } catch (error) {
+            console.log(`Command failed:\n${error.stack}`);
+            msg.channel.send(`Command ${cmdTxt} failed (${error})`);
         }
     } else if (cmdTxt == 'help') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
@@ -83,26 +83,35 @@ process.on('unhandledRejection', err => {
 
 client.login(config.token);
 
-client.on('interactionCreate', async interaction => {
+client.on(Events.InteractionCreate, async interaction => {
+    if (interaction.isAutocomplete()) {
+        const commandName = interaction.commandName;
+        try {
+            commands['autocomplete'].interact(interaction);
+        } catch (error) {
+            console.log(`Command ${commandName} autocomplete failed: ${error}`);
+        }
+        return;
+    }
     if (interaction.type != InteractionType.ApplicationCommand) return;
 
-    console.log(interaction.user.id, interaction.commandName);
-    const command = commands[interaction.commandName];
-    if (command) {
+    const commandName = interaction.commandName;
+    console.log(interaction.user.id, commandName);
+    if ((command = commands[commandName])) {
         try {
             if (command.interact) {
                 const error = await command.interact(interaction);
                 if (error)
-                    await interaction.reply({ content: error, ephemeral: true });
+                    await interaction.reply({ content: error });
             } else {
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }
-        } catch (e) {
-            console.log(`Command failed:\n${e.stack}`);
+        } catch (error) {
+            console.log(`Command ${commandName} failed: ${error}`);
         }
-    } else if (interaction.commandName == 'help') {
+    } else if (commandName == 'help') {
         await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
-    } else if (interaction.commandName == 'stop') {
+    } else if (commandName == 'stop') {
         await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
         stop(client, interaction.user.id);
     } else if (config.respondToInvalid) {
