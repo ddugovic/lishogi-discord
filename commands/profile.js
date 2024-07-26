@@ -6,6 +6,7 @@ const formatCountry = require('../lib/format-country');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatHandicap, formatVariant } = require('../lib/format-variant');
@@ -14,19 +15,15 @@ const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-function profile(user, username, interaction) {
-    if (!username) {
-        return 'You need to set your lishogi username with setuser!';
-    }
-    const favoriteMode = user ? user.favoriteMode : '';
+function profile(username, favoriteMode, interaction) {
     const url = `https://lishogi.org/api/user/${username}?trophies=true`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(embed => formatChunks([embed], interaction, 'Player not found!'))
         .catch(error => {
-            console.log(`Error in profile(${username}): ${error}`);
+            console.log(`Error in profile(${username}, ${favoriteMode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
@@ -328,7 +325,9 @@ function title(str) {
 
 async function process(bot, msg, username) {
     const user = await User.findById(msg.author.id).exec();
-    profile(user, username || user?.lishogiName).then(message => msg.channel.send(message));
+    if (!(username || user?.lishogiName))
+        return 'You need to set your lishogi username with setuser!';
+    profile(username || user?.lishogiName, user?.favoriteMode).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
@@ -336,8 +335,7 @@ async function interact(interaction) {
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return 'You need to set your lishogi username with setuser!';
-    await interaction.deferReply();
-    await interaction.editReply(await profile(user, username, interaction));
+    return profile(user, username, user?.favoriteMode, interaction);
 }
 
 module.exports = {process, interact};
