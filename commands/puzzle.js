@@ -2,14 +2,15 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
 const { checkLink } = require('../lib/format-links');
+const { formatChunks } = require('../lib/format-pages');
 
-function puzzle(author) {
+function puzzle(author, interaction) {
     const url = 'https://lishogi.org/api/puzzle/daily';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPuzzle(json.game, json.puzzle))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(embed => formatChunks([embed], interaction, 'No puzzle found!'))
         .catch(error => {
             console.log(`Error in puzzle(${author.username}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
@@ -53,9 +54,8 @@ function process(bot, msg, mode) {
     puzzle(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await puzzle(interaction.user));
+function interact(interaction) {
+    return puzzle(interaction.user, interaction);
 }
 
 module.exports = {process, interact};

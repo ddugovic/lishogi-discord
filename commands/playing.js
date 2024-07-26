@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatHandicap } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
@@ -16,7 +17,7 @@ function playing(username, interaction) {
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatCurrentGame(json, username))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(embed => formatChunks([embed], interaction, 'No game found!'))
         .catch(error => {
             console.log(`Error in playing(${username}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
@@ -137,8 +138,7 @@ async function interact(interaction) {
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return 'You need to set your lishogi username with setuser!';
-    await interaction.deferReply();
-    await interaction.editReply(await playing(username, interaction));
+    return playing(username, interaction);
 }
 
 module.exports = {process, interact};

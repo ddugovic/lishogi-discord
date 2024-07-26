@@ -2,12 +2,13 @@ const { EmbedBuilder } = require('discord.js');
 const plural = require('plural');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const { formatChunks } = require('../lib/format-pages');
 const { formatHandicap, formatVariant } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function tv(author, mode) {
+async function tv(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) ?? 'standard';
     let status, statusText;
@@ -17,7 +18,7 @@ async function tv(author, mode) {
             const channel = channels[mode];
             if (channel) { return formatChannel(mode ?? 'best', formatVariant(mode ?? 'Top Rated'), channel); }
         })
-        .then(embed => { return embed ? { embeds : [ embed ] } : 'Channel not found!' })
+        .then(embed => formatChunks([embed], interaction, 'Channel not found!'))
         .catch(error => {
             console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
@@ -89,9 +90,8 @@ function process(bot, msg, mode) {
     tv(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    await interaction.deferReply();
-    await interaction.editReply(await tv(interaction.user, interaction.options.getString('mode')));
+function interact(interaction) {
+    return tv(interaction.user, interaction.options.getString('mode'));
 }
 
 module.exports = {process, interact};
