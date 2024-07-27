@@ -33,12 +33,23 @@ async function formatChannel(mode, name, channel) {
         .setURL(`https://lishogi.org/tv/${mode}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
 
-    const games = await getLiveGames(mode);
+    const requests = [getGame(channel.gameId), getLiveGames(mode)];
+    const [game, games] = await Promise.all(requests);
     if (games.length) {
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
         embed = embed.addFields({ name: `Live ${plural('Game', fields.length)}`, value: fields.join('\n') });
+    } else if (game.length) {
+        const field = await formatGame(game[0]);
+        embed = embed.addFields({ name: 'Recent Game', value: field });
     }
     return embed;
+}
+
+function getGame(gameId) {
+    const url = `https://lishogi.org/game/export/${gameId}`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { clocks: 'false', evals: 'false', opening: 'true' } })
+        .then(response => response.text())
+        .then(json => parseDocument(json));
 }
 
 function getLiveGames(channel) {
@@ -50,12 +61,11 @@ function getLiveGames(channel) {
 
 async function formatGame(game) {
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
-    const outcome = winner && winner.name == username ? ':white_circle:' : game.winner ? ':black_circle:' : ':hourglass:';
     const players = [game.players.sente, game.players.gote].map(formatPlayer).join(' - ');
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
-    return `${outcome} ${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.variant, game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.variant, game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatRatingDiff(ratingDiff) {
