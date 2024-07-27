@@ -6,20 +6,23 @@ const { formatSocialLinks } = require('../lib/format-links');
 const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
-function streamers(author, interaction) {
+function streamers(lang, interaction) {
     const url = 'https://lishogi.org/streamer/live';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => setStreamers(json))
+        .then(json => setStreamers(json, lang))
         .then(embeds => formatChunks(embeds, interaction, 'No streamers are currently live.'))
         .catch(error => {
-            console.log(`Error in streamers(${author.username}): ${error}`);
+            console.log(`Error in streamers(${lang}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
-function setStreamers(streamers) {
+function setStreamers(streamers, lang) {
+    if (lang) {
+        streamers = streamers.filter(streamer => streamer.stream.lang == lang);
+    }
     streamers = streamers.map(formatStreamer).sort((a,b) => b.score - a.score);
     return chunk(streamers, 6).map(fields => {
         const rating = Math.max(...fields.map(field => field.rating));
@@ -90,12 +93,12 @@ function chunk(arr, size) {
         .map((_, i) => arr.slice(i * size, (i + 1) * size));
 }
 
-function process(bot, msg, mode) {
-    streamers(msg.author, mode).then(message => msg.channel.send(message));
+function process(bot, msg, lang) {
+    streamers(lang).then(message => msg.channel.send(message));
 }
 
 function interact(interaction) {
-    return streamers(interaction.user, interaction);
+    return streamers(interaction.options.getString('lang'), interaction);
 }
 
 module.exports = {process, interact};

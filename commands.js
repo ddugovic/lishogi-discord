@@ -141,7 +141,7 @@ const commands = {
         interact: simul.interact
     },
     "streamers": {
-        usage: "",
+        usage: "[lang]",
         description: "Display live streamers",
         process: streamers.process,
         interact: streamers.interact

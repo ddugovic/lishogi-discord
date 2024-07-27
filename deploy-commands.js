@@ -29,6 +29,10 @@ const channels = [
     { name: "Minishogi", value: "minishogi" },
     { name: "Computer", value: "computer" }
 ];
+const languages = [
+    { name: "English", value: "en" },
+    { name: "Japanese", value: "jp" }
+];
 const modes = [
     { name: "Annan shogi", value: "annanshogi" },
     { name: "Blitz", value: "blitz" },
@@ -86,7 +90,7 @@ const commands = [
     new SlashCommandBuilder().setName("setgamemode").setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName("mode").setDescription("Enter your favorite game (or puzzle) mode").addChoices(...ratings)),
     new SlashCommandBuilder().setName("setuser").setDescription("Set your lishogi username").addStringOption(option => option.setName("username").setDescription("Enter your lishogi username").setAutocomplete(true).setMaxLength(30).setMinLength(2).setRequired(true)),
     new SlashCommandBuilder().setName("simul").setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
-    new SlashCommandBuilder().setName("streamers").setDescription("Display live streamers"),
+    new SlashCommandBuilder().setName("streamers").setDescription("Display live streamers").addStringOption(option => option.setName("lang").setDescription("Language").addChoices(...languages)),
     new SlashCommandBuilder().setName("team").setDescription("Search teams for a keyword").addStringOption(option => option.setName("text").setDescription("Search keywords").setRequired(true)),
     new SlashCommandBuilder().setName("timestamp").setDescription("Print discord magic timestamp").addIntegerOption(option => option.setName("year").setDescription("Year (2000-2100)").setMinValue(2000).setMaxValue(2100).setRequired(true)).addIntegerOption(option => option.setName("month").setDescription("Month (1-12)").setMinValue(1).setMaxValue(12).setRequired(true)).addIntegerOption(option => option.setName("day").setDescription("Day (1-31)").setMinValue(1).setMaxValue(31).setRequired(true)).addIntegerOption(option => option.setName("utc_hour").setDescription("UTC hour (0-23)").setMinValue(0).setMaxValue(23).setRequired(true)).addIntegerOption(option => option.setName("minute").setDescription("Minute (0-59)").setMinValue(0).setMaxValue(59).setRequired(true)),
     new SlashCommandBuilder().setName("tv").setDescription("Display TV game list").addStringOption(option => option.setName("mode").setDescription("Select channel").addChoices(...channels)),

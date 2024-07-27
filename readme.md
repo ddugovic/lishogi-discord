@@ -48,7 +48,7 @@
     Schedule event (tournament) game
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition
-!streamers
+!streamers [lang]
     Display live streamers
 !team
     Search teams for a keyword
