@@ -335,7 +335,7 @@ async function interact(interaction) {
     const username = interaction.options.getString('username') || user?.lishogiName;
     if (!username)
         return 'You need to set your lishogi username with setuser!';
-    return profile(user, username, user?.favoriteMode, interaction);
+    return profile(username, user?.favoriteMode, interaction);
 }
 
 module.exports = {process, interact};
