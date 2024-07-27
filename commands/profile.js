@@ -73,7 +73,7 @@ async function formatProfile(user, favoriteMode) {
 
     if (user.count.all) {
         const games = responses[1];
-        const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
+        const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(game => formatGame(game, user.username)));
         embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
