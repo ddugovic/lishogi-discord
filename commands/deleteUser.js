@@ -13,8 +13,8 @@ function process(bot, msg, suffix) {
     deleteUser(msg.author).then(message => msg.channel.send(message));
 }
 
-function reply(interaction) {
+function interact(interaction) {
     return deleteUser(interaction.user);
 }
 
-module.exports = { process, reply };
+module.exports = { process, interact };
