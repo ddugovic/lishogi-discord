@@ -6,8 +6,8 @@ function process(bot, msg, username) {
     msg.channel.send(message);
 }
 
-function reply(interaction) {
+function interact(interaction) {
     return message;
 }
 
-module.exports = { process, reply };
+module.exports = { process, interact };

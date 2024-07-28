@@ -95,7 +95,7 @@ const commands = {
         usage: "",
         description: "View privacy policy",
         process: privacy.process,
-        reply: privacy.reply
+        interact: privacy.interact
     },
     "profile": {
         usage: "[username]",
