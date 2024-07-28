@@ -14,8 +14,8 @@ function process(bot, msg, mode) {
     setGameMode(msg.author, mode).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return await setGameMode(interaction.user, interaction.options.getString('mode'));
+function interaction(interaction) {
+    return setGameMode(interaction.user, interaction.options.getString('mode'));
 }
 
-module.exports = { process, reply };
+module.exports = { process, interaction };

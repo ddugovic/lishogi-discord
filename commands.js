@@ -119,13 +119,13 @@ const commands = {
         usage: "[game mode]",
         description: "Set your favorite game (or puzzle) mode",
         process: setGameMode.process,
-        reply: setGameMode.reply
+        interact: setGameMode.interact
     },
     "setuser": {
         usage: "<lishogi name>",
         description: "Set your lishogi username",
         process: setUser.process,
-        reply: setUser.reply
+        interact: setUser.interact
     },
     "simul": {
         usage: "",

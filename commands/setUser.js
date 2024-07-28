@@ -14,8 +14,8 @@ function process(bot, msg, username) {
     setUser(msg.author, username).then(message => msg.channel.send(message));
 }
 
-async function reply(interaction) {
-    return await setUser(interaction.user, interaction.options.getString('username'));
+function interaction(interaction) {
+    return setUser(interaction.user, interaction.options.getString('username'));
 }
 
-module.exports = { process, reply };
+module.exports = { process, interaction };
