@@ -36,7 +36,7 @@
     "sanitize-html": "^2.13.0",
     "shogiops": "^0.16.1",
     "valid-url": "^1.0.9",
-    "xml2js": "^0.6.0"
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "mocha": "^10.7.0",
