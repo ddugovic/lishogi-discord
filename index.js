@@ -104,7 +104,7 @@ client.on(Events.InteractionCreate, async interaction => {
                 if (error)
                     await interaction.reply({ content: error, ephemeral: true });
             } else {
-                await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
+                await interaction.reply({ content: await command.reply(interaction) });
             }
         } catch (error) {
             console.log(`Command ${commandName} failed: ${error}`);
