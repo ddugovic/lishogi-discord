@@ -38,8 +38,6 @@
     Find an upcoming or recent broadcast created by lishogi
 !coach
     Find a coach
-!fesa
-    Display FESA news
 !news
     Display recent news
 !puzzle
