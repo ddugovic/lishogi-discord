@@ -65,7 +65,7 @@ const commands = {
         usage: "",
         description: "Delete your lishogi username from the bot's database",
         process: deleteUser.process,
-        reply: deleteUser.reply
+        interact: deleteUser.interact
     },
     "eval": {
         usage: "<fen>",
