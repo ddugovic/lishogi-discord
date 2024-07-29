@@ -1,30 +1,28 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const formatError = require('../lib/format-error');
 const { formatPages } = require('../lib/format-pages');
 const getUserLink = require('../lib/get-site-links');
-const { parseFeed, formatContent, getAuthorName, getContent, getImageURL, getURL } = require('../lib/parse-feed');
+const html2md = require('html-to-md');
+const { formatContent, getURL } = require('../lib/parse-feed');
+const Parser = require('rss-parser');
 
 function blog(author, interaction) {
     const url = 'https://lishogi.org/blog.atom';
-    let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-        .then(text => parseFeed(text))
-        .then(feed => feed.entry.map(formatEntry))
+    return new Parser().parseURL(url)
+        .then(feed => feed.items.map(formatEntry))
         .then(embeds => formatPages('Entry', embeds, interaction, 'No entries found!'))
         .catch(error => {
             console.log(`Error in blog(${author.username}): ${error}`);
-            return formatError(status, statusText, `${url} failed to respond`);
+            return `An error occurred handling your request: ${url} failed to respond`;
         });
 }
 
 function formatEntry(entry) {
-    const timestamp = Math.floor(new Date(entry.published).getTime() / 1000);
+    const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
     const now = Math.floor(new Date().getTime() / 1000);
     const blue = Math.min(Math.max(Math.round((now - timestamp) / (3600 * 24)), 0), 255);
-    const authorName = getAuthorName(entry);
-    const content = getContent(entry);
+    const authorName = entry.author;
+    const content = entry.content;
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
         .setAuthor({ name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getUserLink(authorName) })
@@ -32,10 +30,16 @@ function formatEntry(entry) {
         .setURL(getURL(entry))
         .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
-    const image = getImageURL(entry);
+    const image = getImage(html2md(content));
     if (image)
         embed = embed.setImage(image);
     return embed;
+}
+
+function getImage(content) {
+    const match = content.match(/!\[.*?\]\((\S+)\)/)
+    if (match)
+        return match[1];
 }
 
 function process(bot, msg) {
