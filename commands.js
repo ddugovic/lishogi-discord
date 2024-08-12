@@ -9,6 +9,7 @@ const community = require('./commands/community');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const feed = require('./commands/feed');
+const help = require('./commands/help');
 const jerome = require('./commands/jerome');
 const leaderboard = require('./commands/leaderboard');
 const log = require('./commands/log');
@@ -86,6 +87,12 @@ const commands = {
         description: "Display recent feed entries",
         process: feed.process,
         interact: feed.interact
+    },
+    "help": {
+        usage: "",
+        description: "Display a list of available commands",
+        process: help.process,
+        reply: help.reply
     },
     "jerome": {
         usage: "",
