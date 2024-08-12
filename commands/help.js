@@ -22,4 +22,8 @@ function process(commands, channel) {
     channel.send(`https://discord.com/blog/slash-commands-are-here ! Re-invite this bot to enable them!\n${help(commands)}`);
 }
 
-module.exports = process;
+function interact(commands, interaction) {
+    return `Available Commands:\n${help(commands)}`;
+}
+
+module.exports = { process, interact };
