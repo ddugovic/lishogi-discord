@@ -19,6 +19,7 @@ const client = new Client({
 // Set up commands
 const commands = require('./commands');
 const help = require('./commands/help');
+const usage = require('./commands.js');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
@@ -48,7 +49,10 @@ client.on('messageCreate', (msg) => {
         return;
     }
     let command = commands[cmdTxt];
-    if (command && suffix.indexOf('@') == -1) {
+    if (cmdTxt == 'help') {
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
+        help.process(usage, msg.channel);
+    } else if (command && command.process && suffix.indexOf('@') == -1) {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
             command.process(client, msg, suffix);
@@ -56,9 +60,6 @@ client.on('messageCreate', (msg) => {
             console.log(`Command failed:\n${error.stack}`);
             msg.channel.send(`Command ${cmdTxt} failed (${error})`);
         }
-    } else if (cmdTxt == 'help') {
-        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        help.process(commands, msg.channel);
     } else if (cmdTxt == 'stop') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         stop(client, msg.author.id);
