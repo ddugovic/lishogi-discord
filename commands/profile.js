@@ -10,7 +10,8 @@ const formatSeconds = require('../lib/format-seconds');
 const { formatOpening } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
-const { parseFeed, formatContent, getContent, getURL } = require('../lib/parse-feed');
+const { formatContent, getURL } = require('../lib/parse-feed');
+const Parser = require('rss-parser');
 const User = require('../models/User');
 
 async function profile(author, username) {
@@ -74,8 +75,8 @@ async function formatProfile(user, favoriteMode) {
         embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
 
     const blog = responses[2];
-    if (blog.entry)
-        embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.entry).slice(0, 3).map(formatEntry).join('\n') });
+    if (blog.items)
+        embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.items).slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.all) {
         const games = responses[3];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
@@ -160,16 +161,12 @@ function formatAbout(embed, username, profile) {
 
 function getBlog(username) {
     const url = `https://lichess.org/@/${username}/blog.atom`;
-    return fetch(url, { headers: { Accept: 'application/atom+xml' } })
-        .then(response => response.text())
-        .then(text => parseFeed(text));
+    return new Parser().parseURL(url)
 }
 
 function formatEntry(entry) {
-    const published = Math.floor(new Date(entry.published).getTime() / 1000);
-    const url = getURL(entry);
-    const content = getContent(entry);
-    return `<t:${published}:R> [${entry.title}](${url}) *${formatContent(content, 80)}*`;
+    const published = Math.floor(new Date(entry.isoDate).getTime() / 1000);
+    return `<t:${published}:R> [${entry.title}](${entry.link}) *${formatContent(entry.contentSnippet, 80)}*`;
 }
 
 function getHistory(username) {
