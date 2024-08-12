@@ -18,7 +18,6 @@ const client = new Client({
 
 // Set up commands
 const commands = require('./commands');
-const help = require('./commands/help');
 const usage = require('./commands.js');
 
 client.on('ready', () => {
@@ -51,7 +50,7 @@ client.on('messageCreate', (msg) => {
     let command = commands[cmdTxt];
     if (cmdTxt == 'help') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        help.process(usage, msg.channel);
+        command.process(usage, msg.channel);
     } else if (command && command.process && suffix.indexOf('@') == -1) {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
@@ -104,6 +103,8 @@ client.on(Events.InteractionCreate, async interaction => {
                 const error = await command.interact(interaction);
                 if (typeof error === 'string')
                     await interaction.reply({ content: error, ephemeral: true });
+            } else if (commandName == 'help') {
+                await interaction.reply({ content: await command.reply(usage, interaction) });
             } else {
                 await interaction.reply({ content: await command.reply(interaction) });
             }
