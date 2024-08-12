@@ -132,7 +132,7 @@ async function interact(interaction) {
     const username = interaction.options.getString('username') || user?.lichessName;
     if (!username)
         return 'You need to set your lichess username with setuser!';
-    return playing(username, interaction);
+    return playing(username, interaction.options.getString('theme'), interaction.options.getString('piece'), interaction);
 }
 
 module.exports = {process, interact};
