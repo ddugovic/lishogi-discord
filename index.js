@@ -18,7 +18,6 @@ const client = new Client({
 
 // Set up commands
 const commands = require('./commands');
-const usage = require('./commands.js');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
@@ -50,7 +49,7 @@ client.on('messageCreate', (msg) => {
     let command = commands[cmdTxt];
     if (cmdTxt == 'help') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        command.process(usage, msg.channel);
+        command.process(commands, msg.channel);
     } else if (command && command.process && suffix.indexOf('@') == -1) {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
@@ -104,7 +103,7 @@ client.on(Events.InteractionCreate, async interaction => {
                 if (typeof error === 'string')
                     await interaction.reply({ content: error, ephemeral: true });
             } else if (commandName == 'help') {
-                await interaction.reply({ content: await command.reply(usage, interaction), ephemeral: true });
+                await interaction.reply({ content: await command.reply(commands, interaction), ephemeral: true });
             } else {
                 await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }
