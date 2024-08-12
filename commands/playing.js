@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const { formatChunks } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 const { formatGifURL } = require('../lib/format-site-links');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
@@ -17,7 +17,7 @@ function playing(username, theme, piece, interaction) {
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatCurrentGame(json, username, theme ?? 'brown', piece ?? 'cburnett'))
-        .then(embed => formatChunks([embed], interaction, 'No game found!'))
+        .then(embed => formatPages([embed], interaction, 'No game found!'))
         .catch(error => {
             console.log(`Error in playing(${username}, ${theme}, ${piece}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);

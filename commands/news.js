@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
-const { formatPages } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 const { parseFeed, formatContent } = require('../lib/parse-feed');
 const Parser = require('rss-parser');
 

@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
 const { formatMarkup } = require('../lib/format-html');
-const { formatPages } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 
 function broadcast(author, interaction) {
     const url = 'https://lichess.org/api/broadcast/top';

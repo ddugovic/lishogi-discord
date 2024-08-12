@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const { formatChunks } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 const { formatThumbnailURL } = require('../lib/format-site-links');
 
 function puzzle(theme, piece, interaction) {
@@ -10,7 +10,7 @@ function puzzle(theme, piece, interaction) {
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown', piece ?? 'cburnett'))
-        .then(embed => formatChunks([embed], interaction, 'No puzzle found!'))
+        .then(embed => formatPages([embed], interaction, 'No puzzle found!'))
         .catch(error => {
             console.log(`Error in puzzle(${theme}, ${piece}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);

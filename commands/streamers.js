@@ -4,7 +4,7 @@ const formatError = require('../lib/format-error');
 const formatFlair = require('../lib/format-flair');
 const formatLang = require('../lib/format-lang');
 const { formatStreamerLinks } = require('../lib/format-links');
-const { formatPages } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 
 function streamers(author, interaction) {
     const url = 'https://lichess.org/api/streamer/live';

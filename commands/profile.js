@@ -5,7 +5,7 @@ const formatClock = require('../lib/format-clock');
 const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
-const { formatChunks } = require('../lib/format-pages');
+const formatPages = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatOpening } = require('../lib/format-variation');
@@ -20,7 +20,7 @@ async function profile(username, favoriteMode, interaction) {
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))
-        .then(embed => formatChunks([embed], interaction, 'Player not found!'))
+        .then(embed => formatPages([embed], interaction, 'Player not found!'))
         .catch(error => {
             console.log(`Error in profile(${username}, ${favoriteMode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
