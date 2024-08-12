@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const { formatChunks } = require('../lib/format-pages');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
@@ -17,7 +16,6 @@ async function eval(fen, theme, piece, since, until, interaction) {
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
             .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
-            .then(embeds => formatChunks(embeds, interaction, 'No cloud evaluation found!'))
             .catch(error => {
                 console.log(`Error in eval(${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
                 return formatError(status, statusText, `${url} failed to respond`);
@@ -58,7 +56,7 @@ async function formatCloudEval(fen, eval, theme, piece, since, until) {
         const lines = await Promise.all(games.topGames.map(game => formatGame(fen, game)));
         embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: lines.join('\n') }));
     }
-    return embeds;
+    return { embeds: embeds };
 }
 
 function getOpeningName(history, games) {
