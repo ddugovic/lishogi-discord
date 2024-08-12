@@ -5,6 +5,7 @@ const formatClock = require('../lib/format-clock');
 const formatError = require('../lib/format-error');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
+const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
 const { formatOpening } = require('../lib/format-variation');
@@ -14,28 +15,16 @@ const { formatContent, getURL } = require('../lib/parse-feed');
 const Parser = require('rss-parser');
 const User = require('../models/User');
 
-async function profile(author, username) {
-    const user = await User.findById(author.id).exec();
-    if (!username) {
-        username = await getName(author);
-        if (!username)
-            return 'You need to set your lichess username with setuser!';
-    }
-    const favoriteMode = user ? user.favoriteMode : '';
+async function profile(username, favoriteMode, interaction) {
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))
+        .then(embed => formatChunks([embed], interaction, 'Player not found!'))
         .catch(error => {
-            console.log(`Error in profile(${author.username}, ${username}): ${error}`);
+            console.log(`Error in profile(${username}, ${favoriteMode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
-}
-
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lichessName;
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
@@ -87,7 +76,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return { embeds: [ embed ] };
+    return embed;
 }
 
 function getUserStatus(username) {
@@ -289,7 +278,7 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lichess\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
@@ -343,12 +332,19 @@ function title(str) {
         .join(' ');
 }
 
-function process(bot, msg, username) {
-    profile(msg.author, username).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    const user = await User.findById(msg.author.id).exec();
+    if (!(username || user?.lichessName))
+        return 'You need to set your lichess username with setuser!';
+    profile(username || user?.lichessName, user?.favoriteMode).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await profile(interaction.user, interaction.options.getString('username')));
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.lichessName;
+    if (!username)
+        return 'You need to set your lichess username with setuser!';
+    return profile(username, user?.favoriteMode, interaction);
 }
 
 module.exports = {process, interact};

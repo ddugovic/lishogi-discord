@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { formatPositionURL, formatTitledUserLink } = require('../lib/format-site-links');
 const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
@@ -54,7 +54,7 @@ function formatArena(arena, theme, piece) {
         .setDescription(getDescription(arena));
     const position = arena.featured ?? arena.position
     if (position)
-	embed = embed.setImage(formatPositionURL(position.fen, position.lastMove, theme, piece));
+        embed = embed.setImage(formatPositionURL(position.fen, position.lastMove, theme, piece));
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(
@@ -85,9 +85,9 @@ function formatRestrictions(arena) {
     if (arena.hasMaxRating) {
         if (arena.maxRating.perf) {
             restrictions.push(`* ${formatVariant(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
-	} else {
+        } else {
             restrictions.push(`* Weekly rating cannot exceed **${arena.maxRating.rating}**.`);
-	}
+        }
     }
     if (arena.minRatedGames) {
         if (arena.minRatedGames.perf) {

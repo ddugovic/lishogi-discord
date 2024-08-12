@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { formatSiteLinks, formatThumbnailURL } = require('../lib/format-site-links');
 
 function simul(author, mode, interaction) {

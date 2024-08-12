@@ -100,18 +100,15 @@ client.on(Events.InteractionCreate, async interaction => {
     if ((command = commands[commandName])) {
         try {
             if (command.interact) {
-                await interaction.deferReply();
                 const error = await command.interact(interaction);
-                if (error)
-                    await interaction.editReply({ content: error });
+                if (typeof error === 'string')
+                    await interaction.reply({ content: error, ephemeral: true });
             } else {
-                await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
+                await interaction.reply({ content: await command.reply(interaction) });
             }
         } catch (error) {
             console.log(`Command ${commandName} failed: ${error}`);
         }
-    } else if (commandName == 'help') {
-        await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
     } else if (commandName == 'stop') {
         await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
         stop(client, interaction.user.id);

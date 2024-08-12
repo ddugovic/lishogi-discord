@@ -2,33 +2,26 @@ const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatGifURL } = require('../lib/format-site-links');
 const { formatOpening } = require('../lib/format-variation');
 const plural = require('plural');
 const User = require('../models/User');
 
-async function playing(author, username, theme, piece) {
+function playing(username, theme, piece, interaction) {
     if (!username) {
-        username = await getName(author);
-        if (!username)
-            return 'You need to set your lichess username with setuser!';
+        return 'You need to set your lichess username with setuser!';
     }
     const url = `https://lichess.org/api/user/${username}/current-game?accuracy=true&clocks=false&division=false&evals=false`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-	.then(json => formatCurrentGame(json, username, theme ?? 'brown', piece ?? 'cburnett'))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(json => formatCurrentGame(json, username, theme ?? 'brown', piece ?? 'cburnett'))
+        .then(embed => formatChunks([embed], interaction, 'No game found!'))
         .catch(error => {
-            console.log(`Error in playing(${author.username}, ${username}, ${theme}, ${piece}): ${error}`);
+            console.log(`Error in playing(${username}, ${theme}, ${piece}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
-}
-
-async function getName(author) {
-    const user = await User.findById(author.id).exec();
-    if (user)
-        return user.lichessName;
 }
 
 async function formatCurrentGame(game, username, theme, piece) {
@@ -129,12 +122,17 @@ function title(str) {
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 
-function process(bot, msg, suffix) {
-    playing(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
+async function process(bot, msg, username) {
+    const user = await User.findById(msg.author.id).exec();
+    playing(username || user?.lichessName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await playing(interaction.user, interaction.options.getString('username'), interaction.options.getString('theme'), interaction.options.getString('piece')));
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.lichessName;
+    if (!username)
+        return 'You need to set your lichess username with setuser!';
+    return playing(username, interaction);
 }
 
 module.exports = {process, interact};

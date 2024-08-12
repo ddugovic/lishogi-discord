@@ -8,26 +8,18 @@ const { formatOpening } = require('../lib/format-variation');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
-async function tv(author, mode) {
-    if (!mode)
-        mode = await getMode(author);
+function tv(mode, interaction) {
     const url = `https://lichess.org/api/tv/${mode ?? 'best'}?clocks=false&nb=3&opening=true`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, opening: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-	.then(text => parseDocument(text))
+        .then(text => parseDocument(text))
         .then(games => formatTv(games, mode))
         .then(embed => { return { embeds: [ embed ] } })
         .catch(error => {
-            console.log(`Error in tv(${author.username}, ${mode}): ${error}`);
+            console.log(`Error in tv(${mode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
-}
-
-async function getMode(author) {
-    const user = await User.findById(author.id).exec();
-    if (user && user.favoriteMode != 'puzzle')
-        return user.favoriteMode;
 }
 
 async function formatTv(games, mode) {
@@ -67,12 +59,20 @@ function formatUser(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
 }
 
-function process(bot, msg, mode) {
-    tv(msg.author, mode).then(message => msg.channel.send(message));
+function getMode(user) {
+    if (user && user.favoriteMode != 'puzzle')
+        return user.favoriteMode;
+}
+
+async function process(bot, msg, mode) {
+    const user = await User.findById(msg.author.id).exec();
+    tv(mode || getMode(user)).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    await interaction.editReply(await tv(interaction.user, interaction.options.getString('mode')));
+    const user = await User.findById(interaction.user.id).exec();
+    const mode = interaction.options.getString('mode') || getMode(user);
+    return tv(mode, interaction);
 }
 
 module.exports = {process, interact};

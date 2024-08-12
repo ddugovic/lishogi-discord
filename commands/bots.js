@@ -4,7 +4,7 @@ const formatError = require('../lib/format-error');
 const formatLang = require('../lib/format-lang');
 const { formatSocialLinks } = require('../lib/format-links');
 const { formatSiteLink, getSiteLinks } = require('../lib/format-site-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
@@ -15,7 +15,7 @@ async function bots(author, interaction) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-	.then(text => filter(parseDocument(text)))
+        .then(text => filter(parseDocument(text)))
         .then(bots => bots.map(bot => formatBot(bot, mode)))
         .then(embeds => formatPages(embeds, interaction, 'No bots are currently online.'))
         .catch(error => {

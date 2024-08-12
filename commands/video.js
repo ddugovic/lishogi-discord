@@ -2,7 +2,7 @@ const { decode } = require('html-entities');
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 const { escape } = require('querystring')
 
 function video(author, text, interaction) {

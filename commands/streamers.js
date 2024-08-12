@@ -4,7 +4,7 @@ const formatError = require('../lib/format-error');
 const formatFlair = require('../lib/format-flair');
 const formatLang = require('../lib/format-lang');
 const { formatStreamerLinks } = require('../lib/format-links');
-const formatPages = require('../lib/format-pages');
+const { formatPages } = require('../lib/format-pages');
 
 function streamers(author, interaction) {
     const url = 'https://lichess.org/api/streamer/live';
@@ -72,7 +72,7 @@ function formatStream(username, title, streamer, stream) {
         if ((length = text.length)) {
             rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
             result.push(text);
-	}
+        }
     }
     return [`${result.join('\n')}`, rating, length + rating];
 }

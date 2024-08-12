@@ -1,16 +1,18 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatThumbnailURL } = require('../lib/format-site-links');
 
-function puzzle(author, theme, piece) {
+function puzzle(theme, piece, interaction) {
     const url = 'https://lichess.org/api/puzzle/daily';
+    let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatPuzzle(json.game, json.puzzle, theme ?? 'brown', piece ?? 'cburnett'))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(embed => formatChunks([embed], interaction, 'No puzzle found!'))
         .catch(error => {
-            console.log(`Error in puzzle(${author.username}, ${theme}, ${piece}): ${error}`);
+            console.log(`Error in puzzle(${theme}, ${piece}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
@@ -26,7 +28,7 @@ function formatPuzzle(game, puzzle, theme, piece) {
         .addFields([
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
-	])
+        ])
         .setImage(formatThumbnailURL(game.id, theme, piece));
 }
 
@@ -51,11 +53,11 @@ function title(str) {
 }
 
 function process(bot, msg, suffix) {
-    puzzle(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
+    puzzle(...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
-async function interact(interaction) {
-    await interaction.editReply(await puzzle(interaction.user, interaction.options.getString('theme'), interaction.options.getString('piece')));
+function interact(interaction) {
+    return puzzle(interaction.options.getString('theme'), interaction.options.getString('piece'));
 }
 
 module.exports = {process, interact};

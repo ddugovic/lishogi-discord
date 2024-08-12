@@ -1,11 +1,12 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
+const { formatChunks } = require('../lib/format-pages');
 const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
-async function eval(author, fen, theme, piece, since, until) {
+async function eval(fen, theme, piece, since, until) {
     const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen.js');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
@@ -16,8 +17,9 @@ async function eval(author, fen, theme, piece, since, until) {
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
             .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
+            .then(embed => formatChunks([embed], interaction, 'No cloud evaluation found!'))
             .catch(error => {
-                console.log(`Error in eval(${author.username}, ${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
+                console.log(`Error in eval(${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
                 return formatError(status, statusText, `${url} failed to respond`);
             });
     } else {
@@ -42,7 +44,7 @@ async function formatCloudEval(fen, eval, theme, piece, since, until) {
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
             .setTitle(`:cloud: ${getOpeningName(history, games) ?? 'Cloud Evaluation'}`)
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
-	    .setImage(formatPositionURL(fen, undefined, theme, piece)),
+            .setImage(formatPositionURL(fen, undefined, theme, piece)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
@@ -53,10 +55,10 @@ async function formatCloudEval(fen, eval, theme, piece, since, until) {
             embeds.push(new EmbedBuilder().setImage(image));
     }
     if (games.topGames.length) {
-	const lines = await Promise.all(games.topGames.map(game => formatGame(fen, game)));
+        const lines = await Promise.all(games.topGames.map(game => formatGame(fen, game)));
         embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: lines.join('\n') }));
     }
-    return { embeds: embeds };
+    return embeds;
 }
 
 function getOpeningName(history, games) {
@@ -123,12 +125,12 @@ function formatEval(pv) {
     return formatter.format(pv.cp/100);
 }
 
-function process(bot, msg, fen, since, until) {
-    eval(msg.author, fen, since, until).then(url => msg.channel.send(url))
+function process(bot, msg, suffix) {
+    eval(...suffix.split(/ /, 2)).then(message => msg.channel.send(message))
 }
 
-async function interact(interaction) {
-    await interaction.editReply(await eval(interaction.user, interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until')));
+function interact(interaction) {
+    interaction.reply(await eval(interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until')));
 }
 
 module.exports = {process, interact};
