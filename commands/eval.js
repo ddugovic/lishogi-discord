@@ -6,7 +6,7 @@ const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
-async function eval(fen, theme, piece, since, until) {
+async function eval(fen, theme, piece, since, until, interaction) {
     const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen.js');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
@@ -17,7 +17,7 @@ async function eval(fen, theme, piece, since, until) {
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
             .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
-            .then(embed => formatChunks([embed], interaction, 'No cloud evaluation found!'))
+            .then(embeds => formatChunks(embeds, interaction, 'No cloud evaluation found!'))
             .catch(error => {
                 console.log(`Error in eval(${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
                 return formatError(status, statusText, `${url} failed to respond`);
@@ -129,8 +129,8 @@ function process(bot, msg, suffix) {
     eval(...suffix.split(/ /, 2)).then(message => msg.channel.send(message))
 }
 
-function interact(interaction) {
-    interaction.reply(await eval(interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until')));
+async function interact(interaction) {
+    return interaction.reply(await eval(interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until'), interaction));
 }
 
 module.exports = {process, interact};
