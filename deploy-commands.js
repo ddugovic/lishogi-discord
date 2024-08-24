@@ -13,8 +13,9 @@ const lexica = [
     { name: 'Català (Catalan)', value: 'DISC2' },
     { name: 'Deutsch (German)', value: 'RD28' },
     { name: 'Français (French)', value: 'FRA24' },
-    { name: 'Norsk (Norwegian)', value: 'NSF21' },
+    { name: 'Norsk (Norwegian)', value: 'NSF23' },
     { name: 'Polski (Polish)', value: 'OSPS49' },
+    { name: 'CSW19X (School Expurgated)', value: 'CSW19X' },
     { name: 'NSWL 20 (NASPA School Word List)', value: 'NSWL20' }
 ];
 
