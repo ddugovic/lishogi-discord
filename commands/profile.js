@@ -39,7 +39,7 @@ async function formatProfile(user, favoriteMode) {
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
     const requests = [ perf, getGames(user.username) ];
-    if (user.count.rated || user.perfs.puzzle) {
+    if (user.count.rated || user.perfs.puzzle || user.perfs.puzzlefrisian || user.perfs.puzzlerussian) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
             requests.push(getStormHistory(user.username));
@@ -75,7 +75,7 @@ async function formatProfile(user, favoriteMode) {
         const fields = games.filter(game => game.status != 'aborted').map(formatGame);
         embed = embed.addFields({ name: `:crossed_swords: Recent ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
-    if (user.count.rated || user.perfs.puzzle) {
+    if (user.count.rated || user.perfs.puzzle || user.perfs.puzzlefrisian || user.perfs.puzzlerussian) {
         const image = await formatHistory(...responses.slice(2));
         if (image)
             embed = embed.setImage(image);
@@ -113,7 +113,7 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
 function unranked(mode, rating) {
     // Players whose RD is above this threshold are unranked
     const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
-    return true || mode == 'puzzle' || rating.rd > (standard.includes(mode) ? 75 : 65);
+    return true || isPuzzle(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
 }
 
 function getCountryAndName(profile) {
@@ -213,7 +213,7 @@ function getMostPlayedMode(perfs, favoriteMode) {
         if (mode.toLowerCase() == favoriteMode)
             return [mode, perf];
         // exclude puzzle games, unless it is the only mode played by that user.
-        if (mode != 'puzzle' && (mostPlayedRating == undefined || perf.games > mostPlayedRating.games)) {
+        if (!isPuzzle(mode) && (mostPlayedRating == undefined || perf.games > mostPlayedRating.games)) {
             mostPlayedMode = mode;
             mostPlayedRating = perf;
         }
@@ -226,7 +226,8 @@ function formatProgress(progress) {
 }
 
 function formatRating(mode, r) {
-    const games = `**${fn.format(r.games)}** ${plural((mode == 'puzzle' ? 'attempt' : 'game'), r.games)}`;
+    const noun = isPuzzle(mode) ? 'attempt': 'game';
+    const games = `**${fn.format(r.games)}** ${plural(noun, r.games)}`;
     return `**${r.rating}** ± **${2 * r.rd}** over ${games}`;
 }
 
@@ -313,6 +314,11 @@ function formatPlayerName(player) {
 
 function formatUserName(user) {
     return user.title ? `**${user.title}** ${user.name}` : user.name;
+}
+
+function isPuzzle(mode) {
+    const puzzle = ['puzzle','puzzlefrisian','puzzlerussian'];
+    return puzzle.includes(mode);
 }
 
 function title(str) {
