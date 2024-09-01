@@ -7,6 +7,7 @@ const { formatSocialLinks } = require('../lib/format-links');
 const { formatName, formatNickname } = require('../lib/format-name');
 const formatError = require('../lib/format-error');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
+const formatPages = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatVariant } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
@@ -23,8 +24,7 @@ function profile(user, username, interaction) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatProfile(json, favoriteMode))
-        .then(embed => { return { embeds: [ embed ] } })
+        .then(json => formatProfile(json, favoriteMode, interaction))
         .catch(error => {
             console.log(`Error in profile(${user}, ${username}): ${error}`);
             return formatError(status, statusText, interaction, `${url} failed to respond`);
@@ -32,7 +32,7 @@ function profile(user, username, interaction) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-async function formatProfile(user, favoriteMode) {
+async function formatProfile(user, favoriteMode, interaction) {
     if (user.disabled)
         return 'This account is closed.';
 
@@ -80,7 +80,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return embed;
+    return formatPages([embed], interaction);
 }
 
 function formatUser(title, name, patron, trophies, online, playing, streaming) {
