@@ -6,7 +6,7 @@ const { formatChunks } = require('../lib/format-pages');
 const formatPlayer = require('../lib/format-player');
 const User = require('../models/User');
 
-function profile(user, username, interaction) {
+function profile(username, interaction) {
     const url = 'https://woogles.io/api/user_service.ProfileService/GetProfile';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { username: username.toLowerCase() };
@@ -15,7 +15,7 @@ function profile(user, username, interaction) {
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => { return status == 200 ? formatProfile(json, username, interaction) : 'Player not found!'; })
         .catch(error => {
-            console.log(`Error in profile(${user.username}, ${username}): ${error}`);
+            console.log(`Error in profile(${username}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
@@ -134,18 +134,17 @@ function formatTitle(str) {
 }
 
 async function process(bot, msg, username) {
-    username = username || await getUsername(msg.author);
-    if (!username)
-        return await msg.channel.send('You need to set your Woogles.io username with setuser!');
-    profile(msg.author, username).then(message => msg.channel.send(message));
+    const user = await User.findById(msg.author.id).exec();
+    if (!(username || user?.wooglesName))
+        return 'You need to set your Woogles.io username with setuser!';
+    profile(username || user?.wooglesName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
-    const username = interaction.options.getString('username') || await getUsername(interaction.user);
-    if (!username)
-        return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
-    await interaction.deferReply();
-    return profile(interaction.user, username, interaction);
+    const user = await User.findById(interaction.user.id).exec();
+    const username = interaction.options.getString('username') || user?.wooglesName;
+        return 'You need to set your Woogles.io username with setuser!';
+    return profile(username, interaction);
 }
 
 async function getUsername(author, username) {
