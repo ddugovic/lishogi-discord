@@ -19,7 +19,7 @@ async function profile(username, favoriteMode, interaction) {
     const url = `https://lichess.org/api/user/${username}?trophies=true`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatProfile(json, favoriteMode))
+        .then(json => formatProfile(json, favoriteMode, interaction))
         .catch(error => {
             console.log(`Error in profile(${username}, ${favoriteMode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
@@ -27,7 +27,7 @@ async function profile(username, favoriteMode, interaction) {
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-async function formatProfile(user, favoriteMode) {
+async function formatProfile(user, favoriteMode, interaction) {
     if (user.disabled)
         return 'This account is closed.';
 
