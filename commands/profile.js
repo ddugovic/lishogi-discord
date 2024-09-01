@@ -1,25 +1,27 @@
 const { EmbedBuilder } = require('discord.js');
 const fn = require('friendly-numbers');
+const formatError = require('../lib/format-error');
 const { getLexiconCategory } = require('../lib/format-lexicon');
+const { formatChunks } = require('../lib/format-pages');
 const formatPlayer = require('../lib/format-player');
 const User = require('../models/User');
 
-async function profile(user, username) {
+function profile(user, username, interaction) {
     const url = 'https://woogles.io/api/user_service.ProfileService/GetProfile';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { username: username.toLowerCase() };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => { return status == 200 ? formatProfile(json, username) : 'Player not found!'; })
+        .then(json => { return status == 200 ? formatProfile(json, username, interaction) : 'Player not found!'; })
         .catch(error => {
             console.log(`Error in profile(${user.username}, ${username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
-function formatProfile(data, username) {
+function formatProfile(data, username, interaction) {
     const player = formatPlayer(data, username);
     var embed = new EmbedBuilder()
         .setColor(0x00FFFF)
@@ -41,7 +43,7 @@ function formatProfile(data, username) {
             .setTitle(`${player} Bingos: ${fn.format(bingos)}`)
             .addFields(formatStats(ratings, records));
     }
-    return { embeds: [ embed ] };
+    return formatChunks([embed], interaction);
 }
 
 function parseData(json) {
@@ -143,7 +145,7 @@ async function interact(interaction) {
     if (!username)
         return await interaction.reply({ content: 'You need to set your Woogles.io username with setuser!', ephemeral: true });
     await interaction.deferReply();
-    interaction.editReply(await profile(interaction.user, username));
+    return profile(interaction.user, username, interaction);
 }
 
 async function getUsername(author, username) {
