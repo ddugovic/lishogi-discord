@@ -20,7 +20,6 @@ async function profile(username, favoriteMode, interaction) {
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode))
-        .then(embed => formatPages([embed], interaction, 'Player not found!'))
         .catch(error => {
             console.log(`Error in profile(${username}, ${favoriteMode}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
@@ -76,7 +75,7 @@ async function formatProfile(user, favoriteMode) {
         if (image)
             embed = embed.setImage(image);
     }
-    return embed;
+    return formatPages([embed], interaction);
 }
 
 function getUserStatus(username) {
