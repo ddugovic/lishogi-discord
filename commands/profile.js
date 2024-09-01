@@ -32,13 +32,7 @@ async function getName(author) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(api, user, favoriteMode) {
-    if (user.status == 'closed' || user.status == 'closed:fair_play_violations')
-        return 'This account is closed.';
-
     const firstName = getFirstName(user) || title(user.username);
-    /*const color = streaming ? (playing ? 0xFF00FF : 0x7F007F) :
-        playing ? 0x00FF00 :
-        online ? 0x007F00 : 0x000000;*/
     const embed = new EmbedBuilder()
         .setColor(0xFFFFFF);
     return setName(api, embed, user, firstName)
