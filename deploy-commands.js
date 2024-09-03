@@ -20,7 +20,6 @@ const modes = [
     { name: 'Chess960', value: 'chess960' },
     { name: 'Classical', value: 'classical' },
     { name: 'Crazyhouse', value: 'crazyhouse' },
-    { name: 'Five-check', value: 'fiveCheck' },
     { name: 'Frisian', value: 'frisian' },
     { name: 'Frysk!', value: 'frysk' },
     { name: 'Horde', value: 'Horde' },
@@ -35,7 +34,6 @@ const modes = [
     { name: 'Russian', value: 'russian' },
     { name: 'Shogi', value: 'shogi' },
     { name: 'Three-check', value: 'threeCheck' },
-    { name: 'UltraBullet', value: 'ultraBullet' },
     { name: 'Xiangqi', value: 'xiangqi' }
 ];
 const ratings = [
@@ -48,9 +46,7 @@ const ratings = [
     { name: 'Bullet', value: 'bullet' },
     { name: 'Chess960', value: 'chess960' },
     { name: 'Classical', value: 'classical' },
-    { name: 'Correspondence', value: 'correspondence' },
     { name: 'Crazyhouse', value: 'crazyhouse' },
-    { name: 'Five-check', value: 'fiveCheck' },
     { name: 'Frisian', value: 'frisian' },
     { name: 'Frysk!', value: 'frysk' },
     { name: 'Horde', value: 'Horde' },
@@ -65,7 +61,6 @@ const ratings = [
     { name: 'Russian', value: 'russian' },
     { name: 'Shogi', value: 'shogi' },
     { name: 'Three-check', value: 'threeCheck' },
-    { name: 'UltraBullet', value: 'ultraBullet' },
     { name: 'Xiangqi', value: 'xiangqi' }
 ];
 
@@ -86,8 +81,7 @@ const commands = [
 .setMaxLength(30).setMinLength(2)),
     new SlashCommandBuilder().setName('puzzle').setDescription("Display today's puzzle"),
     new SlashCommandBuilder().setName('setgamemode').setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName('mode').setDescription('Enter your favorite game (or puzzle) mode').addChoices(...ratings)),
-    new SlashCommandBuilder().setName('setuser').setDescription("Set your playstrategy username").addStringOption(option => option.setName('username').setDescription('Enter your playstrategy username').setRequired(true).setAutocomplete(true)
-.setMaxLength(30).setMinLength(2)),
+    new SlashCommandBuilder().setName('setuser').setDescription("Set your playstrategy username").addStringOption(option => option.setName('username').setDescription('Enter your playstrategy username').setRequired(true).setAutocomplete(true).setMaxLength(30).setMinLength(2)),
     new SlashCommandBuilder().setName('simul').setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
     new SlashCommandBuilder().setName('streamers').setDescription("Display live streamers"),
     new SlashCommandBuilder().setName('team').setDescription("Search teams for a keyword").addStringOption(option => option.setName('text').setDescription('Search keywords').setRequired(true)),
