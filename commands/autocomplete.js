@@ -1,4 +1,3 @@
-const { decode } = require('html-entities');
 const formatError = require('../lib/format-error');
 const { escape } = require('querystring')
 
