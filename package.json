@@ -17,7 +17,7 @@
   "author": "Tim Beck",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/rest": "^2.3.0",
+    "@discordjs/rest": "^2.4.0",
     "@hugop/discord-table": "^1.0.1",
     "chessops": "^0.12.8",
     "convert-seconds": "^1.0.1",
