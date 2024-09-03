@@ -1,6 +1,8 @@
 const countryFlags = require('emoji-flags');
 const { EmbedBuilder } = require('discord.js');
+const { emailRegex } = import('email-regex');
 const formatColor = require('../lib/format-color');
+const formatError = require('../lib/format-error');
 const { formatLink, formatSocialLinks } = require('../lib/format-links');
 const formatPages = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
@@ -18,7 +20,7 @@ async function leaderboard(author, mode, interaction) {
         .then(embeds => formatPages(embeds, interaction, 'No leaders found!'))
         .catch(error => {
             console.log(`Error in leaderboard(${author.username}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
@@ -116,7 +118,7 @@ function formatProfile(username, profile, playTime) {
 function formatBio(bio) {
     const social = /:\/\/|\b(?:discord\.gg|github\.com|instagram\.com|twitch\.tv|twitter\.com|youtube\.com|youtu\.be)\b/i;
     for (let i = 0; i < bio.length; i++) {
-        if (bio[i].match(social)) {
+        if (bio[i].match(social) || bio[i].match(emailRegex)) {
             bio = bio.slice(0, i);
             break;
         }
@@ -142,7 +144,7 @@ function process(bot, msg, mode) {
 }
 
 function interact(interaction) {
-    leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
+    return leaderboard(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};

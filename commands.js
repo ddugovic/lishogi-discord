@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const autocomplete = require('./commands/autocomplete');
 const blog = require('./commands/blog');
 const deleteUser = require('./commands/deleteUser');
 const leaderboard = require('./commands/leaderboard');
@@ -20,6 +21,12 @@ const commands = {
         description: "Find an upcoming or recent arena",
         process: arena.process,
         interact: arena.interact
+    },
+    "autocomplete": {
+        usage: "<lishogi name>",
+        description: "Automatically complete playstrategy username",
+        process: autocomplete.process,
+        interact: autocomplete.interact
     },
     "blog": {
         usage: "",

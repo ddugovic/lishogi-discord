@@ -1,5 +1,5 @@
 const config = require('./config.json');
-const { ActivityType, Client, GatewayIntentBits, InteractionType } = require('discord.js');
+const { ActivityType, Client, Events, GatewayIntentBits, InteractionType } = require('discord.js');
 const publisher = require('discord-lister');
 
 // Set up the database
@@ -83,7 +83,16 @@ process.on('unhandledRejection', err => {
 
 client.login(config.token);
 
-client.on('interactionCreate', async interaction => {
+client.on(Events.InteractionCreate, async interaction => {
+    if (interaction.isAutocomplete()) {
+        const commandName = interaction.commandName;
+        try {
+            commands['autocomplete'].interact(interaction);
+        } catch (error) {
+            console.log(`Command ${commandName} autocomplete failed: ${error}`);
+        }
+        return;
+    }
     if (interaction.type != InteractionType.ApplicationCommand) return;
 
     const commandName = interaction.commandName;
@@ -91,16 +100,15 @@ client.on('interactionCreate', async interaction => {
     if ((command = commands[commandName])) {
         try {
             if (command.interact) {
-                await interaction.deferReply();
-                await command.interact(interaction);
+                const error = await command.interact(interaction);
+                if (typeof error === 'string')
+                    await interaction.reply({ content: error, ephemeral: true });
             } else {
-                await interaction.reply(await command.reply(interaction));
+                await interaction.reply({ content: await command.reply(interaction) });
             }
-        } catch (e) {
-            console.log(`Command ${commandName} failed:\n${e.stack}`);
+        } catch (error) {
+            console.log(`Command ${commandName} failed: ${error}`);
         }
-    } else if (commandName == 'help') {
-        await interaction.reply({ content: help.reply(commands, interaction), ephemeral: true });
     } else if (commandName == 'stop') {
         await interaction.reply({ content: `<@${interaction.user.id}>`, ephemeral: true });
         stop(client, interaction.user.id);

@@ -96,7 +96,7 @@ function process(bot, msg, favoriteMode) {
 }
 
 function interact(interaction) {
-    arena(interaction.user, interaction.options.getString('mode'), interaction);
+    return arena(interaction.user, interaction.options.getString('mode'), interaction);
 }
 
 module.exports = {process, interact};
