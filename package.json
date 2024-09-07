@@ -4,8 +4,9 @@
   "description": "A Discord bot to interact with the Lichess API",
   "main": "index.js",
   "scripts": {
-    "prestart": "if git pull origin lichess | grep 'package'; then npm install && npm cache clean --force; fi",
+    "prestart": "npm install",
     "start": "node index.js",
+    "stop": "if git pull origin lichess | grep 'package'; then npm install && npm cache clean --force; fi",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
   },
