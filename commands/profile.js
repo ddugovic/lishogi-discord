@@ -63,7 +63,7 @@ async function formatProfile(user, favoriteMode, interaction) {
         embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
 
     const blog = responses[2];
-    if (blog.items)
+    if (blog.items?.length)
         embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.items).slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.all) {
         const games = responses[3];
