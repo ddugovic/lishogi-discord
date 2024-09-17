@@ -27,7 +27,7 @@ function playing(username, theme, piece, interaction) {
 async function formatCurrentGame(game, username, theme, piece) {
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
+        .setAuthor({ name: formatAuthorName(game.players), iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: `https://lichess.org/@/${username}/tv` })
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
         .setTitle(`${formatClock(game.clock, game.daysPerTurn)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lichess.org/${game.id}`)
@@ -48,7 +48,7 @@ function getColor(players) {
     return formatColor(red, 0, 255-red);
 }
 
-async function formatAuthorName(players) {
+function formatAuthorName(players) {
     return [players.white, players.black].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
 }
 
