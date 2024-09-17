@@ -49,26 +49,7 @@ function getColor(players) {
 }
 
 async function formatAuthorName(players) {
-    if ([players.white, players.black].every(player => player.user))
-        players = await setCrosstable(players);
     return [players.white, players.black].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
-}
-
-function setCrosstable(players) {
-    const url = `https://lichess.org/api/crosstable/${players.white.user.name}/${players.black.user.name}`;
-    return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.json())
-        .then(json => formatRecord(players, json.users));
-}
-
-function formatRecord(players, users) {
-    const whiteRecord = users[players.white.user.name.split(/ /, 2)[0]];
-    const blackRecord = users[players.black.user.name.split(/ /, 2)[0]];
-    if (whiteRecord + blackRecord) {
-        players.white.record = whiteRecord;
-        players.black.record = blackRecord;
-    }
-    return players;
 }
 
 function formatPlayer(player) {
