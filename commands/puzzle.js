@@ -57,7 +57,7 @@ function process(bot, msg, suffix) {
 }
 
 function interact(interaction) {
-    return puzzle(interaction.options.getString('theme'), interaction.options.getString('piece'));
+    return puzzle(interaction.options.getString('theme'), interaction.options.getString('piece'), interaction);
 }
 
 module.exports = {process, interact};
