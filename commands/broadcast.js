@@ -31,13 +31,13 @@ function formatBroadcast(broadcast) {
         embed = embed.setDescription(broadcast.tour.description);
     }
     if (broadcast.tour.dates) {
-        embed = embed.addFields({ name: 'Schedule', value: broadcast.tour.dates.map(formatRoundDate).join('\n') });
+        embed = embed.addFields({ name: 'Schedule', value: broadcast.tour.dates.map(formatRoundDate).join(' - ') });
     }
     return embed;
 }
 
 function formatRoundDate(date) {
-    return `<t:${date / 1000}> – *<t:${date / 1000}:R>*`;
+    return `<t:${date / 1000}>`;
 }
 
 function process(bot, msg) {
