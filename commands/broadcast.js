@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatColor = require('../lib/format-color');
 const formatError = require('../lib/format-error');
-const { formatMarkup } = require('../lib/format-html');
 const formatPages = require('../lib/format-pages');
 
 function broadcast(author, interaction) {
@@ -23,18 +22,22 @@ function formatBroadcasts(json) {
 
 function formatBroadcast(broadcast) {
     const red = Math.floor(255 / (broadcast.tour.tier || 1));
-    return new EmbedBuilder()
+    let embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: broadcast.tour.name, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
-        .setTitle(broadcast.tour.description)
+        .setTitle(broadcast.tour.name)
         .setURL(broadcast.tour.url)
-        .setThumbnail(broadcast.tour.image ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png')
-        .setDescription(formatMarkup(broadcast.tour.markup))
-        .addFields({ name: 'Next or Last Round', value: formatRound(broadcast.lastRound) });
+        .setThumbnail(broadcast.tour.image ?? 'https://lichess1.org/assets/logo/lichess-favicon-64.png');
+    if (broadcast.tour.description) {
+        embed = embed.setDescription(broadcast.tour.description);
+    }
+    if (broadcast.tour.dates) {
+        embed = embed.addFields({ name: 'Schedule', value: broadcast.tour.dates.map(formatRoundDate).join('\n') });
+    }
+    return embed;
 }
 
-function formatRound(round) {
-    return `<t:${round.startsAt / 1000}> – ${round.name} *<t:${round.startsAt / 1000}:R>*`;
+function formatRoundDate(date) {
+    return `<t:${date / 1000}> – *<t:${date / 1000}:R>*`;
 }
 
 function process(bot, msg) {
