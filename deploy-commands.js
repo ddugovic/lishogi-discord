@@ -12,6 +12,7 @@ const lexica = [
     { name: 'CEL (Common English)', value: 'ECWL' },
     { name: 'Català (Catalan)', value: 'DISC2' },
     { name: 'Deutsch (German)', value: 'RD28' },
+    { name: 'Español (Spanish)', value: 'FISE2' },
     { name: 'Français (French)', value: 'FRA24' },
     { name: 'Norsk (Norwegian)', value: 'NSF23' },
     { name: 'Polski (Polish)', value: 'OSPS49' },

@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { formatLexicon } = require('../lib/format-lexicon');
+const { decodeWord, encodeWord, formatLexicon } = require('../lib/format-lexicon');
 const { formatPages } = require('../lib/format-pages');
 
 function paginate(lexicon, status, results) {
@@ -10,22 +10,22 @@ function paginate(lexicon, status, results) {
 async function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/api/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
-    const query = { lexicon: lexicon, words: words.split(/[\s,]+/), definitions: true };
+    const query = { lexicon: lexicon, words: encodeWord(lexicon, words).split(/[\s,]+/), definitions: true };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPages('Word', paginate(lexicon, status, filterResults(json.results)) ?? [], interaction, 'Word(s) not found!'))
+        .then(json => formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!'))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
             return `An error occurred handling your request: ${status} ${statusText}`;
         });
 }
 
-function filterResults(results) {
+function filterResults(lexicon, results) {
     var a = [];
     Object.entries(results).forEach(([key, value]) => {
         if (value.v) {
-            a[key] = value;
+            a[decodeWord(lexicon, key)] = value;
         }
     });
     return a;
