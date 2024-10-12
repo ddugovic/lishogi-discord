@@ -1,10 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
 const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
+const formatEmbeds = require('../lib/format-embeds');
 const formatError = require('../lib/format-error');
-const { formatChunks } = require('../lib/format-pages');
 const { formatHandicap } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
+const graphSeries = require('../lib/graph-series');
 const plural = require('plural');
 const User = require('../models/User');
 
@@ -16,8 +17,8 @@ function playing(username, interaction) {
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatCurrentGame(json, username))
-        .then(embed => formatChunks([embed], interaction, 'No game found!'))
+        .then(json => Promise.all([formatCurrentGame(json, username), formatCurrentGameClocks(json)]))
+        .then(embeds => formatEmbeds(embeds, interaction, 'No game found!'))
         .catch(error => {
             console.log(`Error in playing(${username}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
@@ -39,6 +40,14 @@ async function formatCurrentGame(game, username) {
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
     }
     return embed;
+}
+
+async function formatCurrentGameClocks(game) {
+    if (game.clocks) {
+        const image = await formatClocks(game.clocks);
+        if (image)
+            return new EmbedBuilder().setImage(image);
+    }
 }
 
 function getColor(players) {
@@ -126,6 +135,21 @@ function chunk(arr, size) {
 function title(str) {
     str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+}
+
+function formatClocks(clocks) {
+    const data = clocks.reduce((acc, value, ndx) => {
+        acc[ndx % 2] = acc[ndx % 2] || [];
+        acc[ndx % 2].push(Math.round(value / 100) * (ndx % 2 ? -1 : 1));
+        return acc;
+    }, []);
+    const series = [{ label: 'Sente', data: data[0] }, { label: 'Gote', data: data[1] }];
+    const chart = graphSeries(series, 500, 100);
+    const url = chart.getUrl();
+    if (url.length <= 2000)
+        return url;
+    if (chart)
+        return chart.getShortUrl();
 }
 
 async function process(bot, msg, username) {
