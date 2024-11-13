@@ -8,17 +8,17 @@ function paginate(lexicon, status, results) {
     return Object.entries(results).map(entry => formatEntry(lexicon, ...entry));
 }
 
-async function define(user, lexicon, words, interaction) {
+function define(user, lexicon, words, interaction) {
     const url = 'https://woogles.io/api/word_service.WordService/DefineWords';
     const headers = { accept: 'application/json', 'content-type': 'application/json', 'user-agent': 'Woogles Statbot' };
     const query = { lexicon: lexicon, words: encodeWord(lexicon, words).split(/[\s,]+/), definitions: true };
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => json.results ? formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!') : formatError(status, statusText, `${url} ${json.code}: ${json.message}`))
+        .then(json => json.results ? formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!') : formatError(interaction, status, statusText, `${url} ${json.code}: ${json.message}`))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
-            return formatError(status, statusText)
+            return formatError(interaction, status, statusText);
         });
 }
 
