@@ -16,7 +16,7 @@ function profile(username, interaction) {
         .then(json => { return status == 200 ? formatProfile(json, username, interaction) : 'Player not found!'; })
         .catch(error => {
             console.log(`Error in profile(${username}): ${error}`);
-            return formatError(status, statusText, `${url} failed to respond`);
+            return formatError(status, statusText)
         });
 }
 

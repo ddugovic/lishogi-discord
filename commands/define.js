@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const formatError = require('../lib/format-error');
 const { decodeWord, encodeWord, formatLexicon } = require('../lib/format-lexicon');
 const { formatPages } = require('../lib/format-pages');
 
@@ -14,10 +15,10 @@ async function define(user, lexicon, words, interaction) {
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!'))
+        .then(json => json.results ? formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!') : formatError(status, statusText, `${url} ${json.code}: ${json.message}`))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
-            return `An error occurred handling your request: ${status} ${statusText}`;
+            return formatError(status, statusText)
         });
 }
 
