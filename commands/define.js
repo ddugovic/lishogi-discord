@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const formatError = require('../lib/format-error');
-const { decodeWord, encodeWord, formatLexicon } = require('../lib/format-lexicon');
+const { encodeWord, formatLexicon } = require('../lib/format-lexicon');
 const { formatPages } = require('../lib/format-pages');
 
 function paginate(lexicon, status, results) {
@@ -15,18 +15,18 @@ function define(user, lexicon, words, interaction) {
     let status, statusText;
     return fetch(url, { method: 'POST', body: JSON.stringify(query), headers: headers })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => json.results ? formatPages('Word', paginate(lexicon, status, filterResults(lexicon, json.results)) ?? [], interaction, 'Word(s) not found!') : formatError(interaction, status, statusText, `${url} ${json.code}: ${json.message}`))
+        .then(json => json.results ? formatPages('Word', paginate(lexicon, status, filterResults(json.results)) ?? [], interaction, 'Word(s) not found!') : formatError(interaction, status, statusText, `${url} ${json.code}: ${json.message}`))
         .catch(error => {
             console.log(`Error in define(${user.username}, ${lexicon}, ${words}): ${error}`);
             return formatError(interaction, status, statusText);
         });
 }
 
-function filterResults(lexicon, results) {
+function filterResults(results) {
     var a = [];
     Object.entries(results).forEach(([key, value]) => {
         if (value.v) {
-            a[decodeWord(lexicon, key)] = value;
+            a[key] = value;
         }
     });
     return a;
