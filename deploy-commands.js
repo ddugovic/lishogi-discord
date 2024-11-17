@@ -7,7 +7,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const lexica = [
-    { name: 'CSW 21 (World English)', value: 'CSW21' },
+    { name: 'CSW 24 (World English)', value: 'CSW24' },
     { name: 'NWL 23 (North American English)', value: 'NWL23' },
     { name: 'CEL (Common English)', value: 'ECWL' },
     { name: 'Català (Catalan)', value: 'DISC2' },
