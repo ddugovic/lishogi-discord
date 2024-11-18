@@ -16,12 +16,14 @@ async function anagram(user, lexicon, alphagrams, interaction) {
         });
 }
 
-function formatEntry(lexicon, word, entry) {
+function formatEntry(lexicon, alphagram, entry) {
     const embed = new EmbedBuilder()
         .setAuthor({ name: formatLexicon(lexicon), iconURL: flags[lexicon] })
-        .setTitle(entry.v ? word : `${word}*`)
-        .setThumbnail('https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg')
-        .setDescription(entry.v ? entry.d : 'Definition not found!');
+        .setTitle(alphagram)
+        .setThumbnail('https://woogles.io/static/media/bio_macondo.301d343adb5a283647e8.jpg');
+    if (!entry.v || entry.d != alphagram) {
+        return embed.setDescription(entry.v ? entry.d : 'Definition not found!');
+    }
     return embed;
 }
 
