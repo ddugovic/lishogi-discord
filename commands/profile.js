@@ -33,7 +33,7 @@ async function formatProfile(user, favoriteMode, interaction) {
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
     const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getBlog(user.username), getGames(user.username) ];
+    const requests = [ getUserStatus(user.username), perf, getArenas(user.username), getBlog(user.username), getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -62,16 +62,21 @@ async function formatProfile(user, favoriteMode, interaction) {
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
 
-    const blog = responses[2];
+    const arenas = responses[2];
+    if (arenas.length) {
+        const fields = await Promise.all(arenas.filter(arena => arena.status != 'aborted').map(formatArena));
+        embed = embed.addFields({ name: `:crossed_swords: ${plural('Arena', fields.length)}`, value: fields.join('\n') });
+    }
+    const blog = responses[3];
     if (blog.items?.length)
         embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.items).slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.all) {
-        const games = responses[3];
+        const games = responses[4];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
         embed = embed.addFields({ name: `:crossed_swords: ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(4));
+        const image = await formatHistory(...responses.slice(5));
         if (image)
             embed = embed.setImage(image);
     }
@@ -292,6 +297,28 @@ function getImage(text) {
     const match = text.match(/https:\/\/i.imgur.com\/\w+.\w+/);
     if (match)
         return match[0];
+}
+
+function getArenas(username) {
+    const url = `https://lichess.org/api/user/${username}/tournament/played?nb=3&performance=false`;
+    return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3, performance: false } })
+        .then(response => response.text())
+        .then(text => parseDocument(text));
+}
+
+async function formatArena(arena) {
+    const [tour, player] = [arena.tournament, arena.player];
+    const url = `https://lichess.org/tournament/${tour.id}`;
+    const opening = tour.moves ? `\n${await formatOpening(tour.opening, tour.initialFen, tour.moves)}` : '';
+    return `**#${player.rank}** ${formatClock(tour.clock, tour.daysPerTurn)} [${tour.fullName}${formatSchedule(tour.schedule)}](${url}) <t:${Math.floor(tour.startsAt / 1000)}:R>${opening}`;
+}
+
+function formatSchedule(schedule) {
+    return schedule.freq == 'shield' ? ' :shield:' :
+        schedule.freq == 'daily' ? ' :calendar:' :
+        schedule.freq == 'weekly' ? ' :calendar:' :
+        schedule.freq == 'monthly' ? ' :calendar:' :
+        schedule.freq == 'yearly' ? ' :calendar:' : '';
 }
 
 function getGames(username) {
