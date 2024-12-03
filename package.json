@@ -40,7 +40,7 @@
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
-    "mocha": "^10.8.2",
+    "mocha": "^11.0.1",
     "nodemon": "^3.1.0"
   }
 }
