@@ -10,7 +10,6 @@ const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
 const feed = require('./commands/feed');
 const help = require('./commands/help');
-const jerome = require('./commands/jerome');
 const leaderboard = require('./commands/leaderboard');
 const log = require('./commands/log');
 const news = require('./commands/news');
@@ -93,12 +92,6 @@ const commands = {
         description: "Display a list of available commands",
         process: help.process,
         reply: help.reply
-    },
-    "jerome": {
-        usage: "",
-        description: "Display Jerome Gambit news",
-        process: jerome.process,
-        interact: jerome.interact
     },
     "leaderboard": {
         usage: "[game mode]",
