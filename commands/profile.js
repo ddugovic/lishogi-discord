@@ -314,11 +314,11 @@ async function formatArena(arena) {
 }
 
 function formatSchedule(schedule) {
-    return schedule.freq == 'shield' ? ' :shield:' :
-        schedule.freq == 'daily' ? ' :calendar:' :
-        schedule.freq == 'weekly' ? ' :calendar:' :
-        schedule.freq == 'monthly' ? ' :calendar:' :
-        schedule.freq == 'yearly' ? ' :calendar:' : '';
+    return schedule?.freq == 'shield' ? ' :shield:' :
+        schedule?.freq == 'daily' ? ' :calendar:' :
+        schedule?.freq == 'weekly' ? ' :calendar:' :
+        schedule?.freq == 'monthly' ? ' :calendar:' :
+        schedule?.freq == 'yearly' ? ' :calendar:' : '';
 }
 
 function getGames(username) {
