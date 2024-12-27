@@ -44,7 +44,7 @@ async function formatCurrentGame(game, username, theme, piece) {
 }
 
 async function formatCurrentGameClocks(game) {
-    if (game.clocks) {
+    if (game.clocks?.length > 2) {
         const image = await formatClocks(game.clocks);
         if (image)
             return new EmbedBuilder().setImage(image);
