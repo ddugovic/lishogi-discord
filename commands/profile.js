@@ -143,6 +143,7 @@ async function process(bot, msg, username) {
 async function interact(interaction) {
     const user = await User.findById(interaction.user.id).exec();
     const username = interaction.options.getString('username') || user?.wooglesName;
+    if (!username)
         return 'You need to set your Woogles.io username with setuser!';
     return profile(username, interaction);
 }
