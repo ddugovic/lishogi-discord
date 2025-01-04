@@ -5,6 +5,7 @@ const chat = require('./commands/chat');
 const define = require('./commands/define');
 const deleteUser = require('./commands/deleteUser');
 const equity = require('./commands/equity');
+const help = require('./commands/help');
 const news = require('./commands/news');
 const recent = require('./commands/recent');
 const privacy = require('./commands/privacy');
@@ -49,6 +50,12 @@ const commands = {
         description: "Estimate rack equity",
         process: equity.process,
         interact: equity.interact
+    },
+    "help": {
+        usage: "",
+        description: "Display a list of available commands",
+        process: help.process,
+        reply: help.reply
     },
     "news": {
         usage: "",
