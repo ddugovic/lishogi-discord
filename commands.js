@@ -7,6 +7,7 @@ const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
 const eval = require('./commands/eval');
+const help = require('./commands/help');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
 const setUser = require('./commands/setUser');
@@ -72,6 +73,12 @@ const commands = {
         description: "Get the cached evaluation of a position, if available",
         process: eval.process,
         interact: eval.interact
+    },
+    "help": {
+        usage: "",
+        description: "Display a list of available commands",
+        process: help.process,
+        reply: help.reply
     },
     "leaderboard": {
         usage: "[game mode]",
