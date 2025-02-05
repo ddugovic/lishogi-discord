@@ -66,7 +66,8 @@ async function interact(interaction) {
     if (words.includes('?'))
         await msg.channel.send('Blank tiles are not supported');
     await interaction.deferReply();
-    define(interaction.user, interaction.options.getString('lexicon'), words.toUpperCase(), interaction);
+    reply = await define(interaction.user, interaction.options.getString('lexicon'), words.toUpperCase());
+    await interaction.editReply(reply);
 }
 
 module.exports = { process, interact };
