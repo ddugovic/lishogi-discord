@@ -36,7 +36,7 @@
     "plural": "^1.1.0",
     "quickchart-js": "^3.1.2",
     "rss-parser": "^3.13.0",
-    "sanitize-html": "^2.14.0",
+    "sanitize-html": "^2.15.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
