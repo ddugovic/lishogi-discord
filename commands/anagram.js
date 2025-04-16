@@ -29,7 +29,7 @@ function formatEntry(lexicon, alphagram, entry) {
 
 const flags = {
   FRA20: 'https://woogles-flags.s3.us-east-2.amazonaws.com/fr.png',
-  RD28: 'https://woogles-flags.s3.us-east-2.amazonaws.com/de.png',
+  RD29: 'https://woogles-flags.s3.us-east-2.amazonaws.com/de.png',
   NSF21: 'https://woogles-flags.s3.us-east-2.amazonaws.com/no.png'
 }
 
