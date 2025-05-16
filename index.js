@@ -13,12 +13,11 @@ mongoose.connect(config.mongourl, {
 const client = new Client({
     allowedMentions: { parse: [] },
     disabledEvents: [ 'TYPING_START' ],
-    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ]
+    intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages ]
 });
 
 // Set up commands
 const commands = require('./commands');
-const help = require('./commands/help');
 
 client.on('ready', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
@@ -48,7 +47,10 @@ client.on('messageCreate', (msg) => {
         return;
     }
     let command = commands[cmdTxt];
-    if (command && suffix.indexOf('@') == -1) {
+    if (cmdTxt == 'help') {
+        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
+        command.process(commands, msg.channel);
+    } else if (command && command.process && suffix.indexOf('@') == -1) {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         try {
             command.process(client, msg, suffix);
@@ -56,9 +58,6 @@ client.on('messageCreate', (msg) => {
             console.log(`Command failed:\n${error.stack}`);
             msg.channel.send(`Command ${cmdTxt} failed (${error})`);
         }
-    } else if (cmdTxt == 'help') {
-        console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
-        help.process(commands, msg.channel);
     } else if (cmdTxt == 'stop') {
         console.log(`Evaluating command ${msg.content} from ${msg.author} (${msg.author.username})`);
         stop(client, msg.author.id);
@@ -94,8 +93,10 @@ client.on(Events.InteractionCreate, async interaction => {
                 const error = await command.interact(interaction);
                 if (typeof error === 'string')
                     await interaction.reply({ content: error, ephemeral: true });
+            } else if (commandName == 'help') {
+                await interaction.reply({ content: await command.reply(commands, interaction), ephemeral: true });
             } else {
-                await interaction.reply({ content: await command.reply(interaction) });
+                await interaction.reply({ content: await command.reply(interaction), ephemeral: true });
             }
         } catch (error) {
             console.log(`Command ${commandName} failed: ${error}`);
