@@ -23,7 +23,7 @@
     "chess-web-api": "^1.2.0",
     "chessops": "^0.12.7",
     "convert-seconds": "^1.0.1",
-    "customizable-discordjs-pagination": "^2.1.1",
+    "customizable-discordjs-pagination": "^2.2.0",
     "discord-api-types": "^0.38.1",
     "discord-lister": "^1.4.0",
     "discord.js": "^14.19.1",
