@@ -96,8 +96,14 @@ function formatSchedule(schedule) {
         schedule.freq == 'yearly' ? ' :calendar:' : '';
 }
 
+function formatSystem(arena) {
+    return arena.system == 'organized' ? 'organized event' :
+           arena.system == 'robin' ? 'round-robin' : 'arena';
+}
+
 function getDescription(arena) {
-    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
+    const name = `${arena.fullName} ${formatSystem(arena)}`;
+    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${name}.` : `**${arena.nbPlayers}** players compete in the ${name}.` : '';
     const clock = formatClock(arena.clock);
     const rated = arena.rated ? 'rated' : 'casual';
     const duration = formatSeconds(arena.minutes * 60);
