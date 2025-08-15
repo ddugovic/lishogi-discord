@@ -124,7 +124,7 @@ function process(bot, msg, suffix) {
 }
 
 function interact(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interation.options.getString('system'), interaction);
+    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction.options.getString('system'), interaction);
 }
 
 module.exports = {process, interact};
