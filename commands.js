@@ -27,8 +27,8 @@ const wiki = require('./commands/wiki');
 
 const commands = {
     "arena": {
-        usage: "[game mode]",
-        description: "Find a created, started, or finished arena",
+        usage: "[game mode] [status] [system]",
+        description: "Find a featured, started, or finished arena",
         process: arena.process,
         interact: arena.interact
     },

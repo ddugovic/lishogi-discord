@@ -7,27 +7,29 @@ const formatSeconds = require('../lib/format-seconds');
 const { formatTitledUserLink } = require('../lib/format-site-links');
 const plural = require('plural');
 
-function arena(author, mode, progress, interaction) {
+function arena(author, mode, progress, system, interaction) {
     const suffix = [progress, mode].join(' ').trim();
     let status, statusText;
     const url = 'https://lishogi.org/api/tournament';
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => setArenas(json, mode, progress))
+        .then(json => setArenas(json, mode, progress, system))
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
+            console.log(`Error in arena(${author.username}, ${mode}, ${progress}, ${system}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
-async function setArenas(data, mode, status) {
+async function setArenas(data, mode, status, system) {
     var arenas = [];
     for (const [key, value] of Object.entries(data))
         if (!status || key == status)
             arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
+    if (system)
+        arenas = arenas.filter(arena => arena.system == system);
     return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
 }
 
@@ -39,7 +41,7 @@ function setArena(arena) {
     const url = `https://lishogi.org/api/tournament/${arena.id}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
-        .then(response => formatArena(json));
+        .then(json => formatArena(json));
 }
 
 function formatArena(arena) {
@@ -118,11 +120,11 @@ function title(str) {
 }
 
 function process(bot, msg, suffix) {
-    arena(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
+    arena(msg.author, ...suffix.split(/ /, 3)).then(message => msg.channel.send(message));
 }
 
 function interact(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
+    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interation.options.getString('system'), interaction);
 }
 
 module.exports = {process, interact};

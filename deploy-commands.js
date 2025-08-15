@@ -61,9 +61,14 @@ const ratings = [
     { name: "UltraBullet", value: "ultraBullet" }
 ];
 const statuses = [
-    { name: "Created", value: "created" },
+    { name: "Featured", value: "featured" },
     { name: "Started", value: "started" },
     { name: "Finished", value: "finished" }
+];
+const systems = [
+    { name: "Arena", value: "arena" },
+    { name: "Organized", value: "organized" },
+    { name: "Round-robin", value: "robin" }
 ];
 
 const guildCommands = [
@@ -72,7 +77,7 @@ const guildCommands = [
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
 const commands = [
-    new SlashCommandBuilder().setName("arena").setDescription("Find a created, started, or finished arena").addStringOption(option => option.setName("mode").setDescription("Select a game mode").addChoices(...arenas)).addStringOption(option => option.setName("status").setDescription("Select an arena status").addChoices(...statuses)),
+    new SlashCommandBuilder().setName("arena").setDescription("Find a featured, started, or finished arena").addStringOption(option => option.setName("mode").setDescription("Select a game mode").addChoices(...arenas)).addStringOption(option => option.setName("status").setDescription("Select an arena status").addChoices(...statuses)).addStringOption(option => option.setName("system").setDescription("Select an arena system").addChoices(...systems)),
     new SlashCommandBuilder().setName("blog").setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName("bots").setDescription("Display online bots"),
     new SlashCommandBuilder().setName("broadcast").setDescription("Find an upcoming or recent broadcast created by lishogi"),

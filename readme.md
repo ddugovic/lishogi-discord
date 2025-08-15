@@ -28,8 +28,8 @@
     Display top-rated players
 !playing [username]
     Share your (or a user's) current game
-!arena [game mode] [status]
-    Find a created, started, or finished arena
+!arena [game mode] [status] [system]
+    Find a featured, started, or finished arena
 !blog
     Display recent blog entries
 !bots
