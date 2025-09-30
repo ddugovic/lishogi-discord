@@ -3,6 +3,7 @@ const arena = require('./commands/arena');
 const blog = require('./commands/blog');
 const broadcast = require('./commands/broadcast');
 const deleteUser = require('./commands/deleteUser');
+const help = require('./commands/help');
 const leaderboard = require('./commands/leaderboard');
 const setUser = require('./commands/setUser');
 const privacy = require('./commands/privacy');
@@ -38,6 +39,12 @@ const commands = {
         description: "Delete your lidraughts username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "help": {
+        usage: "",
+        description: "Display a list of available commands",
+        process: help.process,
+        reply: help.reply
     },
     "leaderboard": {
         usage: "[game mode]",
