@@ -4,10 +4,7 @@ const publisher = require('discord-lister');
 
 // Set up the database
 const mongoose = require('mongoose');
-mongoose.connect(config.mongourl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect(config.mongourl);
 
 // Initialize client
 const client = new Client({
@@ -20,7 +17,7 @@ const client = new Client({
 const commands = require('./commands');
 const help = require('./commands/help');
 
-client.on('ready', () => {
+client.on('clientReady', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
     client.user.setPresence({ activities: [{ name: 'lishogi.org', type: ActivityType.Watching }], status: 'online' });
 });
