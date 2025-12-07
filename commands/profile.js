@@ -16,8 +16,8 @@ const Parser = require('rss-parser');
 const User = require('../models/User');
 
 async function profile(username, favoriteMode, interaction) {
-    const url = `https://lichess.org/api/user/${username}?trophies=true`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
+    const url = `https://lichess.org/api/user/${username}?rank=true&trophies=true`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { rank: true, trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode, interaction))
         .catch(error => {
@@ -32,8 +32,7 @@ async function formatProfile(user, favoriteMode, interaction) {
         return 'This account is closed.';
 
     const [mode, rating] = getMostPlayedMode(user.perfs, user.count.rated ? favoriteMode : 'puzzle');
-    const perf = unranked(mode, rating) ? null : getPerf(user.username, mode);
-    const requests = [ getUserStatus(user.username), perf, getArenas(user.username), getBlog(user.username), getGames(user.username) ];
+    const requests = [ getUserStatus(user.username), getArenas(user.username), getBlog(user.username), getGames(user.username) ];
     if (user.count.rated || user.perfs.puzzle) {
         requests.push(getHistory(user.username));
         if (user.perfs.storm && user.perfs.storm.runs)
@@ -56,27 +55,27 @@ async function formatProfile(user, favoriteMode, interaction) {
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
             .setURL(`https://lichess.org/?user=${user.username}#friend`);
     }
-    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[1]));
+    embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, user.perfs));
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
         embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
 
-    const arenas = responses[2];
+    const arenas = responses[1];
     if (arenas.length) {
         const fields = await Promise.all(arenas.filter(arena => arena.status != 'aborted').map(formatArena));
         embed = embed.addFields({ name: `:crossed_swords: ${plural('Arena', fields.length)}`, value: fields.join('\n') });
     }
-    const blog = responses[3];
+    const blog = responses[2];
     if (blog.items?.length)
         embed = embed.addFields({ name: `:pencil: Blog`, value: parseDocument(blog.items).slice(0, 3).map(formatEntry).join('\n') });
     if (user.count.all) {
-        const games = responses[4];
+        const games = responses[3];
         const fields = await Promise.all(games.filter(game => game.status != 'aborted').map(formatGame));
         embed = embed.addFields({ name: `:crossed_swords: ${plural('Game', fields.length)}`, value: fields.join('\n') });
     }
     if (user.count.rated || user.perfs.puzzle) {
-        const image = await formatHistory(...responses.slice(5));
+        const image = await formatHistory(...responses.slice(4));
         if (image)
             embed = embed.setImage(image);
     }
@@ -116,22 +115,9 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
     return [color, `${name}${status}  ${badges}`];
 }
 
-function unranked(mode, rating) {
-    // Players whose RD is above this threshold are unranked
-    const correspondence = ['correspondence','puzzle'];
-    const standard = ['ultrabullet','bullet','blitz','rapid','classical'];
-    return correspondence.includes(mode) || rating.rd > (standard.includes(mode) ? 75 : 65);
-}
-
 function getProfileName(profile) {
     if (profile)
         return [profile.firstName, profile.lastName];
-}
-
-function getPerf(username, mode) {
-    const url = `https://lichess.org/api/user/${username}/perf/${mode}`;
-    return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.json());
 }
 
 function formatAbout(embed, username, profile) {
@@ -247,10 +233,10 @@ function formatRating(mode, r) {
     return `**${r.rating}** ± **${2 * r.rd}** over ${games}`;
 }
 
-function formatStats(count, playTime, mode, rating, perf) {
+function formatStats(count, playTime, mode, rating, perfs) {
     var category = title(mode);
-    if (perf)
-        category += ` ${formatPerf(perf)}`;
+    if (perfs[mode]?.rank)
+        category += ` ${formatPerf(perfs[mode])}`;
     category += formatProgress(rating.prog);
     if (count.all)
         return [
