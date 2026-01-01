@@ -133,7 +133,7 @@ function chunk(arr, size) {
 }
 
 function title(str) {
-    str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    str = str == 'realTime' ? 'shogi' : str.replace(/([a-z])([A-Z])/g, '$1 $2');
     return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 }
 

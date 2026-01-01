@@ -9,7 +9,7 @@ const arenas = [
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Rapid", value: "rapid" },
-    { name: "Real-time", value: "realTime" },
+    { name: "Shogi", value: "realTime" },
     { name: "Thematic", value: "thematic" }
 ];
 const categories = [
@@ -38,7 +38,7 @@ const modes = [
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Real-time", value: "realTime" }
+    { name: "Shogi", value: "realTime" }
 ];
 const ratings = [
     { name: "Annan shogi", value: "Annanshogi" },
@@ -48,7 +48,7 @@ const ratings = [
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Real-time", value: "realTime" }
+    { name: "Shogi", value: "realTime" }
 ];
 const statuses = [
     { name: "Featured", value: "featured" },
