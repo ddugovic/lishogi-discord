@@ -123,7 +123,7 @@ function formatJudgments(judgments) {
 
 function getJudgmentName(node) {
     if (node.judgment)
-        return node.judgment.name;
+        return `${node.judgment.name.charAt(0).toUpperCase()}${node.judgment.name.slice(1)}`;
 }
 
 function chunk(arr, size) {
