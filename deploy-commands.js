@@ -3,16 +3,14 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 
 const arenas = [
     { name: "Annan shogi", value: "annanshogi" },
-    { name: "Blitz", value: "blitz" },
-    { name: "Bullet", value: "bullet" },
     { name: "Checkshogi", value: "checkshogi" },
     { name: "Chu shogi", value: "chushogi" },
-    { name: "Classical", value: "classical" },
+    { name: "Correspondence", value: "correspondence" },
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Rapid", value: "rapid" },
-    { name: "Thematic", value: "thematic" },
-    { name: "UltraBullet", value: "ultraBullet" }
+    { name: "Real-time", value: "realTime" },
+    { name: "Thematic", value: "thematic" }
 ];
 const categories = [
     { name: "Players", value: "Players" },
@@ -35,30 +33,22 @@ const languages = [
 ];
 const modes = [
     { name: "Annan shogi", value: "annanshogi" },
-    { name: "Blitz", value: "blitz" },
-    { name: "Bullet", value: "bullet" },
     { name: "Checkshogi", value: "checkshogi" },
     { name: "Chu shogi", value: "chushogi" },
-    { name: "Classical", value: "classical" },
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Rapid", value: "rapid" },
-    { name: "UltraBullet", value: "ultraBullet" }
+    { name: "Standard", value: "standard" }
 ];
 const ratings = [
     { name: "Annan shogi", value: "Annanshogi" },
-    { name: "Blitz", value: "blitz" },
-    { name: "Bullet", value: "bullet" },
     { name: "Checkshogi", value: "checkshogi" },
     { name: "Chu shogi", value: "chushogi" },
-    { name: "Classical", value: "classical" },
     { name: "Correspondence", value: "correspondence" },
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Rapid", value: "rapid" },
-    { name: "UltraBullet", value: "ultraBullet" }
+    { name: "Standard", value: "standard" }
 ];
 const statuses = [
     { name: "Featured", value: "featured" },
