@@ -38,7 +38,7 @@ const modes = [
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Standard", value: "standard" }
+    { name: "Real-time", value: "realTime" }
 ];
 const ratings = [
     { name: "Annan shogi", value: "Annanshogi" },
@@ -48,7 +48,7 @@ const ratings = [
     { name: "Kyoto shogi", value: "kyotoshogi" },
     { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Standard", value: "standard" }
+    { name: "Real-time", value: "realTime" }
 ];
 const statuses = [
     { name: "Featured", value: "featured" },
