@@ -60,12 +60,13 @@ function getLiveGames(channel) {
 }
 
 async function formatGame(game) {
+    const handicap = await formatHandicap(game.variant, game.initialSfen);
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
     const players = [game.players.sente, game.players.gote].map(formatPlayer).join(' - ');
     const url = `https://lishogi.org/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
-    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${formatHandicap(game.variant, game.initialSfen)}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatRatingDiff(ratingDiff) {

@@ -97,7 +97,7 @@ function getPlayerName(player) {
 }
 
 async function formatGame(game) {
-    const handicap = formatHandicap(game.variant, game.initialSfen);
+    const handicap = await formatHandicap(game.variant, game.initialSfen);
     const opening = game.moves ? ` ${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
     return `(${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
