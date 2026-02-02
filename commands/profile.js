@@ -16,8 +16,8 @@ const Parser = require('rss-parser');
 const User = require('../models/User');
 
 async function profile(username, favoriteMode, interaction) {
-    const url = `https://lichess.org/api/user/${username}?rank=true&trophies=true`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { rank: true, trophies: true } })
+    const url = `https://lichess.org/api/user/${username}?fideId=true&rank=true&trophies=true`;
+    return fetch(url, { headers: { Accept: 'application/json' }, params: { fideId: true, rank: true, trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatProfile(json, favoriteMode, interaction))
         .catch(error => {
@@ -59,7 +59,7 @@ async function formatProfile(user, favoriteMode, interaction) {
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
-        embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, profile) });
+        embed = embed.addFields({ name: user.patron ? ':unicorn: About' : ':horse: About', value: formatAbout(embed, user.username, user.fideId, profile) });
 
     const arenas = responses[1];
     if (arenas.length) {
@@ -120,10 +120,12 @@ function getProfileName(profile) {
         return [profile.firstName, profile.lastName];
 }
 
-function formatAbout(embed, username, profile) {
+function formatAbout(embed, username, fideId, profile) {
     const links = formatSocialLinks(profile.links ?? profile.bio ?? '');
-    if (profile && profile.bio)
+    if (profile?.bio)
         links.unshift(...getSiteLinks(profile.bio));
+    if (fideId)
+        links.unshift(`[FIDE](https://ratings.fide.com/profile/${fideId})`);
     links.unshift(`[Profile](https://lichess.org/@/${username})`);
 
     const result = [links.join(' | ')];
