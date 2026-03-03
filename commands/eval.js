@@ -26,9 +26,6 @@ async function eval(fen, theme, piece, since, until, interaction) {
 }
 
 async function formatCloudEval(fen, eval, theme, piece, since, until) {
-    const requests = [ getHistory(fen), getMasterGames(fen, since, until) ];
-    const [history, games] = await Promise.all(requests);
-
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = await Promise.all(eval.pvs.map(pv => formatVariation(fen, pv)));
@@ -40,22 +37,12 @@ async function formatCloudEval(fen, eval, theme, piece, since, until) {
             .setColor(formatColor(red, 0, 255 - red))
             .setAuthor({name: 'Lichess Explorer', iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png'})
             .setThumbnail('https://images.prismic.io/lichess/79740e75620f12fcf08a72cf7caa8bac118484d2.png?auto=compress,format')
-            .setTitle(`:cloud: ${getOpeningName(history, games) ?? 'Cloud Evaluation'}`)
+            .setTitle(':cloud: Cloud Evaluation')
             .setURL(`https://lichess.org/analysis/standard/${fenUri}#explorer`)
             .setImage(formatPositionURL(fen, undefined, theme, piece)),
         new EmbedBuilder()
             .addFields({ name: stats, value: variations.join('\n') })
     ];
-
-    if (history) {
-        const image = await formatHistory(history.history);
-        if (image)
-            embeds.push(new EmbedBuilder().setImage(image));
-    }
-    if (games.topGames.length) {
-        const lines = await Promise.all(games.topGames.map(game => formatGame(fen, game)));
-        embeds.push(new EmbedBuilder().addFields({ name: 'Master Games', value: lines.join('\n') }));
-    }
     return { embeds: embeds };
 }
 
@@ -64,19 +51,6 @@ function getOpeningName(history, games) {
         return history.opening.name;
     if (games && games.opening)
         return games.opening.name;
-}
-
-function getHistory(fen) {
-    const now = new Date();
-    const url = `https://explorer.lichess.ovh/lichess/history?fen=${fen}&since=${now.getFullYear()-5}-${now.getMonth()}`;
-    return fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => response.json());
-}
-
-function getMasterGames(fen, since, until) {
-    const url = `https://explorer.lichess.ovh/masters?fen=${fen}&topGames=3&since=${since}&until=${until}`;
-    return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, since: since, until: until } })
-        .then(response => response.json());
 }
 
 async function formatGame(fen, game) {
