@@ -6,7 +6,7 @@ const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
 async function eval(fen, theme, piece, since, until, interaction) {
-    const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen.js');
+    const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
         fen = makeFen(parse.unwrap());
