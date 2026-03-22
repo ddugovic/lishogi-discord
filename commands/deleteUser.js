@@ -13,8 +13,8 @@ function process(bot, msg, suffix) {
     deleteUser(msg.author).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return deleteUser(interaction.user);
+async function reply(interaction) {
+    return await deleteUser(interaction.user);
 }
 
-module.exports = { process, interact };
+module.exports = { process, reply };

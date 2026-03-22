@@ -10,16 +10,12 @@ function video(author, text, interaction) {
     let status, statusText;
     return fetch(url, { params: { q: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
-        .then(text => setVideos(text, interaction))
-        .then(embeds => formatPages('Video', embeds, interaction, 'No videos found.'))
+        .then(text => getVideos(text).map(formatVideo))
+        .then(embeds => formatPages(shuffle(embeds), interaction, 'No videos found.'))
         .catch(error => {
             console.log(`Error in video(${author.username}, ${text}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
-}
-
-function setVideos(document, interaction) {
-    return getVideos(document).map(video => formatVideo(...video));
 }
 
 function getVideos(document) {
@@ -30,7 +26,8 @@ function getVideos(document) {
     return videos;
 }
 
-function formatVideo(uri, duration, name, author, target) {
+function formatVideo(video) {
+    const [uri, duration, name, author, target] = video;
     const seconds = duration.split(/:/).reduce((acc,time) => (60 * acc) + +time);
     const score = Math.min(Math.max(Math.floor(2 * Math.sqrt(seconds)), 0), 255);
     return new EmbedBuilder()
