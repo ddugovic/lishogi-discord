@@ -4,7 +4,7 @@ const formatError = require('../lib/format-error');
 const { formatChunks } = require('../lib/format-pages');
 
 async function eval(sfen, interaction) {
-    const { parseSfen } = await import('shogiops/sfen.js');
+    const { parseSfen } = await import('shogiops/sfen');
     if (sfen && parseSfen('standard', sfen).isOk) {
         const url = `https://lishogi.org/api/cloud-eval?sfen=${sfen}&multiPv=3`;
         let status, statusText;
