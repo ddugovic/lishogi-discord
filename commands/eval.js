@@ -5,7 +5,7 @@ const { formatPositionURL } = require('../lib/format-site-links');
 const { formatUciVariation } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 
-async function eval(fen, theme, piece, since, until, interaction) {
+async function eval(fen, theme, piece, interaction) {
     const { INITIAL_FEN, makeFen, parseFen } = await import('chessops/fen');
     const parse = parseFen(fen.replace(/_/g, ' ') || INITIAL_FEN);
     if (parse.isOk) {
@@ -15,9 +15,9 @@ async function eval(fen, theme, piece, since, until, interaction) {
         let status, statusText;
         return fetch(url, { headers: { Accept: 'application/json' }, params: { fen: fen, multiPv: 3 } })
             .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-            .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett', since ?? 1952, until ?? now.getFullYear()))
+            .then(json => formatCloudEval(fen, json, theme ?? 'brown', piece ?? 'cburnett'))
             .catch(error => {
-                console.log(`Error in eval(${fen}, ${theme}, ${piece}, ${since}, ${until}): ${error}`);
+                console.log(`Error in eval(${fen}, ${theme}, ${piece}: ${error}`);
                 return formatError(status, statusText, `${url} failed to respond`);
             });
     } else {
@@ -25,7 +25,7 @@ async function eval(fen, theme, piece, since, until, interaction) {
     }
 }
 
-async function formatCloudEval(fen, eval, theme, piece, since, until) {
+async function formatCloudEval(fen, eval, theme, piece) {
     const mnodes = Math.floor(eval.knodes / 1000);
     const stats = `Nodes: ${mnodes}M, Depth: ${eval.depth}`;
     const variations = await Promise.all(eval.pvs.map(pv => formatVariation(fen, pv)));
@@ -90,9 +90,9 @@ async function formatVariation(fen, pv) {
 }
 
 function formatEval(pv) {
-    if (pv.mate)
+    if (pv.mate) {
         return `#${pv.mate}`.replace('#-', '-#');
-
+    }
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, signDisplay: 'exceptZero' });
     return formatter.format(pv.cp/100);
 }
@@ -102,7 +102,7 @@ function process(bot, msg, suffix) {
 }
 
 async function interact(interaction) {
-    return interaction.reply(await eval(interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction.options.getInteger('since'), interaction.options.getInteger('until'), interaction));
+    return interaction.reply(await eval(interaction.options.getString('fen') ?? '', interaction.options.getString('theme'), interaction.options.getString('piece'), interaction));
 }
 
 module.exports = {process, interact};
