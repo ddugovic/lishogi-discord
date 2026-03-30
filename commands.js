@@ -66,7 +66,7 @@ const commands = {
         usage: "",
         description: "Delete your lishogi username from the bot's database",
         process: deleteUser.process,
-        interact: deleteUser.interact
+        reply: deleteUser.reply
     },
     "eval": {
         usage: "<fen>",
@@ -126,13 +126,13 @@ const commands = {
         usage: "[game mode]",
         description: "Set your favorite game (or puzzle) mode",
         process: setGameMode.process,
-        interact: setGameMode.interact
+        reply: setGameMode.reply
     },
     "setuser": {
         usage: "<lishogi name>",
         description: "Set your lishogi username",
         process: setUser.process,
-        interact: setUser.interact
+        reply: setUser.reply
     },
     "simul": {
         usage: "",
