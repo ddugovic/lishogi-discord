@@ -7,6 +7,7 @@ const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const community = require('./commands/community');
 const deleteUser = require('./commands/deleteUser');
+const endgame = require('./commands/endgame');
 const eval = require('./commands/eval');
 const feed = require('./commands/feed');
 const help = require('./commands/help');
@@ -74,6 +75,12 @@ const commands = {
         description: "Delete your lichess username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
+    },
+    "endgame": {
+        usage: "",
+        description: "Practice an endgame position",
+        process: endgame.process,
+        reply: endgame.reply
     },
     "eval": {
         usage: "[fen] [theme] [piece] [since] [until]",
