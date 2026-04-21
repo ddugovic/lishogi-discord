@@ -6,7 +6,7 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node index.js",
-    "stop": "if git pull origin chess | grep 'package'; then npm install && npm cache clean --force; fi",
+    "stop": "if git restore package-lock.json && git pull origin chess | grep 'package'; then npm install && npm cache clean --force; fi",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
   },
