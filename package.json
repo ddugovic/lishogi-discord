@@ -32,7 +32,7 @@
     "mongoose": "^9.7.0",
     "ndjson-parse": "^1.0.4",
     "plural": "^1.1.0",
-    "quickchart-js": "^3.1.2",
+    "quickchart-js": "^4.0.0",
     "sanitize-html": "^2.17.0",
     "valid-url": "^1.0.9",
     "xml2js": "^0.6.0"
