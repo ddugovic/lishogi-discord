@@ -63,7 +63,7 @@ function getColor(rating) {
 }
 
 function formatHost(player) {
-    const badges = player.patron ? '⛩️' : '';
+    const badges = player.patron ? '車' : '';
     return player.title ? `${player.title} ${player.name} ${badges}` : `${player.name} ${badges}`;
 }
 

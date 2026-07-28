@@ -84,7 +84,7 @@ function formatPlayer(player) {
 }
 
 function formatUser(user, record) {
-    const patron = user.patron ? '⛩️' : '';
+    const patron = user.patron ? '車' : '';
     const name = user.title ? `**${user.title}** ${user.name}${patron}` : `${user.name}${patron}`;
     return record != undefined ? `${name} (${record})` : name;
 }

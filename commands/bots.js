@@ -44,7 +44,7 @@ function formatBot(bot, mode) {
             nickname = `${countryName} ${nickname}`;
     }
 
-    const badges = bot.patron ? '⛩️' : '';
+    const badges = bot.patron ? '車' : '';
     const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
         .setThumbnail('https://lixiangqi1.org/assets/images/icons/bot.png')

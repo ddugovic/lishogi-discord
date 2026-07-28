@@ -17,7 +17,7 @@ function autocomplete(author, text) {
 }
 
 function formatUser(user) {
-    const badge = user.patron ? '⛩️' : '';
+    const badge = user.patron ? '車' : '';
     const name = user.title ? `${user.title} ${user.name}` : user.name;
     const status = user.online ? ' 📶 Online' : '';
     return `${badge}${name}${status}`;

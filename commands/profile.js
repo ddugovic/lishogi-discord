@@ -68,7 +68,7 @@ async function formatProfile(user, favoriteMode, interaction) {
 
     const profile = user.profile;
     if (profile && (profile.links || profile.bio))
-        embed = embed.addFields({ name: user.patron ? '⛩️ About' : '☗ About', value: formatAbout(embed, user.username, profile) });
+        embed = embed.addFields({ name: user.patron ? '車 About' : '☗ About', value: formatAbout(embed, user.username, profile) });
 
     if (user.count.all) {
         const games = responses[1];
@@ -89,7 +89,7 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
         online ? 0x007F00 : 0x000000;
     if (title)
         name = `${title} ${name}`;
-    var badges = patron ? '⛩️' : '';
+    var badges = patron ? '車' : '';
     for (const trophy of trophies) {
         badges +=
             trophy.type == 'developer' ? '🛠️':
