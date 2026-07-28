@@ -7,7 +7,7 @@ const { formatContent, getURL } = require('../lib/parse-feed');
 const Parser = require('rss-parser');
 
 function blog(author, interaction) {
-    const url = 'https://lishogi.org/blog.atom';
+    const url = 'https://lixiangqi.com/blog.atom';
     return new Parser().parseURL(url)
         .then(feed => feed.items.map(formatEntry))
         .then(embeds => formatPages('Entry', embeds, interaction, 'No entries found!'))
@@ -25,10 +25,10 @@ function formatEntry(entry) {
     const content = entry.content;
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-blue, 0, blue))
-        .setAuthor({ name: authorName, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getUserLink(authorName) })
+        .setAuthor({ name: authorName, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: getUserLink(authorName) })
         .setTitle(entry.title)
         .setURL(getURL(entry))
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setDescription(`<t:${timestamp}:F>\n${formatContent(content, 80)}`);
     const image = getImage(html2md(content));
     if (image)

@@ -4,7 +4,7 @@ const { formatChunks } = require('../lib/format-pages');
 const html2md = require('html-to-md');
 
 function coach(author, interaction) {
-    const url = 'https://lishogi.org/coach';
+    const url = 'https://lixiangqi.com/coach';
     let status, statusText;
     return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
@@ -26,7 +26,7 @@ function formatCoaches(document) {
 
 function formatCoach(image, name, description, details) {
     return new EmbedBuilder()
-        .setAuthor({name: 'Lishogi Coach', iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: 'https://lishogi.org/coach/'})
+        .setAuthor({name: 'Lixiangqi Coach', iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: 'https://lixiangqi.com/coach/'})
         .setTitle(name)
         .setURL(getLink(details))
         .setThumbnail(image)
@@ -36,7 +36,7 @@ function formatCoach(image, name, description, details) {
 function getLink(coach) {
     const match = coach.match(/\(\/@\/(\w+)\)\|/);
     if (match)
-        return `https://lishogi.org/coach/${match[1]}`;
+        return `https://lixiangqi.com/coach/${match[1]}`;
 }
 
 function process(bot, msg) {

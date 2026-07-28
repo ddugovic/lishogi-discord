@@ -1,7 +1,7 @@
 {
-  "name": "lishogidiscordbot",
+  "name": "lixiangqidiscordbot",
   "version": "1.0.0",
-  "description": "A Discord bot to interact with the Lishogi API",
+  "description": "A Discord bot to interact with the Lixiangqi API",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
@@ -12,7 +12,7 @@
   },
   "keywords": [
     "discord",
-    "lishogi",
+    "lixiangqi",
     "bot"
   ],
   "author": "Tim Beck",
@@ -36,7 +36,6 @@
     "quickchart-js": "^4.0.0",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.17.0",
-    "shogiops": "^0.21.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {

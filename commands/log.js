@@ -3,7 +3,7 @@ const { formatLog } = require('../lib/format-html');
 const { formatPages } = require('../lib/format-pages');
 
 function log(author, interaction) {
-    const url = 'https://lishogi.org/changelog';
+    const url = 'https://lixiangqi.com/changelog';
     let status, statusText;
     return fetch(url)
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })

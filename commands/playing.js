@@ -11,9 +11,9 @@ const User = require('../models/User');
 
 function playing(username, interaction) {
     if (!username) {
-        return 'You need to set your lishogi username with setuser!';
+        return 'You need to set your lixiangqi username with setuser!';
     }
-    const url = `https://lishogi.org/api/user/${username}/current-game`;
+    const url = `https://lixiangqi.com/api/user/${username}/current-game`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -28,13 +28,13 @@ function playing(username, interaction) {
 async function formatCurrentGame(game, username) {
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}/tv` })
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}/tv` })
+        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setTitle(`${formatClock(game.clock, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
-        .setURL(`https://lishogi.org/${game.id}`)
+        .setURL(`https://lixiangqi.com/${game.id}`)
         .setDescription(await formatGame(game));
     if (game.status != 'started')
-        embed = embed.setImage(`https://lishogi1.org/game/export/gif/${game.id}.gif`);
+        embed = embed.setImage(`https://lixiangqi1.org/game/export/gif/${game.id}.gif`);
     if (game.analysis) {
         const playerNames = [game.players.sente, game.players.gote].map(getPlayerName);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
@@ -63,7 +63,7 @@ async function formatAuthorName(players) {
 }
 
 function setCrosstable(players) {
-    const url = `https://lishogi.org/api/crosstable/${players.sente.user.name}/${players.gote.user.name}`;
+    const url = `https://lixiangqi.com/api/crosstable/${players.sente.user.name}/${players.gote.user.name}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
         .then(json => formatRecord(players, json.users));
@@ -154,14 +154,14 @@ function formatClocks(clocks) {
 
 async function process(bot, msg, username) {
     const user = await User.findById(msg.author.id).exec();
-    playing(username || user?.lishogiName).then(message => msg.channel.send(message));
+    playing(username || user?.lixiangqiName).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     const user = await User.findById(interaction.user.id).exec();
-    const username = interaction.options.getString('username') || user?.lishogiName;
+    const username = interaction.options.getString('username') || user?.lixiangqiName;
     if (!username)
-        return 'You need to set your lishogi username with setuser!';
+        return 'You need to set your lixiangqi username with setuser!';
     return playing(username, interaction);
 }
 

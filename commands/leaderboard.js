@@ -12,9 +12,9 @@ const User = require('../models/User');
 async function leaderboard(author, mode, interaction) {
     if (!mode)
         mode = await getMode(author) || 'blitz';
-    const url = `https://lishogi.org/player/top/150/${mode}`;
+    const url = `https://lixiangqi.com/player/top/150/${mode}`;
     let status, statusText;
-    return fetch(url, { headers: { Accept: 'application/vnd.lishogi.v3+json' } })
+    return fetch(url, { headers: { Accept: 'application/vnd.lixiangqi.v3+json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => formatLeaders(json.users, mode))
         .then(embeds => formatChunks(embeds, interaction, 'No leaders found!'))
@@ -32,7 +32,7 @@ async function getMode(author) {
 
 function formatLeaders(leaders, mode) {
     const ranks = rankLeaders(leaders);
-    const url = 'https://lishogi.org/api/users';
+    const url = 'https://lixiangqi.com/api/users';
     const ids = leaders.map(leader => leader.id);
     return fetch(url, { method: 'post', body: ids.join(','), headers: { Accept: 'application/json' } })
 	.then(response => response.json())
@@ -41,9 +41,9 @@ function formatLeaders(leaders, mode) {
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))
-                    .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+                    .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
-                    .setURL('https://lishogi.org/player')
+                    .setURL('https://lixiangqi.com/player')
                     .addFields(fields)
                 );
             }
@@ -106,7 +106,7 @@ function formatProfile(username, profile, playTime) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     if (profile && profile.bio)
         links.unshift(...getSiteLinks(profile.bio));
-    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
+    links.unshift(`[Profile](https://lixiangqi.com/@/${username})`);
 
     const result = [];
     if (playTime) {

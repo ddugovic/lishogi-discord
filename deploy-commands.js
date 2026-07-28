@@ -66,7 +66,7 @@ const systems = [
 ];
 
 const guildCommands = [
-    new SlashCommandBuilder().setName("stop").setDescription("Stop Lishogi Statbot (owner only)")
+    new SlashCommandBuilder().setName("stop").setDescription("Stop Lixiangqi Statbot (owner only)")
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.Administrator).toJSON());
 
@@ -74,19 +74,18 @@ const commands = [
     new SlashCommandBuilder().setName("arena").setDescription("Find a featured, started, or finished arena").addStringOption(option => option.setName("mode").setDescription("Select a game mode").addChoices(...arenas)).addStringOption(option => option.setName("status").setDescription("Select an arena status").addChoices(...statuses)).addStringOption(option => option.setName("system").setDescription("Select an arena system").addChoices(...systems)),
     new SlashCommandBuilder().setName("blog").setDescription("Display recent blog entries"),
     new SlashCommandBuilder().setName("bots").setDescription("Display online bots"),
-    new SlashCommandBuilder().setName("broadcast").setDescription("Find an upcoming or recent broadcast created by lishogi"),
+    new SlashCommandBuilder().setName("broadcast").setDescription("Find an upcoming or recent broadcast created by lixiangqi"),
     new SlashCommandBuilder().setName("coach").setDescription("Find a coach"),
-    new SlashCommandBuilder().setName("deleteuser").setDescription("Delete your lishogi username from the bot's database"),
-    new SlashCommandBuilder().setName("eval").setDescription("Get the cached evaluation of a position, if available").addStringOption(option => option.setName("sfen").setDescription("SFEN (Shogi Forsyth-Edwards Notation)").setRequired(true)),
+    new SlashCommandBuilder().setName("deleteuser").setDescription("Delete your lixiangqi username from the bot's database"),
     new SlashCommandBuilder().setName("leaderboard").setDescription("Display top-rated players").addStringOption(option => option.setName("mode").setDescription("Select a game mode").addChoices(...modes)),
-    new SlashCommandBuilder().setName("playing").setDescription("Share your (or a user's) current game").addStringOption(option => option.setName("username").setDescription("Enter lishogi player username").setAutocomplete(true).setMaxLength(30).setMinLength(2)),
+    new SlashCommandBuilder().setName("playing").setDescription("Share your (or a user's) current game").addStringOption(option => option.setName("username").setDescription("Enter lixiangqi player username").setAutocomplete(false).setMaxLength(30).setMinLength(2)),
     new SlashCommandBuilder().setName("news").setDescription("Display recent news"),
     new SlashCommandBuilder().setName("privacy").setDescription("View privacy policy"),
-    new SlashCommandBuilder().setName("profile").setDescription("Display your (or a user's) profile").addStringOption(option => option.setName("username").setDescription("Enter lishogi player username").setAutocomplete(true).setMaxLength(30).setMinLength(2)),
+    new SlashCommandBuilder().setName("profile").setDescription("Display your (or a user's) profile").addStringOption(option => option.setName("username").setDescription("Enter lixiangqi player username").setAutocomplete(false).setMaxLength(30).setMinLength(2)),
     new SlashCommandBuilder().setName("puzzle").setDescription("Display daily puzzle"),
     new SlashCommandBuilder().setName("schedule").setDescription("Schedule event (tournament) game (see timestamp command)").addStringOption(option => option.setName("event").setDescription("Event (tournament) name").setRequired(true)).addUserOption(option => option.setName("sente").setDescription("Sente (first player)").setRequired(true)).addUserOption(option => option.setName("gote").setDescription("Gote (second player)").setRequired(true)).addIntegerOption(option => option.setName("year").setDescription("Year (2000-2100)").setMinValue(2000).setMaxValue(2100).setRequired(true)).addIntegerOption(option => option.setName("month").setDescription("Month (1-12)").setMinValue(1).setMaxValue(12).setRequired(true)).addIntegerOption(option => option.setName("day").setDescription("Day (1-31)").setMinValue(1).setMaxValue(31).setRequired(true)).addIntegerOption(option => option.setName("utc_hour").setDescription("UTC hour (0-23)").setMinValue(0).setMaxValue(23).setRequired(true)).addIntegerOption(option => option.setName("minute").setDescription("Minute (0-59)").setMinValue(0).setMaxValue(59).setRequired(true)),
     new SlashCommandBuilder().setName("setgamemode").setDescription("Set your favorite game (or puzzle) mode").addStringOption(option => option.setName("mode").setDescription("Enter your favorite game (or puzzle) mode").addChoices(...ratings)),
-    new SlashCommandBuilder().setName("setuser").setDescription("Set your lishogi username").addStringOption(option => option.setName("username").setDescription("Enter your lishogi username").setAutocomplete(true).setMaxLength(30).setMinLength(2).setRequired(true)),
+    new SlashCommandBuilder().setName("setuser").setDescription("Set your lixiangqi username").addStringOption(option => option.setName("username").setDescription("Enter your lixiangqi username").setAutocomplete(false).setMaxLength(30).setMinLength(2).setRequired(true)),
     new SlashCommandBuilder().setName("simul").setDescription("Display a recently finished, ongoing, or upcoming simultanous exhibition"),
     new SlashCommandBuilder().setName("streamers").setDescription("Display live streamers").addStringOption(option => option.setName("lang").setDescription("Language").addChoices(...languages)),
     new SlashCommandBuilder().setName("team").setDescription("Search teams for a keyword").addStringOption(option => option.setName("text").setDescription("Search keywords").setRequired(true)),

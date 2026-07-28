@@ -6,7 +6,7 @@ const { formatPages } = require('../lib/format-pages');
 const parseDocument = require('../lib/parse-document');
 
 function broadcast(author, interaction) {
-    const url = 'https://lishogi.org/api/broadcast';
+    const url = 'https://lixiangqi.com/api/broadcast';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
@@ -22,10 +22,10 @@ function formatBroadcast(broadcast) {
     const red = Math.min(broadcast.rounds.length * 20, 255);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({ name: broadcast.tour.name, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png' })
+        .setAuthor({ name: broadcast.tour.name, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png' })
         .setTitle(broadcast.tour.description)
         .setURL(broadcast.tour.url)
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setDescription(formatMarkup(broadcast.tour.markup))
         .addFields({ name: 'Rounds', value: formatRounds(broadcast.rounds) });
 }

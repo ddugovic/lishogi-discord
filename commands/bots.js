@@ -11,7 +11,7 @@ const User = require('../models/User');
 
 function bots(author, interaction) {
     const mode = getMode(author);
-    const url = 'https://lishogi.org/api/bot/online?nb=50';
+    const url = 'https://lixiangqi.com/api/bot/online?nb=50';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 50 } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })
@@ -47,10 +47,10 @@ function formatBot(bot, mode) {
     const badges = bot.patron ? '⛩️' : '';
     const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
-        .setThumbnail('https://lishogi1.org/assets/images/icons/bot.png')
-        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${username}`})
+        .setThumbnail('https://lixiangqi1.org/assets/images/icons/bot.png')
+        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}`})
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-        .setURL(`https://lishogi.org/?user=${bot.username}#friend`);
+        .setURL(`https://lixiangqi.com/?user=${bot.username}#friend`);
     return setAbout(embed, bot.username, bot.profile, bot.playTime);
 }
 

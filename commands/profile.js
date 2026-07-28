@@ -16,7 +16,7 @@ const parseDocument = require('../lib/parse-document');
 const User = require('../models/User');
 
 function profile(username, favoriteMode, interaction) {
-    const url = `https://lishogi.org/api/user/${username}?trophies=true`;
+    const url = `https://lixiangqi.com/api/user/${username}?trophies=true`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { trophies: true } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -52,8 +52,8 @@ async function formatProfile(user, favoriteMode, interaction) {
 
     var embed = new EmbedBuilder()
         .setColor(color)
-        .setAuthor({name: author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail(user.title == 'BOT' ? 'https://lishogi1.org/assets/images/icons/bot.png' : 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png');
+        .setAuthor({name: author, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: user.playing ?? user.url})
+        .setThumbnail(user.title == 'BOT' ? 'https://lixiangqi1.org/assets/images/icons/bot.png' : 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png');
     if (user.online) {
         var nickname = formatNickname(firstName, lastName) ?? user.username;
         if (country) {
@@ -62,7 +62,7 @@ async function formatProfile(user, favoriteMode, interaction) {
                 nickname = `${countryFlag} ${nickname}`;
         }
         embed = embed.setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
-            .setURL(`https://lishogi.org/?user=${user.username}#friend`);
+            .setURL(`https://lixiangqi.com/?user=${user.username}#friend`);
     }
     embed = embed.addFields(formatStats(user.count, user.playTime, mode, rating, responses[0]));
 
@@ -121,7 +121,7 @@ function getCountryAndName(profile) {
 }
 
 function getPerf(username, mode) {
-    const url = `https://lishogi.org/api/user/${username}/perf/${mode}`;
+    const url = `https://lixiangqi.com/api/user/${username}/perf/${mode}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json());
 }
@@ -130,7 +130,7 @@ function formatAbout(embed, username, profile) {
     const links = profile ? formatSocialLinks(profile.links ?? profile.bio ?? '') : [];
     if (profile && profile.bio)
         links.unshift(...getSiteLinks(profile.bio));
-    links.unshift(`[Profile](https://lishogi.org/@/${username})`);
+    links.unshift(`[Profile](https://lixiangqi.com/@/${username})`);
 
     const result = [links.join(' | ')];
     if (profile.bio) {
@@ -145,13 +145,13 @@ function formatAbout(embed, username, profile) {
 }
 
 function getHistory(username) {
-    const url = `https://lishogi.org/api/user/${username}/rating-history`;
+    const url = `https://lixiangqi.com/api/user/${username}/rating-history`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json());
 }
 
 function getStormHistory(username) {
-    const url = `https://lishogi.org/api/storm/dashboard/${username}?days=90`;
+    const url = `https://lixiangqi.com/api/storm/dashboard/${username}?days=90`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { days: 90 } })
         .then(response => response.json());
 }
@@ -265,7 +265,7 @@ function formatPerf(perf) {
 }
 
 function formatBio(bio) {
-    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lishogi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
+    const social = /https?:\/\/(?!lichess\.org|lidraughts\.org|lixiangqi\.org|playstrategy\.org)|\btwitch\.tv\b|\byoutube\.com\b|\byoutu\.be\b/i;
     for (let i = 0; i < bio.length; i++) {
         if (bio[i].match(social)) {
             bio = bio.slice(0, i);
@@ -283,7 +283,7 @@ function getImage(text) {
 }
 
 function getGames(username) {
-    const url = `https://lishogi.org/api/games/user/${username}?max=3&opening=true&ongoing=true`;
+    const url = `https://lixiangqi.com/api/games/user/${username}?max=3&opening=true&ongoing=true`;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { max: 3, opening: 'true', ongoing: 'true' } })
         .then(response => response.text())
         .then(json => parseDocument(json));
@@ -294,7 +294,7 @@ async function formatGame(game, username) {
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
     const outcome = winner && winner.name == username ? ':white_circle:' : game.winner ? ':black_circle:' : ':hourglass:';
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
-    const url = `https://lishogi.org/${game.id}`;
+    const url = `https://lixiangqi.com/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
     return `${outcome} ${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
@@ -324,16 +324,16 @@ function title(str) {
 
 async function process(bot, msg, username) {
     const user = await User.findById(msg.author.id).exec();
-    if (!(username || user?.lishogiName))
-        return 'You need to set your lishogi username with setuser!';
-    profile(username || user?.lishogiName, user?.favoriteMode).then(message => msg.channel.send(message));
+    if (!(username || user?.lixiangqiName))
+        return 'You need to set your lixiangqi username with setuser!';
+    profile(username || user?.lixiangqiName, user?.favoriteMode).then(message => msg.channel.send(message));
 }
 
 async function interact(interaction) {
     const user = await User.findById(interaction.user.id).exec();
-    const username = interaction.options.getString('username') || user?.lishogiName;
+    const username = interaction.options.getString('username') || user?.lixiangqiName;
     if (!username)
-        return 'You need to set your lishogi username with setuser!';
+        return 'You need to set your lixiangqi username with setuser!';
     return profile(username, user?.favoriteMode, interaction);
 }
 

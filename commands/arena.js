@@ -10,7 +10,7 @@ const plural = require('plural');
 function arena(author, mode, progress, system, interaction) {
     const suffix = [progress, mode].join(' ').trim();
     let status, statusText;
-    const url = 'https://lishogi.org/api/tournament';
+    const url = 'https://lixiangqi.com/api/tournament';
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(json => setArenas(json, mode, progress, system))
@@ -38,7 +38,7 @@ function filterArena(arena, mode) {
 }
 
 function setArena(arena) {
-    const url = `https://lishogi.org/api/tournament/${arena.id}`;
+    const url = `https://lixiangqi.com/api/tournament/${arena.id}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
         .then(json => formatArena(json));
@@ -48,13 +48,13 @@ function formatArena(arena) {
     const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
     var embed = new EmbedBuilder()
         .setColor(formatColor(255-speed, 0, speed))
-        .setAuthor({name: arena.createdBy, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png'})
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setAuthor({name: arena.createdBy, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png'})
+        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setTitle(`${arena.fullName}${arena.schedule ? formatSchedule(arena.schedule) : ''}`)
-        .setURL(`https://lishogi.org/tournament/${arena.id}`)
+        .setURL(`https://lixiangqi.com/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
     if (arena.featured)
-	embed = embed.setImage(`https://lishogi.org/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
+	embed = embed.setImage(`https://lixiangqi.com/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(

@@ -1,6 +1,6 @@
-# lishogi discord bot
+# lixiangqi discord bot
 [![Discord Bots](https://discordbots.org/api/widget/status/842330057841049600.svg)](https://discordbots.org/bot/842330057841049600)
-[![Build Status](https://github.com/ddugovic/lishogi-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lishogi-discord/actions?query=workflow%3A%22Node.js+CI%22)
+[![Build Status](https://github.com/ddugovic/lixiangqi-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/ddugovic/lixiangqi-discord/actions?query=workflow%3A%22Node.js+CI%22)
 
 # Setup
 
@@ -10,16 +10,16 @@
 
 # Features
 
-1. Link your lishogi username with this bot to get customized commands!
+1. Link your lixiangqi username with this bot to get customized commands!
 
 # Command List
 ```
 !help
     Display a list of available commands
 !setuser <username>
-    Set your lishogi username
+    Set your lixiangqi username
 !deleteuser
-    Delete your lishogi username from the bot's database
+    Delete your lixiangqi username from the bot's database
 !setgamemode [game mode]
     Set your favorite game (or puzzle) mode
 !profile [username]
@@ -35,7 +35,7 @@
 !bots
     Display online bots
 !broadcast
-    Find an upcoming or recent broadcast created by lishogi
+    Find an upcoming or recent broadcast created by lixiangqi
 !coach
     Find a coach
 !news

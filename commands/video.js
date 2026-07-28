@@ -6,7 +6,7 @@ const { formatPages } = require('../lib/format-pages');
 const { escape } = require('querystring')
 
 function video(author, text, interaction) {
-    const url = `https://lishogi.org/video?q=${escape(text)}`;
+    const url = `https://lixiangqi.com/video?q=${escape(text)}`;
     let status, statusText;
     return fetch(url, { params: { q: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.text(); })

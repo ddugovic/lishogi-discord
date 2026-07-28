@@ -18,7 +18,7 @@ const commands = require('./commands');
 
 client.on('clientReady', () => {
     console.log(`Bot is online!\n${client.users.cache.size} users, in ${client.guilds.cache.size} servers connected.`);
-    client.user.setPresence({ activities: [{ name: 'lishogi.org', type: ActivityType.Watching }], status: 'online' });
+    client.user.setPresence({ activities: [{ name: 'lixiangqi.com', type: ActivityType.Watching }], status: 'online' });
 });
 
 client.on('guildCreate', (guild) => {

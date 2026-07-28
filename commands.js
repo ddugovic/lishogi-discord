@@ -6,7 +6,6 @@ const bots = require('./commands/bots');
 const broadcast = require('./commands/broadcast');
 const coach = require('./commands/coach');
 const deleteUser = require('./commands/deleteUser');
-const eval = require('./commands/eval');
 const help = require('./commands/help');
 const leaderboard = require('./commands/leaderboard');
 const news = require('./commands/news');
@@ -33,8 +32,8 @@ const commands = {
         interact: arena.interact
     },
     "autocomplete": {
-        usage: "<lishogi name>",
-        description: "Automatically complete lishogi username",
+        usage: "<lixiangqi name>",
+        description: "Automatically complete lixiangqi username",
         process: autocomplete.process,
         interact: autocomplete.interact
     },
@@ -52,7 +51,7 @@ const commands = {
     },
     "broadcast": {
         usage: "",
-        description: "Find an upcoming or recent broadcast created by lishogi",
+        description: "Find an upcoming or recent broadcast created by lixiangqi",
         process: broadcast.process,
         interact: broadcast.interact
     },
@@ -64,15 +63,9 @@ const commands = {
     },
     "deleteuser": {
         usage: "",
-        description: "Delete your lishogi username from the bot's database",
+        description: "Delete your lixiangqi username from the bot's database",
         process: deleteUser.process,
         reply: deleteUser.reply
-    },
-    "eval": {
-        usage: "<fen>",
-        description: "Get the cached evaluation of a position, if available",
-        process: eval.process,
-        interact: eval.interact
     },
     "help": {
         usage: "",
@@ -129,8 +122,8 @@ const commands = {
         reply: setGameMode.reply
     },
     "setuser": {
-        usage: "<lishogi name>",
-        description: "Set your lishogi username",
+        usage: "<lixiangqi name>",
+        description: "Set your lixiangqi username",
         process: setUser.process,
         reply: setUser.reply
     },

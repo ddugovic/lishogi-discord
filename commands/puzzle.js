@@ -5,7 +5,7 @@ const { checkLink } = require('../lib/format-links');
 const { formatChunks } = require('../lib/format-pages');
 
 function puzzle(author, interaction) {
-    const url = 'https://lishogi.org/api/puzzle/daily';
+    const url = 'https://lixiangqi.com/api/puzzle/daily';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -20,15 +20,15 @@ function puzzle(author, interaction) {
 function formatPuzzle(game, puzzle) {
     return new EmbedBuilder()
         .setColor(getColor(puzzle.rating))
-        .setAuthor({ name: game.author, iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: getLink(game.author) })
-        .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setAuthor({ name: game.author, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: getLink(game.author) })
+        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
-        .setURL(`https://lishogi.org/training/${puzzle.id}`)
+        .setURL(`https://lixiangqi.com/training/${puzzle.id}`)
         .addFields([
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
 	])
-        .setImage(`https://lishogi1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
+        .setImage(`https://lixiangqi1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
 }
 
 function getColor(rating) {
@@ -42,7 +42,7 @@ function getLink(text) {
 }
 
 function formatTheme(theme) {
-    return `[${title(theme)}](https://lishogi.org/training/${theme})`;
+    return `[${title(theme)}](https://lixiangqi.com/training/${theme})`;
 }
 
 function title(str) {

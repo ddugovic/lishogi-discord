@@ -6,7 +6,7 @@ const { formatPages } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function simul(author, mode, interaction) {
-    const url = 'https://lishogi.org/api/simul';
+    const url = 'https://lixiangqi.com/api/simul';
     const message = mode ? `No ${mode} event found!` : `No event found!`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
@@ -44,10 +44,10 @@ function formatSimul(simul) {
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
     var embed = new EmbedBuilder()
         .setColor(getColor(simul.host.rating))
-        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lishogi1.org/assets/logo/lishogi-favicon-32-invert.png', url: `https://lishogi.org/@/${simul.host.name}`})
-        .setThumbnail(getImage(simul.host) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${simul.host.name}`})
+        .setThumbnail(getImage(simul.host) ?? 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setTitle(`${date} ${simul.fullName}`)
-        .setURL(`https://lishogi.org/simul/${simul.id}`)
+        .setURL(`https://lixiangqi.com/simul/${simul.id}`)
         .setDescription(`${players} ${play} the ${simul.fullName} <t:${Math.round(timestamp / 1000)}:R>.`);
     if (simul.text) {
         const description = formatDescription(simul.text);
@@ -69,7 +69,7 @@ function formatHost(player) {
 
 function getImage(host) {
     if (host.gameId)
-        return `https://lishogi1.org/game/export/gif/${host.gameId}.gif`;
+        return `https://lixiangqi1.org/game/export/gif/${host.gameId}.gif`;
 }
 
 function formatDescription(text) {

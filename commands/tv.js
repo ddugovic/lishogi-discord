@@ -12,7 +12,7 @@ function tv(mode, interaction) {
     if (!mode)
         mode = 'standard';
     let status, statusText;
-    return fetch('https://lishogi.org/api/tv/channels')
+    return fetch('https://lixiangqi.com/api/tv/channels')
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
         .then(channels => {
             const channel = channels[mode];
@@ -28,10 +28,10 @@ function tv(mode, interaction) {
 async function formatChannel(mode, name, channel) {
     var embed = new EmbedBuilder()
         .setColor(getColor(channel))
-        .setThumbnail(`https://lishogi1.org/game/export/gif/thumbnail/${channel.gameId}.gif`)
+        .setThumbnail(`https://lixiangqi1.org/game/export/gif/thumbnail/${channel.gameId}.gif`)
         .setTitle(`${name} :tv: ${formatPlayer(channel)}`)
-        .setURL(`https://lishogi.org/tv/${mode}`)
-        .setDescription(`Sit back, relax, and watch the best ${name} games on Lishogi!`);
+        .setURL(`https://lixiangqi.com/tv/${mode}`)
+        .setDescription(`Sit back, relax, and watch the best ${name} games on Lixiangqi!`);
 
     const requests = [getGame(channel.gameId), getLiveGames(mode)];
     const [game, games] = await Promise.all(requests);
@@ -46,14 +46,14 @@ async function formatChannel(mode, name, channel) {
 }
 
 function getGame(gameId) {
-    const url = `https://lishogi.org/game/export/${gameId}`;
+    const url = `https://lixiangqi.com/game/export/${gameId}`;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { clocks: 'false', evals: 'false', opening: 'true' } })
         .then(response => response.text())
         .then(json => parseDocument(json));
 }
 
 function getLiveGames(channel) {
-    const url = `https://lishogi.org/api/tv/${channel ?? 'best'}?clocks=false&nb=3`;
+    const url = `https://lixiangqi.com/api/tv/${channel ?? 'best'}?clocks=false&nb=3`;
     return fetch(url, { headers: { Accept: 'application/x-ndjson' }, params: { nb: 3 } })
         .then(response => response.text())
         .then(text => parseDocument(text));
@@ -63,7 +63,7 @@ async function formatGame(game) {
     const handicap = await formatHandicap(game.variant, game.initialSfen);
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
     const players = [game.players.sente, game.players.gote].map(formatPlayer).join(' - ');
-    const url = `https://lishogi.org/${game.id}`;
+    const url = `https://lixiangqi.com/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
     return `${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;

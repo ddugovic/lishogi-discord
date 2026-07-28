@@ -7,7 +7,7 @@ const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks } = require('../lib/format-site-links');
 
 function streamers(lang, interaction) {
-    const url = 'https://lishogi.org/streamer/live';
+    const url = 'https://lixiangqi.com/streamer/live';
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -28,9 +28,9 @@ function setStreamers(streamers, lang) {
         const rating = Math.max(...fields.map(field => field.rating));
         return new EmbedBuilder()
             .setColor(getColor(rating))
-            .setThumbnail('https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
-            .setTitle(`:satellite: Lishogi Streamers`)
-            .setURL('https://lishogi.org/streamer')
+            .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+            .setTitle(`:satellite: Lixiangqi Streamers`)
+            .setURL('https://lixiangqi.com/streamer')
             .addFields(fields);
     });
 }
@@ -56,17 +56,17 @@ function formatLang(lang) {
 }
 
 function formatStream(username, title, streamer, stream) {
-    const links = [`:satellite: [Stream](https://lishogi.org/streamer/${username})`];
+    const links = [`:satellite: [Stream](https://lixiangqi.com/streamer/${username})`];
     if (streamer.twitch)
         links.push(formatSocialLinks(streamer.twitch));
     if (streamer.youTube)
         links.push(formatSocialLinks(streamer.youTube));
 
-    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lishogi\.org/gi, ':globe_with_meridians:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
+    const result = [stream.status.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lixiangqi\.org/gi, ':globe_with_meridians:').replaceAll(/\|?(?: \!\w+)+/g, ''), links.join(' | ')];
     var length = 0;
     var rating = 0;
     if (streamer.headline && streamer.description) {
-        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lishogi\.org/gi, ':globe_with_meridians:')}*\n${formatDescription(streamer.description.split(/\s+/))}`;
+        const text = `*${streamer.headline.replaceAll(/\[[A-Z]{2}\]/g, '').replaceAll(/(?<!https?:\/\/)(?:www\.)?lixiangqi\.org/gi, ':globe_with_meridians:')}*\n${formatDescription(streamer.description.split(/\s+/))}`;
         if ((length = text.length)) {
             rating = title == 'GM' ? 2500 : title == 'IM' ? 2400 : title == 'FM' ? 2300 : title ? 2200 : 2000;
             result.push(text);

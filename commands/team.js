@@ -11,7 +11,7 @@ function team(author, text, interaction) {
     if (!text)
         return 'You need to specify text to search by!';
     text = text.replace(/\s+/, '');
-    const url = `https://lishogi.org/api/team/search?text=${text}`;
+    const url = `https://lixiangqi.com/api/team/search?text=${text}`;
     let status, statusText;
     return fetch(url, { headers: { Accept: 'application/json' }, params: { text: text } })
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
@@ -28,9 +28,9 @@ function formatTeam(team) {
     const description = formatDescription(team.description);
     var embed = new EmbedBuilder()
         .setColor(formatColor(count, 0, 255-count))
-        .setThumbnail(getImage(team.description) ?? 'https://lishogi1.org/assets/logo/lishogi-favicon-64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
         .setTitle(team.name)
-        .setURL(`https://lishogi.org/team/${team.id}`)
+        .setURL(`https://lixiangqi.com/team/${team.id}`)
         .setDescription(cleanDescription(description))
         .addFields({ name: 'Members', value: `**${fn.format(team.nbMembers)}**`, inline: true });
     if (team.leaders.length)
@@ -74,7 +74,7 @@ function getImage(text) {
 }
 
 function formatLeader(user) {
-    return `[@${user.name}](https://lishogi.org/@/${user.name})`;
+    return `[@${user.name}](https://lixiangqi.com/@/${user.name})`;
 }
 
 function process(bot, msg, text) {
