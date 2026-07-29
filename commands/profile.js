@@ -9,7 +9,7 @@ const formatError = require('../lib/format-error');
 const { formatChunks } = require('../lib/format-pages');
 const { formatSiteLinks, getSiteLinks } = require('../lib/format-site-links');
 const formatSeconds = require('../lib/format-seconds');
-const { formatHandicap, formatVariant } = require('../lib/format-variant');
+const formatVariant = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const graphPerfHistory = require('../lib/graph-perf-history');
 const parseDocument = require('../lib/parse-document');
@@ -290,14 +290,13 @@ function getGames(username) {
 }
 
 async function formatGame(game, username) {
-    const handicap = await formatHandicap(game.variant, game.initialSfen);
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
     const outcome = winner && winner.name == username ? ':white_circle:' : game.winner ? ':black_circle:' : ':hourglass:';
     const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
     const url = `https://lixiangqi.com/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
-    return `${outcome} ${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} (${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `${outcome} ${formatClock(game.clock, game.daysPerTurn)} ${status[0]} [${players}](${url}) ${status[1]} <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatStatus(game) {

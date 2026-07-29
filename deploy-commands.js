@@ -2,57 +2,39 @@ const { PermissionFlagsBits } = require("discord-api-types/v10");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 const arenas = [
-    { name: "Annan shogi", value: "annanshogi" },
-    { name: "Checkshogi", value: "checkshogi" },
-    { name: "Chu shogi", value: "chushogi" },
     { name: "Correspondence", value: "correspondence" },
-    { name: "Dobutsu", value: "dobutsu" },
-    { name: "Kyoto shogi", value: "kyotoshogi" },
-    { name: "Minishogi", value: "minishogi" },
+    { name: "Blitz", value: "blitz" },
+    { name: "Bullet", value: "bullet" },
+    { name: "Classical", value: "classical" },
     { name: "Rapid", value: "rapid" },
-    { name: "Shogi", value: "realTime" },
-    { name: "Thematic", value: "thematic" }
-];
-const categories = [
-    { name: "Players", value: "Players" },
-    { name: "Proverbs", value: "Proverbs" },
-    { name: "Strategies", value: "Strategies" },
-    { name: "Terminology", value: "Terminology" }
+    { name: "Thematic", value: "thematic" },
+    { name: "Xiangqi", value: "realTime" }
 ];
 const channels = [
     { name: "Standard", value: "standard" },
-    { name: "Annan shogi", value: "annanshogi" },
-    { name: "Checkshogi", value: "checkshogi" },
-    { name: "Chu shogi", value: "chushogi" },
-    { name: "Dobutsu", value: "dobutsu" },
-    { name: "Kyoto shogi", value: "kyotoshogi" },
-    { name: "Minishogi", value: "minishogi" },
     { name: "Computer", value: "computer" }
 ];
 const languages = [
+    { name: "Chinese", value: "zh" },
     { name: "English", value: "en" },
     { name: "Japanese", value: "jp" }
 ];
 const modes = [
-    { name: "Annan shogi", value: "annanshogi" },
-    { name: "Checkshogi", value: "checkshogi" },
-    { name: "Chu shogi", value: "chushogi" },
-    { name: "Dobutsu", value: "dobutsu" },
-    { name: "Kyoto shogi", value: "kyotoshogi" },
-    { name: "Minishogi", value: "minishogi" },
+    { name: "Blitz", value: "blitz" },
+    { name: "Bullet", value: "bullet" },
+    { name: "Classical", value: "classical" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Shogi", value: "realTime" }
+    { name: "Rapid", value: "rapid" },
+    { name: "Xiangqi", value: "realTime" }
 ];
 const ratings = [
-    { name: "Annan shogi", value: "Annanshogi" },
-    { name: "Checkshogi", value: "checkshogi" },
-    { name: "Chu shogi", value: "chushogi" },
+    { name: "Blitz", value: "blitz" },
+    { name: "Bullet", value: "bullet" },
+    { name: "Classical", value: "classical" },
     { name: "Correspondence", value: "correspondence" },
-    { name: "Dobutsu", value: "dobutsu" },
-    { name: "Kyoto shogi", value: "kyotoshogi" },
-    { name: "Minishogi", value: "minishogi" },
     { name: "Puzzle", value: "puzzle" },
-    { name: "Shogi", value: "realTime" }
+    { name: "Rapid", value: "rapid" },
+    { name: "Xiangqi", value: "realTime" }
 ];
 const statuses = [
     { name: "Featured", value: "featured" },
@@ -92,7 +74,6 @@ const commands = [
     new SlashCommandBuilder().setName("timestamp").setDescription("Print discord magic timestamp").addIntegerOption(option => option.setName("year").setDescription("Year (2000-2100)").setMinValue(2000).setMaxValue(2100).setRequired(true)).addIntegerOption(option => option.setName("month").setDescription("Month (1-12)").setMinValue(1).setMaxValue(12).setRequired(true)).addIntegerOption(option => option.setName("day").setDescription("Day (1-31)").setMinValue(1).setMaxValue(31).setRequired(true)).addIntegerOption(option => option.setName("utc_hour").setDescription("UTC hour (0-23)").setMinValue(0).setMaxValue(23).setRequired(true)).addIntegerOption(option => option.setName("minute").setDescription("Minute (0-59)").setMinValue(0).setMaxValue(59).setRequired(true)),
     new SlashCommandBuilder().setName("tv").setDescription("Display TV game list").addStringOption(option => option.setName("mode").setDescription("Select channel").addChoices(...channels)),
     new SlashCommandBuilder().setName("video").setDescription("Search videos for a keyword").addStringOption(option => option.setName("text").setDescription("Search keywords")),
-    new SlashCommandBuilder().setName("wiki").setDescription("Display Shogi Harbour wiki pages").addStringOption(option => option.setName("category").setDescription("Category").setRequired(true).addChoices(...categories)),
     new SlashCommandBuilder().setName("help").setDescription("Display a list of available commands")
 ]
     .map(command => command.setDefaultMemberPermissions(PermissionFlagsBits.SendMessages).toJSON());

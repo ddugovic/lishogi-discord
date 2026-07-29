@@ -3,7 +3,6 @@ const formatClock = require('../lib/format-clock');
 const formatColor = require('../lib/format-color');
 const formatEmbeds = require('../lib/format-embeds');
 const formatError = require('../lib/format-error');
-const { formatHandicap } = require('../lib/format-variant');
 const { formatOpening } = require('../lib/format-variation');
 const graphSeries = require('../lib/graph-series');
 const plural = require('plural');
@@ -97,9 +96,8 @@ function getPlayerName(player) {
 }
 
 async function formatGame(game) {
-    const handicap = await formatHandicap(game.variant, game.initialSfen);
     const opening = game.moves ? ` ${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
-    return `(${handicap}) <t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
+    return `<t:${Math.floor(game.createdAt / 1000)}:R>${opening}`;
 }
 
 function formatAnalysis(analysis, playerNames) {
