@@ -6,7 +6,7 @@ const { formatContent, getURL } = require('../lib/parse-feed');
 const Parser = require('rss-parser');
 
 function news(author, interaction) {
-    const url = 'https://news.google.com/rss/search?q=shogi';
+    const url = 'https://news.google.com/rss/search?q=xiangqi';
     return new Parser().parseURL(url)
         .then(feed => feed.items.map(entry => formatEntry(entry, feed.description, feed.link)))
         .then(embeds => formatChunks(embeds, interaction, 'No news found!'))

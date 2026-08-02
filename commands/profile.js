@@ -316,7 +316,7 @@ function formatUserName(user) {
 }
 
 function title(str) {
-    return str == 'realTime' ? 'Shogi' : str.replace().split(/_/)
+    return str == 'realTime' ? 'Xiangqi' : str.replace().split(/_/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
 }

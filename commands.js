@@ -22,7 +22,6 @@ const team = require('./commands/team');
 const timestamp = require('./commands/timestamp');
 const tv = require('./commands/tv');
 const video = require('./commands/video');
-const wiki = require('./commands/wiki');
 
 const commands = {
     "arena": {
@@ -162,12 +161,6 @@ const commands = {
         description: "Search videos for a keyword",
         process: video.process,
         interact: video.interact
-    },
-    "wiki": {
-        usage: "[category]",
-        description: "Display Shogi Harbour wiki pages",
-        process: wiki.process,
-        interact: wiki.interact
     }
 };
 

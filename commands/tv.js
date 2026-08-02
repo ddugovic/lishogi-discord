@@ -91,7 +91,7 @@ function formatUser(user) {
 }
 
 function getMode(user) {
-    if (user && user.favoriteMode in ['annanshogi','checkshogi','chushogi','dobutsu','kyotoshogi','minishogi','computer'])
+    if (user && user.favoriteMode != 'puzzle')
         return user.favoriteMode;
 }
 

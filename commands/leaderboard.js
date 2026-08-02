@@ -142,7 +142,7 @@ function chunk(arr, size) {
 }
 
 function title(str) {
-    return str == 'realTime' ? 'Shogi' : str.split(/_/)
+    return str == 'realTime' ? 'Xiangqi' : str.split(/_/)
         .map((x) => (x.charAt(0).toUpperCase() + x.slice(1)))
         .join(' ');
 }
