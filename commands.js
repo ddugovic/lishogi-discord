@@ -109,7 +109,7 @@ const commands = {
         interact: puzzle.interact
     },
     "schedule": {
-        usage: "<event> <sente> <gote> <year> <month> <day> <hour> <minute>",
+        usage: "<event> <white> <black> <year> <month> <day> <hour> <minute>",
         description: "Schedule event (tournament) game",
         process: schedule.process,
         reply: schedule.reply

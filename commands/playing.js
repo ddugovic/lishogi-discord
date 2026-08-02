@@ -35,7 +35,7 @@ async function formatCurrentGame(game, username) {
     if (game.status != 'started')
         embed = embed.setImage(`https://lixiangqi1.org/game/export/gif/${game.id}.gif`);
     if (game.analysis) {
-        const playerNames = [game.players.sente, game.players.gote].map(getPlayerName);
+        const playerNames = [game.players.white, game.players.black].map(getPlayerName);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));
     }
     return embed;
@@ -50,30 +50,30 @@ async function formatCurrentGameClocks(game) {
 }
 
 function getColor(players) {
-    const rating = ((players.sente.rating ?? 1500) + (players.gote.rating ?? 1500)) / 2;
+    const rating = ((players.white.rating ?? 1500) + (players.black.rating ?? 1500)) / 2;
     const red = Math.min(Math.max(Math.floor((rating - 1500) / 2), 0), 255);
     return formatColor(red, 0, 255-red);
 }
 
 async function formatAuthorName(players) {
-    if ([players.sente, players.gote].every(player => player.user))
+    if ([players.white, players.black].every(player => player.user))
         players = await setCrosstable(players);
-    return [players.sente, players.gote].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
+    return [players.white, players.black].map(formatPlayer).join(' - ').replace(/\*\*/g, '');
 }
 
 function setCrosstable(players) {
-    const url = `https://lixiangqi.com/api/crosstable/${players.sente.user.name}/${players.gote.user.name}`;
+    const url = `https://lixiangqi.com/api/crosstable/${players.white.user.name}/${players.black.user.name}`;
     return fetch(url, { headers: { Accept: 'application/json' } })
         .then(response => response.json())
         .then(json => formatRecord(players, json.users));
 }
 
 function formatRecord(players, users) {
-    const senteRecord = users[players.sente.user.name.split(/ /, 2)[0]];
-    const goteRecord = users[players.gote.user.name.split(/ /, 2)[0]];
-    if (senteRecord + goteRecord) {
-        players.sente.record = senteRecord;
-        players.gote.record = goteRecord;
+    const whiteRecord = users[players.white.user.name.split(/ /, 2)[0]];
+    const blackRecord = users[players.black.user.name.split(/ /, 2)[0]];
+    if (whiteRecord + blackRecord) {
+        players.white.record = whiteRecord;
+        players.black.record = blackRecord;
     }
     return players;
 }
@@ -102,16 +102,16 @@ async function formatGame(game) {
 
 function formatAnalysis(analysis, playerNames) {
     const nodePairs = chunk(analysis.map(getJudgmentName), 2);
-    const sente = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
-    const gote = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
+    const white = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
+    const black = { 'Inaccuracy': 0, 'Mistake': 0, 'Blunder': 0 };
     for (i = 0; i < nodePairs.length; i++) {
-        const [senteJudgment, goteJudgment] = nodePairs[i];
-        if (senteJudgment) sente[senteJudgment]++;
-        if (goteJudgment) gote[goteJudgment]++;
+        const [whiteJudgment, blackJudgment] = nodePairs[i];
+        if (whiteJudgment) white[whiteJudgment]++;
+        if (blackJudgment) black[blackJudgment]++;
     }
     return [
-        { name: playerNames[0] ?? 'Sente', value: formatJudgments(sente), inline: true },
-        { name: playerNames[1] ?? 'Gote', value: formatJudgments(gote), inline: true }
+        { name: playerNames[0] ?? 'White', value: formatJudgments(white), inline: true },
+        { name: playerNames[1] ?? 'Black', value: formatJudgments(black), inline: true }
     ];
 }
 

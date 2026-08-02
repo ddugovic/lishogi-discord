@@ -104,7 +104,7 @@ function formatUser(title, name, patron, trophies, online, playing, streaming) {
     // A player is a) streaming and playing b) streaming c) playing d) online e) offline
     var status = streaming ? '  📡 Streaming' : '';
     if (playing)
-        status += playing.includes('sente') ? '  ☗ Playing' : '  ☖ Playing';
+        status += playing.includes('white') ? '  ☗ Playing' : '  ☖ Playing';
     else if (!status && online)
         status = '  📶 Online';
     return [color, `${name}${status}  ${badges}`];
@@ -292,7 +292,7 @@ function getGames(username) {
 async function formatGame(game, username) {
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
     const outcome = winner && winner.name == username ? ':white_circle:' : game.winner ? ':black_circle:' : ':hourglass:';
-    const players = [game.players.sente, game.players.gote].map(formatPlayerName).join(' - ');
+    const players = [game.players.white, game.players.black].map(formatPlayerName).join(' - ');
     const url = `https://lixiangqi.com/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
@@ -300,7 +300,7 @@ async function formatGame(game, username) {
 }
 
 function formatStatus(game) {
-    return [game.players.sente.ratingDiff, game.players.gote.ratingDiff].map(formatRatingDiff);
+    return [game.players.white.ratingDiff, game.players.black.ratingDiff].map(formatRatingDiff);
 }
 
 function formatRatingDiff(ratingDiff) {

@@ -61,7 +61,7 @@ function getLiveGames(channel) {
 
 async function formatGame(game) {
     const winner = game.winner ? game.players[`${game.winner}`].user : undefined;
-    const players = [game.players.sente, game.players.gote].map(formatPlayer).join(' - ');
+    const players = [game.players.white, game.players.black].map(formatPlayer).join(' - ');
     const url = `https://lixiangqi.com/${game.id}`;
     const status = formatStatus(game);
     const opening = game.moves ? `${await formatOpening(game.variant, game.opening, game.initialSfen, game.moves)}` : '';
@@ -73,7 +73,7 @@ function formatRatingDiff(ratingDiff) {
 }
 
 function formatStatus(game) {
-    return [game.players.sente.ratingDiff, game.players.gote.ratingDiff].map(formatRatingDiff);
+    return [game.players.white.ratingDiff, game.players.black.ratingDiff].map(formatRatingDiff);
 }
 
 function getColor(game) {

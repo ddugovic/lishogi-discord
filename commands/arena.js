@@ -5,32 +5,32 @@ const formatError = require('../lib/format-error');
 const { formatPages } = require('../lib/format-pages');
 const formatSeconds = require('../lib/format-seconds');
 const { formatTitledUserLink } = require('../lib/format-site-links');
+const formatVariant = require('../lib/format-variant');
 const plural = require('plural');
 
-function arena(author, mode, progress, system, interaction) {
-    const suffix = [progress, mode].join(' ').trim();
-    let status, statusText;
+function arena(author, mode, progress, interaction) {
     const url = 'https://lixiangqi.com/api/tournament';
-    return fetch(url, { headers: { Accept: 'application/json' } })
+    const suffix = [progress, mode].join(' ').trim();
+    const header = { headers: { Accept: 'application/json' } };
+    let status, statusText;
+    return fetch(url, header)
         .then(response => { status = response.status; statusText = response.statusText; return response.json(); })
-        .then(json => setArenas(json, mode, progress, system))
+        .then(json => setArenas(json, mode, progress))
         .then(embeds => formatPages('Tournament', embeds, interaction, suffix ? `No ${suffix} tournament found.` : 'No tournament found!'))
         .catch(error => {
-            console.log(`Error in arena(${author.username}, ${mode}, ${progress}, ${system}): ${error}`);
+            console.log(`Error in arena(${author.username}, ${mode}, ${progress}): ${error}`);
             return formatError(status, statusText, `${url} failed to respond`);
         });
 }
 
-async function setArenas(data, mode, status, system) {
+async function setArenas(data, mode, progress) {
     var arenas = [];
     for (const [key, value] of Object.entries(data))
-        if (!status || key == status)
+        if (!progress || key == progress)
             arenas.push(...value);
     if (mode)
         arenas = arenas.filter(arena => filterArena(arena, mode));
-    if (system)
-        arenas = arenas.filter(arena => arena.system == system);
-    return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(formatArena);
+    return arenas.length == 1 ? [await setArena(arenas[0])] : arenas.map(arena => formatArena(arena));
 }
 
 function filterArena(arena, mode) {
@@ -45,23 +45,21 @@ function setArena(arena) {
 }
 
 function formatArena(arena) {
-    const speed = Math.floor(Math.min(Math.max(arena.clock.limit + arena.clock.increment * 40, 0), 255) / 2);
+    const red = Math.min(arena.nbPlayers, 255);
     var embed = new EmbedBuilder()
-        .setColor(formatColor(255-speed, 0, speed))
-        .setAuthor({name: arena.createdBy, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png'})
-        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
-        .setTitle(`${arena.fullName}${arena.schedule ? formatSchedule(arena.schedule) : ''}`)
+        .setColor(formatColor(red, 0, 255-red))
+        .setAuthor({name: arena.createdBy, iconURL: 'https://lixiangqi1.com/assets/logo/lixiangqi-favicon-32-invert.png'})
+        .setThumbnail('https://lixiangqi1.com/assets/logo/lixiangqi-favicon-64.png')
+        .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lixiangqi.com/tournament/${arena.id}`)
         .setDescription(getDescription(arena));
-    if (arena.featured)
-	embed = embed.setImage(`https://lixiangqi.com/export/gif/${formatGame(arena.featured)}?lastMove=${arena.featured.lastMove}`);
     if (arena.stats && (arena.stats.berserks + arena.stats.games + arena.stats.moves)) {
         embed = embed
             .addFields(
                 { name: 'Berserks', value: `**${arena.stats.berserks}**`, inline: true },
-                { name: 'Games', value: `**${arena.stats.games}** (+**${arena.stats.senteWins}** -**${arena.stats.goteWins}** =**${arena.stats.draws}**)`, inline: true },
+                { name: 'Games', value: `**${arena.stats.games}** (+**${arena.stats.whiteWins}** -**${arena.stats.blackWins}** =**${arena.stats.draws}**)`, inline: true },
                 { name: 'Moves', value: `**${arena.stats.moves}** (**${Math.round(arena.stats.moves / arena.minutes)}** per minute)`, inline: true }
-            )
+            );
     }
     if (!arena.pairingsClosed) {
         const restrictions = formatRestrictions(arena);
@@ -74,18 +72,29 @@ function formatArena(arena) {
 function formatRestrictions(arena) {
     const restrictions = [];
     if (arena.onlyTitled)
-        restrictions.push('National or FESA title required');
-    if (arena.hasMinRating)
-        restrictions.push(`${title(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
-    if (arena.hasMaxRating)
-        restrictions.push(`${title(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
-    if (arena.minRatedGames)
-        restrictions.push(`**${arena.minRatedGames.nb}** rated ${title(arena.minRatedGames.perf).toLowerCase()} games are required.`);
+        restrictions.push('* National or FIDE title required');
+    if (arena.hasMinRating) {
+        if (arena.minRating.perf) {
+            restrictions.push(`* ${formatVariant(arena.minRating.perf)} current rating must be at least **${arena.minRating.rating}**.`);
+        } else {
+            restrictions.push(`* Current rating must be at least **${arena.minRating.rating}**.`);
+        }
+    }
+    if (arena.hasMaxRating) {
+        if (arena.maxRating.perf) {
+            restrictions.push(`* ${formatVariant(arena.maxRating.perf)} weekly rating cannot exceed **${arena.maxRating.rating}**.`);
+        } else {
+            restrictions.push(`* Weekly rating cannot exceed **${arena.maxRating.rating}**.`);
+        }
+    }
+    if (arena.minRatedGames) {
+        if (arena.minRatedGames.perf) {
+            restrictions.push(`* **${arena.minRatedGames.nb}** rated ${formatVariant(arena.minRatedGames.perf).toLowerCase()} games are required.`);
+        } else {
+            restrictions.push(`* **${arena.minRatedGames.nb}** rated games are required.`);
+        }
+    }
     return restrictions;
-}
-
-function formatGame(game) {
-    return game.fen.replace(/ /g,'_');
 }
 
 function formatSchedule(schedule) {
@@ -96,41 +105,29 @@ function formatSchedule(schedule) {
         schedule.freq == 'yearly' ? ' :calendar:' : '';
 }
 
-function formatSystem(arena) {
-    return arena.system == 'organized' ? 'organized event' :
-           arena.system == 'robin' ? 'round-robin' : 'arena';
-}
-
 function getDescription(arena) {
-    const name = `${arena.fullName} ${formatSystem(arena)}`;
-    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${name}.` : `**${arena.nbPlayers}** players compete in the ${name}.` : '';
+    const players = arena.nbPlayers ? arena.nbPlayers == 1 ? `**1** player competes in the ${arena.fullName}.` : `**${arena.nbPlayers}** players compete in the ${arena.fullName}.` : '';
     const clock = formatClock(arena.clock);
     const rated = arena.rated ? 'rated' : 'casual';
-    const duration = formatSeconds(arena.minutes * 60);
-    const status = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
+    const progress = arena.winner ? `${formatPlayer(arena.winner)} takes the prize home!` :
         arena.isFinished ? `${formatPlayer(arena.podium[0])} takes the prize home!` :
         arena.secondsToStart ? `Starts <t:${Math.floor(Date.now()/1000) + arena.secondsToStart}:R>.` :
         arena.secondsToFinish ? `Finishes <t:${Math.floor(Date.now()/1000) + arena.secondsToFinish}:R>.` :
-        arena.startsAt && arena.status < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
+        arena.startsAt && arena.progress < 20 ? `Starts <t:${Math.floor(arena.startsAt/1000)}:R>.` :
         arena.finishesAt ? `Finishes <t:${Math.floor(arena.finishesAt/1000)}:R>.` : '';
-    return `${players}\n${clock} ${rated} games are played during ${duration}.\n${status}`;
+    return `${players}\n${clock} ${rated} games are played during **${arena.minutes}** minutes.\n${progress}`;
 }
 
 function formatPlayer(player) {
     return formatTitledUserLink(player.title, player.name);
 }
 
-function title(str) {
-    str = str == 'realTime' ? 'xiangqi' : str.replace(/([a-z])([A-Z])/g, '$1-$2');
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 function process(bot, msg, suffix) {
-    arena(msg.author, ...suffix.split(/ /, 3)).then(message => msg.channel.send(message));
+    arena(msg.author, ...suffix.split(/ /, 2)).then(message => msg.channel.send(message));
 }
 
-function interact(interaction) {
-    return arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction.options.getString('system'), interaction);
+async function interact(interaction) {
+    arena(interaction.user, interaction.options.getString('mode'), interaction.options.getString('status'), interaction);
 }
 
 module.exports = {process, interact};

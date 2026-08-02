@@ -42,7 +42,7 @@
     Display recent news
 !puzzle
     Display today's puzzle
-!schedule <event> <sente> <gote> <year> <month> <day> <hour> <minute>
+!schedule <event> <white> <black> <year> <month> <day> <hour> <minute>
     Schedule event (tournament) game
 !simul
     Display a recently finished, ongoing, or upcoming simultanous exhibition

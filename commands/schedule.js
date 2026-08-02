@@ -1,6 +1,6 @@
-function timestamp(event, sente, gote, year, month, day, hour, minute) {
+function timestamp(event, white, black, year, month, day, hour, minute) {
     const millis = Date.UTC(year, month-1, day, hour, minute, 0);
-    return `${event} ${sente} - ${gote}: <t:${millis / 1000}> or <t:${millis / 1000}:R>`;
+    return `${event} ${white} - ${black}: <t:${millis / 1000}> or <t:${millis / 1000}:R>`;
 }
 
 function process(bot, msg, suffix) {
@@ -8,7 +8,7 @@ function process(bot, msg, suffix) {
 }
 
 function reply(interaction) {
-    return timestamp(interaction.options.getString('event'), interaction.options.getMember('sente'), interaction.options.getMember('gote'), interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('utc_hour'), interaction.options.getInteger('minute'));
+    return timestamp(interaction.options.getString('event'), interaction.options.getMember('white'), interaction.options.getMember('black'), interaction.options.getInteger('year'), interaction.options.getInteger('month'), interaction.options.getInteger('day'), interaction.options.getInteger('utc_hour'), interaction.options.getInteger('minute'));
 }
 
 module.exports = { process, reply };
