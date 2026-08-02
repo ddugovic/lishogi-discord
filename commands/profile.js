@@ -52,8 +52,8 @@ async function formatProfile(user, favoriteMode, interaction) {
 
     var embed = new EmbedBuilder()
         .setColor(color)
-        .setAuthor({name: author, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: user.playing ?? user.url})
-        .setThumbnail(user.title == 'BOT' ? 'https://lixiangqi1.org/assets/images/icons/bot.png' : 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png');
+        .setAuthor({name: author, iconURL: 'https://lixiangqi.com/assets/logo/lichess-favicon-32-invert.png', url: user.playing ?? user.url})
+        .setThumbnail(user.title == 'BOT' ? 'https://lixiangqi.com/assets/images/icons/bot.png' : 'https://lixiangqi.com/assets/logo/lichess-favicon-64.png');
     if (user.online) {
         var nickname = formatNickname(firstName, lastName) ?? user.username;
         if (country) {

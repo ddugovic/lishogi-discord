@@ -41,7 +41,7 @@ function formatLeaders(leaders, mode) {
             return chunk(players.map(formatPlayer), 6).map((fields, index) =>
                 new EmbedBuilder()
                     .setColor(getColor(index))
-                    .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+                    .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
                     .setTitle(`:trophy: ${title(mode)} Leaderboard`)
                     .setURL('https://lixiangqi.com/player')
                     .addFields(fields)

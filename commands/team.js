@@ -28,7 +28,7 @@ function formatTeam(team) {
     const description = formatDescription(team.description);
     var embed = new EmbedBuilder()
         .setColor(formatColor(count, 0, 255-count))
-        .setThumbnail(getImage(team.description) ?? 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+        .setThumbnail(getImage(team.description) ?? 'https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setTitle(team.name)
         .setURL(`https://lixiangqi.com/team/${team.id}`)
         .setDescription(cleanDescription(description))

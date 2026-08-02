@@ -28,7 +28,7 @@ function setStreamers(streamers, lang) {
         const rating = Math.max(...fields.map(field => field.rating));
         return new EmbedBuilder()
             .setColor(getColor(rating))
-            .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+            .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
             .setTitle(`:satellite: Lixiangqi Streamers`)
             .setURL('https://lixiangqi.com/streamer')
             .addFields(fields);

@@ -44,8 +44,8 @@ function formatSimul(simul) {
         simul.isRunning ? `${(simul.nbPairings == 1 ? 'competes' : 'compete')} in` : 'await';
     var embed = new EmbedBuilder()
         .setColor(getColor(simul.host.rating))
-        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${simul.host.name}`})
-        .setThumbnail(getImage(simul.host) ?? 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+        .setAuthor({name: formatHost(simul.host), iconURL: 'https://lixiangqi.com/assets/logo/lichess-favicon-32-invert.png', url: `https://lixiangqi.com/@/${simul.host.name}`})
+        .setThumbnail(getImage(simul.host) ?? 'https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setTitle(`${date} ${simul.fullName}`)
         .setURL(`https://lixiangqi.com/simul/${simul.id}`)
         .setDescription(`${players} ${play} the ${simul.fullName} <t:${Math.round(timestamp / 1000)}:R>.`);
@@ -69,7 +69,7 @@ function formatHost(player) {
 
 function getImage(host) {
     if (host.gameId)
-        return `https://lixiangqi1.org/game/export/gif/${host.gameId}.gif`;
+        return `https://lixiangqi.com/game/export/gif/${host.gameId}.gif`;
 }
 
 function formatDescription(text) {

@@ -27,13 +27,13 @@ function playing(username, interaction) {
 async function formatCurrentGame(game, username) {
     var embed = new EmbedBuilder()
         .setColor(getColor(game.players))
-        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}/tv` })
-        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+        .setAuthor({ name: await formatAuthorName(game.players), iconURL: 'https://lixiangqi.com/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}/tv` })
+        .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setTitle(`${formatClock(game.clock, game.daysPerMove)} ${title(game.perf)} game #${game.id}`)
         .setURL(`https://lixiangqi.com/${game.id}`)
         .setDescription(await formatGame(game));
     if (game.status != 'started')
-        embed = embed.setImage(`https://lixiangqi1.org/game/export/gif/${game.id}.gif`);
+        embed = embed.setImage(`https://lixiangqi.com/game/export/gif/${game.id}.gif`);
     if (game.analysis) {
         const playerNames = [game.players.white, game.players.black].map(getPlayerName);
         embed = embed.addFields(formatAnalysis(game.analysis, playerNames));

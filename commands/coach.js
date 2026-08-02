@@ -26,7 +26,7 @@ function formatCoaches(document) {
 
 function formatCoach(image, name, description, details) {
     return new EmbedBuilder()
-        .setAuthor({name: 'Lixiangqi Coach', iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: 'https://lixiangqi.com/coach/'})
+        .setAuthor({name: 'Lixiangqi Coach', iconURL: 'https://lixiangqi.com/assets/logo/lixiangqi-favicon-32-invert.png', url: 'https://lixiangqi.com/coach/'})
         .setTitle(name)
         .setURL(getLink(details))
         .setThumbnail(image)

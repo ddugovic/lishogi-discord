@@ -20,15 +20,15 @@ function puzzle(author, interaction) {
 function formatPuzzle(game, puzzle) {
     return new EmbedBuilder()
         .setColor(getColor(puzzle.rating))
-        .setAuthor({ name: game.author, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: getLink(game.author) })
-        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+        .setAuthor({ name: game.author, iconURL: 'https://lixiangqi.com/assets/logo/lichess-favicon-32-invert.png', url: getLink(game.author) })
+        .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setTitle(`:jigsaw: Daily Puzzle #${puzzle.id}`)
         .setURL(`https://lixiangqi.com/training/${puzzle.id}`)
         .addFields([
             { name: 'Attempts', value: `**${puzzle.plays}**`, inline: true },
             { name: 'Themes', value: puzzle.themes.map(formatTheme).join(', '), inline: true }
 	])
-        .setImage(`https://lixiangqi1.org/training/export/gif/thumbnail/${puzzle.id}.gif`);
+        .setImage(`https://lixiangqi.com/training/export/gif/thumbnail/${puzzle.id}.gif`);
 }
 
 function getColor(rating) {

@@ -47,8 +47,8 @@ function formatBot(bot, mode) {
     const badges = bot.patron ? '車' : '';
     const embed = new EmbedBuilder()
         .setColor(getColor(getRating(bot.perfs, mode) ?? 1500))
-        .setThumbnail('https://lixiangqi1.org/assets/images/icons/bot.png')
-        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}`})
+        .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
+        .setAuthor({name: `BOT ${name} ${badges}`, iconURL: 'https://lixiangqi.com/assets/logo/lixiangqi-favicon-32-invert.png', url: `https://lixiangqi.com/@/${username}`})
         .setTitle(`:crossed_swords: Challenge ${nickname} to a game!`)
         .setURL(`https://lixiangqi.com/?user=${bot.username}#friend`);
     return setAbout(embed, bot.username, bot.profile, bot.playTime);

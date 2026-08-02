@@ -48,8 +48,8 @@ function formatArena(arena) {
     const red = Math.min(arena.nbPlayers, 255);
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({name: arena.createdBy, iconURL: 'https://lixiangqi1.com/assets/logo/lixiangqi-favicon-32-invert.png'})
-        .setThumbnail('https://lixiangqi1.com/assets/logo/lixiangqi-favicon-64.png')
+        .setAuthor({name: arena.createdBy, iconURL: 'https://lixiangqi.com/assets/logo/lichess-favicon-32-invert.png'})
+        .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setTitle(`${arena.fullName}${formatSchedule(arena.schedule)}`)
         .setURL(`https://lixiangqi.com/tournament/${arena.id}`)
         .setDescription(getDescription(arena));

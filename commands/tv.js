@@ -28,7 +28,7 @@ function tv(mode, interaction) {
 async function formatChannel(mode, name, channel) {
     var embed = new EmbedBuilder()
         .setColor(getColor(channel))
-        .setThumbnail(`https://lixiangqi1.org/game/export/gif/thumbnail/${channel.gameId}.gif`)
+        .setThumbnail(`https://lixiangqi.com/game/export/gif/thumbnail/${channel.gameId}.gif`)
         .setTitle(`${name} :tv: ${formatPlayer(channel)}`)
         .setURL(`https://lixiangqi.com/tv/${mode}`)
         .setDescription(`Sit back, relax, and watch the best ${name} games on Lixiangqi!`);

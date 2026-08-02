@@ -22,10 +22,10 @@ function formatBroadcast(broadcast) {
     const red = Math.min(broadcast.rounds.length * 20, 255);
     return new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({ name: broadcast.tour.name, iconURL: 'https://lixiangqi1.org/assets/logo/lixiangqi-favicon-32-invert.png' })
+        .setAuthor({ name: broadcast.tour.name, iconURL: 'https://lixiangqi.com/assets/logo/lixiangqi-favicon-32-invert.png' })
         .setTitle(broadcast.tour.description)
         .setURL(broadcast.tour.url)
-        .setThumbnail('https://lixiangqi1.org/assets/logo/lixiangqi-favicon-64.png')
+        .setThumbnail('https://lixiangqi.com/assets/logo/lichess-favicon-64.png')
         .setDescription(formatMarkup(broadcast.tour.markup))
         .addFields({ name: 'Rounds', value: formatRounds(broadcast.rounds) });
 }
