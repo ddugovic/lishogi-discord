@@ -18,10 +18,14 @@ const arenas = [
     { name: 'UltraBullet', value: 'ultraBullet' }
 ];
 const categories = [
-    { name: "Players", value: "Players" },
-    { name: "Proverbs", value: "Proverbs" },
-    { name: "Strategies", value: "Strategies" },
-    { name: "Terminology", value: "Terminology" }
+    { name: "Chess Composer", value: "Chess Composer" },
+    { name: "Chess Player", value: "Chess Player" },
+    { name: "Chess Programmer", value: "Chess Programmer" },
+    { name: "Linux", value: "Linux" },
+    { name: "Researcher", value: "Researcher" },
+    { name: "UCI", value: "UCI" },
+    { name: "Videos", value: "Videos" },
+    { name: "Windows", value: "Windows" }
 ];
 const channels = [
     { name: 'Top Rated', value: 'best' },
