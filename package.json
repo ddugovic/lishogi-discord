@@ -36,7 +36,7 @@
     "quickchart-js": "^4.0.0",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.18.0",
-    "shogiops": "^0.21.0",
+    "shogiops": "^0.22.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
