@@ -2,7 +2,7 @@ const formatError = require('../lib/format-error');
 const { escape } = require('querystring')
 
 function autocomplete(author, text) {
-    if (text.length < 3) {
+    if (text.length < 4) {
         return [];
     }
     const url = `https://lichess.org/api/player/autocomplete?object=true&term=${escape(text)}`;
