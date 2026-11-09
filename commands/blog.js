@@ -19,12 +19,12 @@ function blog(author, interaction) {
 
 function formatEntry(entry) {
     const timestamp = Math.floor(new Date(entry.isoDate).getTime() / 1000);
-    const authorName = entry.author;
+    const authorName = entry.author.name ?? entry.author;
     const summary = entry.contentSnippet;
     const red = Math.min(Math.max(summary.length, 0), 255);
     var embed = new EmbedBuilder()
         .setColor(formatColor(red, 0, 255-red))
-        .setAuthor({ name: authorName, iconURL: 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: getUserLink(authorName) })
+        .setAuthor({ name: authorName, iconURL: entry.author.logo ?? 'https://lichess1.org/assets/logo/lichess-favicon-32-invert.png', url: entry.author.url ?? getUserLink(authorName) })
         .setTitle(entry.title)
         .setURL(entry.link)
         .setThumbnail('https://lichess1.org/assets/logo/lichess-favicon-64.png')
