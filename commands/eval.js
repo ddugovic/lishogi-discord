@@ -67,7 +67,7 @@ function getMasterGames(fen, since, until) {
 async function formatGame(fen, game) {
     const variation = [game.uci];
     const line = await formatUciVariation(fen, variation);
-    return `${line} :chess_pawn: [${game.white.name} - ${game.black.name}](https://lichess.org/${game.id}) *${game.month}*`;
+    return `${line} :chess_pawn: [${formatPlayer(game.white)} - ${formatPlayer(game.black)}](https://lichess.org/${game.id}) *${game.month}*`;
 }
 
 function getSeries(months) {
@@ -83,6 +83,10 @@ function getSeries(months) {
     data.push(...black);
     history.push({ label: 'Black', data: black });
     return [data, history];
+}
+
+function formatPlayer(player) {
+    return `${player.name} (${player.rating})`;
 }
 
 async function formatVariation(fen, pv) {
